@@ -1,78 +1,59 @@
-export interface InvoiceItem {
+export const INVOICE_STATUSES = [
+  "draft",
+  "sent",
+  "viewed",
+  "paid",
+  "overdue",
+  "void",
+] as const;
+
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
+
+export interface InvoiceLineItem {
   id: string;
+  invoiceId: string;
+  productId: string | null;
   description: string;
-  hours: number;
-  rate: number;
-  amount: number;
+  quantity: string;
+  unitPrice: string;
+  amount: string;
+  sortOrder: number;
 }
 
 export interface Invoice {
-  company: {
-    name: string;
-    address: string;
-    cityStateZip: string;
-  };
-  client: {
-    billTo: string;
-  };
+  id: string;
+  organizationId: string;
   invoiceNumber: string;
-  invoiceDate: string;
-  items: InvoiceItem[];
-  notes: string;
+  companyId: string;
+  contactId: string | null;
+  status: InvoiceStatus;
+  issueDate: string;
+  dueDate: string;
+  notes: string | null;
+  subtotal: string;
+  taxRate: string | null;
+  taxAmount: string;
+  total: string;
+  currency: string;
+  paidAt: string | null;
+  paymentReference: string | null;
+  paymentLinkUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  invoiceLineItems?: InvoiceLineItem[];
 }
 
-// Static default invoice to avoid SSR hydration mismatches
-export const defaultInvoice: Invoice = {
-  company: {
-    name: "",
-    address: "",
-    cityStateZip: "",
-  },
-  client: {
-    billTo: "",
-  },
-  invoiceNumber: "",
-  invoiceDate: "",
-  items: [
-    {
-      id: "1",
-      description: "",
-      hours: 1,
-      rate: 0,
-      amount: 0,
-    },
-  ],
-  notes: "",
-};
+/**
+ * Format a numeric string as currency
+ */
+export const formatCurrency = (
+  amount: string,
+  currency = "USD",
+): string => {
+  const num = Number.parseFloat(amount);
 
-/** Generate current date in a readable format */
-export const getCurrentDate = (): string => {
-  const now = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  return now.toLocaleDateString("en-US", options);
-};
-
-/** Generate timestamp-based invoice ID */
-export const generateInvoiceId = (): string => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-
-  return `INV-${year}${month}${day}-${hours}${minutes}${seconds}`;
-};
-
-// Helper function to format numbers with commas
-export const formatNumber = (num: number): string => {
-  return num.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+  }).format(Number.isNaN(num) ? 0 : num);
 };
