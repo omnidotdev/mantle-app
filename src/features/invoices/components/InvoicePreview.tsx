@@ -1,8 +1,8 @@
 import { Plus } from "lucide-react";
 
-import { formatNumber } from "@/types/invoice";
+import { formatNumber } from "@/features/invoices/types/invoice";
 
-import type { Invoice } from "@/types/invoice";
+import type { Invoice } from "@/features/invoices/types/invoice";
 
 interface InvoicePreviewProps {
   invoice: Invoice;
@@ -19,33 +19,33 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
 }) => {
   // Format the billTo text with line breaks for HTML display
   const formattedBillTo = invoice.client.billTo ? (
-    invoice.client.billTo.split("\n").map((line, i) => (
-      <p key={i} className={i === 0 ? "text-gray-800" : "text-gray-600"}>
-        {line}
-      </p>
-    ))
+    <div className="[&>p:first-child]:text-gray-800 [&>p]:text-gray-600">
+      {invoice.client.billTo.split("\n").map((line) => (
+        <p key={`billto-${line}`}>{line}</p>
+      ))}
+    </div>
   ) : (
     <p className="text-gray-800">Client Name</p>
   );
 
   // Format notes with line breaks for HTML display
   const formattedNotes = invoice.notes
-    ? invoice.notes.split("\n").map((line, i) => (
-        <p key={i} className="text-gray-600">
+    ? invoice.notes.split("\n").map((line) => (
+        <p key={`note-${line}`} className="text-gray-600">
           {line}
         </p>
       ))
     : null;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:border-0 print:shadow-none">
+    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
       {/* Gradient Header */}
       <div className="rounded-t-lg bg-linear-to-r from-teal-700 to-teal-500 p-6 text-white print:rounded-none">
         <div className="mb-2 flex justify-between">
           <div className="flex items-start gap-3">
             {/* Logo with brightness(0) invert(1) filter */}
             <img
-              src="/omni-logo.png"
+              src="/omni-logo.svg"
               alt="Omni Logo"
               className="h-12 w-12 object-contain"
               style={{ filter: "brightness(0) invert(1)" }}
@@ -134,7 +134,7 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           <button
             type="button"
             onClick={onAddLineItem}
-            className="pdf-hide mt-4 flex items-center gap-1 text-teal-600 hover:text-teal-700"
+            className="print-hide mt-4 flex items-center gap-1 text-teal-600 hover:text-teal-700"
           >
             <Plus size={18} />
             <span>Add Line Item</span>

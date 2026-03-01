@@ -1,7 +1,9 @@
-import { API_GRAPHQL_URL } from "../config/env.config";
-
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import type { Types } from "@graphql-codegen/plugin-helpers";
+
+// Use process.env directly since codegen runs in Node.js (not Vite)
+const API_URL = process.env.VITE_API_URL ?? "https://localhost:4000";
+const API_GRAPHQL_URL = `${API_URL}/graphql`;
 
 type GraphQLCodegenConfig = Types.ConfiguredOutput;
 

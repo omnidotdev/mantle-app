@@ -1,29 +1,51 @@
-import { Select as ArkSelect, Portal } from "@ark-ui/react";
+import {
+  Select as ArkSelect,
+  Portal,
+  createListCollection,
+} from "@ark-ui/react";
 import { Check, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+import type { CollectionItem } from "@ark-ui/react";
 import type { ComponentProps, PropsWithChildren } from "react";
 
-const Select = ({
-  children,
-  value,
-  onValueChange,
-  required,
-}: PropsWithChildren<{
+interface SelectProps<T extends CollectionItem> {
+  items: T[];
   value?: string;
   onValueChange?: (value: string) => void;
   required?: boolean;
-}>) => (
-  <ArkSelect.Root
-    value={value ? [value] : []}
-    onValueChange={(e) => onValueChange?.(e.value[0])}
-    required={required}
-    positioning={{ sameWidth: true }}
-  >
-    {children}
-  </ArkSelect.Root>
-);
+  itemToString?: (item: T) => string;
+  itemToValue?: (item: T) => string;
+}
+
+const Select = <T extends CollectionItem>({
+  children,
+  items,
+  value,
+  onValueChange,
+  required,
+  itemToString,
+  itemToValue,
+}: PropsWithChildren<SelectProps<T>>) => {
+  const collection = createListCollection({
+    items,
+    itemToString,
+    itemToValue,
+  });
+
+  return (
+    <ArkSelect.Root
+      collection={collection}
+      value={value ? [value] : []}
+      onValueChange={(e) => onValueChange?.(e.value[0])}
+      required={required}
+      positioning={{ sameWidth: true }}
+    >
+      {children}
+    </ArkSelect.Root>
+  );
+};
 
 const SelectTrigger = ({
   className,
@@ -84,11 +106,11 @@ const SelectItem = ({
   children,
   value,
   ...rest
-}: ComponentProps<typeof ArkSelect.Item> & { value: string }) => (
+}: Omit<ComponentProps<typeof ArkSelect.Item>, "item"> & { value: string }) => (
   <ArkSelect.Item
     item={value}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:opacity-50",
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:opacity-50",
       className,
     )}
     {...rest}

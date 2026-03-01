@@ -21,30 +21,7 @@ export interface Invoice {
   notes: string;
 }
 
-// Helper function to generate current date in a readable format
-const getCurrentDate = (): string => {
-  const now = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  return now.toLocaleDateString("en-US", options);
-};
-
-// Helper function to generate timestamp-based invoice ID
-const generateInvoiceId = (): string => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-
-  return `INV-${year}${month}${day}-${hours}${minutes}${seconds}`;
-};
-
+// Static default invoice to avoid SSR hydration mismatches
 export const defaultInvoice: Invoice = {
   company: {
     name: "",
@@ -54,8 +31,8 @@ export const defaultInvoice: Invoice = {
   client: {
     billTo: "",
   },
-  invoiceNumber: generateInvoiceId(),
-  invoiceDate: getCurrentDate(),
+  invoiceNumber: "",
+  invoiceDate: "",
   items: [
     {
       id: "1",
@@ -66,6 +43,30 @@ export const defaultInvoice: Invoice = {
     },
   ],
   notes: "",
+};
+
+/** Generate current date in a readable format */
+export const getCurrentDate = (): string => {
+  const now = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return now.toLocaleDateString("en-US", options);
+};
+
+/** Generate timestamp-based invoice ID */
+export const generateInvoiceId = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+
+  return `INV-${year}${month}${day}-${hours}${minutes}${seconds}`;
 };
 
 // Helper function to format numbers with commas

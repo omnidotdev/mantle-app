@@ -9,6 +9,10 @@ const knipConfig: KnipConfig = {
     "src/routes/**/*.{ts,tsx}",
     "src/router.tsx",
     "src/lib/graphql/graphqlFetch.ts",
+    // UI components and utilities prepared for use
+    "src/components/**/*.{ts,tsx}",
+    "src/lib/**/*.{ts,tsx}",
+    "src/features/**/*.{ts,tsx}",
   ],
   // NB: files are reported as unused if they are in the set of project files, but not in the set of files resolved from the entry files. See: https://knip.dev/guides/configuring-project-files
   project: ["src/**/*.{ts,tsx,css}"],
@@ -22,6 +26,27 @@ const knipConfig: KnipConfig = {
   ignoreDependencies: [
     // used by GraphQL Code Generator scripts
     "dotenv",
+    // UI libraries (some not yet used)
+    "@internationalized/date",
+    "@tanstack/react-form",
+    "@tanstack/react-query",
+    "@tanstack/react-router-ssr-query",
+    "@tanstack/zod-adapter",
+    "dayjs",
+    "jose",
+    "ms",
+    "react-icons",
+    "sonner",
+    "ts-pattern",
+    "usehooks-ts",
+    "zod",
+    // Dev dependencies
+    "@graphql-codegen/import-types-preset",
+    "@tanstack/react-devtools",
+    "@tanstack/react-query-devtools",
+    "@tanstack/react-router-devtools",
+    "@types/ms",
+    "tw-animate-css",
   ],
   tags: ["-knipignore"],
 };

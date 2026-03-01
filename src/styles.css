@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+button {
+  cursor: pointer;
+}
+
+@page {
+  size: auto;
+  margin: 0;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    height: 100%;
+    width: 100%;
+  }
+}

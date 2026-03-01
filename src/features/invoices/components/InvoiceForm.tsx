@@ -1,7 +1,7 @@
-import { formatNumber } from "@/types/invoice";
+import { formatNumber } from "@/features/invoices/types/invoice";
 
 import type React from "react";
-import type { Invoice, InvoiceItem } from "@/types/invoice";
+import type { Invoice, InvoiceItem } from "@/features/invoices/types/invoice";
 
 interface InvoiceFormProps {
   invoice: Invoice;
