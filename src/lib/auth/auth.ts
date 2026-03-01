@@ -38,6 +38,10 @@ const auth = betterAuth({
     // Store OAuth tokens in a signed cookie for stateless mode
     storeAccountCookie: true,
   },
+  advanced: {
+    // use custom cookie prefix to avoid collision with IDP cookies
+    cookiePrefix: "mantle",
+  },
   plugins: [
     genericOAuth({
       config: [
