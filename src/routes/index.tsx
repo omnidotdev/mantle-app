@@ -14,7 +14,7 @@ const HomePage = () => {
           .map(([key, config]) => (
             <Link
               key={key}
-              to={`/${key}` as "/invoices"}
+              to={`/${key}` as "/invoices" | "/people" | "/quotes" | "/inventory"}
               className="flex flex-col items-center gap-2 rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
             >
               <span className="text-3xl">{config.icon}</span>
