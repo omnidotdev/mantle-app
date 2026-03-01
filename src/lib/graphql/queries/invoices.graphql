@@ -1,0 +1,73 @@
+query AllInvoices($organizationId: String!) {
+  allInvoices(
+    condition: { organizationId: $organizationId }
+    orderBy: CREATED_AT_DESC
+  ) {
+    nodes {
+      id
+      organizationId
+      invoiceNumber
+      companyId
+      contactId
+      status
+      issueDate
+      dueDate
+      notes
+      subtotal
+      taxRate
+      taxAmount
+      total
+      currency
+      paidAt
+      paymentReference
+      paymentLinkUrl
+      createdAt
+      updatedAt
+      companyByCompanyId {
+        id
+        name
+      }
+      contactByContactId: personByContactId {
+        id
+        firstName
+        lastName
+      }
+      invoiceLineItemsByInvoiceId {
+        nodes {
+          id
+          invoiceId
+          productId
+          description
+          quantity
+          unitPrice
+          amount
+          sortOrder
+        }
+      }
+    }
+  }
+}
+
+mutation CreateInvoice($input: CreateInvoiceInput!) {
+  createInvoice(input: $input) {
+    invoice {
+      id
+      invoiceNumber
+    }
+  }
+}
+
+mutation UpdateInvoice($id: UUID!, $patch: InvoicePatch!) {
+  updateInvoiceById(input: { id: $id, invoicePatch: $patch }) {
+    invoice {
+      id
+      invoiceNumber
+    }
+  }
+}
+
+mutation DeleteInvoice($id: UUID!) {
+  deleteInvoiceById(input: { id: $id }) {
+    deletedInvoiceId
+  }
+}

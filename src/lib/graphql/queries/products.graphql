@@ -1,0 +1,66 @@
+query AllProducts($organizationId: String!) {
+  allProducts(condition: { organizationId: $organizationId }) {
+    nodes {
+      id
+      organizationId
+      name
+      description
+      sku
+      unitPrice
+      currentQuantity
+      lowStockThreshold
+      isActive
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+    product {
+      id
+      name
+    }
+  }
+}
+
+mutation UpdateProduct($id: UUID!, $patch: ProductPatch!) {
+  updateProductById(input: { id: $id, productPatch: $patch }) {
+    product {
+      id
+      name
+    }
+  }
+}
+
+mutation DeleteProduct($id: UUID!) {
+  deleteProductById(input: { id: $id }) {
+    deletedProductId
+  }
+}
+
+query InventoryAdjustments($productId: UUID!) {
+  allInventoryAdjustments(
+    condition: { productId: $productId }
+    orderBy: CREATED_AT_DESC
+  ) {
+    nodes {
+      id
+      productId
+      quantityChange
+      reason
+      referenceId
+      createdAt
+    }
+  }
+}
+
+mutation CreateInventoryAdjustment($input: CreateInventoryAdjustmentInput!) {
+  createInventoryAdjustment(input: $input) {
+    inventoryAdjustment {
+      id
+      quantityChange
+    }
+  }
+}

@@ -1,0 +1,76 @@
+query AllQuotes($organizationId: String!) {
+  allQuotes(
+    condition: { organizationId: $organizationId }
+    orderBy: CREATED_AT_DESC
+  ) {
+    nodes {
+      id
+      organizationId
+      quoteNumber
+      companyId
+      contactId
+      title
+      description
+      status
+      validUntil
+      terms
+      notes
+      subtotal
+      taxRate
+      taxAmount
+      total
+      currency
+      convertedInvoiceId
+      createdAt
+      updatedAt
+      companyByCompanyId {
+        id
+        name
+      }
+      contactByContactId: personByContactId {
+        id
+        firstName
+        lastName
+      }
+      quoteLineItemsByQuoteId {
+        nodes {
+          id
+          quoteId
+          productId
+          description
+          quantity
+          unitPrice
+          amount
+          pricingType
+          estimatedHours
+          royaltyPercentage
+          sortOrder
+        }
+      }
+    }
+  }
+}
+
+mutation CreateQuote($input: CreateQuoteInput!) {
+  createQuote(input: $input) {
+    quote {
+      id
+      quoteNumber
+    }
+  }
+}
+
+mutation UpdateQuote($id: UUID!, $patch: QuotePatch!) {
+  updateQuoteById(input: { id: $id, quotePatch: $patch }) {
+    quote {
+      id
+      quoteNumber
+    }
+  }
+}
+
+mutation DeleteQuote($id: UUID!) {
+  deleteQuoteById(input: { id: $id }) {
+    deletedQuoteId
+  }
+}

@@ -1,0 +1,43 @@
+query AllPeople($organizationId: String!) {
+  allPeople(condition: { organizationId: $organizationId }) {
+    nodes {
+      id
+      organizationId
+      firstName
+      lastName
+      email
+      phone
+      avatarUrl
+      tags
+      notes
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+mutation CreatePerson($input: CreatePersonInput!) {
+  createPerson(input: $input) {
+    person {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+
+mutation UpdatePerson($id: UUID!, $patch: PersonPatch!) {
+  updatePersonById(input: { id: $id, personPatch: $patch }) {
+    person {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+
+mutation DeletePerson($id: UUID!) {
+  deletePersonById(input: { id: $id }) {
+    deletedPersonId
+  }
+}
