@@ -1,30 +1,38 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { Invoice } from "../types/invoice";
+import type { Invoice, InvoiceLineItem } from "../types/invoice";
 
 // TODO: Migrate to database persistence via GraphQL API
-// See: https://github.com/omnidotdev/mantle/issues/XXX
+// Once codegen runs, replace this store with generated React Query hooks.
+// Zustand remains only for ephemeral UI state.
 
-type InvoiceStatus = "draft" | "sent" | "paid";
-
-interface StoredInvoice extends Invoice {
-  id: string;
-  status: InvoiceStatus;
-  createdAt: string;
-  updatedAt: string;
-}
+interface StoredInvoice extends Invoice {}
 
 interface InvoiceStore {
   invoices: StoredInvoice[];
-  createInvoice: (invoice: Invoice) => StoredInvoice;
-  updateInvoice: (id: string, invoice: Partial<Invoice>) => void;
+  createInvoice: (
+    invoice: Omit<
+      Invoice,
+      "id" | "createdAt" | "updatedAt" | "organizationId"
+    >,
+  ) => StoredInvoice;
+  updateInvoice: (id: string, updates: Partial<Invoice>) => void;
   deleteInvoice: (id: string) => void;
   getInvoice: (id: string) => StoredInvoice | undefined;
-  updateStatus: (id: string, status: InvoiceStatus) => void;
 }
 
-const generateId = () => crypto.randomUUID();
+/**
+ * Generate sequential invoice number.
+ */
+const generateInvoiceNumber = (invoices: StoredInvoice[]): string => {
+  const maxNum = invoices.reduce((max, inv) => {
+    const match = inv.invoiceNumber.match(/^INV-(\d+)$/);
+    return match ? Math.max(max, Number.parseInt(match[1], 10)) : max;
+  }, 0);
+
+  return `INV-${String(maxNum + 1).padStart(4, "0")}`;
+};
 
 const useInvoiceStore = create<InvoiceStore>()(
   persist(
@@ -35,8 +43,10 @@ const useInvoiceStore = create<InvoiceStore>()(
         const now = new Date().toISOString();
         const newInvoice: StoredInvoice = {
           ...invoice,
-          id: generateId(),
-          status: "draft",
+          id: crypto.randomUUID(),
+          organizationId: "",
+          invoiceNumber:
+            invoice.invoiceNumber || generateInvoiceNumber(get().invoices),
           createdAt: now,
           updatedAt: now,
         };
@@ -67,22 +77,15 @@ const useInvoiceStore = create<InvoiceStore>()(
       getInvoice: (id) => {
         return get().invoices.find((inv) => inv.id === id);
       },
-
-      updateStatus: (id, status) => {
-        set((state) => ({
-          invoices: state.invoices.map((inv) =>
-            inv.id === id
-              ? { ...inv, status, updatedAt: new Date().toISOString() }
-              : inv,
-          ),
-        }));
-      },
     }),
     {
       name: "mantle-invoices",
+      partialize: (state) => ({
+        invoices: state.invoices,
+      }),
     },
   ),
 );
 
-export { useInvoiceStore };
-export type { StoredInvoice, InvoiceStatus };
+export { useInvoiceStore, generateInvoiceNumber };
+export type { StoredInvoice };

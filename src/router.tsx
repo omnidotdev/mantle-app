@@ -1,23 +1,29 @@
+import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { routerWithQueryClient } from "@tanstack/react-router-ssr-query";
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
-import createQueryClient from "@/lib/graphql/queryClient";
 import { routeTree } from "./routeTree.gen";
 
 /**
  * Create the application router with TanStack Query integration.
  */
 const getRouter = () => {
-  const queryClient = createQueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 30_000,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
 
-  const router = routerWithQueryClient(
-    createTanStackRouter({
-      routeTree,
-      scrollRestoration: true,
-      context: { queryClient },
-    }),
-    queryClient,
-  );
+  const router = createTanStackRouter({
+    routeTree,
+    scrollRestoration: true,
+    context: { queryClient },
+  });
+
+  setupRouterSsrQueryIntegration({ router, queryClient });
 
   return router;
 };

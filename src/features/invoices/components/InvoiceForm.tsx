@@ -1,238 +1,387 @@
-import { formatNumber } from "@/features/invoices/types/invoice";
+import { Plus, Trash2 } from "lucide-react";
 
-import type React from "react";
-import type { Invoice, InvoiceItem } from "@/features/invoices/types/invoice";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { formatCurrency } from "@/features/invoices/types/invoice";
+
+import type { Invoice, InvoiceLineItem } from "@/features/invoices/types/invoice";
 
 interface InvoiceFormProps {
-  invoice: Invoice;
-  onInvoiceChange: (invoice: Invoice) => void;
-  onAddLineItem: () => void;
-  calculateTotal: () => number;
+  invoice: Partial<Invoice>;
+  onInvoiceChange: (invoice: Partial<Invoice>) => void;
+  lineItems: Partial<InvoiceLineItem>[];
+  onLineItemsChange: (items: Partial<InvoiceLineItem>[]) => void;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
-const InvoiceForm: React.FC<InvoiceFormProps> = ({
+const InvoiceForm = ({
   invoice,
   onInvoiceChange,
-  onAddLineItem,
-  calculateTotal,
-}) => {
-  const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    onInvoiceChange({
-      ...invoice,
-      company: {
-        ...invoice.company,
-        [name]: value,
-      },
-    });
+  lineItems,
+  onLineItemsChange,
+  onSave,
+  onCancel,
+}: InvoiceFormProps) => {
+  const handleChange = (field: keyof Invoice, value: string | null) => {
+    onInvoiceChange({ ...invoice, [field]: value });
   };
 
-  const handleClientChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onInvoiceChange({
-      ...invoice,
-      client: {
-        billTo: e.target.value,
-      },
-    });
-  };
-
-  const handleInvoiceDetailChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+  const handleLineItemChange = (
+    index: number,
+    field: keyof InvoiceLineItem,
+    value: string | number | null,
   ) => {
-    const { name, value } = e.target;
-    onInvoiceChange({
-      ...invoice,
-      [name]: value,
-    });
-  };
+    const updated = lineItems.map((item, i) => {
+      if (i !== index) return item;
 
-  const handleItemChange = (
-    id: string,
-    field: keyof InvoiceItem,
-    value: string | number,
-  ) => {
-    const updatedItems = invoice.items.map((item) => {
-      if (item.id === id) {
-        const updatedItem = { ...item, [field]: value };
+      const updatedItem = { ...item, [field]: value };
 
-        // Recalculate amount if hours or rate changes
-        if (field === "hours" || field === "rate") {
-          const hours = field === "hours" ? Number(value) : item.hours;
-          const rate = field === "rate" ? Number(value) : item.rate;
-          updatedItem.amount = hours * rate;
-        }
-
-        return updatedItem;
+      // Recompute amount when quantity or unitPrice change
+      if (field === "quantity" || field === "unitPrice") {
+        const qty = Number.parseFloat(
+          String(field === "quantity" ? value : updatedItem.quantity) || "0",
+        );
+        const price = Number.parseFloat(
+          String(field === "unitPrice" ? value : updatedItem.unitPrice) || "0",
+        );
+        updatedItem.amount = String(qty * price);
       }
-      return item;
+
+      return updatedItem;
     });
+
+    onLineItemsChange(updated);
+    recalculateTotals(updated);
+  };
+
+  const recalculateTotals = (items: Partial<InvoiceLineItem>[]) => {
+    const subtotal = items.reduce(
+      (sum, item) => sum + Number.parseFloat(item.amount || "0"),
+      0,
+    );
+    const taxRate = Number.parseFloat(invoice.taxRate || "0");
+    const taxAmount = (subtotal * taxRate) / 100;
+    const total = subtotal + taxAmount;
 
     onInvoiceChange({
       ...invoice,
-      items: updatedItems,
+      subtotal: String(subtotal),
+      taxAmount: String(taxAmount),
+      total: String(total),
     });
   };
 
-  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTaxRateChange = (value: string) => {
+    const subtotal = lineItems.reduce(
+      (sum, item) => sum + Number.parseFloat(item.amount || "0"),
+      0,
+    );
+    const taxRate = Number.parseFloat(value || "0");
+    const taxAmount = (subtotal * taxRate) / 100;
+    const total = subtotal + taxAmount;
+
     onInvoiceChange({
       ...invoice,
-      notes: e.target.value,
+      taxRate: value || null,
+      taxAmount: String(taxAmount),
+      total: String(total),
     });
   };
+
+  const handleAddLineItem = () => {
+    onLineItemsChange([
+      ...lineItems,
+      {
+        id: crypto.randomUUID(),
+        description: "",
+        quantity: "1",
+        unitPrice: "0",
+        amount: "0",
+        sortOrder: lineItems.length,
+      },
+    ]);
+  };
+
+  const handleRemoveLineItem = (index: number) => {
+    const updated = lineItems.filter((_, i) => i !== index);
+    onLineItemsChange(updated);
+    recalculateTotals(updated);
+  };
+
+  const subtotal = lineItems.reduce(
+    (sum, item) => sum + Number.parseFloat(item.amount || "0"),
+    0,
+  );
 
   return (
     <div className="space-y-6">
+      {/* Invoice details */}
       <div className="space-y-4">
-        <h2 className="font-medium text-gray-700 text-lg">Your Information</h2>
-        <label className="block font-medium text-gray-700 text-sm">
-          Company Name
-          <input
-            type="text"
-            name="name"
-            value={invoice.company.name}
-            onChange={handleCompanyChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          />
-        </label>
-        <label className="block font-medium text-gray-700 text-sm">
-          Address
-          <input
-            type="text"
-            name="address"
-            value={invoice.company.address}
-            onChange={handleCompanyChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          />
-        </label>
-        <label className="block font-medium text-gray-700 text-sm">
-          City, State, ZIP
-          <input
-            type="text"
-            name="cityStateZip"
-            value={invoice.company.cityStateZip}
-            onChange={handleCompanyChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          />
-        </label>
-      </div>
+        <h3 className="font-medium text-gray-700 text-lg">Invoice Details</h3>
 
-      <div className="space-y-4">
-        <h2 className="font-medium text-gray-700 text-lg">
-          Client Information
-        </h2>
-        <label className="block font-medium text-gray-700 text-sm">
-          Bill To
-          <textarea
-            value={invoice.client.billTo}
-            onChange={handleClientChange}
-            rows={4}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-            placeholder="Client Name&#10;Address&#10;City, State ZIP"
-          />
-        </label>
-      </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-number">Invoice Number</Label>
+            <Input
+              id="invoice-number"
+              value={invoice.invoiceNumber ?? ""}
+              readOnly
+              className="bg-gray-50"
+            />
+          </div>
 
-      <div className="space-y-4">
-        <h2 className="font-medium text-gray-700 text-lg">Invoice Details</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <label className="block font-medium text-gray-700 text-sm">
-            Invoice ID
-            <input
-              type="text"
-              name="invoiceNumber"
-              value={invoice.invoiceNumber}
-              onChange={handleInvoiceDetailChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-status">Status</Label>
+            <Input
+              id="invoice-status"
+              value={invoice.status ?? "draft"}
+              readOnly
+              className="bg-gray-50 capitalize"
             />
-          </label>
-          <label className="block font-medium text-gray-700 text-sm">
-            Invoice Date
-            <input
-              type="text"
-              name="invoiceDate"
-              value={invoice.invoiceDate}
-              onChange={handleInvoiceDetailChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-            />
-          </label>
+          </div>
         </div>
       </div>
 
+      {/* Client */}
       <div className="space-y-4">
-        <h2 className="font-medium text-gray-700 text-lg">Line Items</h2>
-        {invoice.items.map((item) => (
-          <div key={item.id} className="space-y-2">
-            <label className="block font-medium text-gray-700 text-sm">
-              Description
-              <input
-                type="text"
-                value={item.description}
+        <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-company">Company ID</Label>
+            <Input
+              id="invoice-company"
+              value={invoice.companyId ?? ""}
+              onChange={(e) => handleChange("companyId", e.target.value)}
+              placeholder="Company identifier"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-contact">Contact ID</Label>
+            <Input
+              id="invoice-contact"
+              value={invoice.contactId ?? ""}
+              onChange={(e) =>
+                handleChange("contactId", e.target.value || null)
+              }
+              placeholder="Contact identifier"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Dates */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-gray-700 text-lg">Dates</h3>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-issue-date">Issue Date</Label>
+            <Input
+              id="invoice-issue-date"
+              type="date"
+              value={invoice.issueDate ?? ""}
+              onChange={(e) => handleChange("issueDate", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-due-date">Due Date</Label>
+            <Input
+              id="invoice-due-date"
+              type="date"
+              value={invoice.dueDate ?? ""}
+              onChange={(e) => handleChange("dueDate", e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Line items */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-gray-700 text-lg">Line Items</h3>
+
+        {lineItems.map((item, index) => (
+          <div
+            key={item.id}
+            className="space-y-3 rounded-lg border border-gray-200 p-4"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-gray-600 text-sm">
+                Item {index + 1}
+              </span>
+              {lineItems.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveLineItem(index)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Remove item"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
+              <Input
+                id={`item-desc-${item.id}`}
+                value={item.description ?? ""}
                 onChange={(e) =>
-                  handleItemChange(item.id, "description", e.target.value)
+                  handleLineItemChange(index, "description", e.target.value)
                 }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Item description"
               />
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <label className="block font-medium text-gray-700 text-sm">
-                Hours/Items
-                <input
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                <Input
+                  id={`item-qty-${item.id}`}
                   type="number"
-                  value={item.hours}
+                  min="0"
+                  step="1"
+                  value={item.quantity ?? "1"}
                   onChange={(e) =>
-                    handleItemChange(item.id, "hours", Number(e.target.value))
+                    handleLineItemChange(index, "quantity", e.target.value)
                   }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                 />
-              </label>
-              <label className="block font-medium text-gray-700 text-sm">
-                Rate ($)
-                <input
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
+                <Input
+                  id={`item-price-${item.id}`}
                   type="number"
-                  value={item.rate}
+                  min="0"
+                  step="0.01"
+                  value={item.unitPrice ?? "0"}
                   onChange={(e) =>
-                    handleItemChange(item.id, "rate", Number(e.target.value))
+                    handleLineItemChange(index, "unitPrice", e.target.value)
                   }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                 />
-              </label>
-              <label className="block font-medium text-gray-700 text-sm">
-                Amount ($)
-                <input
-                  type="text"
-                  value={formatNumber(item.amount)}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
+                <Input
+                  id={`item-amount-${item.id}`}
+                  value={formatCurrency(item.amount || "0", invoice.currency)}
                   readOnly
-                  className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm sm:text-sm"
+                  className="bg-gray-50"
                 />
-              </label>
+              </div>
             </div>
           </div>
         ))}
+
         <button
           type="button"
-          onClick={onAddLineItem}
-          className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
+          onClick={handleAddLineItem}
+          className="flex items-center gap-1 text-teal-600 hover:text-teal-700"
         >
-          <span>+ Add Line Item</span>
+          <Plus size={18} />
+          <span>Add Line Item</span>
         </button>
-        <div className="flex justify-end">
-          <div className="w-1/3">
-            <div className="flex justify-between font-medium">
-              <span>Total:</span>
-              <span>${formatNumber(calculateTotal())}</span>
-            </div>
+      </div>
+
+      {/* Financials */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-gray-700 text-lg">Financials</h3>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-subtotal">Subtotal</Label>
+            <Input
+              id="invoice-subtotal"
+              value={formatCurrency(String(subtotal), invoice.currency)}
+              readOnly
+              className="bg-gray-50"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-tax-rate">Tax Rate (%)</Label>
+            <Input
+              id="invoice-tax-rate"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              value={invoice.taxRate ?? ""}
+              onChange={(e) => handleTaxRateChange(e.target.value)}
+              placeholder="0"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-tax-amount">Tax Amount</Label>
+            <Input
+              id="invoice-tax-amount"
+              value={formatCurrency(
+                invoice.taxAmount || "0",
+                invoice.currency,
+              )}
+              readOnly
+              className="bg-gray-50"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-total">Total</Label>
+            <Input
+              id="invoice-total"
+              value={formatCurrency(invoice.total || "0", invoice.currency)}
+              readOnly
+              className="bg-gray-50 font-medium"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-currency">Currency</Label>
+            <Input
+              id="invoice-currency"
+              value={invoice.currency ?? "USD"}
+              onChange={(e) => handleChange("currency", e.target.value)}
+              placeholder="USD"
+            />
           </div>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <h2 className="font-medium text-gray-700 text-lg">Notes</h2>
-        <textarea
-          value={invoice.notes}
-          onChange={handleNotesChange}
+      {/* Notes */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-gray-700 text-lg">Notes</h3>
+
+        <Textarea
+          value={invoice.notes ?? ""}
+          onChange={(e) => handleChange("notes", e.target.value || null)}
           rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-        ></textarea>
+          placeholder="Additional notes"
+        />
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-end gap-2 border-gray-200 border-t pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={!invoice.companyId?.trim()}
+          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Save
+        </button>
       </div>
     </div>
   );

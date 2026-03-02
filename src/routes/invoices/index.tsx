@@ -4,67 +4,111 @@ import { useState } from "react";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
-import { useInvoiceStore } from "@/features/invoices/store/invoiceStore";
 import {
-  defaultInvoice,
-  formatNumber,
-  generateInvoiceId,
-  getCurrentDate,
-} from "@/features/invoices/types/invoice";
+  generateInvoiceNumber,
+  useInvoiceStore,
+} from "@/features/invoices/store/invoiceStore";
+import { formatCurrency } from "@/features/invoices/types/invoice";
 
+import type { Invoice, InvoiceLineItem } from "@/features/invoices/types/invoice";
 import type { StoredInvoice } from "@/features/invoices/store/invoiceStore";
-import type { Invoice, InvoiceItem } from "@/features/invoices/types/invoice";
 
 type ViewMode = "list" | "create" | "edit" | "preview";
+
+const statusColors: Record<string, string> = {
+  draft: "bg-gray-100 text-gray-700",
+  sent: "bg-blue-100 text-blue-700",
+  viewed: "bg-indigo-100 text-indigo-700",
+  paid: "bg-green-100 text-green-700",
+  overdue: "bg-red-100 text-red-700",
+  void: "bg-gray-100 text-gray-500",
+};
+
+const defaultInvoice: Partial<Invoice> = {
+  invoiceNumber: "",
+  companyId: "",
+  contactId: null,
+  status: "draft",
+  issueDate: "",
+  dueDate: "",
+  notes: null,
+  subtotal: "0",
+  taxRate: null,
+  taxAmount: "0",
+  total: "0",
+  currency: "USD",
+  paidAt: null,
+  paymentReference: null,
+  paymentLinkUrl: null,
+};
 
 const InvoicesPage = () => {
   const { invoices, createInvoice, updateInvoice, deleteInvoice } =
     useInvoiceStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const [currentInvoice, setCurrentInvoice] = useState<Invoice>(defaultInvoice);
+  const [currentInvoice, setCurrentInvoice] =
+    useState<Partial<Invoice>>(defaultInvoice);
+  const [currentLineItems, setCurrentLineItems] = useState<
+    Partial<InvoiceLineItem>[]
+  >([{ id: crypto.randomUUID(), description: "", quantity: "1", unitPrice: "0", amount: "0", sortOrder: 0 }]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [showHoursAndRate, setShowHoursAndRate] = useState(true);
 
   const handleCreateNew = () => {
-    setCurrentInvoice({
-      ...defaultInvoice,
-      invoiceNumber: generateInvoiceId(),
-      invoiceDate: getCurrentDate(),
-    });
+    const invoiceNumber = generateInvoiceNumber(invoices as StoredInvoice[]);
+    const today = new Date().toISOString().split("T")[0];
+    setCurrentInvoice({ ...defaultInvoice, invoiceNumber, issueDate: today });
+    setCurrentLineItems([
+      { id: crypto.randomUUID(), description: "", quantity: "1", unitPrice: "0", amount: "0", sortOrder: 0 },
+    ]);
     setEditingId(null);
     setViewMode("create");
   };
 
-  const handlePopulateOmni = () => {
-    setCurrentInvoice({
-      ...currentInvoice,
-      company: {
-        name: "Omni LLC",
-        address: "Ste 1 202 N Cedar Ave",
-        cityStateZip: "Owatonna, MN 55060-2306",
-      },
-    });
-  };
-
   const handleEdit = (invoice: StoredInvoice) => {
     setCurrentInvoice(invoice);
+    setCurrentLineItems(
+      invoice.invoiceLineItems ?? [
+        { id: crypto.randomUUID(), description: "", quantity: "1", unitPrice: "0", amount: "0", sortOrder: 0 },
+      ],
+    );
     setEditingId(invoice.id);
     setViewMode("edit");
   };
 
   const handlePreview = (invoice: StoredInvoice) => {
     setCurrentInvoice(invoice);
+    setCurrentLineItems(invoice.invoiceLineItems ?? []);
     setEditingId(invoice.id);
     setViewMode("preview");
   };
 
   const handleSave = () => {
+    const invoiceData = {
+      ...currentInvoice,
+      invoiceNumber: currentInvoice.invoiceNumber ?? "",
+      companyId: currentInvoice.companyId ?? "",
+      status: currentInvoice.status ?? "draft",
+      issueDate: currentInvoice.issueDate ?? "",
+      dueDate: currentInvoice.dueDate ?? "",
+      subtotal: currentInvoice.subtotal ?? "0",
+      taxAmount: currentInvoice.taxAmount ?? "0",
+      total: currentInvoice.total ?? "0",
+      currency: currentInvoice.currency ?? "USD",
+      invoiceLineItems: currentLineItems as InvoiceLineItem[],
+    };
+
     if (editingId) {
-      updateInvoice(editingId, currentInvoice);
+      updateInvoice(editingId, invoiceData);
     } else {
-      createInvoice(currentInvoice);
+      createInvoice(
+        invoiceData as Omit<
+          Invoice,
+          "id" | "createdAt" | "updatedAt" | "organizationId"
+        >,
+      );
     }
+
     setViewMode("list");
     setEditingId(null);
   };
@@ -75,31 +119,19 @@ const InvoicesPage = () => {
     }
   };
 
-  const handleAddLineItem = () => {
-    const newItem: InvoiceItem = {
-      id: crypto.randomUUID(),
-      description: "",
-      hours: 1,
-      rate: 0,
-      amount: 0,
-    };
-    setCurrentInvoice({
-      ...currentInvoice,
-      items: [...currentInvoice.items, newItem],
-    });
+  const handleCancel = () => {
+    setViewMode("list");
+    setEditingId(null);
   };
 
-  const calculateTotal = () => {
-    return currentInvoice.items.reduce((sum, item) => sum + item.amount, 0);
-  };
-
+  // List view
   if (viewMode === "list") {
     return (
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <Link to="/" className="text-gray-500 text-sm hover:text-gray-700">
-              ← Back
+              &larr; Back
             </Link>
             <h1 className="font-bold text-2xl">Invoices</h1>
           </div>
@@ -133,13 +165,13 @@ const InvoicesPage = () => {
                     Invoice #
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Client
+                    Company
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Date
+                    Issue Date
                   </th>
                   <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
-                    Amount
+                    Total
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
                     Status
@@ -150,70 +182,59 @@ const InvoicesPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {invoices.map((invoice) => {
-                  const total = invoice.items.reduce(
-                    (sum, item) => sum + item.amount,
-                    0,
-                  );
-                  const clientName =
-                    invoice.client.billTo.split("\n")[0] || "—";
-
-                  return (
-                    <tr key={invoice.id} className="border-gray-100 border-t">
-                      <td className="px-4 py-3 font-mono text-sm">
-                        {invoice.invoiceNumber}
-                      </td>
-                      <td className="px-4 py-3 text-sm">{clientName}</td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
-                        {invoice.invoiceDate}
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium text-sm">
-                        ${formatNumber(total)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-block rounded-full px-2 py-1 text-xs ${
-                            invoice.status === "paid"
-                              ? "bg-green-100 text-green-700"
-                              : invoice.status === "sent"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-700"
-                          }`}
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id} className="border-gray-100 border-t">
+                    <td className="px-4 py-3 font-mono text-sm">
+                      {invoice.invoiceNumber}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {invoice.companyId || "\u2014"}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 text-sm">
+                      {invoice.issueDate}
+                    </td>
+                    <td className="px-4 py-3 text-right font-medium text-sm">
+                      {formatCurrency(invoice.total, invoice.currency)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-block rounded-full px-2 py-1 text-xs ${
+                          statusColors[invoice.status] || statusColors.draft
+                        }`}
+                      >
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handlePreview(invoice)}
+                          className="text-gray-500 hover:text-gray-700"
+                          title="Preview"
                         >
-                          {invoice.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handlePreview(invoice)}
-                            className="text-gray-500 hover:text-gray-700"
-                            title="Preview"
-                          >
-                            <Eye size={16} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleEdit(invoice)}
-                            className="text-gray-500 hover:text-gray-700"
-                            title="Edit"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(invoice.id)}
-                            className="text-red-500 hover:text-red-700"
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(invoice)}
+                          className="text-gray-500 hover:text-gray-700"
+                          title="Edit"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(invoice.id)}
+                          className="text-red-500 hover:text-red-700"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -222,6 +243,7 @@ const InvoicesPage = () => {
     );
   }
 
+  // Preview view
   if (viewMode === "preview") {
     return (
       <div className="mx-auto max-w-4xl p-8 print:max-w-none print:p-0">
@@ -231,7 +253,7 @@ const InvoicesPage = () => {
             onClick={() => setViewMode("list")}
             className="text-gray-500 hover:text-gray-700"
           >
-            ← Back to list
+            &larr; Back to list
           </button>
           <div className="flex gap-2">
             <button
@@ -258,14 +280,13 @@ const InvoicesPage = () => {
 
         <InvoicePreview
           invoice={currentInvoice}
-          total={calculateTotal()}
-          onAddLineItem={handleAddLineItem}
-          showHoursAndRate={showHoursAndRate}
+          lineItems={currentLineItems}
         />
       </div>
     );
   }
 
+  // Create/edit view
   return (
     <div className="mx-auto max-w-6xl p-8">
       <div className="mb-6 flex items-center justify-between">
@@ -274,12 +295,12 @@ const InvoicesPage = () => {
           onClick={() => setViewMode("list")}
           className="text-gray-500 hover:text-gray-700"
         >
-          ← Back to list
+          &larr; Back to list
         </button>
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setViewMode("list")}
+            onClick={handleCancel}
             className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
           >
             Cancel
@@ -296,44 +317,24 @@ const InvoicesPage = () => {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-bold text-xl">
-              {editingId ? "Edit Invoice" : "New Invoice"}
-            </h2>
-            <button
-              type="button"
-              onClick={handlePopulateOmni}
-              className="rounded border border-teal-600 px-3 py-1 text-sm text-teal-600 hover:bg-teal-50"
-            >
-              Populate with Omni
-            </button>
-          </div>
+          <h2 className="mb-4 font-bold text-xl">
+            {editingId ? "Edit Invoice" : "New Invoice"}
+          </h2>
           <InvoiceForm
             invoice={currentInvoice}
             onInvoiceChange={setCurrentInvoice}
-            onAddLineItem={handleAddLineItem}
-            calculateTotal={calculateTotal}
+            lineItems={currentLineItems}
+            onLineItemsChange={setCurrentLineItems}
+            onSave={handleSave}
+            onCancel={handleCancel}
           />
         </div>
 
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-bold text-xl">Preview</h2>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={showHoursAndRate}
-                onChange={(e) => setShowHoursAndRate(e.target.checked)}
-                className="rounded"
-              />
-              Show hours/rate
-            </label>
-          </div>
+          <h2 className="mb-4 font-bold text-xl">Preview</h2>
           <InvoicePreview
             invoice={currentInvoice}
-            total={calculateTotal()}
-            onAddLineItem={handleAddLineItem}
-            showHoursAndRate={showHoursAndRate}
+            lineItems={currentLineItems}
           />
         </div>
       </div>
