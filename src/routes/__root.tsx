@@ -66,12 +66,12 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#18181b" },
+      { name: "theme-color", content: "#1a0f0a" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { name: "apple-mobile-web-app-title", content: app.name },
       { name: "mobile-web-app-capable", content: "yes" },
-      { name: "msapplication-TileColor", content: "#18181b" },
+      { name: "msapplication-TileColor", content: "#1a0f0a" },
       ...createMetaTags(),
     ],
     links: [
@@ -85,11 +85,11 @@ export const Route = createRootRouteWithContext<{
 
 function MaintenancePage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-zinc-900 to-zinc-800 p-8 text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-base-950 to-base-900 p-8 text-base-100">
       <div className="text-center">
         <div className="mb-6 text-9xl">🌋</div>
         <h1 className="mb-4 font-bold text-4xl">Beneath the Surface</h1>
-        <p className="max-w-md text-lg text-zinc-300">
+        <p className="max-w-md text-base-400 text-lg">
           We're shifting some layers. Mantle will resurface shortly.
         </p>
       </div>
@@ -121,7 +121,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       <head>
         <HeadContent />
       </head>
-      <body className="min-h-screen bg-gray-50">
+      <body className="min-h-screen bg-background text-foreground">
         {children}
         <Scripts />
       </body>

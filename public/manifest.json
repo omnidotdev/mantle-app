@@ -1,11 +1,11 @@
 {
   "name": "Mantle",
   "short_name": "Mantle",
-  "description": "Business operations, unified",
+  "description": "Business operations, forged under pressure",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#18181b",
-  "background_color": "#18181b",
+  "theme_color": "#1a0f0a",
+  "background_color": "#1a0f0a",
   "icons": [
     {
       "src": "/omni-logo.svg",

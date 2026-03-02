@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { LuGithub as GithubIcon } from "react-icons/lu";
 
+import VolcanicCard from "@/components/core/VolcanicCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
@@ -74,26 +75,33 @@ function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative px-4 pt-20 pb-32 sm:px-6 md:pt-32 md:pb-40 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
+        {/* Decorative glow behind headline */}
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="h-[400px] w-[600px] rounded-full bg-primary-500/5 blur-[100px]" />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl text-center">
           <div className="mb-8 flex justify-center">
-            <Badge className="gap-2 px-4 py-2">{appConfig.description}</Badge>
+            <Badge className="gap-2 px-4 py-2">{appConfig.tagline}</Badge>
           </div>
 
-          <h1 className="mb-6 font-extrabold text-4xl text-gray-900 tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block">Run your business,</span>
-            <span className="mt-2 block text-teal-600">not your tools</span>
+          <h1 className="mb-6 font-extrabold text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            <span className="block">Business operations,</span>
+            <span className="mt-2 block text-shimmer">
+              forged under pressure
+            </span>
           </h1>
 
-          <p className="mx-auto mb-10 max-w-2xl text-gray-600 text-lg">
-            People, invoices, quotes, and inventory — all in one place.{" "}
-            {appConfig.name} is the unified operations suite that lets you focus
-            on what matters. Free and open source.
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
+            People, invoices, quotes, and inventory — unified in a single
+            bedrock platform. {appConfig.name} is the operations suite refined
+            from the core. Free and open source.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button
               size="lg"
-              className="group h-12 gap-2 bg-teal-600 px-8 font-semibold text-white shadow-lg hover:bg-teal-700"
+              className="group h-12 gap-2 px-8 font-semibold shadow-lg"
               onClick={() =>
                 signIn({
                   redirectUrl: `${BASE_URL}/dashboard`,
@@ -127,30 +135,25 @@ function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto mb-16 max-w-2xl text-center">
             <Badge className="mb-4">Modules</Badge>
-            <h2 className="mb-4 font-bold text-3xl text-gray-900 sm:text-4xl">
-              Everything you need to operate
+            <h2 className="mb-4 font-bold text-3xl sm:text-4xl">
+              Core modules, crystallized
             </h2>
-            <p className="text-gray-600 text-lg">
-              Four integrated modules that cover your core business operations
+            <p className="text-lg text-muted-foreground">
+              Four essential modules forged into a unified operations layer
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             {modules.map((mod) => (
-              <div
-                key={mod.title}
-                className="group rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+              <VolcanicCard key={mod.title}>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary dark:bg-primary-950">
                   {mod.icon}
                 </div>
-                <h3 className="mb-2 font-semibold text-gray-900 text-lg">
-                  {mod.title}
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h3 className="mb-2 font-semibold text-lg">{mod.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {mod.description}
                 </p>
-              </div>
+              </VolcanicCard>
             ))}
           </div>
         </div>
@@ -161,11 +164,11 @@ function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto mb-16 max-w-2xl text-center">
             <Badge className="mb-4">How It Works</Badge>
-            <h2 className="mb-4 font-bold text-3xl text-gray-900 sm:text-4xl">
-              Up and running in minutes
+            <h2 className="mb-4 font-bold text-3xl sm:text-4xl">
+              Surface in minutes
             </h2>
-            <p className="text-gray-600 text-lg">
-              No complex setup. No steep learning curve.
+            <p className="text-lg text-muted-foreground">
+              No friction. Just solid ground.
             </p>
           </div>
 
@@ -173,20 +176,20 @@ function HomePage() {
             {steps.map((step) => (
               <div
                 key={step.title}
-                className="flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm"
+                className="flex flex-col items-center rounded-2xl border border-base-200 bg-card p-8 text-center shadow-sm dark:border-base-800"
               >
                 <div className="relative mb-6">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-gray-200 bg-white shadow-md">
-                    <div className="text-teal-600">{step.icon}</div>
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-base-200 bg-card shadow-md dark:border-base-800">
+                    <div className="text-primary">{step.icon}</div>
                   </div>
-                  <div className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-teal-600 font-bold text-white text-xs">
+                  <div className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
                     {step.number}
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-gray-900 text-xl">
-                  {step.title}
-                </h3>
-                <p className="max-w-xs text-gray-600">{step.description}</p>
+                <h3 className="mb-2 font-semibold text-xl">{step.title}</h3>
+                <p className="max-w-xs text-muted-foreground">
+                  {step.description}
+                </p>
               </div>
             ))}
           </div>
@@ -196,20 +199,20 @@ function HomePage() {
       {/* Open Source */}
       <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="rounded-3xl border border-gray-200 bg-gradient-to-br from-teal-50 to-white p-8 sm:p-12 lg:p-16">
+          <div className="rounded-3xl border border-base-200 bg-linear-to-br from-primary-50/50 to-background p-8 sm:p-12 lg:p-16 dark:border-base-800 dark:from-primary-950/30">
             <div className="flex flex-col items-center gap-8 lg:flex-row lg:justify-between">
               <div className="max-w-xl text-center lg:text-left">
                 <Badge className="mb-4">
                   <CheckCircle2Icon size={14} className="mr-1" />
                   Open Source
                 </Badge>
-                <h2 className="mb-4 font-bold text-3xl text-gray-900 sm:text-4xl">
-                  Built in the open, for everyone
+                <h2 className="mb-4 font-bold text-3xl sm:text-4xl">
+                  Forged in the open
                 </h2>
-                <p className="text-gray-600 text-lg">
+                <p className="text-lg text-muted-foreground">
                   {appConfig.name} is completely open source. Inspect the code,
                   contribute features, or self-host on your own infrastructure.
-                  Your data, your rules.
+                  Your data, your foundation.
                 </p>
               </div>
 
@@ -231,18 +234,17 @@ function HomePage() {
       {/* Final CTA */}
       <section className="px-4 py-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-6 font-bold text-4xl text-gray-900 sm:text-5xl">
-            Ready to unify your{" "}
-            <span className="text-teal-600">operations?</span>
+          <h2 className="mb-6 font-bold text-4xl sm:text-5xl">
+            Ready to build on <span className="text-shimmer">bedrock?</span>
           </h2>
-          <p className="mx-auto mb-10 max-w-xl text-gray-600 text-lg">
-            Stop juggling tools. Start running your business from one place.
-            Free and open source, forever.
+          <p className="mx-auto mb-10 max-w-xl text-lg text-muted-foreground">
+            Stop shifting between tools. Build on a foundation that holds. Free
+            and open source, forever.
           </p>
 
           <Button
             size="lg"
-            className="group h-14 gap-2 bg-teal-600 px-10 font-semibold text-lg text-white shadow-lg hover:bg-teal-700"
+            className="group h-14 gap-2 px-10 font-semibold text-lg shadow-lg"
             onClick={() =>
               signIn({
                 redirectUrl: `${BASE_URL}/dashboard`,
@@ -257,7 +259,7 @@ function HomePage() {
             />
           </Button>
 
-          <p className="mt-6 text-gray-500 text-sm">
+          <p className="mt-6 text-muted-foreground text-sm">
             No credit card required. Free and open source.
           </p>
         </div>
