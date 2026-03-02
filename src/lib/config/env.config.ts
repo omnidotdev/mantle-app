@@ -16,7 +16,7 @@ export const isDev = import.meta.env.DEV;
 // Auth config
 export const PORT = import.meta.env.VITE_PORT ?? 3000;
 export const BASE_URL =
-  import.meta.env.VITE_BASE_URL ?? `https://localhost:${PORT}`;
+  env.VITE_BASE_URL || env.BASE_URL || `https://localhost:${PORT}`;
 export const AUTH_BASE_URL = env.AUTH_BASE_URL || env.VITE_AUTH_BASE_URL;
 export const AUTH_CLIENT_ID = env.AUTH_CLIENT_ID;
 export const AUTH_CLIENT_SECRET = env.AUTH_CLIENT_SECRET;
