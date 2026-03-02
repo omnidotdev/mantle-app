@@ -62,7 +62,7 @@ const QuoteForm = ({
       0,
     );
     const taxRate = Number.parseFloat(quote.taxRate || "0");
-    const taxAmount = subtotal * taxRate / 100;
+    const taxAmount = (subtotal * taxRate) / 100;
     const total = subtotal + taxAmount;
 
     onQuoteChange({
@@ -79,7 +79,7 @@ const QuoteForm = ({
       0,
     );
     const taxRate = Number.parseFloat(value || "0");
-    const taxAmount = subtotal * taxRate / 100;
+    const taxAmount = (subtotal * taxRate) / 100;
     const total = subtotal + taxAmount;
 
     onQuoteChange({

@@ -81,7 +81,8 @@ const useInventoryStore = create<InventoryStore>()(
             p.id === adjustment.productId
               ? {
                   ...p,
-                  currentQuantity: p.currentQuantity + adjustment.quantityChange,
+                  currentQuantity:
+                    p.currentQuantity + adjustment.quantityChange,
                   updatedAt: new Date().toISOString(),
                 }
               : p,

@@ -5,7 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 
-import type { Invoice, InvoiceLineItem } from "@/features/invoices/types/invoice";
+import type {
+  Invoice,
+  InvoiceLineItem,
+} from "@/features/invoices/types/invoice";
 
 interface InvoiceFormProps {
   invoice: Partial<Invoice>;
@@ -322,10 +325,7 @@ const InvoiceForm = ({
             <Label htmlFor="invoice-tax-amount">Tax Amount</Label>
             <Input
               id="invoice-tax-amount"
-              value={formatCurrency(
-                invoice.taxAmount || "0",
-                invoice.currency,
-              )}
+              value={formatCurrency(invoice.taxAmount || "0", invoice.currency)}
               readOnly
               className="bg-gray-50"
             />

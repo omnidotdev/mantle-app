@@ -1,6 +1,9 @@
 import { formatCurrency } from "@/features/invoices/types/invoice";
 
-import type { Invoice, InvoiceLineItem } from "@/features/invoices/types/invoice";
+import type {
+  Invoice,
+  InvoiceLineItem,
+} from "@/features/invoices/types/invoice";
 
 interface InvoicePreviewProps {
   invoice: Partial<Invoice>;

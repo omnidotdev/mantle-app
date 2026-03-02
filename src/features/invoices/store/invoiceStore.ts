@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { Invoice, InvoiceLineItem } from "../types/invoice";
+import type { Invoice } from "../types/invoice";
 
 // TODO: Migrate to database persistence via GraphQL API
 // Once codegen runs, replace this store with generated React Query hooks.
@@ -12,10 +12,7 @@ interface StoredInvoice extends Invoice {}
 interface InvoiceStore {
   invoices: StoredInvoice[];
   createInvoice: (
-    invoice: Omit<
-      Invoice,
-      "id" | "createdAt" | "updatedAt" | "organizationId"
-    >,
+    invoice: Omit<Invoice, "id" | "createdAt" | "updatedAt" | "organizationId">,
   ) => StoredInvoice;
   updateInvoice: (id: string, updates: Partial<Invoice>) => void;
   deleteInvoice: (id: string) => void;

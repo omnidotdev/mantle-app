@@ -28,9 +28,7 @@ const ProductForm = ({
     <div className="space-y-6">
       {/* Basic information */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">
-          Basic Information
-        </h3>
+        <h3 className="font-medium text-gray-700 text-lg">Basic Information</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
@@ -62,9 +60,7 @@ const ProductForm = ({
             <Input
               id="product-sku"
               value={product.sku ?? ""}
-              onChange={(e) =>
-                handleChange("sku", e.target.value || null)
-              }
+              onChange={(e) => handleChange("sku", e.target.value || null)}
               placeholder="e.g. SKU-001"
             />
           </div>
@@ -127,9 +123,7 @@ const ProductForm = ({
               onChange={(e) =>
                 handleChange(
                   "lowStockThreshold",
-                  e.target.value
-                    ? Number.parseInt(e.target.value, 10)
-                    : null,
+                  e.target.value ? Number.parseInt(e.target.value, 10) : null,
                 )
               }
               placeholder="e.g. 10"

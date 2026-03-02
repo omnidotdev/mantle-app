@@ -22,7 +22,7 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
     0,
   );
   const taxRate = Number.parseFloat(quote.taxRate || "0");
-  const taxAmount = subtotal * taxRate / 100;
+  const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
   const currency = quote.currency || "USD";
 
@@ -132,7 +132,7 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                             </div>
                           )}
                       </td>
-                      <td className="px-4 py-3 capitalize text-gray-800">
+                      <td className="px-4 py-3 text-gray-800 capitalize">
                         {item.pricingType || "fixed"}
                       </td>
                       <td className="px-4 py-3 text-right text-gray-800">

@@ -1,12 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  Edit,
-  Eye,
-  Package,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, Edit, Eye, Package, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -243,9 +236,7 @@ const InventoryPage = () => {
                 <button
                   type="button"
                   onClick={handleAddAdjustment}
-                  disabled={
-                    !adjustmentReason.trim() || !adjustmentQuantity
-                  }
+                  disabled={!adjustmentReason.trim() || !adjustmentQuantity}
                   className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Submit
@@ -380,9 +371,7 @@ const ProductsTable = ({
         <tbody>
           {products.map((product) => (
             <tr key={product.id} className="border-gray-100 border-t">
-              <td className="px-4 py-3 font-medium text-sm">
-                {product.name}
-              </td>
+              <td className="px-4 py-3 font-medium text-sm">{product.name}</td>
               <td className="px-4 py-3 text-gray-600 text-sm">
                 {product.sku ?? "\u2014"}
               </td>

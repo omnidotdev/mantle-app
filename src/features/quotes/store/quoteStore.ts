@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { Quote, QuoteLineItem } from "../types/quote";
+import type { Quote } from "../types/quote";
 
 // TODO: Migrate to database persistence via GraphQL API
 
@@ -39,8 +39,7 @@ const useQuoteStore = create<QuoteStore>()(
           ...quote,
           id: crypto.randomUUID(),
           organizationId: "",
-          quoteNumber:
-            quote.quoteNumber || generateQuoteNumber(get().quotes),
+          quoteNumber: quote.quoteNumber || generateQuoteNumber(get().quotes),
           createdAt: now,
           updatedAt: now,
         };

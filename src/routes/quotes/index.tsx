@@ -2,16 +2,16 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { Edit, Eye, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+import { formatCurrency } from "@/features/invoices/types/invoice";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
 import {
   generateQuoteNumber,
   useQuoteStore,
 } from "@/features/quotes/store/quoteStore";
-import { formatCurrency } from "@/features/invoices/types/invoice";
 
-import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 import type { StoredQuote } from "@/features/quotes/store/quoteStore";
+import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 
 type ViewMode = "list" | "create" | "edit" | "preview";
 
@@ -75,7 +75,9 @@ const QuotesPage = () => {
 
   const handleEdit = (quote: StoredQuote) => {
     setCurrentQuote(quote);
-    setCurrentLineItems(quote.quoteLineItems ?? [{ ...defaultLineItem, id: crypto.randomUUID() }]);
+    setCurrentLineItems(
+      quote.quoteLineItems ?? [{ ...defaultLineItem, id: crypto.randomUUID() }],
+    );
     setEditingId(quote.id);
     setViewMode("edit");
   };
@@ -105,7 +107,12 @@ const QuotesPage = () => {
     if (editingId) {
       updateQuote(editingId, quoteData);
     } else {
-      createQuote(quoteData as Omit<Quote, "id" | "createdAt" | "updatedAt" | "organizationId">);
+      createQuote(
+        quoteData as Omit<
+          Quote,
+          "id" | "createdAt" | "updatedAt" | "organizationId"
+        >,
+      );
     }
 
     setViewMode("list");

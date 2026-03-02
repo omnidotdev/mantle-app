@@ -10,8 +10,11 @@ import {
 } from "@/features/invoices/store/invoiceStore";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 
-import type { Invoice, InvoiceLineItem } from "@/features/invoices/types/invoice";
 import type { StoredInvoice } from "@/features/invoices/store/invoiceStore";
+import type {
+  Invoice,
+  InvoiceLineItem,
+} from "@/features/invoices/types/invoice";
 
 type ViewMode = "list" | "create" | "edit" | "preview";
 
@@ -51,7 +54,16 @@ const InvoicesPage = () => {
     useState<Partial<Invoice>>(defaultInvoice);
   const [currentLineItems, setCurrentLineItems] = useState<
     Partial<InvoiceLineItem>[]
-  >([{ id: crypto.randomUUID(), description: "", quantity: "1", unitPrice: "0", amount: "0", sortOrder: 0 }]);
+  >([
+    {
+      id: crypto.randomUUID(),
+      description: "",
+      quantity: "1",
+      unitPrice: "0",
+      amount: "0",
+      sortOrder: 0,
+    },
+  ]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleCreateNew = () => {
@@ -59,7 +71,14 @@ const InvoicesPage = () => {
     const today = new Date().toISOString().split("T")[0];
     setCurrentInvoice({ ...defaultInvoice, invoiceNumber, issueDate: today });
     setCurrentLineItems([
-      { id: crypto.randomUUID(), description: "", quantity: "1", unitPrice: "0", amount: "0", sortOrder: 0 },
+      {
+        id: crypto.randomUUID(),
+        description: "",
+        quantity: "1",
+        unitPrice: "0",
+        amount: "0",
+        sortOrder: 0,
+      },
     ]);
     setEditingId(null);
     setViewMode("create");
@@ -69,7 +88,14 @@ const InvoicesPage = () => {
     setCurrentInvoice(invoice);
     setCurrentLineItems(
       invoice.invoiceLineItems ?? [
-        { id: crypto.randomUUID(), description: "", quantity: "1", unitPrice: "0", amount: "0", sortOrder: 0 },
+        {
+          id: crypto.randomUUID(),
+          description: "",
+          quantity: "1",
+          unitPrice: "0",
+          amount: "0",
+          sortOrder: 0,
+        },
       ],
     );
     setEditingId(invoice.id);
@@ -278,10 +304,7 @@ const InvoicesPage = () => {
           </div>
         </div>
 
-        <InvoicePreview
-          invoice={currentInvoice}
-          lineItems={currentLineItems}
-        />
+        <InvoicePreview invoice={currentInvoice} lineItems={currentLineItems} />
       </div>
     );
   }

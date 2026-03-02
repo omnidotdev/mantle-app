@@ -46,10 +46,7 @@ export interface Invoice {
 /**
  * Format a numeric string as currency
  */
-export const formatCurrency = (
-  amount: string,
-  currency = "USD",
-): string => {
+export const formatCurrency = (amount: string, currency = "USD"): string => {
   const num = Number.parseFloat(amount);
 
   return new Intl.NumberFormat("en-US", {
