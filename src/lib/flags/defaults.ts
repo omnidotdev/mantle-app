@@ -4,7 +4,7 @@ export interface FlagConfig {
 }
 
 export const defaultFlags: Record<string, FlagConfig> = {
-  "invoice-maintenance-mode": {
+  "mantle-app-maintenance-mode": {
     variants: {
       on: true,
       off: false,
@@ -14,5 +14,5 @@ export const defaultFlags: Record<string, FlagConfig> = {
 };
 
 export const FLAGS = {
-  MAINTENANCE_MODE: "invoice-maintenance-mode",
+  MAINTENANCE_MODE: "mantle-app-maintenance-mode",
 } as const;
