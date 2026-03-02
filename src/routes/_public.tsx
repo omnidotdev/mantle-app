@@ -36,12 +36,31 @@ function PublicLayout() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col">
+      {/* Ambient heat glow orbs */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        {/* Primary magma glow — top right */}
+        <div
+          className="absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full bg-primary-500/10 blur-[120px]"
+          style={{ animation: "heat-pulse 8s ease-in-out infinite" }}
+        />
+        {/* Secondary mineral rose glow — bottom left */}
+        <div
+          className="absolute -bottom-24 -left-24 h-[400px] w-[400px] rounded-full bg-secondary-500/5 blur-[100px]"
+          style={{ animation: "heat-pulse 10s ease-in-out infinite 2s" }}
+        />
+        {/* Subtle deep glow — center */}
+        <div
+          className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-400/5 blur-[150px]"
+          style={{ animation: "heat-pulse 12s ease-in-out infinite 4s" }}
+        />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-gray-200 border-b bg-white/80 backdrop-blur-lg">
+      <header className="sticky top-0 z-50 w-full border-border border-b bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <a href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🪨</span>
+            <span className="text-2xl">🌋</span>
             <span className="font-bold text-xl tracking-tight">
               {appConfig.name}
             </span>
@@ -53,7 +72,7 @@ function PublicLayout() {
               href={appConfig.links.docs}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md px-3 py-2 font-medium text-gray-600 text-sm hover:text-gray-900"
+              className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
             >
               Docs
             </a>
@@ -61,7 +80,7 @@ function PublicLayout() {
               href={appConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md px-3 py-2 font-medium text-gray-600 text-sm hover:text-gray-900"
+              className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
             >
               GitHub
             </a>
@@ -95,7 +114,7 @@ function PublicLayout() {
         {/* Mobile menu */}
         <div
           className={cn(
-            "border-gray-200 border-t bg-white md:hidden",
+            "border-border border-t bg-background md:hidden",
             mobileMenuOpen ? "block" : "hidden",
           )}
         >
@@ -104,7 +123,7 @@ function PublicLayout() {
               href={appConfig.links.docs}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-md px-3 py-2 font-medium text-gray-600 text-sm hover:bg-gray-100 hover:text-gray-900"
+              className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
             >
               Docs
             </a>
@@ -112,7 +131,7 @@ function PublicLayout() {
               href={appConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-md px-3 py-2 font-medium text-gray-600 text-sm hover:bg-gray-100 hover:text-gray-900"
+              className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
             >
               GitHub
             </a>
@@ -132,23 +151,23 @@ function PublicLayout() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1">
+      <main className="relative z-10 flex-1">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer className="border-gray-200 border-t bg-gray-50">
+      <footer className="relative z-10 border-border border-t bg-muted/50 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-2">
-              <span className="text-xl opacity-60">🪨</span>
-              <span className="text-gray-500 text-sm">
+              <span className="text-xl opacity-60">🌋</span>
+              <span className="text-muted-foreground text-sm">
                 Made by{" "}
                 <a
                   href={appConfig.organization.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-900 transition-colors hover:text-teal-600"
+                  className="text-foreground transition-colors hover:text-primary"
                 >
                   {appConfig.organization.name}
                 </a>
@@ -160,7 +179,7 @@ function PublicLayout() {
                 href={appConfig.links.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 transition-colors hover:text-gray-600"
+                className="text-base-400 transition-colors hover:text-primary"
               >
                 <GithubIcon size={20} />
               </a>
@@ -168,7 +187,7 @@ function PublicLayout() {
                 href={appConfig.organization.discord}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 transition-colors hover:text-gray-600"
+                className="text-base-400 transition-colors hover:text-primary"
               >
                 <DiscordIcon size={20} />
               </a>
@@ -176,7 +195,7 @@ function PublicLayout() {
                 href={appConfig.organization.x}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 transition-colors hover:text-gray-600"
+                className="text-base-400 transition-colors hover:text-primary"
               >
                 <XIcon2 size={20} />
               </a>
@@ -184,19 +203,19 @@ function PublicLayout() {
                 href={appConfig.organization.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 transition-colors hover:text-gray-600"
+                className="text-base-400 transition-colors hover:text-primary"
               >
                 <LinkedinIcon size={20} />
               </a>
             </div>
 
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted-foreground text-sm">
               &copy; {new Date().getFullYear()}{" "}
               <a
                 href={appConfig.organization.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-gray-900"
+                className="hover:text-foreground"
               >
                 {appConfig.organization.name}
               </a>

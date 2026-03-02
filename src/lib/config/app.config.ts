@@ -8,9 +8,10 @@ const app = {
   /** App name - change this to rename the product */
   name: "Mantle",
   /** App description (used in SEO meta tags) */
-  description: "Business operations, unified. Designed and maintained by Omni.",
+  description:
+    "Business operations, forged under pressure. Designed and maintained by Omni.",
   /** App tagline */
-  tagline: "Unified business operations suite",
+  tagline: "🌋 Forged under pressure",
   /** Production URL */
   url: "https://mantle.omni.dev",
   /** Organization info */
@@ -24,7 +25,7 @@ const app = {
   /** External links */
   links: {
     docs: "https://docs.omni.dev/core/mantle",
-    github: "https://github.com/omnidotdev/mantle",
+    github: "https://github.com/omnidotdev/mantle-stack",
     feedback: "https://backfeed.omni.dev/workspaces/omni/projects/mantle",
   },
   /** Module configuration - toggle modules on/off */
