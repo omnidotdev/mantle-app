@@ -6,13 +6,32 @@ import {
   useRouteContext,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 
+import authClient from "@/lib/auth/authClient";
 import { fetchMaintenanceMode } from "@/lib/providers";
-import appStyles from "@/styles.css?url";
 import { fetchSession } from "@/server/functions/auth";
+import appStyles from "@/styles.css?url";
 
+import type { OrganizationClaim } from "@omnidotdev/providers";
 import type { QueryClient } from "@tanstack/react-query";
+import type { Session } from "better-auth/types";
 import type { ReactNode } from "react";
+
+interface ExtendedUser {
+  id: string;
+  email: string;
+  name?: string;
+  image?: string;
+  identityProviderId?: string;
+  username?: string;
+}
+
+interface ExtendedSession extends Omit<Session, "user"> {
+  user: ExtendedUser;
+  accessToken?: string;
+  organizations?: OrganizationClaim[];
+}
 
 const fetchSessionAndMaintenanceMode = createServerFn({
   method: "GET",
@@ -31,6 +50,7 @@ const fetchSessionAndMaintenanceMode = createServerFn({
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
+  session: ExtendedSession | null;
   isMaintenanceMode: boolean;
 }>()({
   beforeLoad: async () => {
@@ -66,13 +86,67 @@ function MaintenancePage() {
   );
 }
 
+function SignInRedirect() {
+  const [showFallback, setShowFallback] = useState(false);
+
+  useEffect(() => {
+    // Auto-trigger OAuth sign-in
+    authClient.signIn.oauth2({
+      providerId: "omni",
+      callbackURL: window.location.href,
+    });
+
+    // Show fallback button after 3 seconds if redirect hasn't happened
+    const timer = setTimeout(() => setShowFallback(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-8">
+      <div className="text-center">
+        {showFallback ? (
+          <>
+            <p className="mb-4 text-gray-600">
+              Redirect didn't happen automatically.
+            </p>
+            <button
+              type="button"
+              className="rounded-md bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800"
+              onClick={() =>
+                authClient.signIn.oauth2({
+                  providerId: "omni",
+                  callbackURL: window.location.href,
+                })
+              }
+            >
+              Sign in with Omni
+            </button>
+          </>
+        ) : (
+          <p className="text-gray-500">Signing in...</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function RootComponent() {
-  const { isMaintenanceMode } = useRouteContext({ from: "__root__" });
+  const { isMaintenanceMode, session } = useRouteContext({
+    from: "__root__",
+  });
 
   if (isMaintenanceMode) {
     return (
       <RootDocument>
         <MaintenancePage />
+      </RootDocument>
+    );
+  }
+
+  if (!session) {
+    return (
+      <RootDocument>
+        <SignInRedirect />
       </RootDocument>
     );
   }

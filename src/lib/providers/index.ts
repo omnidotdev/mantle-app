@@ -2,10 +2,7 @@
  * Shared provider instances.
  */
 
-import {
-  createAuthzProvider,
-  createFlagProvider,
-} from "@omnidotdev/providers";
+import { createAuthzProvider, createFlagProvider } from "@omnidotdev/providers";
 import { createServerFn } from "@tanstack/react-start";
 
 import {
