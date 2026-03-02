@@ -19,6 +19,10 @@ export const AUTH_BASE_URL =
 export const AUTH_CLIENT_ID = import.meta.env.VITE_AUTH_CLIENT_ID ?? "";
 export const AUTH_CLIENT_SECRET = import.meta.env.VITE_AUTH_CLIENT_SECRET ?? "";
 
+// Feature flags config
+export const FLAGS_API_HOST = import.meta.env.VITE_FLAGS_API_HOST;
+export const FLAGS_CLIENT_KEY = import.meta.env.VITE_FLAGS_CLIENT_KEY;
+
 // Authorization config
 export const AUTHZ_ENABLED = import.meta.env.VITE_AUTHZ_ENABLED ?? "false";
 export const AUTHZ_API_URL = import.meta.env.VITE_AUTHZ_API_URL;

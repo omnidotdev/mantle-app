@@ -17,6 +17,7 @@
   "dependencies": {
     "@ark-ui/react": "^5.30.0",
     "@internationalized/date": "^3.10.1",
+    "@omnidotdev/providers": "github:omnidotdev/providers#316498f",
     "@tanstack/react-form": "^1.27.7",
     "@tanstack/react-query": "^5.90.16",
     "@tanstack/react-router": "^1.147.3",
@@ -39,6 +40,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "ts-pattern": "^5.9.0",
+    "unleash-client": "^6.9.6",
     "usehooks-ts": "^3.1.1",
     "zod": "4.3.5",
     "zustand": "^5.0.10"
