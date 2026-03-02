@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuotesIndexRouteImport } from './routes/quotes/index'
 import { Route as PeopleIndexRouteImport } from './routes/people/index'
-import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
 import { Route as InvoicesIndexRouteImport } from './routes/invoices/index'
+import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,51 +30,51 @@ const PeopleIndexRoute = PeopleIndexRouteImport.update({
   path: '/people/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventoryIndexRoute = InventoryIndexRouteImport.update({
-  id: '/inventory/',
-  path: '/inventory/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const InvoicesIndexRoute = InvoicesIndexRouteImport.update({
   id: '/invoices/',
   path: '/invoices/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InventoryIndexRoute = InventoryIndexRouteImport.update({
+  id: '/inventory/',
+  path: '/inventory/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/invoices/': typeof InvoicesIndexRoute
   '/inventory/': typeof InventoryIndexRoute
+  '/invoices/': typeof InvoicesIndexRoute
   '/people/': typeof PeopleIndexRoute
   '/quotes/': typeof QuotesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/invoices': typeof InvoicesIndexRoute
   '/inventory': typeof InventoryIndexRoute
+  '/invoices': typeof InvoicesIndexRoute
   '/people': typeof PeopleIndexRoute
   '/quotes': typeof QuotesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/invoices/': typeof InvoicesIndexRoute
   '/inventory/': typeof InventoryIndexRoute
+  '/invoices/': typeof InvoicesIndexRoute
   '/people/': typeof PeopleIndexRoute
   '/quotes/': typeof QuotesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/invoices/' | '/inventory/' | '/people/' | '/quotes/'
+  fullPaths: '/' | '/inventory/' | '/invoices/' | '/people/' | '/quotes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/invoices' | '/inventory' | '/people' | '/quotes'
-  id: '__root__' | '/' | '/invoices/' | '/inventory/' | '/people/' | '/quotes/'
+  to: '/' | '/inventory' | '/invoices' | '/people' | '/quotes'
+  id: '__root__' | '/' | '/inventory/' | '/invoices/' | '/people/' | '/quotes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  InvoicesIndexRoute: typeof InvoicesIndexRoute
   InventoryIndexRoute: typeof InventoryIndexRoute
+  InvoicesIndexRoute: typeof InvoicesIndexRoute
   PeopleIndexRoute: typeof PeopleIndexRoute
   QuotesIndexRoute: typeof QuotesIndexRoute
 }
@@ -86,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quotes/': {
+      id: '/quotes/'
+      path: '/quotes'
+      fullPath: '/quotes/'
+      preLoaderRoute: typeof QuotesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/people/': {
@@ -102,13 +109,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvoicesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/quotes/': {
-      id: '/quotes/'
-      path: '/quotes'
-      fullPath: '/quotes/'
-      preLoaderRoute: typeof QuotesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/inventory/': {
       id: '/inventory/'
       path: '/inventory'
@@ -121,8 +121,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  InvoicesIndexRoute: InvoicesIndexRoute,
   InventoryIndexRoute: InventoryIndexRoute,
+  InvoicesIndexRoute: InvoicesIndexRoute,
   PeopleIndexRoute: PeopleIndexRoute,
   QuotesIndexRoute: QuotesIndexRoute,
 }
