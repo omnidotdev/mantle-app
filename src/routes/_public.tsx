@@ -162,7 +162,7 @@ function PublicLayout() {
             <div className="flex items-center gap-2">
               <span className="text-xl opacity-60">🌋</span>
               <span className="text-muted-foreground text-sm">
-                Made by{" "}
+                Built with 🪨 by{" "}
                 <a
                   href={appConfig.organization.website}
                   target="_blank"
