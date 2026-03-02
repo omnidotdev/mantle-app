@@ -7,8 +7,8 @@
 const app = {
   /** App name - change this to rename the product */
   name: "Mantle",
-  /** App description with emoji */
-  description: "🪨 Business operations, unified",
+  /** App description (used in SEO meta tags) */
+  description: "Business operations, unified. Designed and maintained by Omni.",
   /** App tagline */
   tagline: "Unified business operations suite",
   /** Production URL */

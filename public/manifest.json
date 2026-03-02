@@ -1,0 +1,16 @@
+{
+  "name": "Mantle",
+  "short_name": "Mantle",
+  "description": "Business operations, unified",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#18181b",
+  "background_color": "#18181b",
+  "icons": [
+    {
+      "src": "/omni-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

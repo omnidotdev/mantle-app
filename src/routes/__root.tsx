@@ -7,7 +7,9 @@ import {
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
+import app from "@/lib/config/app.config";
 import { fetchMaintenanceMode } from "@/lib/providers";
+import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
 import appStyles from "@/styles.css?url";
 
@@ -64,8 +66,19 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#18181b" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: app.name },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "msapplication-TileColor", content: "#18181b" },
+      ...createMetaTags(),
     ],
-    links: [{ rel: "stylesheet", href: appStyles }],
+    links: [
+      { rel: "stylesheet", href: appStyles },
+      { rel: "manifest", href: "/manifest.json" },
+      { rel: "icon", type: "image/svg+xml", href: "/omni-logo.svg" },
+    ],
   }),
   component: RootComponent,
 });
