@@ -6,7 +6,7 @@ import type { Company, Person } from "../types";
 // TODO: Migrate to database persistence via GraphQL API
 
 type ViewMode = "list" | "create" | "edit";
-type ActiveTab = "companies" | "contacts";
+type ActiveTab = "companies" | "contacts" | "network";
 
 interface PeopleStore {
   companies: Company[];
@@ -30,6 +30,17 @@ interface PeopleStore {
   updatePerson: (id: string, updates: Partial<Person>) => void;
   deletePerson: (id: string) => void;
   getPerson: (id: string) => Person | undefined;
+
+  // Bulk operations
+  importPeople: (
+    people: Omit<Person, "id" | "createdAt" | "updatedAt" | "organizationId">[],
+  ) => void;
+  importCompanies: (
+    companies: Omit<
+      Company,
+      "id" | "createdAt" | "updatedAt" | "organizationId"
+    >[],
+  ) => void;
 
   // UI state
   setViewMode: (mode: ViewMode) => void;
@@ -120,12 +131,61 @@ const usePeopleStore = create<PeopleStore>()(
         return get().people.find((p) => p.id === id);
       },
 
+      importPeople: (newPeople) => {
+        const now = new Date().toISOString();
+        const created = newPeople.map((p) => ({
+          ...p,
+          id: crypto.randomUUID(),
+          organizationId: "",
+          createdAt: now,
+          updatedAt: now,
+        }));
+
+        set((state) => ({
+          people: [...state.people, ...created],
+        }));
+      },
+
+      importCompanies: (newCompanies) => {
+        const now = new Date().toISOString();
+        const created = newCompanies.map((c) => ({
+          ...c,
+          id: crypto.randomUUID(),
+          organizationId: "",
+          createdAt: now,
+          updatedAt: now,
+        }));
+
+        set((state) => ({
+          companies: [...state.companies, ...created],
+        }));
+      },
+
       setViewMode: (mode) => set({ viewMode: mode }),
       setActiveTab: (tab) => set({ activeTab: tab }),
       setEditingId: (id) => set({ editingId: id }),
     }),
     {
       name: "mantle-people",
+      version: 1,
+      migrate: (persisted, version) => {
+        const state = persisted as Record<string, unknown>;
+
+        // v0 → v1: email → emails[], add internal flag
+        if (version === 0) {
+          const people = (state.people as Record<string, unknown>[]) ?? [];
+          state.people = people.map((p) => {
+            const email = p.email as string | null;
+            return {
+              ...p,
+              emails: email ? [email] : [],
+              internal: false,
+            };
+          });
+        }
+
+        return state as unknown as PeopleStore;
+      },
       // Only persist data, not UI state
       partialize: (state) => ({
         companies: state.companies,

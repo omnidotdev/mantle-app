@@ -13,6 +13,7 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AuthDashboardRouteImport } from './routes/_auth/dashboard'
+import { Route as AuthSettingsIndexRouteImport } from './routes/_auth/settings/index'
 import { Route as AuthQuotesIndexRouteImport } from './routes/_auth/quotes/index'
 import { Route as AuthPeopleIndexRouteImport } from './routes/_auth/people/index'
 import { Route as AuthInvoicesIndexRouteImport } from './routes/_auth/invoices/index'
@@ -35,6 +36,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const AuthDashboardRoute = AuthDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSettingsIndexRoute = AuthSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthQuotesIndexRoute = AuthQuotesIndexRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/invoices/': typeof AuthInvoicesIndexRoute
   '/people/': typeof AuthPeopleIndexRoute
   '/quotes/': typeof AuthQuotesIndexRoute
+  '/settings/': typeof AuthSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/invoices': typeof AuthInvoicesIndexRoute
   '/people': typeof AuthPeopleIndexRoute
   '/quotes': typeof AuthQuotesIndexRoute
+  '/settings': typeof AuthSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/_auth/invoices/': typeof AuthInvoicesIndexRoute
   '/_auth/people/': typeof AuthPeopleIndexRoute
   '/_auth/quotes/': typeof AuthQuotesIndexRoute
+  '/_auth/settings/': typeof AuthSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/invoices/'
     | '/people/'
     | '/quotes/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/invoices'
     | '/people'
     | '/quotes'
+    | '/settings'
   id:
     | '__root__'
     | '/_auth'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/_auth/invoices/'
     | '/_auth/people/'
     | '/_auth/quotes/'
+    | '/_auth/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -159,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthDashboardRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/settings/': {
+      id: '/_auth/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthSettingsIndexRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/quotes/': {
@@ -205,6 +224,7 @@ interface AuthRouteChildren {
   AuthInvoicesIndexRoute: typeof AuthInvoicesIndexRoute
   AuthPeopleIndexRoute: typeof AuthPeopleIndexRoute
   AuthQuotesIndexRoute: typeof AuthQuotesIndexRoute
+  AuthSettingsIndexRoute: typeof AuthSettingsIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
@@ -213,6 +233,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthInvoicesIndexRoute: AuthInvoicesIndexRoute,
   AuthPeopleIndexRoute: AuthPeopleIndexRoute,
   AuthQuotesIndexRoute: AuthQuotesIndexRoute,
+  AuthSettingsIndexRoute: AuthSettingsIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

@@ -22,10 +22,11 @@ export interface Person {
   organizationId: string;
   firstName: string;
   lastName: string;
-  email: string | null;
+  emails: string[];
   phone: string | null;
   avatarUrl: string | null;
   tags: string[] | null;
+  internal: boolean;
   notes: string | null;
   createdAt: string;
   updatedAt: string;

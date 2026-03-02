@@ -1,4 +1,6 @@
+import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -16,7 +18,16 @@ const statusColors: Record<string, string> = {
   converted: "bg-purple-100 text-purple-700",
 };
 
+const pricingColors: Record<string, string> = {
+  fixed: "bg-teal-100 text-teal-700",
+  hourly: "bg-blue-100 text-blue-700",
+  royalty: "bg-purple-100 text-purple-700",
+};
+
 const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
+  const { profiles } = useSettingsStore();
+  const orgProfile = profiles[0];
+
   const subtotal = lineItems.reduce(
     (sum, item) => sum + Number.parseFloat(item.amount || "0"),
     0,
@@ -40,8 +51,11 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
             />
             <div>
               <h3 className="font-bold text-white text-xl">
-                {quote.companyId || "Your Company"}
+                {orgProfile?.companyName || quote.companyId || "Your Company"}
               </h3>
+              {orgProfile?.email && (
+                <p className="text-sm text-teal-100">{orgProfile.email}</p>
+              )}
             </div>
           </div>
           <div className="text-right">
@@ -51,14 +65,17 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
       </div>
 
       <div className="p-6">
-        {/* Quote details and client */}
+        {/* Two-column: Prepared By / Prepared For */}
         <div className="mb-8 grid grid-cols-2 gap-8">
           <div>
-            <h4 className="mb-2 font-bold text-gray-700">Client</h4>
+            <h4 className="mb-2 font-bold text-gray-700">Prepared For</h4>
             <p className="text-gray-800">
-              {quote.companyId || "Company not specified"}
+              {quote.clientName || quote.companyId || "Client not specified"}
             </p>
-            {quote.contactId && (
+            {quote.clientEmail && (
+              <p className="text-gray-600 text-sm">{quote.clientEmail}</p>
+            )}
+            {quote.contactId && !quote.clientName && (
               <p className="text-gray-600">Contact: {quote.contactId}</p>
             )}
           </div>
@@ -86,13 +103,19 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
           </div>
         </div>
 
-        {/* Title and description */}
-        {(quote.title || quote.description) && (
+        {/* Project overview */}
+        {(quote.title || quote.description || quote.projectType) && (
           <div className="mb-6">
             {quote.title && (
               <h3 className="mb-1 font-bold text-gray-800 text-lg">
                 {quote.title}
               </h3>
+            )}
+            {quote.projectType && (
+              <p className="mb-1 text-gray-500 text-sm capitalize">
+                {quote.projectType} project
+                {quote.timeRange && ` \u2022 ${quote.timeRange}`}
+              </p>
             )}
             {quote.description && (
               <p className="text-gray-600">{quote.description}</p>
@@ -106,7 +129,7 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
             <thead>
               <tr className="bg-teal-600 text-white">
                 <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Pricing Type</th>
+                <th className="px-4 py-2 text-left">Pricing</th>
                 <th className="px-4 py-2 text-right">Qty</th>
                 <th className="px-4 py-2 text-right">Unit Price</th>
                 <th className="px-4 py-2 text-right">Amount</th>
@@ -119,21 +142,63 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                     <tr key={item.id} className="border-gray-200 border-b">
                       <td className="px-4 py-3 text-gray-800">
                         <div>{item.description}</div>
-                        {item.pricingType === "hourly" &&
-                          item.estimatedHours && (
-                            <div className="text-gray-500 text-xs">
-                              Est. {item.estimatedHours} hours
-                            </div>
-                          )}
-                        {item.pricingType === "royalty" &&
-                          item.royaltyPercentage && (
-                            <div className="text-gray-500 text-xs">
-                              {item.royaltyPercentage}% royalty
-                            </div>
-                          )}
+                        {item.pricingType === "hourly" && (
+                          <div className="mt-1 space-y-0.5 text-gray-500 text-xs">
+                            {item.hourlyRate && (
+                              <span>
+                                {formatCurrency(item.hourlyRate, currency)}/hr
+                              </span>
+                            )}
+                            {item.weeklyCapHours && (
+                              <span>
+                                {" "}
+                                \u2022 Weekly: {item.weeklyCapHours}hrs
+                              </span>
+                            )}
+                            {item.monthlyCapHours && (
+                              <span>
+                                {" "}
+                                \u2022 Monthly: {item.monthlyCapHours}hrs
+                              </span>
+                            )}
+                            {item.maxCapHours && (
+                              <span> \u2022 Max: {item.maxCapHours}hrs</span>
+                            )}
+                          </div>
+                        )}
+                        {item.pricingType === "royalty" && (
+                          <div className="mt-1 space-y-0.5 text-gray-500 text-xs">
+                            {item.royaltyPercentage && (
+                              <span>{item.royaltyPercentage}% royalty</span>
+                            )}
+                            {item.royaltyTimeframeUnit && (
+                              <span>
+                                {" "}
+                                \u2022{" "}
+                                {item.royaltyTimeframeUnit === "perpetual"
+                                  ? "Perpetual"
+                                  : `${item.royaltyTimeframe} ${item.royaltyTimeframeUnit}`}
+                              </span>
+                            )}
+                            {item.royaltyBuyoutAmount && (
+                              <span>
+                                {" "}
+                                \u2022 Buyout:{" "}
+                                {formatCurrency(
+                                  item.royaltyBuyoutAmount,
+                                  currency,
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </td>
-                      <td className="px-4 py-3 text-gray-800 capitalize">
-                        {item.pricingType || "fixed"}
+                      <td className="px-4 py-3">
+                        <Badge
+                          className={`text-xs ${pricingColors[item.pricingType || "fixed"]}`}
+                        >
+                          {item.pricingType || "fixed"}
+                        </Badge>
                       </td>
                       <td className="px-4 py-3 text-right text-gray-800">
                         {item.quantity}
@@ -180,6 +245,18 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                 <p key={`term-${line}`}>{line}</p>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Additional terms */}
+        {quote.additionalTerms && quote.additionalTerms.length > 0 && (
+          <div className="mb-4">
+            <h4 className="mb-2 font-bold text-gray-700">Additional Terms:</h4>
+            <ul className="list-disc pl-5 text-gray-600">
+              {quote.additionalTerms.map((term) => (
+                <li key={term}>{term}</li>
+              ))}
+            </ul>
           </div>
         )}
 

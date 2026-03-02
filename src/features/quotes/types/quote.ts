@@ -25,6 +25,16 @@ export interface QuoteLineItem {
   estimatedHours: string | null;
   royaltyPercentage: string | null;
   sortOrder: number;
+  // Hourly caps
+  hourlyRate: string | null;
+  weeklyCapHours: string | null;
+  monthlyCapHours: string | null;
+  maxCapHours: string | null;
+  // Royalty details
+  royaltyTimeframe: string | null;
+  royaltyTimeframeUnit: "months" | "years" | "perpetual" | null;
+  royaltyThreshold: string | null;
+  royaltyBuyoutAmount: string | null;
 }
 
 export interface Quote {
@@ -48,4 +58,10 @@ export interface Quote {
   createdAt: string;
   updatedAt: string;
   quoteLineItems?: QuoteLineItem[];
+  // Contract fields
+  projectType: string | null;
+  timeRange: string | null;
+  additionalTerms: string[] | null;
+  clientName: string | null;
+  clientEmail: string | null;
 }

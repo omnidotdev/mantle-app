@@ -1,9 +1,12 @@
 import { Plus, Trash2 } from "lucide-react";
 
+import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import CompanyPicker from "@/features/people/components/CompanyPicker";
+import ContactPicker from "@/features/people/components/ContactPicker";
 
 import type {
   Invoice,
@@ -149,28 +152,36 @@ const InvoiceForm = ({
 
       {/* Client */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+          <PopulateButton
+            onPopulateSender={() => {}}
+            onPopulateClient={({ companyId, contactId }) => {
+              onInvoiceChange({
+                ...invoice,
+                companyId,
+                contactId: contactId ?? null,
+              });
+            }}
+          />
+        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="invoice-company">Company ID</Label>
-            <Input
-              id="invoice-company"
+            <Label>Company</Label>
+            <CompanyPicker
               value={invoice.companyId ?? ""}
-              onChange={(e) => handleChange("companyId", e.target.value)}
-              placeholder="Company identifier"
+              onValueChange={(value) => handleChange("companyId", value)}
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="invoice-contact">Contact ID</Label>
-            <Input
-              id="invoice-contact"
+            <Label>Contact</Label>
+            <ContactPicker
               value={invoice.contactId ?? ""}
-              onChange={(e) =>
-                handleChange("contactId", e.target.value || null)
+              onValueChange={(value) =>
+                handleChange("contactId", value || null)
               }
-              placeholder="Contact identifier"
             />
           </div>
         </div>

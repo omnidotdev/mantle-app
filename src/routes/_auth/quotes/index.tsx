@@ -3,6 +3,7 @@ import { Edit, Eye, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
 import {
@@ -14,6 +15,7 @@ import type { StoredQuote } from "@/features/quotes/store/quoteStore";
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 
 type ViewMode = "list" | "create" | "edit" | "preview";
+type PreviewType = "quote" | "contract";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-100 text-gray-700",
@@ -40,6 +42,11 @@ const defaultQuote: Partial<Quote> = {
   total: "0",
   currency: "USD",
   convertedInvoiceId: null,
+  projectType: null,
+  timeRange: null,
+  additionalTerms: null,
+  clientName: null,
+  clientEmail: null,
 };
 
 const defaultLineItem: Partial<QuoteLineItem> = {
@@ -51,8 +58,49 @@ const defaultLineItem: Partial<QuoteLineItem> = {
   pricingType: "fixed",
   estimatedHours: null,
   royaltyPercentage: null,
+  hourlyRate: null,
+  weeklyCapHours: null,
+  monthlyCapHours: null,
+  maxCapHours: null,
+  royaltyTimeframe: null,
+  royaltyTimeframeUnit: null,
+  royaltyThreshold: null,
+  royaltyBuyoutAmount: null,
   sortOrder: 0,
 };
+
+const PreviewToggle = ({
+  value,
+  onChange,
+}: {
+  value: PreviewType;
+  onChange: (v: PreviewType) => void;
+}) => (
+  <div className="mb-4 inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+    <button
+      type="button"
+      onClick={() => onChange("quote")}
+      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
+        value === "quote"
+          ? "bg-white text-gray-900 shadow-sm"
+          : "text-gray-500 hover:text-gray-700"
+      }`}
+    >
+      Quote
+    </button>
+    <button
+      type="button"
+      onClick={() => onChange("contract")}
+      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
+        value === "contract"
+          ? "bg-white text-gray-900 shadow-sm"
+          : "text-gray-500 hover:text-gray-700"
+      }`}
+    >
+      Contract
+    </button>
+  </div>
+);
 
 const QuotesPage = () => {
   const { quotes, createQuote, updateQuote, deleteQuote } = useQuoteStore();
@@ -64,12 +112,14 @@ const QuotesPage = () => {
     Partial<QuoteLineItem>[]
   >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [previewType, setPreviewType] = useState<PreviewType>("quote");
 
   const handleCreateNew = () => {
     const quoteNumber = generateQuoteNumber(quotes as StoredQuote[]);
     setCurrentQuote({ ...defaultQuote, quoteNumber });
     setCurrentLineItems([{ ...defaultLineItem, id: crypto.randomUUID() }]);
     setEditingId(null);
+    setPreviewType("quote");
     setViewMode("create");
   };
 
@@ -86,6 +136,7 @@ const QuotesPage = () => {
     setCurrentQuote(quote);
     setCurrentLineItems(quote.quoteLineItems ?? []);
     setEditingId(quote.id);
+    setPreviewType("quote");
     setViewMode("preview");
   };
 
@@ -128,6 +179,15 @@ const QuotesPage = () => {
   const handleCancel = () => {
     setViewMode("list");
     setEditingId(null);
+  };
+
+  const renderPreview = () => {
+    if (previewType === "contract") {
+      return (
+        <ContractPreview quote={currentQuote} lineItems={currentLineItems} />
+      );
+    }
+    return <QuotePreview quote={currentQuote} lineItems={currentLineItems} />;
   };
 
   // List view
@@ -278,7 +338,9 @@ const QuotesPage = () => {
               type="button"
               onClick={() => {
                 const originalTitle = document.title;
-                document.title = `quote_${currentQuote.quoteNumber}`;
+                const prefix =
+                  previewType === "contract" ? "contract" : "quote";
+                document.title = `${prefix}_${currentQuote.quoteNumber}`;
                 window.print();
                 document.title = originalTitle;
               }}
@@ -289,7 +351,11 @@ const QuotesPage = () => {
           </div>
         </div>
 
-        <QuotePreview quote={currentQuote} lineItems={currentLineItems} />
+        <div className="print-hide">
+          <PreviewToggle value={previewType} onChange={setPreviewType} />
+        </div>
+
+        {renderPreview()}
       </div>
     );
   }
@@ -339,8 +405,11 @@ const QuotesPage = () => {
         </div>
 
         <div>
-          <h2 className="mb-4 font-bold text-xl">Preview</h2>
-          <QuotePreview quote={currentQuote} lineItems={currentLineItems} />
+          <div className="flex items-center justify-between">
+            <h2 className="mb-4 font-bold text-xl">Preview</h2>
+            <PreviewToggle value={previewType} onChange={setPreviewType} />
+          </div>
+          {renderPreview()}
         </div>
       </div>
     </div>

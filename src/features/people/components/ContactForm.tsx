@@ -1,8 +1,9 @@
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { COMMON_TAGS } from "@/features/people/types";
+import EmailList from "./EmailList";
+import TagList from "./TagList";
 
 import type { Person } from "@/features/people/types";
 
@@ -21,19 +22,9 @@ const ContactForm = ({
 }: ContactFormProps) => {
   const handleChange = (
     field: keyof Person,
-    value: string | string[] | null,
+    value: string | string[] | boolean | null,
   ) => {
     onPersonChange({ ...person, [field]: value });
-  };
-
-  const toggleTag = (tag: string) => {
-    const currentTags = person.tags ?? [];
-    const hasTag = currentTags.includes(tag);
-    const updatedTags = hasTag
-      ? currentTags.filter((t) => t !== tag)
-      : [...currentTags, tag];
-
-    handleChange("tags", updatedTags.length > 0 ? updatedTags : null);
   };
 
   const isValid = person.firstName?.trim() && person.lastName?.trim();
@@ -68,17 +59,6 @@ const ContactForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="contact-email">Email</Label>
-            <Input
-              id="contact-email"
-              type="email"
-              value={person.email ?? ""}
-              onChange={(e) => handleChange("email", e.target.value || null)}
-              placeholder="email@example.com"
-            />
-          </div>
-
-          <div className="space-y-1.5">
             <Label htmlFor="contact-phone">Phone</Label>
             <Input
               id="contact-phone"
@@ -88,28 +68,36 @@ const ContactForm = ({
               placeholder="(555) 555-5555"
             />
           </div>
+
+          <div className="flex items-center gap-3 self-end pb-1">
+            <Switch
+              id="contact-internal"
+              checked={person.internal ?? false}
+              onCheckedChange={(checked) => handleChange("internal", checked)}
+            />
+            <Label htmlFor="contact-internal">Internal team member</Label>
+          </div>
         </div>
+      </div>
+
+      {/* Emails */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-gray-700 text-lg">Email Addresses</h3>
+        <EmailList
+          emails={person.emails ?? []}
+          onChange={(emails) => handleChange("emails", emails)}
+        />
       </div>
 
       {/* Tags */}
       <div className="space-y-4">
         <h3 className="font-medium text-gray-700 text-lg">Tags</h3>
-        <div className="flex flex-wrap gap-2">
-          {COMMON_TAGS.map((tag) => {
-            const isActive = (person.tags ?? []).includes(tag);
-
-            return (
-              <button key={tag} type="button" onClick={() => toggleTag(tag)}>
-                <Badge
-                  variant={isActive ? "solid" : "outline"}
-                  className="cursor-pointer select-none"
-                >
-                  {tag}
-                </Badge>
-              </button>
-            );
-          })}
-        </div>
+        <TagList
+          tags={person.tags ?? []}
+          onChange={(tags) =>
+            handleChange("tags", tags.length > 0 ? tags : null)
+          }
+        />
       </div>
 
       {/* Notes */}

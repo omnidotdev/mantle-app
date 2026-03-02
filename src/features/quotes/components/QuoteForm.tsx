@@ -1,9 +1,13 @@
 import { Plus, Trash2 } from "lucide-react";
 
+import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import CompanyPicker from "@/features/people/components/CompanyPicker";
+import ContactPicker from "@/features/people/components/ContactPicker";
+import AdditionalTermsEditor from "./AdditionalTermsEditor";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -24,7 +28,10 @@ const QuoteForm = ({
   onSave,
   onCancel,
 }: QuoteFormProps) => {
-  const handleChange = (field: keyof Quote, value: string | null) => {
+  const handleChange = (
+    field: keyof Quote,
+    value: string | string[] | null,
+  ) => {
     onQuoteChange({ ...quote, [field]: value });
   };
 
@@ -102,6 +109,14 @@ const QuoteForm = ({
         pricingType: "fixed",
         estimatedHours: null,
         royaltyPercentage: null,
+        hourlyRate: null,
+        weeklyCapHours: null,
+        monthlyCapHours: null,
+        maxCapHours: null,
+        royaltyTimeframe: null,
+        royaltyTimeframeUnit: null,
+        royaltyThreshold: null,
+        royaltyBuyoutAmount: null,
         sortOrder: lineItems.length,
       },
     ]);
@@ -173,38 +188,109 @@ const QuoteForm = ({
 
       {/* Client */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+          <PopulateButton
+            onPopulateSender={() => {}}
+            onPopulateClient={({
+              companyId,
+              contactId,
+              contactName,
+              contactEmail,
+            }) => {
+              onQuoteChange({
+                ...quote,
+                companyId,
+                contactId: contactId ?? null,
+                clientName: contactName ?? null,
+                clientEmail: contactEmail ?? null,
+              });
+            }}
+          />
+        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="quote-company">Company ID</Label>
-            <Input
-              id="quote-company"
+            <Label>Company</Label>
+            <CompanyPicker
               value={quote.companyId ?? ""}
-              onChange={(e) => handleChange("companyId", e.target.value)}
-              placeholder="Company identifier"
+              onValueChange={(value) => handleChange("companyId", value)}
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-contact">Contact ID</Label>
-            <Input
-              id="quote-contact"
+            <Label>Contact</Label>
+            <ContactPicker
               value={quote.contactId ?? ""}
-              onChange={(e) =>
-                handleChange("contactId", e.target.value || null)
+              onValueChange={(value) =>
+                handleChange("contactId", value || null)
               }
-              placeholder="Contact identifier"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-client-name">Client Name</Label>
+            <Input
+              id="quote-client-name"
+              value={quote.clientName ?? ""}
+              onChange={(e) =>
+                handleChange("clientName", e.target.value || null)
+              }
+              placeholder="Client full name"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-client-email">Client Email</Label>
+            <Input
+              id="quote-client-email"
+              type="email"
+              value={quote.clientEmail ?? ""}
+              onChange={(e) =>
+                handleChange("clientEmail", e.target.value || null)
+              }
+              placeholder="client@example.com"
             />
           </div>
         </div>
       </div>
 
-      {/* Dates */}
+      {/* Project details */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Dates</h3>
+        <h3 className="font-medium text-gray-700 text-lg">Project Details</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-project-type">Project Type</Label>
+            <select
+              id="quote-project-type"
+              value={quote.projectType ?? ""}
+              onChange={(e) =>
+                handleChange("projectType", e.target.value || null)
+              }
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
+            >
+              <option value="">Select type</option>
+              <option value="web">Web Application</option>
+              <option value="mobile">Mobile Application</option>
+              <option value="desktop">Desktop Application</option>
+              <option value="api">API / Backend</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-time-range">Timeline</Label>
+            <Input
+              id="quote-time-range"
+              value={quote.timeRange ?? ""}
+              onChange={(e) =>
+                handleChange("timeRange", e.target.value || null)
+              }
+              placeholder="e.g. 3-6 months"
+            />
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="quote-valid-until">Valid Until</Label>
             <Input
@@ -310,38 +396,90 @@ const QuoteForm = ({
               </div>
             </div>
 
-            {/* Conditional fields based on pricing type */}
+            {/* Hourly fields */}
             {item.pricingType === "hourly" && (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-hours-${item.id}`}>
-                    Estimated Hours
-                  </Label>
+                  <Label htmlFor={`item-rate-${item.id}`}>Hourly Rate</Label>
                   <Input
-                    id={`item-hours-${item.id}`}
+                    id={`item-rate-${item.id}`}
                     type="number"
                     min="0"
-                    step="0.5"
-                    value={item.estimatedHours ?? ""}
+                    step="0.01"
+                    value={item.hourlyRate ?? ""}
                     onChange={(e) =>
                       handleLineItemChange(
                         index,
-                        "estimatedHours",
+                        "hourlyRate",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="$/hr"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-weekly-${item.id}`}>
+                    Weekly Cap (hrs)
+                  </Label>
+                  <Input
+                    id={`item-weekly-${item.id}`}
+                    type="number"
+                    min="0"
+                    value={item.weeklyCapHours ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "weeklyCapHours",
                         e.target.value || null,
                       )
                     }
                     placeholder="e.g. 40"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-monthly-${item.id}`}>
+                    Monthly Cap (hrs)
+                  </Label>
+                  <Input
+                    id={`item-monthly-${item.id}`}
+                    type="number"
+                    min="0"
+                    value={item.monthlyCapHours ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "monthlyCapHours",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="e.g. 160"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-max-${item.id}`}>Max Cap (hrs)</Label>
+                  <Input
+                    id={`item-max-${item.id}`}
+                    type="number"
+                    min="0"
+                    value={item.maxCapHours ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "maxCapHours",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="Total max"
+                  />
+                </div>
               </div>
             )}
 
+            {/* Royalty fields */}
             {item.pricingType === "royalty" && (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-royalty-${item.id}`}>
-                    Royalty Percentage
-                  </Label>
+                  <Label htmlFor={`item-royalty-${item.id}`}>Royalty %</Label>
                   <Input
                     id={`item-royalty-${item.id}`}
                     type="number"
@@ -359,25 +497,83 @@ const QuoteForm = ({
                     placeholder="e.g. 5"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-rtf-${item.id}`}>Timeframe</Label>
+                  <Input
+                    id={`item-rtf-${item.id}`}
+                    type="number"
+                    min="0"
+                    value={item.royaltyTimeframe ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "royaltyTimeframe",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="Duration"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-rtfu-${item.id}`}>Unit</Label>
+                  <select
+                    id={`item-rtfu-${item.id}`}
+                    value={item.royaltyTimeframeUnit ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "royaltyTimeframeUnit",
+                        e.target.value || null,
+                      )
+                    }
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
+                  >
+                    <option value="">Select</option>
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                    <option value="perpetual">Perpetual</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-threshold-${item.id}`}>Threshold</Label>
+                  <Input
+                    id={`item-threshold-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.royaltyThreshold ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "royaltyThreshold",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="Revenue threshold"
+                  />
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor={`item-buyout-${item.id}`}>
+                    Buyout Amount
+                  </Label>
+                  <Input
+                    id={`item-buyout-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.royaltyBuyoutAmount ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "royaltyBuyoutAmount",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="One-time buyout"
+                  />
+                </div>
               </div>
             )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor={`item-sort-${item.id}`}>Sort Order</Label>
-              <Input
-                id={`item-sort-${item.id}`}
-                type="number"
-                min="0"
-                value={item.sortOrder ?? 0}
-                onChange={(e) =>
-                  handleLineItemChange(
-                    index,
-                    "sortOrder",
-                    Number.parseInt(e.target.value, 10) || 0,
-                  )
-                }
-              />
-            </div>
           </div>
         ))}
 
@@ -464,6 +660,16 @@ const QuoteForm = ({
             onChange={(e) => handleChange("terms", e.target.value || null)}
             rows={3}
             placeholder="Payment terms and conditions"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label>Additional Terms</Label>
+          <AdditionalTermsEditor
+            terms={quote.additionalTerms ?? []}
+            onChange={(terms) =>
+              handleChange("additionalTerms", terms.length > 0 ? terms : null)
+            }
           />
         </div>
 

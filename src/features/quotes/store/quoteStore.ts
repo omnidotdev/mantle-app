@@ -73,6 +73,40 @@ const useQuoteStore = create<QuoteStore>()(
     }),
     {
       name: "mantle-quotes",
+      version: 1,
+      migrate: (persisted, version) => {
+        const state = persisted as Record<string, unknown>;
+
+        // v0 → v1: add new contract and pricing fields
+        if (version === 0) {
+          const quotes = (state.quotes as Record<string, unknown>[]) ?? [];
+          state.quotes = quotes.map((q) => {
+            const lineItems =
+              (q.quoteLineItems as Record<string, unknown>[]) ?? [];
+            return {
+              ...q,
+              projectType: null,
+              timeRange: null,
+              additionalTerms: null,
+              clientName: null,
+              clientEmail: null,
+              quoteLineItems: lineItems.map((li) => ({
+                ...li,
+                hourlyRate: null,
+                weeklyCapHours: null,
+                monthlyCapHours: null,
+                maxCapHours: null,
+                royaltyTimeframe: null,
+                royaltyTimeframeUnit: null,
+                royaltyThreshold: null,
+                royaltyBuyoutAmount: null,
+              })),
+            };
+          });
+        }
+
+        return state as unknown as QuoteStore;
+      },
       // Only persist data, not UI state
       partialize: (state) => ({
         quotes: state.quotes,

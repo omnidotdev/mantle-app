@@ -1,5 +1,14 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Building2, Edit, Plus, Trash2, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Edit,
+  Network,
+  Plus,
+  Share2,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +20,8 @@ import {
 } from "@/components/ui/tabs";
 import CompanyForm from "@/features/people/components/CompanyForm";
 import ContactForm from "@/features/people/components/ContactForm";
+import ImportExportDialog from "@/features/people/components/ImportExportDialog";
+import NetworkSection from "@/features/people/components/NetworkSection";
 import { usePeopleStore } from "@/features/people/store/peopleStore";
 
 import type { ActiveTab } from "@/features/people/store/peopleStore";
@@ -36,10 +47,11 @@ const defaultCompany: Partial<Company> = {
 const defaultPerson: Partial<Person> = {
   firstName: "",
   lastName: "",
-  email: null,
+  emails: [],
   phone: null,
   avatarUrl: null,
   tags: null,
+  internal: false,
   notes: null,
 };
 
@@ -62,6 +74,7 @@ const PeoplePage = () => {
     useState<Partial<Company>>(defaultCompany);
   const [currentPerson, setCurrentPerson] =
     useState<Partial<Person>>(defaultPerson);
+  const [importExportOpen, setImportExportOpen] = useState(false);
 
   // Company handlers
   const handleCreateCompany = () => {
@@ -125,10 +138,11 @@ const PeoplePage = () => {
       createPerson({
         firstName: currentPerson.firstName ?? "",
         lastName: currentPerson.lastName ?? "",
-        email: currentPerson.email ?? null,
+        emails: currentPerson.emails ?? [],
         phone: currentPerson.phone ?? null,
         avatarUrl: currentPerson.avatarUrl ?? null,
         tags: currentPerson.tags ?? null,
+        internal: currentPerson.internal ?? false,
         notes: currentPerson.notes ?? null,
       });
     }
@@ -207,18 +221,32 @@ const PeoplePage = () => {
           </Link>
           <h1 className="font-bold text-2xl">People</h1>
         </div>
-        <button
-          type="button"
-          onClick={
-            activeTab === "companies"
-              ? handleCreateCompany
-              : handleCreateContact
-          }
-          className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
-        >
-          <Plus size={18} />
-          {activeTab === "companies" ? "Add Company" : "Add Contact"}
-        </button>
+        <div className="flex gap-2">
+          {activeTab !== "network" && (
+            <button
+              type="button"
+              onClick={() => setImportExportOpen(true)}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+            >
+              <Share2 size={16} />
+              Import/Export
+            </button>
+          )}
+          {activeTab !== "network" && (
+            <button
+              type="button"
+              onClick={
+                activeTab === "companies"
+                  ? handleCreateCompany
+                  : handleCreateContact
+              }
+              className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+            >
+              <Plus size={18} />
+              {activeTab === "companies" ? "Add Company" : "Add Contact"}
+            </button>
+          )}
+        </div>
       </div>
 
       <TabsRoot
@@ -233,6 +261,10 @@ const PeoplePage = () => {
           <TabsTrigger value="contacts" className="flex items-center gap-2">
             <Users size={16} />
             Contacts
+          </TabsTrigger>
+          <TabsTrigger value="network" className="flex items-center gap-2">
+            <Network size={16} />
+            Network
           </TabsTrigger>
         </TabsList>
 
@@ -253,7 +285,17 @@ const PeoplePage = () => {
             onCreateNew={handleCreateContact}
           />
         </TabsContent>
+
+        <TabsContent value="network">
+          <NetworkSection people={people} />
+        </TabsContent>
       </TabsRoot>
+
+      <ImportExportDialog
+        open={importExportOpen}
+        onOpenChange={setImportExportOpen}
+        context={activeTab === "companies" ? "companies" : "contacts"}
+      />
     </div>
   );
 };
@@ -313,13 +355,13 @@ const CompaniesTable = ({
             <tr key={company.id} className="border-gray-100 border-t">
               <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
               <td className="px-4 py-3 text-gray-600 text-sm">
-                {company.industry ?? "—"}
+                {company.industry ?? "\u2014"}
               </td>
               <td className="px-4 py-3 text-gray-600 text-sm">
-                {company.email ?? "—"}
+                {company.email ?? "\u2014"}
               </td>
               <td className="px-4 py-3 text-gray-600 text-sm">
-                {company.phone ?? "—"}
+                {company.phone ?? "\u2014"}
               </td>
               <td className="px-4 py-3 text-right">
                 <div className="flex justify-end gap-2">
@@ -392,6 +434,9 @@ const ContactsTable = ({
               Phone
             </th>
             <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+              Type
+            </th>
+            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
               Tags
             </th>
             <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
@@ -406,10 +451,31 @@ const ContactsTable = ({
                 {person.firstName} {person.lastName}
               </td>
               <td className="px-4 py-3 text-gray-600 text-sm">
-                {person.email ?? "—"}
+                {person.emails.length > 0 ? (
+                  person.emails.length === 1 ? (
+                    person.emails[0]
+                  ) : (
+                    <span title={person.emails.join(", ")}>
+                      {person.emails[0]}{" "}
+                      <span className="text-gray-400">
+                        +{person.emails.length - 1}
+                      </span>
+                    </span>
+                  )
+                ) : (
+                  "\u2014"
+                )}
               </td>
               <td className="px-4 py-3 text-gray-600 text-sm">
-                {person.phone ?? "—"}
+                {person.phone ?? "\u2014"}
+              </td>
+              <td className="px-4 py-3">
+                <Badge
+                  variant={person.internal ? "solid" : "outline"}
+                  className="text-xs"
+                >
+                  {person.internal ? "Internal" : "External"}
+                </Badge>
               </td>
               <td className="px-4 py-3">
                 <div className="flex flex-wrap gap-1">
@@ -420,7 +486,7 @@ const ContactsTable = ({
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-gray-400 text-sm">—</span>
+                    <span className="text-gray-400 text-sm">{"\u2014"}</span>
                   )}
                 </div>
               </td>

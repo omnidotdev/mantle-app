@@ -1,12 +1,25 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 
 import appConfig from "@/lib/config/app.config";
 
 const DashboardPage = () => {
   return (
     <div className="mx-auto max-w-4xl p-8">
-      <h1 className="mb-2 font-bold text-3xl">{appConfig.name}</h1>
-      <p className="mb-8 text-gray-600">{appConfig.tagline}</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="mb-2 font-bold text-3xl">{appConfig.name}</h1>
+          <p className="text-gray-600">{appConfig.tagline}</p>
+        </div>
+        <Link
+          to="/settings"
+          className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+          title="Settings"
+        >
+          <Settings size={18} />
+          <span className="text-sm">Settings</span>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {Object.entries(appConfig.modules)

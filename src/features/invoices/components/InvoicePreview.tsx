@@ -1,4 +1,6 @@
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import { usePeopleStore } from "@/features/people/store/peopleStore";
+import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type {
   Invoice,
@@ -20,6 +22,13 @@ const statusColors: Record<string, string> = {
 };
 
 const InvoicePreview = ({ invoice, lineItems }: InvoicePreviewProps) => {
+  const { getCompany, getPerson } = usePeopleStore();
+  const { profiles } = useSettingsStore();
+  const orgProfile = profiles[0];
+
+  const company = invoice.companyId ? getCompany(invoice.companyId) : undefined;
+  const contact = invoice.contactId ? getPerson(invoice.contactId) : undefined;
+
   const subtotal = lineItems.reduce(
     (sum, item) => sum + Number.parseFloat(item.amount || "0"),
     0,
@@ -43,8 +52,18 @@ const InvoicePreview = ({ invoice, lineItems }: InvoicePreviewProps) => {
             />
             <div>
               <h3 className="font-bold text-white text-xl">
-                {invoice.companyId || "Your Company"}
+                {orgProfile?.companyName || "Your Company"}
               </h3>
+              {orgProfile?.email && (
+                <p className="text-sm text-teal-100">{orgProfile.email}</p>
+              )}
+              {orgProfile?.addressLine1 && (
+                <p className="text-sm text-teal-100">
+                  {orgProfile.addressLine1}
+                  {orgProfile.city && `, ${orgProfile.city}`}
+                  {orgProfile.state && `, ${orgProfile.state}`}
+                </p>
+              )}
             </div>
           </div>
           <div className="text-right">
@@ -59,10 +78,25 @@ const InvoicePreview = ({ invoice, lineItems }: InvoicePreviewProps) => {
           <div>
             <h4 className="mb-2 font-bold text-gray-700">Bill To:</h4>
             <p className="text-gray-800">
-              {invoice.companyId || "Company not specified"}
+              {company?.name || invoice.companyId || "Company not specified"}
             </p>
-            {invoice.contactId && (
+            {contact && (
+              <p className="text-gray-600">
+                {contact.firstName} {contact.lastName}
+              </p>
+            )}
+            {!contact && invoice.contactId && (
               <p className="text-gray-600">Contact: {invoice.contactId}</p>
+            )}
+            {company?.email && (
+              <p className="text-gray-500 text-sm">{company.email}</p>
+            )}
+            {company?.addressLine1 && (
+              <p className="text-gray-500 text-sm">
+                {company.addressLine1}
+                {company.city && `, ${company.city}`}
+                {company.state && `, ${company.state}`}
+              </p>
             )}
           </div>
           <div>
