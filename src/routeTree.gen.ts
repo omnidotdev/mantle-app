@@ -17,6 +17,7 @@ import { Route as AuthQuotesIndexRouteImport } from './routes/_auth/quotes/index
 import { Route as AuthPeopleIndexRouteImport } from './routes/_auth/people/index'
 import { Route as AuthInvoicesIndexRouteImport } from './routes/_auth/invoices/index'
 import { Route as AuthInventoryIndexRouteImport } from './routes/_auth/inventory/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -56,10 +57,16 @@ const AuthInventoryIndexRoute = AuthInventoryIndexRouteImport.update({
   path: '/inventory/',
   getParentRoute: () => AuthRoute,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/inventory/': typeof AuthInventoryIndexRoute
   '/invoices/': typeof AuthInvoicesIndexRoute
   '/people/': typeof AuthPeopleIndexRoute
@@ -68,6 +75,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/inventory': typeof AuthInventoryIndexRoute
   '/invoices': typeof AuthInvoicesIndexRoute
   '/people': typeof AuthPeopleIndexRoute
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteWithChildren
   '/_auth/dashboard': typeof AuthDashboardRoute
   '/_public/': typeof PublicIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/_auth/inventory/': typeof AuthInventoryIndexRoute
   '/_auth/invoices/': typeof AuthInvoicesIndexRoute
   '/_auth/people/': typeof AuthPeopleIndexRoute
@@ -89,18 +98,27 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/api/auth/$'
     | '/inventory/'
     | '/invoices/'
     | '/people/'
     | '/quotes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/inventory' | '/invoices' | '/people' | '/quotes'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/api/auth/$'
+    | '/inventory'
+    | '/invoices'
+    | '/people'
+    | '/quotes'
   id:
     | '__root__'
     | '/_auth'
     | '/_public'
     | '/_auth/dashboard'
     | '/_public/'
+    | '/api/auth/$'
     | '/_auth/inventory/'
     | '/_auth/invoices/'
     | '/_auth/people/'
@@ -110,6 +128,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -170,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthInventoryIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -205,6 +231,7 @@ const PublicRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
