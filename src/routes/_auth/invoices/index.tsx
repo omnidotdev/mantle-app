@@ -269,7 +269,10 @@ const InvoicesPage = () => {
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link to="/" className="text-gray-500 text-sm hover:text-gray-700">
+            <Link
+              to="/dashboard"
+              className="text-gray-500 text-sm hover:text-gray-700"
+            >
               &larr; Back
             </Link>
             <h1 className="font-bold text-2xl">Invoices</h1>
@@ -483,6 +486,6 @@ const InvoicesPage = () => {
   );
 };
 
-export const Route = createFileRoute("/invoices/")({
+export const Route = createFileRoute("/_auth/invoices/")({
   component: InvoicesPage,
 });

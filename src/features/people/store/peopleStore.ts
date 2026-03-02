@@ -16,13 +16,17 @@ interface PeopleStore {
   editingId: string | null;
 
   // Company CRUD
-  createCompany: (company: Omit<Company, "id" | "createdAt" | "updatedAt" | "organizationId">) => Company;
+  createCompany: (
+    company: Omit<Company, "id" | "createdAt" | "updatedAt" | "organizationId">,
+  ) => Company;
   updateCompany: (id: string, updates: Partial<Company>) => void;
   deleteCompany: (id: string) => void;
   getCompany: (id: string) => Company | undefined;
 
   // Person CRUD
-  createPerson: (person: Omit<Person, "id" | "createdAt" | "updatedAt" | "organizationId">) => Person;
+  createPerson: (
+    person: Omit<Person, "id" | "createdAt" | "updatedAt" | "organizationId">,
+  ) => Person;
   updatePerson: (id: string, updates: Partial<Person>) => void;
   deletePerson: (id: string) => void;
   getPerson: (id: string) => Person | undefined;

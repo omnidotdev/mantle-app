@@ -42,9 +42,7 @@ const ContactForm = ({
     <div className="space-y-6">
       {/* Basic information */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">
-          Basic Information
-        </h3>
+        <h3 className="font-medium text-gray-700 text-lg">Basic Information</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -75,9 +73,7 @@ const ContactForm = ({
               id="contact-email"
               type="email"
               value={person.email ?? ""}
-              onChange={(e) =>
-                handleChange("email", e.target.value || null)
-              }
+              onChange={(e) => handleChange("email", e.target.value || null)}
               placeholder="email@example.com"
             />
           </div>
@@ -88,9 +84,7 @@ const ContactForm = ({
               id="contact-phone"
               type="tel"
               value={person.phone ?? ""}
-              onChange={(e) =>
-                handleChange("phone", e.target.value || null)
-              }
+              onChange={(e) => handleChange("phone", e.target.value || null)}
               placeholder="(555) 555-5555"
             />
           </div>
@@ -105,11 +99,7 @@ const ContactForm = ({
             const isActive = (person.tags ?? []).includes(tag);
 
             return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => toggleTag(tag)}
-              >
+              <button key={tag} type="button" onClick={() => toggleTag(tag)}>
                 <Badge
                   variant={isActive ? "solid" : "outline"}
                   className="cursor-pointer select-none"

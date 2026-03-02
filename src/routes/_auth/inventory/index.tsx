@@ -287,7 +287,10 @@ const InventoryPage = () => {
     <div className="mx-auto max-w-6xl p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <Link to="/" className="text-gray-500 text-sm hover:text-gray-700">
+          <Link
+            to="/dashboard"
+            className="text-gray-500 text-sm hover:text-gray-700"
+          >
             &larr; Back
           </Link>
           <h1 className="font-bold text-2xl">Inventory</h1>
@@ -436,6 +439,6 @@ const ProductsTable = ({
   );
 };
 
-export const Route = createFileRoute("/inventory/")({
+export const Route = createFileRoute("/_auth/inventory/")({
   component: InventoryPage,
 });

@@ -9,122 +9,202 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as QuotesIndexRouteImport } from './routes/quotes/index'
-import { Route as PeopleIndexRouteImport } from './routes/people/index'
-import { Route as InvoicesIndexRouteImport } from './routes/invoices/index'
-import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
+import { Route as PublicRouteImport } from './routes/_public'
+import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as AuthDashboardRouteImport } from './routes/_auth/dashboard'
+import { Route as AuthQuotesIndexRouteImport } from './routes/_auth/quotes/index'
+import { Route as AuthPeopleIndexRouteImport } from './routes/_auth/people/index'
+import { Route as AuthInvoicesIndexRouteImport } from './routes/_auth/invoices/index'
+import { Route as AuthInventoryIndexRouteImport } from './routes/_auth/inventory/index'
 
-const IndexRoute = IndexRouteImport.update({
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PublicRoute,
 } as any)
-const QuotesIndexRoute = QuotesIndexRouteImport.update({
+const AuthDashboardRoute = AuthDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthQuotesIndexRoute = AuthQuotesIndexRouteImport.update({
   id: '/quotes/',
   path: '/quotes/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRoute,
 } as any)
-const PeopleIndexRoute = PeopleIndexRouteImport.update({
+const AuthPeopleIndexRoute = AuthPeopleIndexRouteImport.update({
   id: '/people/',
   path: '/people/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRoute,
 } as any)
-const InvoicesIndexRoute = InvoicesIndexRouteImport.update({
+const AuthInvoicesIndexRoute = AuthInvoicesIndexRouteImport.update({
   id: '/invoices/',
   path: '/invoices/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRoute,
 } as any)
-const InventoryIndexRoute = InventoryIndexRouteImport.update({
+const AuthInventoryIndexRoute = AuthInventoryIndexRouteImport.update({
   id: '/inventory/',
   path: '/inventory/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/inventory/': typeof InventoryIndexRoute
-  '/invoices/': typeof InvoicesIndexRoute
-  '/people/': typeof PeopleIndexRoute
-  '/quotes/': typeof QuotesIndexRoute
+  '/': typeof PublicIndexRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/inventory/': typeof AuthInventoryIndexRoute
+  '/invoices/': typeof AuthInvoicesIndexRoute
+  '/people/': typeof AuthPeopleIndexRoute
+  '/quotes/': typeof AuthQuotesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/inventory': typeof InventoryIndexRoute
-  '/invoices': typeof InvoicesIndexRoute
-  '/people': typeof PeopleIndexRoute
-  '/quotes': typeof QuotesIndexRoute
+  '/': typeof PublicIndexRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/inventory': typeof AuthInventoryIndexRoute
+  '/invoices': typeof AuthInvoicesIndexRoute
+  '/people': typeof AuthPeopleIndexRoute
+  '/quotes': typeof AuthQuotesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/inventory/': typeof InventoryIndexRoute
-  '/invoices/': typeof InvoicesIndexRoute
-  '/people/': typeof PeopleIndexRoute
-  '/quotes/': typeof QuotesIndexRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
+  '/_auth/dashboard': typeof AuthDashboardRoute
+  '/_public/': typeof PublicIndexRoute
+  '/_auth/inventory/': typeof AuthInventoryIndexRoute
+  '/_auth/invoices/': typeof AuthInvoicesIndexRoute
+  '/_auth/people/': typeof AuthPeopleIndexRoute
+  '/_auth/quotes/': typeof AuthQuotesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inventory/' | '/invoices/' | '/people/' | '/quotes/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/inventory/'
+    | '/invoices/'
+    | '/people/'
+    | '/quotes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inventory' | '/invoices' | '/people' | '/quotes'
-  id: '__root__' | '/' | '/inventory/' | '/invoices/' | '/people/' | '/quotes/'
+  to: '/' | '/dashboard' | '/inventory' | '/invoices' | '/people' | '/quotes'
+  id:
+    | '__root__'
+    | '/_auth'
+    | '/_public'
+    | '/_auth/dashboard'
+    | '/_public/'
+    | '/_auth/inventory/'
+    | '/_auth/invoices/'
+    | '/_auth/people/'
+    | '/_auth/quotes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  InventoryIndexRoute: typeof InventoryIndexRoute
-  InvoicesIndexRoute: typeof InvoicesIndexRoute
-  PeopleIndexRoute: typeof PeopleIndexRoute
-  QuotesIndexRoute: typeof QuotesIndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/': {
+      id: '/_public/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRoute
     }
-    '/quotes/': {
-      id: '/quotes/'
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/quotes/': {
+      id: '/_auth/quotes/'
       path: '/quotes'
       fullPath: '/quotes/'
-      preLoaderRoute: typeof QuotesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthQuotesIndexRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/people/': {
-      id: '/people/'
+    '/_auth/people/': {
+      id: '/_auth/people/'
       path: '/people'
       fullPath: '/people/'
-      preLoaderRoute: typeof PeopleIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthPeopleIndexRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/invoices/': {
-      id: '/invoices/'
+    '/_auth/invoices/': {
+      id: '/_auth/invoices/'
       path: '/invoices'
       fullPath: '/invoices/'
-      preLoaderRoute: typeof InvoicesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthInvoicesIndexRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/inventory/': {
-      id: '/inventory/'
+    '/_auth/inventory/': {
+      id: '/_auth/inventory/'
       path: '/inventory'
       fullPath: '/inventory/'
-      preLoaderRoute: typeof InventoryIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthInventoryIndexRouteImport
+      parentRoute: typeof AuthRoute
     }
   }
 }
 
+interface AuthRouteChildren {
+  AuthDashboardRoute: typeof AuthDashboardRoute
+  AuthInventoryIndexRoute: typeof AuthInventoryIndexRoute
+  AuthInvoicesIndexRoute: typeof AuthInvoicesIndexRoute
+  AuthPeopleIndexRoute: typeof AuthPeopleIndexRoute
+  AuthQuotesIndexRoute: typeof AuthQuotesIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthDashboardRoute: AuthDashboardRoute,
+  AuthInventoryIndexRoute: AuthInventoryIndexRoute,
+  AuthInvoicesIndexRoute: AuthInvoicesIndexRoute,
+  AuthPeopleIndexRoute: AuthPeopleIndexRoute,
+  AuthQuotesIndexRoute: AuthQuotesIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface PublicRouteChildren {
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  InventoryIndexRoute: InventoryIndexRoute,
-  InvoicesIndexRoute: InvoicesIndexRoute,
-  PeopleIndexRoute: PeopleIndexRoute,
-  QuotesIndexRoute: QuotesIndexRoute,
+  AuthRoute: AuthRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

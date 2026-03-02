@@ -13,8 +13,8 @@ import CompanyForm from "@/features/people/components/CompanyForm";
 import ContactForm from "@/features/people/components/ContactForm";
 import { usePeopleStore } from "@/features/people/store/peopleStore";
 
-import type { Company, Person } from "@/features/people/types";
 import type { ActiveTab } from "@/features/people/store/peopleStore";
+import type { Company, Person } from "@/features/people/types";
 
 type ViewMode = "list" | "create" | "edit";
 
@@ -199,7 +199,10 @@ const PeoplePage = () => {
     <div className="mx-auto max-w-6xl p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <Link to="/" className="text-gray-500 text-sm hover:text-gray-700">
+          <Link
+            to="/dashboard"
+            className="text-gray-500 text-sm hover:text-gray-700"
+          >
             &larr; Back
           </Link>
           <h1 className="font-bold text-2xl">People</h1>
@@ -220,9 +223,7 @@ const PeoplePage = () => {
 
       <TabsRoot
         value={activeTab}
-        onValueChange={(details) =>
-          setActiveTab(details.value as ActiveTab)
-        }
+        onValueChange={(details) => setActiveTab(details.value as ActiveTab)}
       >
         <TabsList className="mb-4">
           <TabsTrigger value="companies" className="flex items-center gap-2">
@@ -310,9 +311,7 @@ const CompaniesTable = ({
         <tbody>
           {companies.map((company) => (
             <tr key={company.id} className="border-gray-100 border-t">
-              <td className="px-4 py-3 font-medium text-sm">
-                {company.name}
-              </td>
+              <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
               <td className="px-4 py-3 text-gray-600 text-sm">
                 {company.industry ?? "—"}
               </td>
@@ -416,11 +415,7 @@ const ContactsTable = ({
                 <div className="flex flex-wrap gap-1">
                   {person.tags?.length ? (
                     person.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="text-xs"
-                      >
+                      <Badge key={tag} variant="secondary" className="text-xs">
                         {tag}
                       </Badge>
                     ))
@@ -457,6 +452,6 @@ const ContactsTable = ({
   );
 };
 
-export const Route = createFileRoute("/people/")({
+export const Route = createFileRoute("/_auth/people/")({
   component: PeoplePage,
 });
