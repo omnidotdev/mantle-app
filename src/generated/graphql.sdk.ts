@@ -17,7 +17,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   /** A floating point number that requires more precision than IEEE 754 binary 64 */
-  BigFloat: { input: unknown; output: unknown; }
+  BigFloat: { input: string; output: string; }
   /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
   /** A calendar date in YYYY-MM-DD format. */
@@ -3232,7 +3232,7 @@ export type AllInvoicesQueryVariables = Exact<{
 }>;
 
 
-export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId: string, contactId?: string | null, status: string, issueDate: string, dueDate: string, notes?: string | null, subtotal?: unknown | null, taxRate?: unknown | null, taxAmount?: unknown | null, total?: unknown | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: unknown, unitPrice: unknown, amount: unknown, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId: string, contactId?: string | null, status: string, issueDate: string, dueDate: string, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateInvoiceMutationVariables = Exact<{
   input: CreateInvoiceInput;
@@ -3288,7 +3288,7 @@ export type AllProductsQueryVariables = Exact<{
 }>;
 
 
-export type AllProductsQuery = { __typename?: 'Query', products?: { __typename?: 'ProductConnection', nodes: Array<{ __typename?: 'Product', rowId: string, organizationId: string, name: string, description?: string | null, sku?: string | null, unitPrice?: unknown | null, currentQuantity?: number | null, lowStockThreshold?: number | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
+export type AllProductsQuery = { __typename?: 'Query', products?: { __typename?: 'ProductConnection', nodes: Array<{ __typename?: 'Product', rowId: string, organizationId: string, name: string, description?: string | null, sku?: string | null, unitPrice?: string | null, currentQuantity?: number | null, lowStockThreshold?: number | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -3330,7 +3330,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId: string, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, terms?: string | null, notes?: string | null, subtotal?: unknown | null, taxRate?: unknown | null, taxAmount?: unknown | null, total?: unknown | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: unknown, unitPrice: unknown, amount: unknown, pricingType: string, estimatedHours?: unknown | null, royaltyPercentage?: unknown | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId: string, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, terms?: string | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, royaltyPercentage?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;

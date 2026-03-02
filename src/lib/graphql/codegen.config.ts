@@ -33,6 +33,7 @@ const sharedConfig: GraphQLCodegenConfig["config"] = {
     UUID: "string",
     Cursor: "string",
     BigInt: "string",
+    BigFloat: "string",
   },
   defaultScalarType: "unknown",
   constEnum: true,
