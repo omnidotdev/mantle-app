@@ -16,6 +16,11 @@ const viteConfig = defineConfig(({ command }) => ({
     port: 3001,
     host: "0.0.0.0",
   },
+  ssr: {
+    // Externalize better-auth from SSR bundle to prevent duplicate
+    // `getSession` declarations when rollup merges its internal ESM re-exports
+    external: ["better-auth"],
+  },
   plugins: [
     devtools(),
     // NB: command is `serve` in development, `build` in production
