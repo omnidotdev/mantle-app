@@ -1,15 +1,15 @@
 query AllCompanies($organizationId: String!) {
-  allCompanies(condition: { organizationId: $organizationId }) {
+  companies(condition: { organizationId: $organizationId }) {
     nodes {
-      id
+      rowId
       organizationId
       name
       website
       industry
       phone
       email
-      addressLine_1
-      addressLine_2
+      addressLine1
+      addressLine2
       city
       state
       postalCode
@@ -24,23 +24,23 @@ query AllCompanies($organizationId: String!) {
 mutation CreateCompany($input: CreateCompanyInput!) {
   createCompany(input: $input) {
     company {
-      id
+      rowId
       name
     }
   }
 }
 
-mutation UpdateCompany($id: UUID!, $patch: CompanyPatch!) {
-  updateCompanyById(input: { id: $id, companyPatch: $patch }) {
+mutation UpdateCompany($input: UpdateCompanyInput!) {
+  updateCompany(input: $input) {
     company {
-      id
+      rowId
       name
     }
   }
 }
 
-mutation DeleteCompany($id: UUID!) {
-  deleteCompanyById(input: { id: $id }) {
+mutation DeleteCompany($input: DeleteCompanyInput!) {
+  deleteCompany(input: $input) {
     deletedCompanyId
   }
 }

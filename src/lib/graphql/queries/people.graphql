@@ -1,7 +1,7 @@
 query AllPeople($organizationId: String!) {
-  allPeople(condition: { organizationId: $organizationId }) {
+  people(condition: { organizationId: $organizationId }) {
     nodes {
-      id
+      rowId
       organizationId
       firstName
       lastName
@@ -19,25 +19,25 @@ query AllPeople($organizationId: String!) {
 mutation CreatePerson($input: CreatePersonInput!) {
   createPerson(input: $input) {
     person {
-      id
+      rowId
       firstName
       lastName
     }
   }
 }
 
-mutation UpdatePerson($id: UUID!, $patch: PersonPatch!) {
-  updatePersonById(input: { id: $id, personPatch: $patch }) {
+mutation UpdatePerson($input: UpdatePersonInput!) {
+  updatePerson(input: $input) {
     person {
-      id
+      rowId
       firstName
       lastName
     }
   }
 }
 
-mutation DeletePerson($id: UUID!) {
-  deletePersonById(input: { id: $id }) {
+mutation DeletePerson($input: DeletePersonInput!) {
+  deletePerson(input: $input) {
     deletedPersonId
   }
 }

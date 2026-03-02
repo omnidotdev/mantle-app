@@ -1,7 +1,7 @@
 query AllProducts($organizationId: String!) {
-  allProducts(condition: { organizationId: $organizationId }) {
+  products(condition: { organizationId: $organizationId }) {
     nodes {
-      id
+      rowId
       organizationId
       name
       description
@@ -19,34 +19,31 @@ query AllProducts($organizationId: String!) {
 mutation CreateProduct($input: CreateProductInput!) {
   createProduct(input: $input) {
     product {
-      id
+      rowId
       name
     }
   }
 }
 
-mutation UpdateProduct($id: UUID!, $patch: ProductPatch!) {
-  updateProductById(input: { id: $id, productPatch: $patch }) {
+mutation UpdateProduct($input: UpdateProductInput!) {
+  updateProduct(input: $input) {
     product {
-      id
+      rowId
       name
     }
   }
 }
 
-mutation DeleteProduct($id: UUID!) {
-  deleteProductById(input: { id: $id }) {
+mutation DeleteProduct($input: DeleteProductInput!) {
+  deleteProduct(input: $input) {
     deletedProductId
   }
 }
 
 query InventoryAdjustments($productId: UUID!) {
-  allInventoryAdjustments(
-    condition: { productId: $productId }
-    orderBy: CREATED_AT_DESC
-  ) {
+  inventoryAdjustments(condition: { productId: $productId }) {
     nodes {
-      id
+      rowId
       productId
       quantityChange
       reason
@@ -59,7 +56,7 @@ query InventoryAdjustments($productId: UUID!) {
 mutation CreateInventoryAdjustment($input: CreateInventoryAdjustmentInput!) {
   createInventoryAdjustment(input: $input) {
     inventoryAdjustment {
-      id
+      rowId
       quantityChange
     }
   }

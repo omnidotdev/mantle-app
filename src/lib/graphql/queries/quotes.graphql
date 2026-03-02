@@ -1,10 +1,7 @@
 query AllQuotes($organizationId: String!) {
-  allQuotes(
-    condition: { organizationId: $organizationId }
-    orderBy: CREATED_AT_DESC
-  ) {
+  quotes(condition: { organizationId: $organizationId }) {
     nodes {
-      id
+      rowId
       organizationId
       quoteNumber
       companyId
@@ -23,18 +20,18 @@ query AllQuotes($organizationId: String!) {
       convertedInvoiceId
       createdAt
       updatedAt
-      companyByCompanyId {
-        id
+      company {
+        rowId
         name
       }
-      contactByContactId: personByContactId {
-        id
+      contact {
+        rowId
         firstName
         lastName
       }
-      quoteLineItemsByQuoteId {
+      quoteLineItems {
         nodes {
-          id
+          rowId
           quoteId
           productId
           description
@@ -54,23 +51,23 @@ query AllQuotes($organizationId: String!) {
 mutation CreateQuote($input: CreateQuoteInput!) {
   createQuote(input: $input) {
     quote {
-      id
+      rowId
       quoteNumber
     }
   }
 }
 
-mutation UpdateQuote($id: UUID!, $patch: QuotePatch!) {
-  updateQuoteById(input: { id: $id, quotePatch: $patch }) {
+mutation UpdateQuote($input: UpdateQuoteInput!) {
+  updateQuote(input: $input) {
     quote {
-      id
+      rowId
       quoteNumber
     }
   }
 }
 
-mutation DeleteQuote($id: UUID!) {
-  deleteQuoteById(input: { id: $id }) {
+mutation DeleteQuote($input: DeleteQuoteInput!) {
+  deleteQuote(input: $input) {
     deletedQuoteId
   }
 }

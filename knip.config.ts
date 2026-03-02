@@ -29,8 +29,6 @@ const knipConfig: KnipConfig = {
     // UI libraries (some not yet used)
     "@internationalized/date",
     "@tanstack/react-form",
-    "@tanstack/react-query",
-    "@tanstack/react-router-ssr-query",
     "@tanstack/zod-adapter",
     "dayjs",
     "jose",

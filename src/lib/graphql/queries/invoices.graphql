@@ -1,10 +1,7 @@
 query AllInvoices($organizationId: String!) {
-  allInvoices(
-    condition: { organizationId: $organizationId }
-    orderBy: CREATED_AT_DESC
-  ) {
+  invoices(condition: { organizationId: $organizationId }) {
     nodes {
-      id
+      rowId
       organizationId
       invoiceNumber
       companyId
@@ -23,18 +20,18 @@ query AllInvoices($organizationId: String!) {
       paymentLinkUrl
       createdAt
       updatedAt
-      companyByCompanyId {
-        id
+      company {
+        rowId
         name
       }
-      contactByContactId: personByContactId {
-        id
+      contact {
+        rowId
         firstName
         lastName
       }
-      invoiceLineItemsByInvoiceId {
+      invoiceLineItems {
         nodes {
-          id
+          rowId
           invoiceId
           productId
           description
@@ -51,23 +48,23 @@ query AllInvoices($organizationId: String!) {
 mutation CreateInvoice($input: CreateInvoiceInput!) {
   createInvoice(input: $input) {
     invoice {
-      id
+      rowId
       invoiceNumber
     }
   }
 }
 
-mutation UpdateInvoice($id: UUID!, $patch: InvoicePatch!) {
-  updateInvoiceById(input: { id: $id, invoicePatch: $patch }) {
+mutation UpdateInvoice($input: UpdateInvoiceInput!) {
+  updateInvoice(input: $input) {
     invoice {
-      id
+      rowId
       invoiceNumber
     }
   }
 }
 
-mutation DeleteInvoice($id: UUID!) {
-  deleteInvoiceById(input: { id: $id }) {
+mutation DeleteInvoice($input: DeleteInvoiceInput!) {
+  deleteInvoice(input: $input) {
     deletedInvoiceId
   }
 }
