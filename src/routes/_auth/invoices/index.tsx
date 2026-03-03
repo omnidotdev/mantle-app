@@ -1,9 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import html2canvas from "html2canvas-pro";
-import jsPDF from "jspdf";
 import {
-  Download,
   Edit,
   Eye,
   Loader2,
@@ -11,7 +8,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -81,8 +78,6 @@ const InvoicesPage = () => {
     open: boolean;
     id: string;
   }>({ open: false, id: "" });
-
-  const previewRef = useRef<HTMLDivElement>(null);
 
   const [currentInvoice, setCurrentInvoice] =
     useState<Partial<Invoice>>(defaultInvoice);
@@ -360,28 +355,6 @@ const InvoicesPage = () => {
     }
   };
 
-  const handleDownloadPdf = async () => {
-    const el = previewRef.current;
-    if (!el) return;
-
-    toast.info("Generating PDF...");
-
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: [canvas.width, canvas.height],
-    });
-
-    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-    pdf.save(`invoice_${currentInvoice.invoiceNumber || "draft"}.pdf`);
-  };
-
   const handleDelete = (id: string) => {
     setDeleteConfirm({ open: true, id });
   };
@@ -625,14 +598,6 @@ const InvoicesPage = () => {
             </button>
             <button
               type="button"
-              onClick={handleDownloadPdf}
-              className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
-            >
-              <Download size={14} />
-              Download PDF
-            </button>
-            <button
-              type="button"
               onClick={() => {
                 const originalTitle = document.title;
                 document.title = `invoice_${currentInvoice.invoiceNumber}`;
@@ -646,7 +611,7 @@ const InvoicesPage = () => {
           </div>
         </div>
 
-        <div ref={previewRef}>
+        <div>
           <InvoicePreview
             invoice={currentInvoice}
             lineItems={currentLineItems}

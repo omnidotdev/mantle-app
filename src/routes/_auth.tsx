@@ -47,9 +47,9 @@ function AuthLayout() {
     <OrganizationProvider organizations={organizations}>
       <SidebarProvider>
         <div className="flex h-dvh w-full">
-          <AppSidebar />
+          <AppSidebar className="print:hidden" />
           <SidebarInset>
-            <div className="flex items-center p-2 md:hidden">
+            <div className="flex items-center p-2 md:hidden print:hidden">
               <SidebarTrigger />
             </div>
             <ErrorBoundary>
