@@ -3847,7 +3847,7 @@ export const useCreateInvoiceLineItemMutation = <
       TError = unknown,
       TContext = unknown
     >(options?: UseMutationOptions<CreateInvoiceLineItemMutation, TError, CreateInvoiceLineItemMutationVariables, TContext>) => {
-
+    
     return useMutation<CreateInvoiceLineItemMutation, TError, CreateInvoiceLineItemMutationVariables, TContext>(
       {
     mutationKey: ['CreateInvoiceLineItem'],
@@ -3873,7 +3873,7 @@ export const useDeleteInvoiceLineItemMutation = <
       TError = unknown,
       TContext = unknown
     >(options?: UseMutationOptions<DeleteInvoiceLineItemMutation, TError, DeleteInvoiceLineItemMutationVariables, TContext>) => {
-
+    
     return useMutation<DeleteInvoiceLineItemMutation, TError, DeleteInvoiceLineItemMutationVariables, TContext>(
       {
     mutationKey: ['DeleteInvoiceLineItem'],

@@ -3316,6 +3316,20 @@ export type DeleteInvoiceMutationVariables = Exact<{
 
 export type DeleteInvoiceMutation = { __typename?: 'Mutation', deleteInvoice?: { __typename?: 'DeleteInvoicePayload', deletedInvoiceId?: string | null } | null };
 
+export type CreateInvoiceLineItemMutationVariables = Exact<{
+  input: CreateInvoiceLineItemInput;
+}>;
+
+
+export type CreateInvoiceLineItemMutation = { __typename?: 'Mutation', createInvoiceLineItem?: { __typename?: 'CreateInvoiceLineItemPayload', invoiceLineItem?: { __typename?: 'InvoiceLineItem', rowId: string } | null } | null };
+
+export type DeleteInvoiceLineItemMutationVariables = Exact<{
+  input: DeleteInvoiceLineItemInput;
+}>;
+
+
+export type DeleteInvoiceLineItemMutation = { __typename?: 'Mutation', deleteInvoiceLineItem?: { __typename?: 'DeleteInvoiceLineItemPayload', deletedInvoiceLineItemId?: string | null } | null };
+
 export type AllPeopleQueryVariables = Exact<{
   organizationId: Scalars['String']['input'];
 }>;
@@ -3538,6 +3552,22 @@ export const DeleteInvoiceDocument = gql`
     mutation DeleteInvoice($input: DeleteInvoiceInput!) {
   deleteInvoice(input: $input) {
     deletedInvoiceId
+  }
+}
+    `;
+export const CreateInvoiceLineItemDocument = gql`
+    mutation CreateInvoiceLineItem($input: CreateInvoiceLineItemInput!) {
+  createInvoiceLineItem(input: $input) {
+    invoiceLineItem {
+      rowId
+    }
+  }
+}
+    `;
+export const DeleteInvoiceLineItemDocument = gql`
+    mutation DeleteInvoiceLineItem($input: DeleteInvoiceLineItemInput!) {
+  deleteInvoiceLineItem(input: $input) {
+    deletedInvoiceLineItemId
   }
 }
     `;
@@ -3780,6 +3810,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteInvoice(variables: DeleteInvoiceMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteInvoiceMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteInvoiceMutation>({ document: DeleteInvoiceDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteInvoice', 'mutation', variables);
+    },
+    CreateInvoiceLineItem(variables: CreateInvoiceLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateInvoiceLineItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateInvoiceLineItemMutation>({ document: CreateInvoiceLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateInvoiceLineItem', 'mutation', variables);
+    },
+    DeleteInvoiceLineItem(variables: DeleteInvoiceLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteInvoiceLineItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteInvoiceLineItemMutation>({ document: DeleteInvoiceLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteInvoiceLineItem', 'mutation', variables);
     },
     AllPeople(variables: AllPeopleQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<AllPeopleQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<AllPeopleQuery>({ document: AllPeopleDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'AllPeople', 'query', variables);
