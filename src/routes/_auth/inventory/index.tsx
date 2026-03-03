@@ -196,7 +196,7 @@ const InventoryPage = () => {
           },
         });
       } else {
-        await createProductMutation.mutateAsync({
+        const result = await createProductMutation.mutateAsync({
           input: {
             product: {
               organizationId,
@@ -210,10 +210,15 @@ const InventoryPage = () => {
             },
           },
         });
+
+        const newId = result.createProduct?.product?.rowId;
+        if (newId) {
+          setEditingId(newId);
+          setViewMode("edit");
+        }
       }
       invalidateProducts();
-      setViewMode("list");
-      setEditingId(null);
+      toast.success("Product saved");
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save product",

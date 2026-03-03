@@ -56,7 +56,7 @@ const defaultInvoice: Partial<Invoice> = {
   billTo: null,
   status: "draft",
   issueDate: "",
-  dueDate: "",
+  dueDate: null,
   notes: null,
   subtotal: "0",
   taxRate: null,
@@ -283,6 +283,8 @@ const InvoicesPage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
+      let newId: string | undefined;
+
       if (editingId) {
         await updateMutation.mutateAsync({
           input: {
@@ -298,7 +300,7 @@ const InvoicesPage = () => {
                 : undefined,
               dueDate: currentInvoice.dueDate
                 ? new Date(currentInvoice.dueDate)
-                : undefined,
+                : null,
               notes: currentInvoice.notes,
               subtotal: currentInvoice.subtotal,
               taxRate: currentInvoice.taxRate,
@@ -336,15 +338,19 @@ const InvoicesPage = () => {
           },
         });
 
-        const invoiceId = result.createInvoice?.invoice?.rowId;
-        if (invoiceId) {
-          await saveLineItems(invoiceId);
+        newId = result.createInvoice?.invoice?.rowId;
+        if (newId) {
+          await saveLineItems(newId);
         }
       }
 
       invalidateInvoices();
       toast.success("Invoice saved");
-      reset();
+
+      if (newId) {
+        setEditingId(newId);
+        setViewMode("edit");
+      }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to save invoice";

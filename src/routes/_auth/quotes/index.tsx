@@ -380,6 +380,8 @@ const QuotesPage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
+      let newId: string | undefined;
+
       if (editingId) {
         await updateMutation.mutateAsync({
           input: {
@@ -438,15 +440,19 @@ const QuotesPage = () => {
           },
         });
 
-        const quoteId = result.createQuote?.quote?.rowId;
-        if (quoteId) {
-          await saveLineItems(quoteId);
+        newId = result.createQuote?.quote?.rowId;
+        if (newId) {
+          await saveLineItems(newId);
         }
       }
 
       invalidateQuotes();
-      setViewMode("list");
-      setEditingId(null);
+      toast.success("Quote saved");
+
+      if (newId) {
+        setEditingId(newId);
+        setViewMode("edit");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save quote");
     } finally {

@@ -236,7 +236,7 @@ const PeoplePage = () => {
           },
         });
       } else {
-        await createCompanyMutation.mutateAsync({
+        const result = await createCompanyMutation.mutateAsync({
           input: {
             company: {
               organizationId,
@@ -255,10 +255,15 @@ const PeoplePage = () => {
             },
           },
         });
+
+        const newId = result.createCompany?.company?.rowId;
+        if (newId) {
+          setEditingId(newId);
+          setViewMode("edit");
+        }
       }
       invalidateCompanies();
-      setViewMode("list");
-      setEditingId(null);
+      toast.success("Company saved");
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save company",
@@ -305,7 +310,7 @@ const PeoplePage = () => {
           },
         });
       } else {
-        await createPersonMutation.mutateAsync({
+        const result = await createPersonMutation.mutateAsync({
           input: {
             person: {
               organizationId,
@@ -320,10 +325,15 @@ const PeoplePage = () => {
             },
           },
         });
+
+        const newId = result.createPerson?.person?.rowId;
+        if (newId) {
+          setEditingId(newId);
+          setViewMode("edit");
+        }
       }
       invalidatePeople();
-      setViewMode("list");
-      setEditingId(null);
+      toast.success("Contact saved");
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save contact",
