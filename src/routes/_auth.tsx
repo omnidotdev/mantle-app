@@ -2,7 +2,11 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 
 import AppSidebar from "@/components/core/AppSidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import OrganizationProvider from "@/providers/OrganizationProvider";
 import {
   getLastOrgCookie,
@@ -43,6 +47,9 @@ function AuthLayout() {
         <div className="flex h-dvh w-full">
           <AppSidebar />
           <SidebarInset>
+            <div className="flex items-center p-2 md:hidden">
+              <SidebarTrigger />
+            </div>
             <Outlet />
           </SidebarInset>
         </div>

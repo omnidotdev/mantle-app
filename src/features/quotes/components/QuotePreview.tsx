@@ -8,6 +8,7 @@ import type { Quote, QuoteLineItem } from "../types/quote";
 interface QuotePreviewProps {
   quote: Partial<Quote>;
   lineItems: Partial<QuoteLineItem>[];
+  organizationId?: string;
 }
 
 const statusColors: Record<string, string> = {
@@ -32,10 +33,16 @@ const pluralizeUnit = (value: string | null, unit: string | null): string => {
   return `${value} ${num === 1 ? singular : unit}`;
 };
 
-const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
-  const { profiles } = useSettingsStore();
+const QuotePreview = ({
+  quote,
+  lineItems,
+  organizationId,
+}: QuotePreviewProps) => {
+  const { getProfileForOrg } = useSettingsStore();
   const { getCompany, getPerson } = usePeopleStore();
-  const orgProfile = profiles[0];
+  const orgProfile = organizationId
+    ? getProfileForOrg(organizationId)
+    : undefined;
 
   const company = quote.companyId ? getCompany(quote.companyId) : null;
   const contact = quote.contactId ? getPerson(quote.contactId) : null;
@@ -214,10 +221,7 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                               </span>
                             )}
                             {item.estimatedHours && (
-                              <span>
-                                {" "}
-                                \u2022 Est: {item.estimatedHours}hrs
-                              </span>
+                              <span> \u2022 Est: {item.estimatedHours}hrs</span>
                             )}
                             {item.weeklyCapHours && (
                               <span>

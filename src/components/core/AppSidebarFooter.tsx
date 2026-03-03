@@ -43,7 +43,10 @@ const AppSidebarFooter = () => {
       <SidebarSeparator />
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild isActive={pathname.startsWith("/settings")}>
+          <SidebarMenuButton
+            asChild
+            isActive={pathname.startsWith("/settings")}
+          >
             <Link to="/settings">
               <SettingsIcon className="size-4" />
               <span>Settings</span>

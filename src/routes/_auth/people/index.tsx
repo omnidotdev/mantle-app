@@ -314,9 +314,7 @@ const PeoplePage = () => {
 
       <ConfirmDialog
         open={deleteConfirm.open}
-        onOpenChange={(open) =>
-          setDeleteConfirm((prev) => ({ ...prev, open }))
-        }
+        onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title={`Delete ${deleteConfirm.type === "company" ? "Company" : "Contact"}`}
         description="Are you sure you want to delete this record? This action cannot be undone."
         onConfirm={() => {
@@ -433,7 +431,10 @@ const CompaniesTable = ({
 const EmailActionButton = ({
   emails,
   name,
-}: { emails: string[]; name: string }) => {
+}: {
+  emails: string[];
+  name: string;
+}) => {
   const [open, setOpen] = useState(false);
 
   if (emails.length === 1) {
@@ -584,115 +585,122 @@ const ContactsTable = ({
               setSearchTerm("");
               setTypeFilter("all");
             }}
-            className="mt-2 text-teal-600 text-sm hover:text-teal-700"
+            className="mt-2 text-sm text-teal-600 hover:text-teal-700"
           >
             Clear filters
           </button>
         </div>
       ) : (
-      <table className="w-full">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-              Name
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-              Email
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-              Phone
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-              Type
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-              Tags
-            </th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPeople.map((person) => (
-            <tr
-              key={person.id}
-              className="cursor-pointer border-gray-100 border-t hover:bg-gray-50"
-              onClick={() => onEdit(person)}
-            >
-              <td className="px-4 py-3 font-medium text-sm">
-                {person.firstName} {person.lastName}
-              </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
-                {person.emails.length > 0 ? (
-                  person.emails.length === 1 ? (
-                    person.emails[0]
-                  ) : (
-                    <span title={person.emails.join(", ")}>
-                      {person.emails[0]}{" "}
-                      <span className="text-gray-400">
-                        +{person.emails.length - 1}
-                      </span>
-                    </span>
-                  )
-                ) : (
-                  "\u2014"
-                )}
-              </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
-                {person.phone ?? "\u2014"}
-              </td>
-              <td className="px-4 py-3">
-                <Badge
-                  variant={person.internal ? "solid" : "outline"}
-                  className="text-xs"
-                >
-                  {person.internal ? "Internal" : "External"}
-                </Badge>
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex flex-wrap gap-1">
-                  {person.tags?.length ? (
-                    person.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-gray-400 text-sm">{"\u2014"}</span>
-                  )}
-                </div>
-              </td>
-              <td
-                className="px-4 py-3 text-right"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex justify-end gap-2">
-                  {person.emails.length > 0 && (
-                    <EmailActionButton emails={person.emails} name={`${person.firstName} ${person.lastName}`} />
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => onEdit(person)}
-                    className="text-gray-500 hover:text-gray-700"
-                    title="Edit"
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(person.id)}
-                    className="text-red-500 hover:text-red-700"
-                    title="Delete"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </td>
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                Name
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                Email
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                Phone
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                Type
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                Tags
+              </th>
+              <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                Actions
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredPeople.map((person) => (
+              <tr
+                key={person.id}
+                className="cursor-pointer border-gray-100 border-t hover:bg-gray-50"
+                onClick={() => onEdit(person)}
+              >
+                <td className="px-4 py-3 font-medium text-sm">
+                  {person.firstName} {person.lastName}
+                </td>
+                <td className="px-4 py-3 text-gray-600 text-sm">
+                  {person.emails.length > 0 ? (
+                    person.emails.length === 1 ? (
+                      person.emails[0]
+                    ) : (
+                      <span title={person.emails.join(", ")}>
+                        {person.emails[0]}{" "}
+                        <span className="text-gray-400">
+                          +{person.emails.length - 1}
+                        </span>
+                      </span>
+                    )
+                  ) : (
+                    "\u2014"
+                  )}
+                </td>
+                <td className="px-4 py-3 text-gray-600 text-sm">
+                  {person.phone ?? "\u2014"}
+                </td>
+                <td className="px-4 py-3">
+                  <Badge
+                    variant={person.internal ? "solid" : "outline"}
+                    className="text-xs"
+                  >
+                    {person.internal ? "Internal" : "External"}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-1">
+                    {person.tags?.length ? (
+                      person.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {tag}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-gray-400 text-sm">{"\u2014"}</span>
+                    )}
+                  </div>
+                </td>
+                <td
+                  className="px-4 py-3 text-right"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex justify-end gap-2">
+                    {person.emails.length > 0 && (
+                      <EmailActionButton
+                        emails={person.emails}
+                        name={`${person.firstName} ${person.lastName}`}
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onEdit(person)}
+                      className="text-gray-500 hover:text-gray-700"
+                      title="Edit"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDelete(person.id)}
+                      className="text-red-500 hover:text-red-700"
+                      title="Delete"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

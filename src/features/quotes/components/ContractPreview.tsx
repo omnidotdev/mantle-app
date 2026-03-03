@@ -13,12 +13,19 @@ import type { Quote, QuoteLineItem } from "../types/quote";
 interface ContractPreviewProps {
   quote: Partial<Quote>;
   lineItems: Partial<QuoteLineItem>[];
+  organizationId?: string;
 }
 
-const ContractPreview = ({ quote, lineItems }: ContractPreviewProps) => {
-  const { profiles } = useSettingsStore();
+const ContractPreview = ({
+  quote,
+  lineItems,
+  organizationId,
+}: ContractPreviewProps) => {
+  const { getProfileForOrg } = useSettingsStore();
   const { getCompany, getPerson } = usePeopleStore();
-  const orgProfile = profiles[0];
+  const orgProfile = organizationId
+    ? getProfileForOrg(organizationId)
+    : undefined;
   const currency = quote.currency || "USD";
   const date = quote.validUntil || new Date().toISOString().split("T")[0];
 

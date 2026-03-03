@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/features/invoices/types/invoice";
@@ -129,8 +129,11 @@ const QuotesPage = () => {
   const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
   const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
 
-  const resolveCompanyName = (companyId: string | undefined) =>
-    companies.find((c) => c.id === companyId)?.name ?? null;
+  const resolveCompanyName = useCallback(
+    (companyId: string | undefined) =>
+      companies.find((c) => c.id === companyId)?.name ?? null,
+    [companies],
+  );
 
   const filteredQuotes = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -143,12 +146,11 @@ const QuotesPage = () => {
         q.title.toLowerCase().includes(term) ||
         companyName.toLowerCase().includes(term);
 
-      const matchesStatus =
-        statusFilter === "all" || q.status === statusFilter;
+      const matchesStatus = statusFilter === "all" || q.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
-  }, [quotes, companies, searchTerm, statusFilter]);
+  }, [quotes, resolveCompanyName, searchTerm, statusFilter]);
 
   const filteredTotal = useMemo(
     () =>
@@ -236,10 +238,20 @@ const QuotesPage = () => {
   const renderPreview = () => {
     if (previewType === "contract") {
       return (
-        <ContractPreview quote={currentQuote} lineItems={currentLineItems} />
+        <ContractPreview
+          quote={currentQuote}
+          lineItems={currentLineItems}
+          organizationId={organizationId}
+        />
       );
     }
-    return <QuotePreview quote={currentQuote} lineItems={currentLineItems} />;
+    return (
+      <QuotePreview
+        quote={currentQuote}
+        lineItems={currentLineItems}
+        organizationId={organizationId}
+      />
+    );
   };
 
   // List view
@@ -319,93 +331,93 @@ const QuotesPage = () => {
                     setSearchTerm("");
                     setStatusFilter("all");
                   }}
-                  className="mt-2 text-teal-600 text-sm hover:text-teal-700"
+                  className="mt-2 text-sm text-teal-600 hover:text-teal-700"
                 >
                   Clear filters
                 </button>
               </div>
             ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Quote #
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Title
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Company
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
-                    Total
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Valid Until
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredQuotes.map((quote) => (
-                  <tr key={quote.id} className="border-gray-100 border-t">
-                    <td className="px-4 py-3 font-mono text-sm">
-                      {quote.quoteNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm">{quote.title}</td>
-                    <td className="px-4 py-3 text-gray-600 text-sm">
-                      {resolveCompanyName(quote.companyId) || "\u2014"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[quote.status] || statusColors.draft}`}
-                      >
-                        {quote.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-sm">
-                      {formatCurrency(quote.total, quote.currency)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 text-sm">
-                      {quote.validUntil || "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handlePreview(quote)}
-                          className="text-gray-500 hover:text-gray-700"
-                          title="Preview"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(quote)}
-                          className="text-gray-500 hover:text-gray-700"
-                          title="Edit"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(quote.id)}
-                          className="text-red-500 hover:text-red-700"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Quote #
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Title
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Company
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                      Total
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Valid Until
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredQuotes.map((quote) => (
+                    <tr key={quote.id} className="border-gray-100 border-t">
+                      <td className="px-4 py-3 font-mono text-sm">
+                        {quote.quoteNumber}
+                      </td>
+                      <td className="px-4 py-3 text-sm">{quote.title}</td>
+                      <td className="px-4 py-3 text-gray-600 text-sm">
+                        {resolveCompanyName(quote.companyId) || "\u2014"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[quote.status] || statusColors.draft}`}
+                        >
+                          {quote.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium text-sm">
+                        {formatCurrency(quote.total, quote.currency)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 text-sm">
+                        {quote.validUntil || "\u2014"}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handlePreview(quote)}
+                            className="text-gray-500 hover:text-gray-700"
+                            title="Preview"
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(quote)}
+                            className="text-gray-500 hover:text-gray-700"
+                            title="Edit"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(quote.id)}
+                            className="text-red-500 hover:text-red-700"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         )}

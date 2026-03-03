@@ -49,9 +49,7 @@ const AppSidebarContent = () => {
                 <SidebarMenuItem key={key}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(
-                      moduleRoutes[key] as string,
-                    )}
+                    isActive={pathname.startsWith(moduleRoutes[key] as string)}
                   >
                     <Link to={moduleRoutes[key] as "/people"}>
                       <span>{config.icon}</span>

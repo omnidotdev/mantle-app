@@ -11,8 +11,7 @@ type FormState = Omit<OrganizationProfile, "id" | "createdAt" | "updatedAt">;
 
 const SettingsPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { createProfile, updateProfile, getProfileForOrg } =
-    useSettingsStore();
+  const { createProfile, updateProfile, getProfileForOrg } = useSettingsStore();
   const existing = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
@@ -80,9 +79,7 @@ const SettingsPage = () => {
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">
-          Select an organization to view settings
-        </p>
+        <p className="text-gray-500">Select an organization to view settings</p>
       </div>
     );
   }

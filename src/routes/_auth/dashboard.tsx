@@ -23,8 +23,10 @@ const DashboardPage = () => {
   const people = organizationId ? getPeopleForOrg(organizationId) : [];
   const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
 
-  const { data: invoiceData, isLoading: invoicesLoading } =
-    useAllInvoicesQuery({ organizationId: organizationId! });
+  const { data: invoiceData, isLoading: invoicesLoading } = useAllInvoicesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
 
   const invoices = (invoiceData?.invoices?.nodes ?? []).flatMap((node) => {
     if (!node) return [];

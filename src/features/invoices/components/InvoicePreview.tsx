@@ -10,6 +10,7 @@ import type {
 interface InvoicePreviewProps {
   invoice: Partial<Invoice>;
   lineItems: Partial<InvoiceLineItem>[];
+  organizationId?: string;
 }
 
 const statusColors: Record<string, string> = {
@@ -21,10 +22,16 @@ const statusColors: Record<string, string> = {
   void: "bg-gray-100 text-gray-500",
 };
 
-const InvoicePreview = ({ invoice, lineItems }: InvoicePreviewProps) => {
+const InvoicePreview = ({
+  invoice,
+  lineItems,
+  organizationId,
+}: InvoicePreviewProps) => {
   const { getCompany, getPerson } = usePeopleStore();
-  const { profiles } = useSettingsStore();
-  const orgProfile = profiles[0];
+  const { getProfileForOrg } = useSettingsStore();
+  const orgProfile = organizationId
+    ? getProfileForOrg(organizationId)
+    : undefined;
 
   const company = invoice.companyId ? getCompany(invoice.companyId) : undefined;
   const contact = invoice.contactId ? getPerson(invoice.contactId) : undefined;

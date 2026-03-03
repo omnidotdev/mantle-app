@@ -81,9 +81,10 @@ const InvoicesPage = () => {
     },
   ]);
 
-  const { data, isLoading } = useAllInvoicesQuery({
-    organizationId: organizationId!,
-  });
+  const { data, isLoading } = useAllInvoicesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
 
   const invoices = (data?.invoices?.nodes ?? []).flatMap((node) => {
     if (!node) return [];
@@ -159,7 +160,7 @@ const InvoicesPage = () => {
   const invalidateInvoices = () => {
     queryClient.invalidateQueries({
       queryKey: useAllInvoicesQuery.getKey({
-        organizationId: organizationId!,
+        organizationId: organizationId ?? "",
       }),
     });
   };
@@ -256,7 +257,7 @@ const InvoicesPage = () => {
       createMutation.mutate({
         input: {
           invoice: {
-            organizationId: organizationId!,
+            organizationId: organizationId ?? "",
             invoiceNumber: currentInvoice.invoiceNumber ?? "",
             companyId: currentInvoice.companyId ?? "",
             status: currentInvoice.status ?? "draft",
@@ -380,97 +381,97 @@ const InvoicesPage = () => {
                     setSearchTerm("");
                     setStatusFilter("all");
                   }}
-                  className="mt-2 text-teal-600 text-sm hover:text-teal-700"
+                  className="mt-2 text-sm text-teal-600 hover:text-teal-700"
                 >
                   Clear filters
                 </button>
               </div>
             ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Invoice #
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Company
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Issue Date
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Due Date
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
-                    Total
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="border-gray-100 border-t">
-                    <td className="px-4 py-3 font-mono text-sm">
-                      {invoice.invoiceNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {invoice.company?.name ?? invoice.companyId ?? "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 text-sm">
-                      {invoice.issueDate}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 text-sm">
-                      {invoice.dueDate || "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-sm">
-                      {formatCurrency(invoice.total, invoice.currency)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-block rounded-full px-2 py-1 text-xs ${
-                          statusColors[invoice.status] || statusColors.draft
-                        }`}
-                      >
-                        {invoice.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handlePreview(invoice)}
-                          className="text-gray-500 hover:text-gray-700"
-                          title="Preview"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(invoice)}
-                          className="text-gray-500 hover:text-gray-700"
-                          title="Edit"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(invoice.id)}
-                          className="text-red-500 hover:text-red-700"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Invoice #
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Company
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Issue Date
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Due Date
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                      Total
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredInvoices.map((invoice) => (
+                    <tr key={invoice.id} className="border-gray-100 border-t">
+                      <td className="px-4 py-3 font-mono text-sm">
+                        {invoice.invoiceNumber}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        {invoice.company?.name ?? invoice.companyId ?? "\u2014"}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 text-sm">
+                        {invoice.issueDate}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 text-sm">
+                        {invoice.dueDate || "\u2014"}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium text-sm">
+                        {formatCurrency(invoice.total, invoice.currency)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-block rounded-full px-2 py-1 text-xs ${
+                            statusColors[invoice.status] || statusColors.draft
+                          }`}
+                        >
+                          {invoice.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handlePreview(invoice)}
+                            className="text-gray-500 hover:text-gray-700"
+                            title="Preview"
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(invoice)}
+                            className="text-gray-500 hover:text-gray-700"
+                            title="Edit"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(invoice.id)}
+                            className="text-red-500 hover:text-red-700"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         )}
@@ -525,7 +526,11 @@ const InvoicesPage = () => {
           </div>
         </div>
 
-        <InvoicePreview invoice={currentInvoice} lineItems={currentLineItems} />
+        <InvoicePreview
+          invoice={currentInvoice}
+          lineItems={currentLineItems}
+          organizationId={organizationId}
+        />
       </div>
     );
   }
