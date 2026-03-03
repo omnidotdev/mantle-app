@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Sparkles, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,22 @@ const InvoiceForm = ({
 }: InvoiceFormProps) => {
   const handleChange = (field: keyof Invoice, value: string | null) => {
     onInvoiceChange({ ...invoice, [field]: value });
+  };
+
+  const generateInvoiceId = () => {
+    const now = new Date();
+    const date = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0"),
+    ].join("");
+    const time = [
+      String(now.getHours()).padStart(2, "0"),
+      String(now.getMinutes()).padStart(2, "0"),
+      String(now.getSeconds()).padStart(2, "0"),
+    ].join("");
+
+    handleChange("invoiceNumber", `IGDI-${date}-${time}`);
   };
 
   const handleLineItemChange = (
@@ -270,12 +286,23 @@ const InvoiceForm = ({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="invoice-number">Invoice Number</Label>
-            <Input
-              id="invoice-number"
-              value={invoice.invoiceNumber ?? ""}
-              onChange={(e) => handleChange("invoiceNumber", e.target.value)}
-              placeholder="INV-0001"
-            />
+            <div className="flex gap-2">
+              <Input
+                id="invoice-number"
+                value={invoice.invoiceNumber ?? ""}
+                onChange={(e) => handleChange("invoiceNumber", e.target.value)}
+                placeholder="IGDI-20260203-115447"
+              />
+              <button
+                type="button"
+                onClick={generateInvoiceId}
+                className="flex shrink-0 items-center gap-1 rounded-md border border-input px-3 text-muted-foreground text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground"
+                aria-label="Generate invoice number"
+              >
+                <Sparkles size={14} />
+                Generate
+              </button>
+            </div>
           </div>
 
           <div className="space-y-1.5">

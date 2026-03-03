@@ -53,6 +53,7 @@ const defaultInvoice: Partial<Invoice> = {
   invoiceNumber: "",
   companyId: null,
   contactId: null,
+  billTo: null,
   status: "draft",
   issueDate: "",
   dueDate: "",
@@ -115,6 +116,7 @@ const InvoicesPage = () => {
             invoiceNumber: node.invoiceNumber,
             companyId: node.companyId ?? null,
             contactId: node.contactId ?? null,
+            billTo: node.billTo ?? null,
             status: (node.status ?? "draft") as Invoice["status"],
             issueDate: node.issueDate,
             dueDate: node.dueDate,
@@ -289,6 +291,7 @@ const InvoicesPage = () => {
               invoiceNumber: currentInvoice.invoiceNumber,
               companyId: currentInvoice.companyId || null,
               contactId: currentInvoice.contactId,
+              billTo: currentInvoice.billTo,
               status: currentInvoice.status,
               issueDate: currentInvoice.issueDate
                 ? new Date(currentInvoice.issueDate)
@@ -315,6 +318,7 @@ const InvoicesPage = () => {
               invoiceNumber: currentInvoice.invoiceNumber ?? "",
               companyId: currentInvoice.companyId || undefined,
               contactId: currentInvoice.contactId,
+              billTo: currentInvoice.billTo,
               status: currentInvoice.status ?? "draft",
               issueDate: currentInvoice.issueDate
                 ? new Date(currentInvoice.issueDate)
