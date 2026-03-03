@@ -101,7 +101,12 @@ const InvoicePreview = ({
                   orgProfile?.state ||
                   orgProfile?.postalCode) && (
                   <p className="text-sm text-teal-100">
-                    {[orgProfile.city, orgProfile.state, orgProfile.postalCode]
+                    {[
+                      orgProfile.city,
+                      [orgProfile.state, orgProfile.postalCode]
+                        .filter(Boolean)
+                        .join(" "),
+                    ]
                       .filter(Boolean)
                       .join(", ")}
                   </p>
@@ -138,9 +143,14 @@ const InvoicePreview = ({
                   )}
                   {company.addressLine1 && (
                     <p className="text-gray-500 text-sm">
-                      {company.addressLine1}
-                      {company.city && `, ${company.city}`}
-                      {company.state && `, ${company.state}`}
+                      {[
+                        company.addressLine1,
+                        [company.city, [company.state, company.postalCode].filter(Boolean).join(" ")]
+                          .filter(Boolean)
+                          .join(", "),
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
                     </p>
                   )}
                 </>
