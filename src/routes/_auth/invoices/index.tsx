@@ -16,7 +16,9 @@ import {
 } from "@/features/invoices/types/invoice";
 import {
   useAllInvoicesQuery,
+  useCreateInvoiceLineItemMutation,
   useCreateInvoiceMutation,
+  useDeleteInvoiceLineItemMutation,
   useDeleteInvoiceMutation,
   useUpdateInvoiceMutation,
 } from "@/generated/graphql";
@@ -61,6 +63,7 @@ const InvoicesPage = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
@@ -165,19 +168,10 @@ const InvoicesPage = () => {
     });
   };
 
-  const createMutation = useCreateInvoiceMutation({
-    onSuccess: () => {
-      invalidateInvoices();
-      reset();
-    },
-  });
-
-  const updateMutation = useUpdateInvoiceMutation({
-    onSuccess: () => {
-      invalidateInvoices();
-      reset();
-    },
-  });
+  const createMutation = useCreateInvoiceMutation();
+  const updateMutation = useUpdateInvoiceMutation();
+  const createLineItemMutation = useCreateInvoiceLineItemMutation();
+  const deleteLineItemMutation = useDeleteInvoiceLineItemMutation();
 
   const deleteMutation = useDeleteInvoiceMutation({
     onSuccess: invalidateInvoices,
@@ -228,54 +222,106 @@ const InvoicesPage = () => {
     setViewMode("preview");
   };
 
-  const handleSave = () => {
-    if (editingId) {
-      updateMutation.mutate({
-        input: {
-          rowId: editingId,
-          patch: {
-            invoiceNumber: currentInvoice.invoiceNumber,
-            companyId: currentInvoice.companyId,
-            contactId: currentInvoice.contactId,
-            status: currentInvoice.status,
-            issueDate: currentInvoice.issueDate
-              ? new Date(currentInvoice.issueDate)
-              : undefined,
-            dueDate: currentInvoice.dueDate
-              ? new Date(currentInvoice.dueDate)
-              : undefined,
-            notes: currentInvoice.notes,
-            subtotal: currentInvoice.subtotal,
-            taxRate: currentInvoice.taxRate,
-            taxAmount: currentInvoice.taxAmount,
-            total: currentInvoice.total,
-            currency: currentInvoice.currency,
+  const saveLineItems = async (invoiceId: string) => {
+    const validItems = currentLineItems.filter(
+      (item) => item.description?.trim(),
+    );
+
+    await Promise.all(
+      validItems.map((item, index) =>
+        createLineItemMutation.mutateAsync({
+          input: {
+            invoiceLineItem: {
+              invoiceId,
+              description: item.description ?? "",
+              quantity: item.quantity ?? "1",
+              unitPrice: item.unitPrice ?? "0",
+              amount: item.amount ?? "0",
+              sortOrder: index,
+            },
           },
-        },
-      });
-    } else {
-      createMutation.mutate({
-        input: {
-          invoice: {
-            organizationId: organizationId ?? "",
-            invoiceNumber: currentInvoice.invoiceNumber ?? "",
-            companyId: currentInvoice.companyId ?? "",
-            status: currentInvoice.status ?? "draft",
-            issueDate: currentInvoice.issueDate
-              ? new Date(currentInvoice.issueDate)
-              : new Date(),
-            dueDate: currentInvoice.dueDate
-              ? new Date(currentInvoice.dueDate)
-              : new Date(),
-            notes: currentInvoice.notes,
-            subtotal: currentInvoice.subtotal,
-            taxRate: currentInvoice.taxRate,
-            taxAmount: currentInvoice.taxAmount,
-            total: currentInvoice.total,
-            currency: currentInvoice.currency ?? "USD",
+        }),
+      ),
+    );
+  };
+
+  const deleteExistingLineItems = async () => {
+    const existing = invoices.find((inv) => inv.id === editingId);
+    if (!existing?.invoiceLineItems.length) return;
+
+    await Promise.all(
+      existing.invoiceLineItems.map((item) =>
+        deleteLineItemMutation.mutateAsync({
+          input: { rowId: item.id },
+        }),
+      ),
+    );
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (editingId) {
+        await updateMutation.mutateAsync({
+          input: {
+            rowId: editingId,
+            patch: {
+              invoiceNumber: currentInvoice.invoiceNumber,
+              companyId: currentInvoice.companyId,
+              contactId: currentInvoice.contactId,
+              status: currentInvoice.status,
+              issueDate: currentInvoice.issueDate
+                ? new Date(currentInvoice.issueDate)
+                : undefined,
+              dueDate: currentInvoice.dueDate
+                ? new Date(currentInvoice.dueDate)
+                : undefined,
+              notes: currentInvoice.notes,
+              subtotal: currentInvoice.subtotal,
+              taxRate: currentInvoice.taxRate,
+              taxAmount: currentInvoice.taxAmount,
+              total: currentInvoice.total,
+              currency: currentInvoice.currency,
+            },
           },
-        },
-      });
+        });
+        await deleteExistingLineItems();
+        await saveLineItems(editingId);
+      } else {
+        const result = await createMutation.mutateAsync({
+          input: {
+            invoice: {
+              organizationId: organizationId ?? "",
+              invoiceNumber: currentInvoice.invoiceNumber ?? "",
+              companyId: currentInvoice.companyId ?? "",
+              contactId: currentInvoice.contactId,
+              status: currentInvoice.status ?? "draft",
+              issueDate: currentInvoice.issueDate
+                ? new Date(currentInvoice.issueDate)
+                : new Date(),
+              dueDate: currentInvoice.dueDate
+                ? new Date(currentInvoice.dueDate)
+                : new Date(),
+              notes: currentInvoice.notes,
+              subtotal: currentInvoice.subtotal,
+              taxRate: currentInvoice.taxRate,
+              taxAmount: currentInvoice.taxAmount,
+              total: currentInvoice.total,
+              currency: currentInvoice.currency ?? "USD",
+            },
+          },
+        });
+
+        const invoiceId = result.createInvoice?.invoice?.rowId;
+        if (invoiceId) {
+          await saveLineItems(invoiceId);
+        }
+      }
+
+      invalidateInvoices();
+      reset();
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -557,10 +603,10 @@ const InvoicesPage = () => {
           <button
             type="button"
             onClick={handleSave}
-            disabled={createMutation.isPending || updateMutation.isPending}
+            disabled={saving}
             className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {createMutation.isPending || updateMutation.isPending
+            {saving
               ? "Saving..."
               : editingId
                 ? "Save Changes"

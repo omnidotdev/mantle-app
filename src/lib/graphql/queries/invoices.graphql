@@ -68,3 +68,17 @@ mutation DeleteInvoice($input: DeleteInvoiceInput!) {
     deletedInvoiceId
   }
 }
+
+mutation CreateInvoiceLineItem($input: CreateInvoiceLineItemInput!) {
+  createInvoiceLineItem(input: $input) {
+    invoiceLineItem {
+      rowId
+    }
+  }
+}
+
+mutation DeleteInvoiceLineItem($input: DeleteInvoiceLineItemInput!) {
+  deleteInvoiceLineItem(input: $input) {
+    deletedInvoiceLineItemId
+  }
+}

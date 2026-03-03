@@ -3315,6 +3315,20 @@ export type DeleteInvoiceMutationVariables = Exact<{
 
 export type DeleteInvoiceMutation = { __typename?: 'Mutation', deleteInvoice?: { __typename?: 'DeleteInvoicePayload', deletedInvoiceId?: string | null } | null };
 
+export type CreateInvoiceLineItemMutationVariables = Exact<{
+  input: CreateInvoiceLineItemInput;
+}>;
+
+
+export type CreateInvoiceLineItemMutation = { __typename?: 'Mutation', createInvoiceLineItem?: { __typename?: 'CreateInvoiceLineItemPayload', invoiceLineItem?: { __typename?: 'InvoiceLineItem', rowId: string } | null } | null };
+
+export type DeleteInvoiceLineItemMutationVariables = Exact<{
+  input: DeleteInvoiceLineItemInput;
+}>;
+
+
+export type DeleteInvoiceLineItemMutation = { __typename?: 'Mutation', deleteInvoiceLineItem?: { __typename?: 'DeleteInvoiceLineItemPayload', deletedInvoiceLineItemId?: string | null } | null };
+
 export type AllPeopleQueryVariables = Exact<{
   organizationId: Scalars['String']['input'];
 }>;
@@ -3818,6 +3832,60 @@ useDeleteInvoiceMutation.getKey = () => ['DeleteInvoice'];
 
 
 useDeleteInvoiceMutation.fetcher = (variables: DeleteInvoiceMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteInvoiceMutation, DeleteInvoiceMutationVariables>(DeleteInvoiceDocument, variables, options);
+
+export const CreateInvoiceLineItemDocument = `
+    mutation CreateInvoiceLineItem($input: CreateInvoiceLineItemInput!) {
+  createInvoiceLineItem(input: $input) {
+    invoiceLineItem {
+      rowId
+    }
+  }
+}
+    `;
+
+export const useCreateInvoiceLineItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<CreateInvoiceLineItemMutation, TError, CreateInvoiceLineItemMutationVariables, TContext>) => {
+
+    return useMutation<CreateInvoiceLineItemMutation, TError, CreateInvoiceLineItemMutationVariables, TContext>(
+      {
+    mutationKey: ['CreateInvoiceLineItem'],
+    mutationFn: (variables?: CreateInvoiceLineItemMutationVariables) => graphqlFetch<CreateInvoiceLineItemMutation, CreateInvoiceLineItemMutationVariables>(CreateInvoiceLineItemDocument, variables)(),
+    ...options
+  }
+    )};
+
+useCreateInvoiceLineItemMutation.getKey = () => ['CreateInvoiceLineItem'];
+
+
+useCreateInvoiceLineItemMutation.fetcher = (variables: CreateInvoiceLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateInvoiceLineItemMutation, CreateInvoiceLineItemMutationVariables>(CreateInvoiceLineItemDocument, variables, options);
+
+export const DeleteInvoiceLineItemDocument = `
+    mutation DeleteInvoiceLineItem($input: DeleteInvoiceLineItemInput!) {
+  deleteInvoiceLineItem(input: $input) {
+    deletedInvoiceLineItemId
+  }
+}
+    `;
+
+export const useDeleteInvoiceLineItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<DeleteInvoiceLineItemMutation, TError, DeleteInvoiceLineItemMutationVariables, TContext>) => {
+
+    return useMutation<DeleteInvoiceLineItemMutation, TError, DeleteInvoiceLineItemMutationVariables, TContext>(
+      {
+    mutationKey: ['DeleteInvoiceLineItem'],
+    mutationFn: (variables?: DeleteInvoiceLineItemMutationVariables) => graphqlFetch<DeleteInvoiceLineItemMutation, DeleteInvoiceLineItemMutationVariables>(DeleteInvoiceLineItemDocument, variables)(),
+    ...options
+  }
+    )};
+
+useDeleteInvoiceLineItemMutation.getKey = () => ['DeleteInvoiceLineItem'];
+
+
+useDeleteInvoiceLineItemMutation.fetcher = (variables: DeleteInvoiceLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteInvoiceLineItemMutation, DeleteInvoiceLineItemMutationVariables>(DeleteInvoiceLineItemDocument, variables, options);
 
 export const AllPeopleDocument = `
     query AllPeople($organizationId: String!) {
