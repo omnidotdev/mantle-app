@@ -45,6 +45,34 @@ const QuoteForm = ({
 
       const updatedItem = { ...item, [field]: value };
 
+      // Clear previous type's fields and set defaults when pricing type changes
+      if (field === "pricingType") {
+        // Clear hourly fields
+        updatedItem.hourlyRate = null;
+        updatedItem.weeklyCapHours = null;
+        updatedItem.monthlyCapHours = null;
+        updatedItem.maxCapHours = null;
+        updatedItem.estimatedHours = null;
+
+        // Clear royalty fields
+        updatedItem.royaltyPercentage = null;
+        updatedItem.royaltyTimeframe = null;
+        updatedItem.royaltyTimeframeUnit = null;
+        updatedItem.royaltyThreshold = null;
+        updatedItem.royaltyBuyoutAmount = null;
+
+        // Set sensible defaults for the new type
+        if (value === "hourly") {
+          updatedItem.hourlyRate = "150";
+          updatedItem.weeklyCapHours = "10";
+          updatedItem.monthlyCapHours = "40";
+        } else if (value === "royalty") {
+          updatedItem.royaltyPercentage = "5";
+          updatedItem.royaltyTimeframe = "12";
+          updatedItem.royaltyTimeframeUnit = "months";
+        }
+      }
+
       // Recompute amount when quantity or unitPrice change
       if (field === "quantity" || field === "unitPrice") {
         const qty = Number.parseFloat(
@@ -398,6 +426,26 @@ const QuoteForm = ({
             {/* Hourly fields */}
             {item.pricingType === "hourly" && (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-est-hrs-${item.id}`}>
+                    Estimated Hours
+                  </Label>
+                  <Input
+                    id={`item-est-hrs-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={item.estimatedHours ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "estimatedHours",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="e.g. 200"
+                  />
+                </div>
                 <div className="space-y-1.5">
                   <Label htmlFor={`item-rate-${item.id}`}>Hourly Rate</Label>
                   <Input

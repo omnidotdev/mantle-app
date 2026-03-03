@@ -5,11 +5,12 @@ import {
   Edit,
   Network,
   Plus,
+  Search,
   Share2,
   Trash2,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -392,6 +393,8 @@ const CompaniesTable = ({
 };
 
 // Contacts table sub-component
+type ContactTypeFilter = "all" | "internal" | "external";
+
 const ContactsTable = ({
   people,
   onEdit,
@@ -403,6 +406,28 @@ const ContactsTable = ({
   onDelete: (id: string) => void;
   onCreateNew: () => void;
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState<ContactTypeFilter>("all");
+
+  const filteredPeople = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+
+    return people.filter((p) => {
+      const matchesSearch =
+        !term ||
+        `${p.firstName} ${p.lastName}`.toLowerCase().includes(term) ||
+        p.emails.some((e) => e.toLowerCase().includes(term)) ||
+        (p.phone ?? "").toLowerCase().includes(term);
+
+      const matchesType =
+        typeFilter === "all" ||
+        (typeFilter === "internal" && p.internal) ||
+        (typeFilter === "external" && !p.internal);
+
+      return matchesSearch && matchesType;
+    });
+  }, [people, searchTerm, typeFilter]);
+
   if (people.length === 0) {
     return (
       <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
@@ -419,8 +444,61 @@ const ContactsTable = ({
     );
   }
 
+  const typeButtons: { value: ContactTypeFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "internal", label: "Internal" },
+    { value: "external", label: "External" },
+  ];
+
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="flex items-center gap-4 border-gray-200 border-b p-4">
+        <div className="relative flex-1">
+          <Search
+            className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+            aria-hidden="true"
+          />
+          <input
+            type="text"
+            placeholder="Search contacts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          />
+        </div>
+        <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+          {typeButtons.map((btn) => (
+            <button
+              key={btn.value}
+              type="button"
+              onClick={() => setTypeFilter(btn.value)}
+              className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
+                typeFilter === btn.value
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {filteredPeople.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="text-gray-500">No contacts match your filters</p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchTerm("");
+              setTypeFilter("all");
+            }}
+            className="mt-2 text-teal-600 text-sm hover:text-teal-700"
+          >
+            Clear filters
+          </button>
+        </div>
+      ) : (
       <table className="w-full">
         <thead className="bg-gray-50">
           <tr>
@@ -445,7 +523,7 @@ const ContactsTable = ({
           </tr>
         </thead>
         <tbody>
-          {people.map((person) => (
+          {filteredPeople.map((person) => (
             <tr key={person.id} className="border-gray-100 border-t">
               <td className="px-4 py-3 font-medium text-sm">
                 {person.firstName} {person.lastName}
@@ -514,6 +592,7 @@ const ContactsTable = ({
           ))}
         </tbody>
       </table>
+      )}
     </div>
   );
 };

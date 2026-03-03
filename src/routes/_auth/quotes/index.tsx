@@ -1,8 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Edit, Eye, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import { usePeopleStore } from "@/features/people/store/peopleStore";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
@@ -10,6 +11,7 @@ import {
   generateQuoteNumber,
   useQuoteStore,
 } from "@/features/quotes/store/quoteStore";
+import { QUOTE_STATUSES } from "@/features/quotes/types/quote";
 
 import type { StoredQuote } from "@/features/quotes/store/quoteStore";
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
@@ -104,8 +106,11 @@ const PreviewToggle = ({
 
 const QuotesPage = () => {
   const { quotes, createQuote, updateQuote, deleteQuote } = useQuoteStore();
+  const { companies } = usePeopleStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentQuote, setCurrentQuote] =
     useState<Partial<Quote>>(defaultQuote);
   const [currentLineItems, setCurrentLineItems] = useState<
@@ -113,6 +118,36 @@ const QuotesPage = () => {
   >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewType, setPreviewType] = useState<PreviewType>("quote");
+
+  const resolveCompanyName = (companyId: string | undefined) =>
+    companies.find((c) => c.id === companyId)?.name ?? null;
+
+  const filteredQuotes = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+
+    return quotes.filter((q) => {
+      const companyName = resolveCompanyName(q.companyId) ?? "";
+      const matchesSearch =
+        !term ||
+        q.quoteNumber.toLowerCase().includes(term) ||
+        q.title.toLowerCase().includes(term) ||
+        companyName.toLowerCase().includes(term);
+
+      const matchesStatus =
+        statusFilter === "all" || q.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [quotes, companies, searchTerm, statusFilter]);
+
+  const filteredTotal = useMemo(
+    () =>
+      filteredQuotes.reduce(
+        (sum, q) => sum + (Number.parseFloat(q.total) || 0),
+        0,
+      ),
+    [filteredQuotes],
+  );
 
   const handleCreateNew = () => {
     const quoteNumber = generateQuoteNumber(quotes as StoredQuote[]);
@@ -204,14 +239,25 @@ const QuotesPage = () => {
             </Link>
             <h1 className="font-bold text-2xl">Quotes</h1>
           </div>
-          <button
-            type="button"
-            onClick={handleCreateNew}
-            className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
-          >
-            <Plus size={18} />
-            New Quote
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-2">
+              <p className="text-gray-500 text-xs">
+                {filteredQuotes.length}{" "}
+                {filteredQuotes.length === 1 ? "quote" : "quotes"}
+              </p>
+              <p className="font-bold text-lg">
+                {formatCurrency(filteredTotal.toFixed(2))}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+            >
+              <Plus size={18} />
+              New Quote
+            </button>
+          </div>
         </div>
 
         {quotes.length === 0 ? (
@@ -227,6 +273,49 @@ const QuotesPage = () => {
           </div>
         ) : (
           <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <div className="flex gap-4 border-gray-200 border-b p-4">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                  aria-hidden="true"
+                />
+                <input
+                  type="text"
+                  placeholder="Search quotes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              >
+                <option value="all">All statuses</option>
+                {QUOTE_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {filteredQuotes.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-gray-500">No quotes match your filters</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setStatusFilter("all");
+                  }}
+                  className="mt-2 text-teal-600 text-sm hover:text-teal-700"
+                >
+                  Clear filters
+                </button>
+              </div>
+            ) : (
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
@@ -254,14 +343,14 @@ const QuotesPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {quotes.map((quote) => (
+                {filteredQuotes.map((quote) => (
                   <tr key={quote.id} className="border-gray-100 border-t">
                     <td className="px-4 py-3 font-mono text-sm">
                       {quote.quoteNumber}
                     </td>
                     <td className="px-4 py-3 text-sm">{quote.title}</td>
                     <td className="px-4 py-3 text-gray-600 text-sm">
-                      {quote.companyId || "\u2014"}
+                      {resolveCompanyName(quote.companyId) || "\u2014"}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -308,6 +397,7 @@ const QuotesPage = () => {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         )}
       </div>
