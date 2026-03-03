@@ -16,8 +16,12 @@ const statusColors: Record<string, string> = {
 
 const DashboardPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { companies, people } = usePeopleStore();
-  const { quotes } = useQuoteStore();
+  const { getCompaniesForOrg, getPeopleForOrg } = usePeopleStore();
+  const { getQuotesForOrg } = useQuoteStore();
+
+  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
+  const people = organizationId ? getPeopleForOrg(organizationId) : [];
+  const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
 
   const { data: invoiceData, isLoading: invoicesLoading } =
     useAllInvoicesQuery({ organizationId: organizationId! });
