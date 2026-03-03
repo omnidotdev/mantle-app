@@ -1136,7 +1136,7 @@ export type Invoice = Node & {
   contactId?: Maybe<Scalars['UUID']['output']>;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
-  dueDate: Scalars['Date']['output'];
+  dueDate?: Maybe<Scalars['Date']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   /** Reads and enables pagination through a set of `InvoiceLineItem`. */
@@ -1244,7 +1244,7 @@ export type InvoiceInput = {
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
-  dueDate: Scalars['Date']['input'];
+  dueDate?: InputMaybe<Scalars['Date']['input']>;
   invoiceNumber: Scalars['String']['input'];
   issueDate: Scalars['Date']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
@@ -3308,7 +3308,7 @@ export type AllInvoicesQueryVariables = Exact<{
 }>;
 
 
-export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId?: string | null, contactId?: string | null, billTo?: string | null, status: string, issueDate: string, dueDate: string, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId?: string | null, contactId?: string | null, billTo?: string | null, status: string, issueDate: string, dueDate?: string | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateInvoiceMutationVariables = Exact<{
   input: CreateInvoiceInput;

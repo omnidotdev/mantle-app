@@ -384,7 +384,7 @@ const InvoiceForm = ({
               id="invoice-due-date"
               type="date"
               value={invoice.dueDate ?? ""}
-              onChange={(e) => handleChange("dueDate", e.target.value)}
+              onChange={(e) => handleChange("dueDate", e.target.value || null)}
             />
           </div>
         </div>

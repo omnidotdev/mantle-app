@@ -29,7 +29,7 @@ export interface Invoice {
   billTo: string | null;
   status: InvoiceStatus;
   issueDate: string;
-  dueDate: string;
+  dueDate: string | null;
   notes: string | null;
   subtotal: string;
   taxRate: string | null;

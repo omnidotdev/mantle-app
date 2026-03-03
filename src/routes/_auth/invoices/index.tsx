@@ -119,7 +119,7 @@ const InvoicesPage = () => {
             billTo: node.billTo ?? null,
             status: (node.status ?? "draft") as Invoice["status"],
             issueDate: node.issueDate,
-            dueDate: node.dueDate,
+            dueDate: node.dueDate ?? null,
             notes: node.notes ?? null,
             subtotal: node.subtotal ?? "0",
             taxRate: node.taxRate ?? null,
@@ -327,7 +327,7 @@ const InvoicesPage = () => {
                 : new Date(),
               dueDate: currentInvoice.dueDate
                 ? new Date(currentInvoice.dueDate)
-                : new Date(),
+                : null,
               notes: currentInvoice.notes,
               subtotal: currentInvoice.subtotal,
               taxRate: currentInvoice.taxRate,
