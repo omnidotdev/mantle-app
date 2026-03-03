@@ -191,7 +191,6 @@ const QuoteForm = ({
         <div className="flex items-center justify-between">
           <h3 className="font-medium text-gray-700 text-lg">Client</h3>
           <PopulateButton
-            onPopulateSender={() => {}}
             onPopulateClient={({
               companyId,
               contactId,

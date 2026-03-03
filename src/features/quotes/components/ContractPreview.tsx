@@ -1,3 +1,4 @@
+import { usePeopleStore } from "@/features/people/store/peopleStore";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import ContractHeader from "./contract/ContractHeader";
 import ContractLegal from "./contract/ContractLegal";
@@ -16,9 +17,17 @@ interface ContractPreviewProps {
 
 const ContractPreview = ({ quote, lineItems }: ContractPreviewProps) => {
   const { profiles } = useSettingsStore();
+  const { getCompany, getPerson } = usePeopleStore();
   const orgProfile = profiles[0];
   const currency = quote.currency || "USD";
   const date = quote.validUntil || new Date().toISOString().split("T")[0];
+
+  const company = quote.companyId ? getCompany(quote.companyId) : null;
+  const contact = quote.contactId ? getPerson(quote.contactId) : null;
+  const resolvedClientName =
+    quote.clientName ||
+    (contact ? `${contact.firstName} ${contact.lastName}` : "");
+  const resolvedClientCompany = company?.name || "";
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
@@ -27,9 +36,9 @@ const ContractPreview = ({ quote, lineItems }: ContractPreviewProps) => {
       <div className="space-y-6 p-6">
         <ContractParties
           orgProfile={orgProfile}
-          clientName={quote.clientName || ""}
+          clientName={resolvedClientName}
           clientEmail={quote.clientEmail || ""}
-          clientCompany={quote.companyId || ""}
+          clientCompany={resolvedClientCompany}
           date={date}
         />
 

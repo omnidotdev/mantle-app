@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import { usePeopleStore } from "@/features/people/store/peopleStore";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
@@ -26,7 +27,15 @@ const pricingColors: Record<string, string> = {
 
 const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
   const { profiles } = useSettingsStore();
+  const { getCompany, getPerson } = usePeopleStore();
   const orgProfile = profiles[0];
+
+  const company = quote.companyId ? getCompany(quote.companyId) : null;
+  const contact = quote.contactId ? getPerson(quote.contactId) : null;
+  const resolvedCompanyName = company?.name || "";
+  const resolvedContactName = contact
+    ? `${contact.firstName} ${contact.lastName}`
+    : "";
 
   const subtotal = lineItems.reduce(
     (sum, item) => sum + Number.parseFloat(item.amount || "0"),
@@ -51,7 +60,7 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
             />
             <div>
               <h3 className="font-bold text-white text-xl">
-                {orgProfile?.companyName || quote.companyId || "Your Company"}
+                {orgProfile?.companyName || "Your Company"}
               </h3>
               {orgProfile?.email && (
                 <p className="text-sm text-teal-100">{orgProfile.email}</p>
@@ -70,13 +79,16 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
           <div>
             <h4 className="mb-2 font-bold text-gray-700">Prepared For</h4>
             <p className="text-gray-800">
-              {quote.clientName || quote.companyId || "Client not specified"}
+              {quote.clientName ||
+                resolvedContactName ||
+                resolvedCompanyName ||
+                "Client not specified"}
             </p>
             {quote.clientEmail && (
               <p className="text-gray-600 text-sm">{quote.clientEmail}</p>
             )}
-            {quote.contactId && !quote.clientName && (
-              <p className="text-gray-600">Contact: {quote.contactId}</p>
+            {resolvedCompanyName && !quote.clientName && (
+              <p className="text-gray-600">{resolvedCompanyName}</p>
             )}
           </div>
           <div>
