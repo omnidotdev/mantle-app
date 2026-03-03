@@ -5,6 +5,7 @@ import {
   Eye,
   Loader2,
   Plus,
+  Printer,
   Search,
   Trash2,
 } from "lucide-react";
@@ -624,8 +625,8 @@ const InvoicesPage = () => {
 
   // Create/edit view
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="p-6 print:p-0">
+      <div className="print-hide mb-6 flex items-center justify-between">
         <button
           type="button"
           onClick={() => setViewMode("list")}
@@ -643,6 +644,19 @@ const InvoicesPage = () => {
           </button>
           <button
             type="button"
+            onClick={() => {
+              const originalTitle = document.title;
+              document.title = `invoice_${currentInvoice.invoiceNumber}`;
+              window.print();
+              document.title = originalTitle;
+            }}
+            className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
+            <Printer size={14} />
+            Print
+          </button>
+          <button
+            type="button"
             onClick={handleSave}
             disabled={saving}
             className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -656,8 +670,8 @@ const InvoicesPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 print:block">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 print:hidden">
           <h2 className="mb-4 font-semibold text-lg">
             {editingId ? "Edit Invoice" : "New Invoice"}
           </h2>
@@ -673,7 +687,7 @@ const InvoicesPage = () => {
         </div>
 
         <div>
-          <h2 className="mb-4 font-semibold text-lg">Preview</h2>
+          <h2 className="mb-4 font-semibold text-lg print:hidden">Preview</h2>
           <InvoicePreview
             invoice={currentInvoice}
             lineItems={currentLineItems}
