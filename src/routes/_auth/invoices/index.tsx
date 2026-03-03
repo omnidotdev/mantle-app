@@ -13,6 +13,7 @@ import {
 import {
   INVOICE_STATUSES,
   formatCurrency,
+  formatDate,
 } from "@/features/invoices/types/invoice";
 import {
   useAllInvoicesQuery,
@@ -477,10 +478,10 @@ const InvoicesPage = () => {
                         {invoice.company?.name ?? invoice.companyId ?? "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-sm">
-                        {invoice.issueDate}
+                        {invoice.issueDate ? formatDate(invoice.issueDate) : "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-sm">
-                        {invoice.dueDate || "\u2014"}
+                        {invoice.dueDate ? formatDate(invoice.dueDate) : "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-sm">
                         {formatCurrency(invoice.total, invoice.currency)}

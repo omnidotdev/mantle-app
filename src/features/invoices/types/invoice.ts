@@ -43,6 +43,17 @@ export interface Invoice {
   invoiceLineItems?: InvoiceLineItem[];
 }
 
+/** Format an ISO date string as "Month Day, Year" (e.g. "February 3, 2026") */
+export const formatDate = (iso: string): string => {
+  const date = new Date(`${iso}T00:00:00`);
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
 /**
  * Format a numeric string as currency
  */

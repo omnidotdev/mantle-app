@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
+import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type {
   Invoice,
@@ -123,8 +124,150 @@ const InvoiceForm = ({
     0,
   );
 
+  const { getProfileForOrg, createProfile, updateProfile } =
+    useSettingsStore();
+  const orgProfile = organizationId
+    ? getProfileForOrg(organizationId)
+    : undefined;
+
+  const handleProfileChange = (
+    field: string,
+    value: string | null,
+  ) => {
+    if (!organizationId) return;
+
+    if (orgProfile) {
+      updateProfile(orgProfile.id, { [field]: value });
+    } else {
+      createProfile({
+        organizationId,
+        companyName: field === "companyName" ? (value ?? "") : "",
+        contactName: field === "contactName" ? (value ?? "") : "",
+        contactTitle: field === "contactTitle" ? value : null,
+        email: field === "email" ? (value ?? "") : "",
+        phone: field === "phone" ? value : null,
+        website: null,
+        addressLine1: field === "addressLine1" ? value : null,
+        addressLine2: null,
+        city: field === "city" ? value : null,
+        state: field === "state" ? value : null,
+        postalCode: field === "postalCode" ? value : null,
+        country: null,
+        logoUrl: null,
+        registrationState: null,
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* From (your company) */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-gray-700 text-lg">From</h3>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="from-company-name">Company Name</Label>
+            <Input
+              id="from-company-name"
+              value={orgProfile?.companyName ?? ""}
+              onChange={(e) =>
+                handleProfileChange("companyName", e.target.value)
+              }
+              placeholder="Your company name"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="from-contact-name">Contact Name</Label>
+            <Input
+              id="from-contact-name"
+              value={orgProfile?.contactName ?? ""}
+              onChange={(e) =>
+                handleProfileChange("contactName", e.target.value)
+              }
+              placeholder="Your name"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="from-email">Email</Label>
+            <Input
+              id="from-email"
+              type="email"
+              value={orgProfile?.email ?? ""}
+              onChange={(e) =>
+                handleProfileChange("email", e.target.value)
+              }
+              placeholder="billing@example.com"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="from-phone">Phone</Label>
+            <Input
+              id="from-phone"
+              type="tel"
+              value={orgProfile?.phone ?? ""}
+              onChange={(e) =>
+                handleProfileChange("phone", e.target.value || null)
+              }
+              placeholder="(555) 123-4567"
+            />
+          </div>
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="from-address">Address</Label>
+            <Input
+              id="from-address"
+              value={orgProfile?.addressLine1 ?? ""}
+              onChange={(e) =>
+                handleProfileChange("addressLine1", e.target.value || null)
+              }
+              placeholder="123 Main St"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="from-city">City</Label>
+            <Input
+              id="from-city"
+              value={orgProfile?.city ?? ""}
+              onChange={(e) =>
+                handleProfileChange("city", e.target.value || null)
+              }
+              placeholder="City"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="from-state">State</Label>
+              <Input
+                id="from-state"
+                value={orgProfile?.state ?? ""}
+                onChange={(e) =>
+                  handleProfileChange("state", e.target.value || null)
+                }
+                placeholder="State"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="from-postal">Postal Code</Label>
+              <Input
+                id="from-postal"
+                value={orgProfile?.postalCode ?? ""}
+                onChange={(e) =>
+                  handleProfileChange("postalCode", e.target.value || null)
+                }
+                placeholder="12345"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Invoice details */}
       <div className="space-y-4">
         <h3 className="font-medium text-gray-700 text-lg">Invoice Details</h3>
