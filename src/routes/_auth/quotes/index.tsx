@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Edit, Eye, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/features/invoices/types/invoice";
@@ -444,6 +445,8 @@ const QuotesPage = () => {
       invalidateQuotes();
       setViewMode("list");
       setEditingId(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save quote");
     } finally {
       setSaving(false);
     }

@@ -10,6 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -213,6 +214,10 @@ const InventoryPage = () => {
       invalidateProducts();
       setViewMode("list");
       setEditingId(null);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save product",
+      );
     } finally {
       setSaving(false);
     }
@@ -238,23 +243,29 @@ const InventoryPage = () => {
   const handleAddAdjustment = async () => {
     if (!editingId || !adjustmentReason.trim() || !adjustmentQuantity) return;
 
-    await createAdjustmentMutation.mutateAsync({
-      input: {
-        inventoryAdjustment: {
-          productId: editingId,
-          quantityChange: Number.parseInt(adjustmentQuantity, 10),
-          reason: adjustmentReason.trim(),
-          referenceId: null,
+    try {
+      await createAdjustmentMutation.mutateAsync({
+        input: {
+          inventoryAdjustment: {
+            productId: editingId,
+            quantityChange: Number.parseInt(adjustmentQuantity, 10),
+            reason: adjustmentReason.trim(),
+            referenceId: null,
+          },
         },
-      },
-    });
+      });
 
-    invalidateProducts();
-    invalidateAdjustments();
+      invalidateProducts();
+      invalidateAdjustments();
 
-    setAdjustmentReason("");
-    setAdjustmentQuantity("");
-    setShowAdjustmentForm(false);
+      setAdjustmentReason("");
+      setAdjustmentQuantity("");
+      setShowAdjustmentForm(false);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to add adjustment",
+      );
+    }
   };
 
   // Detail view
@@ -416,6 +427,7 @@ const InventoryPage = () => {
             onProductChange={setCurrentProduct}
             onSave={handleSaveProduct}
             onCancel={handleCancel}
+            saving={saving}
           />
         </div>
       </div>

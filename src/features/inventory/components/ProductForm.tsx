@@ -9,6 +9,7 @@ interface ProductFormProps {
   onProductChange: (product: Partial<Product>) => void;
   onSave: () => void;
   onCancel: () => void;
+  saving?: boolean;
 }
 
 const ProductForm = ({
@@ -16,6 +17,7 @@ const ProductForm = ({
   onProductChange,
   onSave,
   onCancel,
+  saving,
 }: ProductFormProps) => {
   const handleChange = (
     field: keyof Product,
@@ -160,7 +162,7 @@ const ProductForm = ({
         <button
           type="button"
           onClick={onSave}
-          disabled={!product.name?.trim()}
+          disabled={!product.name?.trim() || saving}
           className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save

@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -258,6 +259,10 @@ const PeoplePage = () => {
       invalidateCompanies();
       setViewMode("list");
       setEditingId(null);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save company",
+      );
     } finally {
       setSaving(false);
     }
@@ -319,6 +324,10 @@ const PeoplePage = () => {
       invalidatePeople();
       setViewMode("list");
       setEditingId(null);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save contact",
+      );
     } finally {
       setSaving(false);
     }
@@ -366,6 +375,7 @@ const PeoplePage = () => {
               onCompanyChange={setCurrentCompany}
               onSave={handleSaveCompany}
               onCancel={handleCancel}
+              saving={saving}
             />
           ) : (
             <ContactForm
@@ -373,6 +383,7 @@ const PeoplePage = () => {
               onPersonChange={setCurrentPerson}
               onSave={handleSaveContact}
               onCancel={handleCancel}
+              saving={saving}
             />
           )}
         </div>
@@ -618,12 +629,9 @@ const EmailActionButton = ({
       {open && (
         <>
           <div
-            role="button"
-            tabIndex={-1}
-            aria-label="Close menu"
+            role="presentation"
             className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
-            onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
           />
           <div className="absolute right-0 z-20 mt-1 min-w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
             {emails.map((email) => (
@@ -645,6 +653,12 @@ const EmailActionButton = ({
 
 // Contacts table sub-component
 type ContactTypeFilter = "all" | "internal" | "external";
+
+const TYPE_BUTTONS: { value: ContactTypeFilter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "internal", label: "Internal" },
+  { value: "external", label: "External" },
+];
 
 const ContactsTable = ({
   people,
@@ -695,12 +709,6 @@ const ContactsTable = ({
     );
   }
 
-  const typeButtons: { value: ContactTypeFilter; label: string }[] = [
-    { value: "all", label: "All" },
-    { value: "internal", label: "Internal" },
-    { value: "external", label: "External" },
-  ];
-
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
       <div className="flex items-center gap-4 border-gray-200 border-b p-4">
@@ -719,7 +727,7 @@ const ContactsTable = ({
           />
         </div>
         <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
-          {typeButtons.map((btn) => (
+          {TYPE_BUTTONS.map((btn) => (
             <button
               key={btn.value}
               type="button"

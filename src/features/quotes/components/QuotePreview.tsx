@@ -78,10 +78,10 @@ const QuotePreview = ({
     : "";
 
   const subtotal = lineItems.reduce(
-    (sum, item) => sum + Number.parseFloat(item.amount || "0"),
+    (sum, item) => sum + (Number.parseFloat(item.amount || "0") || 0),
     0,
   );
-  const taxRate = Number.parseFloat(quote.taxRate || "0");
+  const taxRate = Number.parseFloat(quote.taxRate || "0") || 0;
   const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
   const currency = quote.currency || "USD";
@@ -93,10 +93,9 @@ const QuotePreview = ({
   const hourlyMaxTotal = lineItems
     .filter((li) => li.pricingType === "hourly")
     .reduce((sum, li) => {
-      const rate = Number.parseFloat(li.hourlyRate || "0");
-      const maxHrs = Number.parseFloat(
-        li.maxCapHours || li.monthlyCapHours || "0",
-      );
+      const rate = Number.parseFloat(li.hourlyRate || "0") || 0;
+      const maxHrs =
+        Number.parseFloat(li.maxCapHours || li.monthlyCapHours || "0") || 0;
       return sum + rate * maxHrs;
     }, 0);
 

@@ -160,8 +160,9 @@ const CompanyForm = ({
 
       {/* Notes */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Notes</h3>
+        <Label htmlFor="company-notes">Notes</Label>
         <Textarea
+          id="company-notes"
           value={company.notes ?? ""}
           onChange={(e) => handleChange("notes", e.target.value || null)}
           rows={3}

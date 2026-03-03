@@ -104,8 +104,9 @@ const ContactForm = ({
 
       {/* Notes */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Notes</h3>
+        <Label htmlFor="contact-notes">Notes</Label>
         <Textarea
+          id="contact-notes"
           value={person.notes ?? ""}
           onChange={(e) => handleChange("notes", e.target.value || null)}
           rows={3}

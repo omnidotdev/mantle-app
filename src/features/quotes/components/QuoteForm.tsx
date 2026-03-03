@@ -98,7 +98,7 @@ const QuoteForm = ({
       (sum, item) => sum + Number.parseFloat(item.amount || "0"),
       0,
     );
-    const taxRate = Number.parseFloat(quote.taxRate || "0");
+    const taxRate = Number.parseFloat(quote.taxRate || "0") || 0;
     const taxAmount = (subtotal * taxRate) / 100;
     const total = subtotal + taxAmount;
 
@@ -112,10 +112,10 @@ const QuoteForm = ({
 
   const handleTaxRateChange = (value: string) => {
     const subtotal = lineItems.reduce(
-      (sum, item) => sum + Number.parseFloat(item.amount || "0"),
+      (sum, item) => sum + (Number.parseFloat(item.amount || "0") || 0),
       0,
     );
-    const taxRate = Number.parseFloat(value || "0");
+    const taxRate = Number.parseFloat(value || "0") || 0;
     const taxAmount = (subtotal * taxRate) / 100;
     const total = subtotal + taxAmount;
 
@@ -353,7 +353,7 @@ const QuoteForm = ({
                   type="button"
                   onClick={() => handleRemoveLineItem(index)}
                   className="text-red-500 hover:text-red-700"
-                  title="Remove item"
+                  aria-label="Remove item"
                 >
                   <Trash2 size={14} />
                 </button>
