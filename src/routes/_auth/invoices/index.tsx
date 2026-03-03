@@ -40,7 +40,7 @@ const statusColors: Record<string, string> = {
 
 const defaultInvoice: Partial<Invoice> = {
   invoiceNumber: "",
-  companyId: "",
+  companyId: null,
   contactId: null,
   status: "draft",
   issueDate: "",
@@ -100,7 +100,7 @@ const InvoicesPage = () => {
             id: node.rowId,
             organizationId: node.organizationId,
             invoiceNumber: node.invoiceNumber,
-            companyId: node.companyId,
+            companyId: node.companyId ?? null,
             contactId: node.contactId ?? null,
             status: (node.status ?? "draft") as Invoice["status"],
             issueDate: node.issueDate,
@@ -274,7 +274,7 @@ const InvoicesPage = () => {
             rowId: editingId,
             patch: {
               invoiceNumber: currentInvoice.invoiceNumber,
-              companyId: currentInvoice.companyId,
+              companyId: currentInvoice.companyId || null,
               contactId: currentInvoice.contactId,
               status: currentInvoice.status,
               issueDate: currentInvoice.issueDate
@@ -352,7 +352,10 @@ const InvoicesPage = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-6">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2
+          className="h-8 w-8 animate-spin text-gray-400"
+          aria-label="Loading invoices"
+        />
       </div>
     );
   }
@@ -475,13 +478,17 @@ const InvoicesPage = () => {
                         {invoice.invoiceNumber}
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        {invoice.company?.name ?? invoice.companyId ?? "\u2014"}
+                        {invoice.company?.name ?? "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-sm">
-                        {invoice.issueDate ? formatDate(invoice.issueDate) : "\u2014"}
+                        {invoice.issueDate
+                          ? formatDate(invoice.issueDate)
+                          : "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-sm">
-                        {invoice.dueDate ? formatDate(invoice.dueDate) : "\u2014"}
+                        {invoice.dueDate
+                          ? formatDate(invoice.dueDate)
+                          : "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-sm">
                         {formatCurrency(invoice.total, invoice.currency)}
@@ -501,7 +508,7 @@ const InvoicesPage = () => {
                             type="button"
                             onClick={() => handlePreview(invoice)}
                             className="text-gray-500 hover:text-gray-700"
-                            title="Preview"
+                            aria-label="Preview invoice"
                           >
                             <Eye size={16} />
                           </button>
@@ -509,7 +516,7 @@ const InvoicesPage = () => {
                             type="button"
                             onClick={() => handleEdit(invoice)}
                             className="text-gray-500 hover:text-gray-700"
-                            title="Edit"
+                            aria-label="Edit invoice"
                           >
                             <Edit size={16} />
                           </button>
@@ -517,7 +524,7 @@ const InvoicesPage = () => {
                             type="button"
                             onClick={() => handleDelete(invoice.id)}
                             className="text-red-500 hover:text-red-700"
-                            title="Delete"
+                            aria-label="Delete invoice"
                           >
                             <Trash2 size={16} />
                           </button>

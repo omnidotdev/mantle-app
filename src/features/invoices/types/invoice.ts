@@ -24,8 +24,9 @@ export interface Invoice {
   id: string;
   organizationId: string;
   invoiceNumber: string;
-  companyId: string;
+  companyId: string | null;
   contactId: string | null;
+  billTo: string | null;
   status: InvoiceStatus;
   issueDate: string;
   dueDate: string;

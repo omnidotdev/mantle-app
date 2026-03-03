@@ -5,8 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/features/invoices/types/invoice";
-import CompanyPicker from "@/features/people/components/CompanyPicker";
-import ContactPicker from "@/features/people/components/ContactPicker";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type {
@@ -124,16 +122,12 @@ const InvoiceForm = ({
     0,
   );
 
-  const { getProfileForOrg, createProfile, updateProfile } =
-    useSettingsStore();
+  const { getProfileForOrg, createProfile, updateProfile } = useSettingsStore();
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
 
-  const handleProfileChange = (
-    field: string,
-    value: string | null,
-  ) => {
+  const handleProfileChange = (field: string, value: string | null) => {
     if (!organizationId) return;
 
     if (orgProfile) {
@@ -196,9 +190,7 @@ const InvoiceForm = ({
               id="from-email"
               type="email"
               value={orgProfile?.email ?? ""}
-              onChange={(e) =>
-                handleProfileChange("email", e.target.value)
-              }
+              onChange={(e) => handleProfileChange("email", e.target.value)}
               placeholder="billing@example.com"
             />
           </div>
@@ -278,8 +270,8 @@ const InvoiceForm = ({
             <Input
               id="invoice-number"
               value={invoice.invoiceNumber ?? ""}
-              readOnly
-              className="bg-gray-50"
+              onChange={(e) => handleChange("invoiceNumber", e.target.value)}
+              placeholder="INV-0001"
             />
           </div>
 
@@ -295,42 +287,43 @@ const InvoiceForm = ({
         </div>
       </div>
 
-      {/* Client */}
+      {/* Bill To */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+          <h3 className="font-medium text-gray-700 text-lg">Bill To</h3>
           <PopulateButton
             organizationId={organizationId}
-            onPopulateClient={({ companyId, contactId }) => {
+            onPopulateClient={({
+              companyId,
+              contactId,
+              companyName,
+              contactName,
+              contactEmail,
+            }) => {
+              const lines = [companyName, contactName, contactEmail].filter(
+                Boolean,
+              );
               onInvoiceChange({
                 ...invoice,
                 companyId,
                 contactId: contactId ?? null,
+                billTo: lines.join("\n") || null,
               });
             }}
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>Company</Label>
-            <CompanyPicker
-              value={invoice.companyId ?? ""}
-              onValueChange={(value) => handleChange("companyId", value)}
-              organizationId={organizationId}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Contact</Label>
-            <ContactPicker
-              value={invoice.contactId ?? ""}
-              onValueChange={(value) =>
-                handleChange("contactId", value || null)
-              }
-              organizationId={organizationId}
-            />
-          </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="invoice-bill-to">Recipient name and address</Label>
+          <Textarea
+            id="invoice-bill-to"
+            value={invoice.billTo ?? ""}
+            onChange={(e) => handleChange("billTo", e.target.value || null)}
+            rows={4}
+            placeholder={
+              "Company Name\nContact Name\n123 Main St\nCity, State ZIP"
+            }
+          />
         </div>
       </div>
 
@@ -535,7 +528,7 @@ const InvoiceForm = ({
         <button
           type="button"
           onClick={onSave}
-          disabled={!invoice.companyId?.trim()}
+          disabled={!invoice.billTo?.trim() && !invoice.companyId?.trim()}
           className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save

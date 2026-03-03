@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency, formatDate } from "@/features/invoices/types/invoice";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type {
@@ -24,14 +24,34 @@ const InvoicePreview = ({
 }: InvoicePreviewProps) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  const { getCompany, getPerson } = usePeopleStore();
   const { getProfileForOrg } = useSettingsStore();
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
 
-  const company = invoice.companyId ? getCompany(invoice.companyId) : undefined;
-  const contact = invoice.contactId ? getPerson(invoice.contactId) : undefined;
+  const { data: companiesData } = useAllCompaniesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const { data: peopleData } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const company = useMemo(() => {
+    if (!invoice.companyId) return undefined;
+    return companiesData?.companies?.nodes?.find(
+      (n) => n?.rowId === invoice.companyId,
+    );
+  }, [companiesData, invoice.companyId]);
+
+  const contact = useMemo(() => {
+    if (!invoice.contactId) return undefined;
+    return peopleData?.people?.nodes?.find(
+      (n) => n?.rowId === invoice.contactId,
+    );
+  }, [peopleData, invoice.contactId]);
 
   const subtotal = lineItems.reduce(
     (sum, item) => sum + Number.parseFloat(item.amount || "0"),
@@ -99,26 +119,33 @@ const InvoicePreview = ({
           <div className="mb-8 grid grid-cols-2 gap-8">
             <div>
               <h4 className="mb-2 font-bold text-gray-700">Bill To:</h4>
-              <p className="text-gray-800">
-                {company?.name || invoice.companyId || "Company not specified"}
-              </p>
-              {contact && (
-                <p className="text-gray-600">
-                  {contact.firstName} {contact.lastName}
-                </p>
-              )}
-              {!contact && invoice.contactId && (
-                <p className="text-gray-600">Contact: {invoice.contactId}</p>
-              )}
-              {company?.email && (
-                <p className="text-gray-500 text-sm">{company.email}</p>
-              )}
-              {company?.addressLine1 && (
-                <p className="text-gray-500 text-sm">
-                  {company.addressLine1}
-                  {company.city && `, ${company.city}`}
-                  {company.state && `, ${company.state}`}
-                </p>
+              {invoice.billTo ? (
+                <div className="text-gray-800">
+                  {invoice.billTo.split("\n").map((line) => (
+                    <p key={`bill-${line}`}>{line}</p>
+                  ))}
+                </div>
+              ) : company ? (
+                <>
+                  <p className="text-gray-800">{company.name}</p>
+                  {contact && (
+                    <p className="text-gray-600">
+                      {contact.firstName} {contact.lastName}
+                    </p>
+                  )}
+                  {company.email && (
+                    <p className="text-gray-500 text-sm">{company.email}</p>
+                  )}
+                  {company.addressLine1 && (
+                    <p className="text-gray-500 text-sm">
+                      {company.addressLine1}
+                      {company.city && `, ${company.city}`}
+                      {company.state && `, ${company.state}`}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-gray-400">Not specified</p>
               )}
             </div>
             <div>
@@ -200,9 +227,7 @@ const InvoicePreview = ({
                     </div>
                     <div className="mb-1 flex justify-between text-sm">
                       <span>Tax ({taxRate}%)</span>
-                      <span>
-                        {formatCurrency(String(taxAmount), currency)}
-                      </span>
+                      <span>{formatCurrency(String(taxAmount), currency)}</span>
                     </div>
                   </>
                 )}

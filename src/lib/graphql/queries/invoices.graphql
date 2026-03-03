@@ -6,6 +6,7 @@ query AllInvoices($organizationId: String!) {
       invoiceNumber
       companyId
       contactId
+      billTo
       status
       issueDate
       dueDate
