@@ -1,5 +1,12 @@
 import { Link, useLocation, useRouteContext } from "@tanstack/react-router";
-import { LogOutIcon, SettingsIcon } from "lucide-react";
+import {
+  LogOutIcon,
+  MoonIcon,
+  PanelLeftCloseIcon,
+  PanelLeftIcon,
+  SettingsIcon,
+  SunIcon,
+} from "lucide-react";
 
 import {
   SidebarFooter,
@@ -7,13 +14,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import signOut from "@/lib/auth/signOut";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const AppSidebarFooter = () => {
   const { pathname } = useLocation();
   const { session } = useRouteContext({ from: "__root__" });
   const user = session?.user;
+  const { open, setOpen } = useSidebar();
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () =>
+    theme === "dark" ? setTheme("light") : setTheme("dark");
 
   return (
     <SidebarFooter>
@@ -22,7 +36,7 @@ const AppSidebarFooter = () => {
           {user.image ? (
             <img
               src={user.image}
-              alt=""
+              alt="User avatar"
               className="h-7 w-7 shrink-0 rounded-full object-cover"
             />
           ) : (
@@ -42,6 +56,30 @@ const AppSidebarFooter = () => {
       )}
       <SidebarSeparator />
       <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={() => setOpen(!open)}>
+            {open ? (
+              <PanelLeftCloseIcon className="size-4" />
+            ) : (
+              <PanelLeftIcon className="size-4" />
+            )}
+            <span>
+              {open ? "Collapse" : "Expand"} Sidebar
+            </span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={toggleTheme}>
+            {theme === "dark" ? (
+              <MoonIcon className="size-4" />
+            ) : (
+              <SunIcon className="size-4" />
+            )}
+            <span>Toggle Theme</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild

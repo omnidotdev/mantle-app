@@ -10,7 +10,9 @@ import { createServerFn } from "@tanstack/react-start";
 import app from "@/lib/config/app.config";
 import { fetchMaintenanceMode } from "@/lib/providers";
 import createMetaTags from "@/lib/util/createMetaTags";
+import ThemeProvider from "@/providers/ThemeProvider";
 import { fetchSession } from "@/server/functions/auth";
+import { getTheme } from "@/server/functions/theme";
 import appStyles from "@/styles.css?url";
 
 import type { OrganizationClaim } from "@omnidotdev/providers";
@@ -43,24 +45,30 @@ const fetchSessionAndMaintenanceMode = createServerFn({
   const context = session?.user?.email
     ? { userId: session.user.id, properties: { email: session.user.email } }
     : undefined;
-  const { isMaintenanceMode } = await fetchMaintenanceMode({ data: context });
 
-  return { session, isMaintenanceMode };
+  const [{ isMaintenanceMode }, theme] = await Promise.all([
+    fetchMaintenanceMode({ data: context }),
+    getTheme(),
+  ]);
+
+  return { session, isMaintenanceMode, theme };
 });
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   session: ExtendedSession | null;
   isMaintenanceMode: boolean;
+  theme: string;
 }>()({
   beforeLoad: async () => {
-    const { session, isMaintenanceMode } =
+    const { session, isMaintenanceMode, theme } =
       await fetchSessionAndMaintenanceMode();
 
     // Skip auth when maintenance page is shown
-    if (isMaintenanceMode) return { session: null, isMaintenanceMode };
+    if (isMaintenanceMode)
+      return { session: null, isMaintenanceMode, theme };
 
-    return { session, isMaintenanceMode };
+    return { session, isMaintenanceMode, theme };
   },
   head: () => ({
     meta: [
@@ -98,26 +106,31 @@ function MaintenancePage() {
 }
 
 function RootComponent() {
-  const { isMaintenanceMode } = useRouteContext({ from: "__root__" });
+  const { isMaintenanceMode, theme } = useRouteContext({ from: "__root__" });
 
   if (isMaintenanceMode) {
     return (
-      <RootDocument>
+      <RootDocument theme={theme}>
         <MaintenancePage />
       </RootDocument>
     );
   }
 
   return (
-    <RootDocument>
-      <Outlet />
+    <RootDocument theme={theme}>
+      <ThemeProvider theme={theme}>
+        <Outlet />
+      </ThemeProvider>
     </RootDocument>
   );
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+function RootDocument({
+  children,
+  theme,
+}: Readonly<{ children: ReactNode; theme: string }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={theme}>
       <head>
         <HeadContent />
       </head>

@@ -20,7 +20,12 @@ const getRouter = () => {
   const router = createTanStackRouter({
     routeTree,
     scrollRestoration: true,
-    context: { queryClient, session: null, isMaintenanceMode: false },
+    context: {
+      queryClient,
+      session: null,
+      isMaintenanceMode: false,
+      theme: "dark",
+    },
   });
 
   setupRouterSsrQueryIntegration({ router, queryClient });

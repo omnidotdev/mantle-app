@@ -1,6 +1,7 @@
 import { useRouteContext, useRouter } from "@tanstack/react-router";
 import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import {
   MenuContent,
   MenuItem,
@@ -38,6 +39,9 @@ const AppSidebarHeader = () => {
         <span className="truncate font-semibold text-sm group-data-[collapsible=icon]:hidden">
           {app.name}
         </span>
+        <Badge className="border-primary/20 bg-primary/10 text-primary text-xs group-data-[collapsible=icon]:hidden">
+          Early Access
+        </Badge>
       </div>
 
       {/* Org switcher */}
