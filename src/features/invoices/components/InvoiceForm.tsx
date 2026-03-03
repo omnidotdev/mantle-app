@@ -291,7 +291,7 @@ const InvoiceForm = ({
                 id="invoice-number"
                 value={invoice.invoiceNumber ?? ""}
                 onChange={(e) => handleChange("invoiceNumber", e.target.value)}
-                placeholder="IGDI-20260203-115447"
+                placeholder="INV-20260203-115447"
               />
               <button
                 type="button"
