@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Edit, Eye, Loader2, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Edit, Eye, Loader2, Plus, Search, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
@@ -9,7 +9,10 @@ import {
   generateInvoiceNumber,
   useInvoiceUIStore,
 } from "@/features/invoices/store/invoiceStore";
-import { formatCurrency } from "@/features/invoices/types/invoice";
+import {
+  INVOICE_STATUSES,
+  formatCurrency,
+} from "@/features/invoices/types/invoice";
 import {
   useAllInvoicesQuery,
   useCreateInvoiceMutation,
@@ -56,6 +59,9 @@ const InvoicesPage = () => {
   const { viewMode, editingId, setViewMode, setEditingId, reset } =
     useInvoiceUIStore();
   const queryClient = useQueryClient();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const [currentInvoice, setCurrentInvoice] =
     useState<Partial<Invoice>>(defaultInvoice);
@@ -121,6 +127,31 @@ const InvoicesPage = () => {
       },
     ];
   });
+
+  const filteredInvoices = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+
+    return invoices.filter((inv) => {
+      const matchesSearch =
+        !term ||
+        inv.invoiceNumber.toLowerCase().includes(term) ||
+        (inv.company?.name ?? "").toLowerCase().includes(term);
+
+      const matchesStatus =
+        statusFilter === "all" || inv.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [invoices, searchTerm, statusFilter]);
+
+  const filteredTotal = useMemo(
+    () =>
+      filteredInvoices.reduce(
+        (sum, inv) => sum + (Number.parseFloat(inv.total) || 0),
+        0,
+      ),
+    [filteredInvoices],
+  );
 
   const invalidateInvoices = () => {
     queryClient.invalidateQueries({
@@ -277,14 +308,25 @@ const InvoicesPage = () => {
             </Link>
             <h1 className="font-bold text-2xl">Invoices</h1>
           </div>
-          <button
-            type="button"
-            onClick={handleCreateNew}
-            className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
-          >
-            <Plus size={18} />
-            New Invoice
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg border border-gray-200 bg-white px-4 py-2">
+              <p className="text-gray-500 text-xs">
+                {filteredInvoices.length}{" "}
+                {filteredInvoices.length === 1 ? "invoice" : "invoices"}
+              </p>
+              <p className="font-bold text-lg">
+                {formatCurrency(filteredTotal.toFixed(2))}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+            >
+              <Plus size={18} />
+              New Invoice
+            </button>
+          </div>
         </div>
 
         {invoices.length === 0 ? (
@@ -300,6 +342,49 @@ const InvoicesPage = () => {
           </div>
         ) : (
           <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <div className="flex gap-4 border-gray-200 border-b p-4">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                  aria-hidden="true"
+                />
+                <input
+                  type="text"
+                  placeholder="Search invoices..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              >
+                <option value="all">All statuses</option>
+                {INVOICE_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {filteredInvoices.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-gray-500">No invoices match your filters</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setStatusFilter("all");
+                  }}
+                  className="mt-2 text-teal-600 text-sm hover:text-teal-700"
+                >
+                  Clear filters
+                </button>
+              </div>
+            ) : (
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
@@ -324,7 +409,7 @@ const InvoicesPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {invoices.map((invoice) => (
+                {filteredInvoices.map((invoice) => (
                   <tr key={invoice.id} className="border-gray-100 border-t">
                     <td className="px-4 py-3 font-mono text-sm">
                       {invoice.invoiceNumber}
@@ -379,6 +464,7 @@ const InvoicesPage = () => {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         )}
       </div>

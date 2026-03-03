@@ -5,8 +5,9 @@ query AllPeople($organizationId: String!) {
       organizationId
       firstName
       lastName
-      email
+      emails
       phone
+      internal
       avatarUrl
       tags
       notes

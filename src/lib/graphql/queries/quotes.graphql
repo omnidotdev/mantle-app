@@ -10,7 +10,10 @@ query AllQuotes($organizationId: String!) {
       description
       status
       validUntil
+      projectType
+      timeRange
       terms
+      additionalTerms
       notes
       subtotal
       taxRate
@@ -40,7 +43,15 @@ query AllQuotes($organizationId: String!) {
           amount
           pricingType
           estimatedHours
+          hourlyRate
+          weeklyCapHours
+          monthlyCapHours
+          maxCapHours
           royaltyPercentage
+          royaltyTimeframe
+          royaltyTimeframeUnit
+          royaltyThreshold
+          royaltyBuyoutAmount
           sortOrder
         }
       }

@@ -15,21 +15,10 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A floating point number that requires more precision than IEEE 754 binary 64 */
   BigFloat: { input: string; output: string; }
-  /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
-  /** A calendar date in YYYY-MM-DD format. */
   Date: { input: Date; output: string; }
-  /**
-   * A point in time as described by the [ISO
-   * 8601](https://en.wikipedia.org/wiki/ISO_8601) and, if it has a timezone, [RFC
-   * 3339](https://datatracker.ietf.org/doc/html/rfc3339) standards. Input values
-   * that do not conform to both ISO 8601 and RFC 3339 may be coerced, which may lead
-   * to unexpected results.
-   */
   Datetime: { input: Date; output: string; }
-  /** A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
   UUID: { input: string; output: string; }
 };
 
@@ -1803,10 +1792,11 @@ export type Person = Node & {
   /** Reads and enables pagination through a set of `CompanyMember`. */
   companyMembers: CompanyMemberConnection;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
+  emails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   firstName: Scalars['String']['output'];
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
+  internal: Scalars['Boolean']['output'];
   lastName: Scalars['String']['output'];
   notes?: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['String']['output'];
@@ -1830,8 +1820,6 @@ export type PersonCompanyMembersArgs = {
 
 /** A condition to be used against `Person` object types. All fields are tested for equality and combined with a logical ‘and.’ */
 export type PersonCondition = {
-  /** Checks for equality with the object’s `email` field. */
-  email?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `organizationId` field. */
   organizationId?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `rowId` field. */
@@ -1868,8 +1856,8 @@ export type PersonFilter = {
   companyMembers?: InputMaybe<PersonToManyCompanyMemberFilter>;
   /** Some related `companyMembers` exist. */
   companyMembersExist?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Filter by the object’s `email` field. */
-  email?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `emails` field. */
+  emails?: InputMaybe<StringListFilter>;
   /** Negates the expression. */
   not?: InputMaybe<PersonFilter>;
   /** Checks for any expressions in this list. */
@@ -1884,8 +1872,9 @@ export type PersonFilter = {
 export type PersonInput = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   firstName: Scalars['String']['input'];
+  internal?: InputMaybe<Scalars['Boolean']['input']>;
   lastName: Scalars['String']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
@@ -1897,8 +1886,6 @@ export type PersonInput = {
 
 /** Methods to use when ordering `Person`. */
 export enum PersonOrderBy {
-  EmailAsc = 'EMAIL_ASC',
-  EmailDesc = 'EMAIL_DESC',
   Natural = 'NATURAL',
   OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
   OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
@@ -1912,8 +1899,9 @@ export enum PersonOrderBy {
 export type PersonPatch = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   firstName?: InputMaybe<Scalars['String']['input']>;
+  internal?: InputMaybe<Scalars['Boolean']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
   organizationId?: InputMaybe<Scalars['String']['input']>;
@@ -2370,6 +2358,7 @@ export type QueryQuotesArgs = {
 
 export type Quote = Node & {
   __typename?: 'Quote';
+  additionalTerms?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   /** Reads a single `Company` that is related to this `Quote`. */
   company?: Maybe<Company>;
   companyId: Scalars['UUID']['output'];
@@ -2386,6 +2375,7 @@ export type Quote = Node & {
   id: Scalars['ID']['output'];
   notes?: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['String']['output'];
+  projectType?: Maybe<Scalars['String']['output']>;
   /** Reads and enables pagination through a set of `QuoteLineItem`. */
   quoteLineItems: QuoteLineItemConnection;
   quoteNumber: Scalars['String']['output'];
@@ -2395,6 +2385,7 @@ export type Quote = Node & {
   taxAmount?: Maybe<Scalars['BigFloat']['output']>;
   taxRate?: Maybe<Scalars['BigFloat']['output']>;
   terms?: Maybe<Scalars['String']['output']>;
+  timeRange?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   total?: Maybe<Scalars['BigFloat']['output']>;
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
@@ -2485,6 +2476,7 @@ export type QuoteFilter = {
 
 /** An input for mutations affecting `Quote` */
 export type QuoteInput = {
+  additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   companyId: Scalars['UUID']['input'];
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   convertedInvoiceId?: InputMaybe<Scalars['UUID']['input']>;
@@ -2493,6 +2485,7 @@ export type QuoteInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
+  projectType?: InputMaybe<Scalars['String']['input']>;
   quoteNumber: Scalars['String']['input'];
   rowId?: InputMaybe<Scalars['UUID']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
@@ -2500,6 +2493,7 @@ export type QuoteInput = {
   taxAmount?: InputMaybe<Scalars['BigFloat']['input']>;
   taxRate?: InputMaybe<Scalars['BigFloat']['input']>;
   terms?: InputMaybe<Scalars['String']['input']>;
+  timeRange?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   total?: InputMaybe<Scalars['BigFloat']['input']>;
   updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
@@ -2511,8 +2505,11 @@ export type QuoteLineItem = Node & {
   amount: Scalars['BigFloat']['output'];
   description: Scalars['String']['output'];
   estimatedHours?: Maybe<Scalars['BigFloat']['output']>;
+  hourlyRate?: Maybe<Scalars['BigFloat']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
+  maxCapHours?: Maybe<Scalars['Int']['output']>;
+  monthlyCapHours?: Maybe<Scalars['Int']['output']>;
   pricingType: Scalars['String']['output'];
   /** Reads a single `Product` that is related to this `QuoteLineItem`. */
   product?: Maybe<Product>;
@@ -2522,9 +2519,14 @@ export type QuoteLineItem = Node & {
   quote?: Maybe<Quote>;
   quoteId: Scalars['UUID']['output'];
   rowId: Scalars['UUID']['output'];
+  royaltyBuyoutAmount?: Maybe<Scalars['BigFloat']['output']>;
   royaltyPercentage?: Maybe<Scalars['BigFloat']['output']>;
+  royaltyThreshold?: Maybe<Scalars['BigFloat']['output']>;
+  royaltyTimeframe?: Maybe<Scalars['Int']['output']>;
+  royaltyTimeframeUnit?: Maybe<Scalars['String']['output']>;
   sortOrder?: Maybe<Scalars['Int']['output']>;
   unitPrice: Scalars['BigFloat']['output'];
+  weeklyCapHours?: Maybe<Scalars['Int']['output']>;
 };
 
 /**
@@ -2585,14 +2587,22 @@ export type QuoteLineItemInput = {
   amount: Scalars['BigFloat']['input'];
   description: Scalars['String']['input'];
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
+  hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
+  maxCapHours?: InputMaybe<Scalars['Int']['input']>;
+  monthlyCapHours?: InputMaybe<Scalars['Int']['input']>;
   pricingType?: InputMaybe<Scalars['String']['input']>;
   productId?: InputMaybe<Scalars['UUID']['input']>;
   quantity: Scalars['BigFloat']['input'];
   quoteId: Scalars['UUID']['input'];
   rowId?: InputMaybe<Scalars['UUID']['input']>;
+  royaltyBuyoutAmount?: InputMaybe<Scalars['BigFloat']['input']>;
   royaltyPercentage?: InputMaybe<Scalars['BigFloat']['input']>;
+  royaltyThreshold?: InputMaybe<Scalars['BigFloat']['input']>;
+  royaltyTimeframe?: InputMaybe<Scalars['Int']['input']>;
+  royaltyTimeframeUnit?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['Int']['input']>;
   unitPrice: Scalars['BigFloat']['input'];
+  weeklyCapHours?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Methods to use when ordering `QuoteLineItem`. */
@@ -2611,14 +2621,22 @@ export type QuoteLineItemPatch = {
   amount?: InputMaybe<Scalars['BigFloat']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
+  hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
+  maxCapHours?: InputMaybe<Scalars['Int']['input']>;
+  monthlyCapHours?: InputMaybe<Scalars['Int']['input']>;
   pricingType?: InputMaybe<Scalars['String']['input']>;
   productId?: InputMaybe<Scalars['UUID']['input']>;
   quantity?: InputMaybe<Scalars['BigFloat']['input']>;
   quoteId?: InputMaybe<Scalars['UUID']['input']>;
   rowId?: InputMaybe<Scalars['UUID']['input']>;
+  royaltyBuyoutAmount?: InputMaybe<Scalars['BigFloat']['input']>;
   royaltyPercentage?: InputMaybe<Scalars['BigFloat']['input']>;
+  royaltyThreshold?: InputMaybe<Scalars['BigFloat']['input']>;
+  royaltyTimeframe?: InputMaybe<Scalars['Int']['input']>;
+  royaltyTimeframeUnit?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['Int']['input']>;
   unitPrice?: InputMaybe<Scalars['BigFloat']['input']>;
+  weeklyCapHours?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Methods to use when ordering `Quote`. */
@@ -2640,6 +2658,7 @@ export enum QuoteOrderBy {
 
 /** Represents an update to a `Quote`. Fields that are set will be updated. */
 export type QuotePatch = {
+  additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   companyId?: InputMaybe<Scalars['UUID']['input']>;
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   convertedInvoiceId?: InputMaybe<Scalars['UUID']['input']>;
@@ -2648,6 +2667,7 @@ export type QuotePatch = {
   description?: InputMaybe<Scalars['String']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
   organizationId?: InputMaybe<Scalars['String']['input']>;
+  projectType?: InputMaybe<Scalars['String']['input']>;
   quoteNumber?: InputMaybe<Scalars['String']['input']>;
   rowId?: InputMaybe<Scalars['UUID']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
@@ -2655,6 +2675,7 @@ export type QuotePatch = {
   taxAmount?: InputMaybe<Scalars['BigFloat']['input']>;
   taxRate?: InputMaybe<Scalars['BigFloat']['input']>;
   terms?: InputMaybe<Scalars['String']['input']>;
+  timeRange?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   total?: InputMaybe<Scalars['BigFloat']['input']>;
   updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
@@ -2747,6 +2768,46 @@ export type StringFilter = {
   startsWith?: InputMaybe<Scalars['String']['input']>;
   /** Starts with the specified string (case-insensitive). */
   startsWithInsensitive?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** A filter to be used against String List fields. All fields are combined with a logical ‘and.’ */
+export type StringListFilter = {
+  /** Any array item is equal to the specified value. */
+  anyEqualTo?: InputMaybe<Scalars['String']['input']>;
+  /** Any array item is greater than the specified value. */
+  anyGreaterThan?: InputMaybe<Scalars['String']['input']>;
+  /** Any array item is greater than or equal to the specified value. */
+  anyGreaterThanOrEqualTo?: InputMaybe<Scalars['String']['input']>;
+  /** Any array item is less than the specified value. */
+  anyLessThan?: InputMaybe<Scalars['String']['input']>;
+  /** Any array item is less than or equal to the specified value. */
+  anyLessThanOrEqualTo?: InputMaybe<Scalars['String']['input']>;
+  /** Any array item is not equal to the specified value. */
+  anyNotEqualTo?: InputMaybe<Scalars['String']['input']>;
+  /** Contained by the specified list of values. */
+  containedBy?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Contains the specified list of values. */
+  contains?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Overlaps the specified list of values. */
+  overlaps?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 /** A filter to be used against UUID fields. All fields are combined with a logical ‘and.’ */
@@ -3259,7 +3320,7 @@ export type AllPeopleQueryVariables = Exact<{
 }>;
 
 
-export type AllPeopleQuery = { __typename?: 'Query', people?: { __typename?: 'PersonConnection', nodes: Array<{ __typename?: 'Person', rowId: string, organizationId: string, firstName: string, lastName: string, email?: string | null, phone?: string | null, avatarUrl?: string | null, tags?: Array<string | null> | null, notes?: string | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
+export type AllPeopleQuery = { __typename?: 'Query', people?: { __typename?: 'PersonConnection', nodes: Array<{ __typename?: 'Person', rowId: string, organizationId: string, firstName: string, lastName: string, emails?: Array<string | null> | null, phone?: string | null, internal: boolean, avatarUrl?: string | null, tags?: Array<string | null> | null, notes?: string | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
 
 export type CreatePersonMutationVariables = Exact<{
   input: CreatePersonInput;
@@ -3329,7 +3390,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId: string, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, terms?: string | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, royaltyPercentage?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId: string, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -3766,8 +3827,9 @@ export const AllPeopleDocument = `
       organizationId
       firstName
       lastName
-      email
+      emails
       phone
+      internal
       avatarUrl
       tags
       notes
@@ -4268,7 +4330,10 @@ export const AllQuotesDocument = `
       description
       status
       validUntil
+      projectType
+      timeRange
       terms
+      additionalTerms
       notes
       subtotal
       taxRate
@@ -4298,7 +4363,15 @@ export const AllQuotesDocument = `
           amount
           pricingType
           estimatedHours
+          hourlyRate
+          weeklyCapHours
+          monthlyCapHours
+          maxCapHours
           royaltyPercentage
+          royaltyTimeframe
+          royaltyTimeframeUnit
+          royaltyThreshold
+          royaltyBuyoutAmount
           sortOrder
         }
       }
