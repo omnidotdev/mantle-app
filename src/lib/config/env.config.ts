@@ -6,15 +6,14 @@
 
 const env = { ...import.meta.env, ...process.env };
 
-export const API_URL = import.meta.env.VITE_API_URL ?? "https://localhost:4000";
+export const API_URL = env.VITE_API_URL ?? "https://localhost:4000";
 export const API_GRAPHQL_URL = `${API_URL}/graphql`;
-export const AUTH_URL =
-  import.meta.env.VITE_AUTH_URL ?? "https://localhost:3100";
+export const AUTH_URL = env.VITE_AUTH_URL ?? "https://localhost:3100";
 export const isProd = import.meta.env.PROD;
 export const isDev = import.meta.env.DEV;
 
 // Auth config
-export const PORT = import.meta.env.VITE_PORT ?? 3000;
+export const PORT = env.VITE_PORT ?? 3000;
 export const BASE_URL =
   env.VITE_BASE_URL || env.BASE_URL || `https://localhost:${PORT}`;
 export const AUTH_BASE_URL = env.AUTH_BASE_URL || env.VITE_AUTH_BASE_URL;
@@ -27,5 +26,5 @@ export const FLAGS_CLIENT_KEY =
   env.FLAGS_CLIENT_KEY || env.VITE_FLAGS_CLIENT_KEY;
 
 // Authorization config
-export const AUTHZ_ENABLED = import.meta.env.VITE_AUTHZ_ENABLED ?? "false";
-export const AUTHZ_API_URL = import.meta.env.VITE_AUTHZ_API_URL;
+export const AUTHZ_ENABLED = env.VITE_AUTHZ_ENABLED ?? "false";
+export const AUTHZ_API_URL = env.VITE_AUTHZ_API_URL;
