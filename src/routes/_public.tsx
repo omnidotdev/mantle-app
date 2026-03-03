@@ -12,6 +12,7 @@ import {
   SiX as XIcon2,
 } from "react-icons/si";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import signOut from "@/lib/auth/signOut";
@@ -56,14 +57,35 @@ function PublicLayout() {
         />
       </div>
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-border border-b bg-background/80 backdrop-blur-lg">
+      {/* Banner + header */}
+      <div className="sticky top-0 z-50">
+        <div className="flex w-full items-center justify-center gap-2 border-primary-500/20 border-b bg-primary-500/20 px-4 py-2 text-sm backdrop-blur-sm sm:gap-3">
+          <span className="text-base-700 dark:text-base-300">
+            <strong className="font-semibold">Mantle is in early access</strong>{" "}
+            — help shape it!
+          </span>
+
+          <a
+            href={appConfig.organization.discord}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 rounded-full bg-primary-500/20 px-2.5 py-0.5 font-medium text-primary-700 text-xs transition-colors hover:bg-primary-500/30 dark:text-primary-300"
+          >
+            <DiscordIcon className="size-3" />
+            Discord
+          </a>
+        </div>
+
+      <header className="w-full border-border border-b bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <a href="/" className="flex items-center gap-2">
             <span className="text-2xl">🌋</span>
             <span className="font-bold text-xl tracking-tight">
               {appConfig.name}
             </span>
+            <Badge className="hidden border-primary-500/20 bg-primary-500/10 text-shimmer text-xs sm:inline-flex">
+              Early Access
+            </Badge>
           </a>
 
           {/* Desktop nav */}
@@ -149,6 +171,7 @@ function PublicLayout() {
           </div>
         </div>
       </header>
+      </div>
 
       {/* Main content */}
       <main className="relative z-10 flex-1">
