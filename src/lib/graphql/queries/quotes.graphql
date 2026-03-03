@@ -82,3 +82,17 @@ mutation DeleteQuote($input: DeleteQuoteInput!) {
     deletedQuoteId
   }
 }
+
+mutation CreateQuoteLineItem($input: CreateQuoteLineItemInput!) {
+  createQuoteLineItem(input: $input) {
+    quoteLineItem {
+      rowId
+    }
+  }
+}
+
+mutation DeleteQuoteLineItem($input: DeleteQuoteLineItemInput!) {
+  deleteQuoteLineItem(input: $input) {
+    deletedQuoteLineItemId
+  }
+}

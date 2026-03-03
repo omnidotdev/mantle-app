@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Building2,
   Edit,
+  Loader2,
   Mail,
   Network,
   Plus,
@@ -25,7 +27,16 @@ import CompanyForm from "@/features/people/components/CompanyForm";
 import ContactForm from "@/features/people/components/ContactForm";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import {
+  useAllCompaniesQuery,
+  useAllPeopleQuery,
+  useCreateCompanyMutation,
+  useCreatePersonMutation,
+  useDeleteCompanyMutation,
+  useDeletePersonMutation,
+  useUpdateCompanyMutation,
+  useUpdatePersonMutation,
+} from "@/generated/graphql";
 
 import type { ActiveTab } from "@/features/people/store/peopleStore";
 import type { Company, Person } from "@/features/people/types";
@@ -60,16 +71,7 @@ const defaultPerson: Partial<Person> = {
 
 const PeoplePage = () => {
   const { organizationId } = Route.useRouteContext();
-  const {
-    getCompaniesForOrg,
-    getPeopleForOrg,
-    createCompany,
-    updateCompany,
-    deleteCompany,
-    createPerson,
-    updatePerson,
-    deletePerson,
-  } = usePeopleStore();
+  const queryClient = useQueryClient();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [activeTab, setActiveTab] = useState<ActiveTab>("companies");
@@ -79,19 +81,119 @@ const PeoplePage = () => {
   const [currentPerson, setCurrentPerson] =
     useState<Partial<Person>>(defaultPerson);
   const [importExportOpen, setImportExportOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
     type: "company" | "contact";
   }>({ open: false, id: "", type: "company" });
 
-  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
-  const people = organizationId ? getPeopleForOrg(organizationId) : [];
+  const { data: companiesData, isLoading: companiesLoading } =
+    useAllCompaniesQuery(
+      { organizationId: organizationId ?? "" },
+      { enabled: !!organizationId },
+    );
+
+  const { data: peopleData, isLoading: peopleLoading } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const companies = useMemo(
+    () =>
+      (companiesData?.companies?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            organizationId: node.organizationId,
+            name: node.name,
+            website: node.website ?? null,
+            industry: node.industry ?? null,
+            phone: node.phone ?? null,
+            email: node.email ?? null,
+            addressLine1: node.addressLine1 ?? null,
+            addressLine2: node.addressLine2 ?? null,
+            city: node.city ?? null,
+            state: node.state ?? null,
+            postalCode: node.postalCode ?? null,
+            country: node.country ?? null,
+            notes: node.notes ?? null,
+            createdAt: node.createdAt ?? "",
+            updatedAt: node.updatedAt ?? "",
+          },
+        ];
+      }),
+    [companiesData],
+  );
+
+  const people = useMemo(
+    () =>
+      (peopleData?.people?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            organizationId: node.organizationId,
+            firstName: node.firstName,
+            lastName: node.lastName,
+            emails: (node.emails as string[]) ?? [],
+            phone: node.phone ?? null,
+            avatarUrl: node.avatarUrl ?? null,
+            tags: (node.tags as string[]) ?? null,
+            internal: node.internal ?? false,
+            notes: node.notes ?? null,
+            createdAt: node.createdAt ?? "",
+            updatedAt: node.updatedAt ?? "",
+          },
+        ];
+      }),
+    [peopleData],
+  );
+
+  const invalidateCompanies = () => {
+    queryClient.invalidateQueries({
+      queryKey: useAllCompaniesQuery.getKey({
+        organizationId: organizationId ?? "",
+      }),
+    });
+  };
+
+  const invalidatePeople = () => {
+    queryClient.invalidateQueries({
+      queryKey: useAllPeopleQuery.getKey({
+        organizationId: organizationId ?? "",
+      }),
+    });
+  };
+
+  const createCompanyMutation = useCreateCompanyMutation();
+  const updateCompanyMutation = useUpdateCompanyMutation();
+  const deleteCompanyMutation = useDeleteCompanyMutation({
+    onSuccess: invalidateCompanies,
+  });
+
+  const createPersonMutation = useCreatePersonMutation();
+  const updatePersonMutation = useUpdatePersonMutation();
+  const deletePersonMutation = useDeletePersonMutation({
+    onSuccess: invalidatePeople,
+  });
 
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-gray-500">Select an organization to view people</p>
+      </div>
+    );
+  }
+
+  if (companiesLoading || peopleLoading) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <Loader2
+          className="h-8 w-8 animate-spin text-gray-400"
+          aria-label="Loading people"
+        />
       </div>
     );
   }
@@ -109,30 +211,56 @@ const PeoplePage = () => {
     setViewMode("edit");
   };
 
-  const handleSaveCompany = () => {
-    if (editingId) {
-      updateCompany(editingId, currentCompany);
-    } else {
-      createCompany(
-        {
-          name: currentCompany.name ?? "",
-          website: currentCompany.website ?? null,
-          industry: currentCompany.industry ?? null,
-          phone: currentCompany.phone ?? null,
-          email: currentCompany.email ?? null,
-          addressLine1: currentCompany.addressLine1 ?? null,
-          addressLine2: currentCompany.addressLine2 ?? null,
-          city: currentCompany.city ?? null,
-          state: currentCompany.state ?? null,
-          postalCode: currentCompany.postalCode ?? null,
-          country: currentCompany.country ?? null,
-          notes: currentCompany.notes ?? null,
-        },
-        organizationId,
-      );
+  const handleSaveCompany = async () => {
+    setSaving(true);
+    try {
+      if (editingId) {
+        await updateCompanyMutation.mutateAsync({
+          input: {
+            rowId: editingId,
+            patch: {
+              name: currentCompany.name,
+              website: currentCompany.website,
+              industry: currentCompany.industry,
+              phone: currentCompany.phone,
+              email: currentCompany.email,
+              addressLine1: currentCompany.addressLine1,
+              addressLine2: currentCompany.addressLine2,
+              city: currentCompany.city,
+              state: currentCompany.state,
+              postalCode: currentCompany.postalCode,
+              country: currentCompany.country,
+              notes: currentCompany.notes,
+            },
+          },
+        });
+      } else {
+        await createCompanyMutation.mutateAsync({
+          input: {
+            company: {
+              organizationId,
+              name: currentCompany.name ?? "",
+              website: currentCompany.website ?? null,
+              industry: currentCompany.industry ?? null,
+              phone: currentCompany.phone ?? null,
+              email: currentCompany.email ?? null,
+              addressLine1: currentCompany.addressLine1 ?? null,
+              addressLine2: currentCompany.addressLine2 ?? null,
+              city: currentCompany.city ?? null,
+              state: currentCompany.state ?? null,
+              postalCode: currentCompany.postalCode ?? null,
+              country: currentCompany.country ?? null,
+              notes: currentCompany.notes ?? null,
+            },
+          },
+        });
+      }
+      invalidateCompanies();
+      setViewMode("list");
+      setEditingId(null);
+    } finally {
+      setSaving(false);
     }
-    setViewMode("list");
-    setEditingId(null);
   };
 
   const handleDeleteCompany = (id: string) => {
@@ -152,26 +280,48 @@ const PeoplePage = () => {
     setViewMode("edit");
   };
 
-  const handleSaveContact = () => {
-    if (editingId) {
-      updatePerson(editingId, currentPerson);
-    } else {
-      createPerson(
-        {
-          firstName: currentPerson.firstName ?? "",
-          lastName: currentPerson.lastName ?? "",
-          emails: currentPerson.emails ?? [],
-          phone: currentPerson.phone ?? null,
-          avatarUrl: currentPerson.avatarUrl ?? null,
-          tags: currentPerson.tags ?? null,
-          internal: currentPerson.internal ?? false,
-          notes: currentPerson.notes ?? null,
-        },
-        organizationId,
-      );
+  const handleSaveContact = async () => {
+    setSaving(true);
+    try {
+      if (editingId) {
+        await updatePersonMutation.mutateAsync({
+          input: {
+            rowId: editingId,
+            patch: {
+              firstName: currentPerson.firstName,
+              lastName: currentPerson.lastName,
+              emails: currentPerson.emails,
+              phone: currentPerson.phone,
+              avatarUrl: currentPerson.avatarUrl,
+              tags: currentPerson.tags,
+              internal: currentPerson.internal,
+              notes: currentPerson.notes,
+            },
+          },
+        });
+      } else {
+        await createPersonMutation.mutateAsync({
+          input: {
+            person: {
+              organizationId,
+              firstName: currentPerson.firstName ?? "",
+              lastName: currentPerson.lastName ?? "",
+              emails: currentPerson.emails ?? [],
+              phone: currentPerson.phone ?? null,
+              avatarUrl: currentPerson.avatarUrl ?? null,
+              tags: currentPerson.tags ?? null,
+              internal: currentPerson.internal ?? false,
+              notes: currentPerson.notes ?? null,
+            },
+          },
+        });
+      }
+      invalidatePeople();
+      setViewMode("list");
+      setEditingId(null);
+    } finally {
+      setSaving(false);
     }
-    setViewMode("list");
-    setEditingId(null);
   };
 
   const handleDeleteContact = (id: string) => {
@@ -310,6 +460,8 @@ const PeoplePage = () => {
         onOpenChange={setImportExportOpen}
         context={activeTab === "companies" ? "companies" : "contacts"}
         organizationId={organizationId}
+        companies={companies}
+        people={people}
       />
 
       <ConfirmDialog
@@ -319,9 +471,13 @@ const PeoplePage = () => {
         description="Are you sure you want to delete this record? This action cannot be undone."
         onConfirm={() => {
           if (deleteConfirm.type === "company") {
-            deleteCompany(deleteConfirm.id);
+            deleteCompanyMutation.mutate({
+              input: { rowId: deleteConfirm.id },
+            });
           } else {
-            deletePerson(deleteConfirm.id);
+            deletePersonMutation.mutate({
+              input: { rowId: deleteConfirm.id },
+            });
           }
         }}
       />
@@ -405,7 +561,7 @@ const CompaniesTable = ({
                     type="button"
                     onClick={() => onEdit(company)}
                     className="text-gray-500 hover:text-gray-700"
-                    title="Edit"
+                    aria-label="Edit company"
                   >
                     <Edit size={16} />
                   </button>
@@ -413,7 +569,7 @@ const CompaniesTable = ({
                     type="button"
                     onClick={() => onDelete(company.id)}
                     className="text-red-500 hover:text-red-700"
-                    title="Delete"
+                    aria-label="Delete company"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -442,7 +598,7 @@ const EmailActionButton = ({
       <a
         href={`mailto:${emails[0]}?subject=Hello ${name}`}
         className="text-gray-500 hover:text-gray-700"
-        title={`Email ${emails[0]}`}
+        aria-label={`Email ${emails[0]}`}
       >
         <Mail size={16} />
       </a>
@@ -455,7 +611,7 @@ const EmailActionButton = ({
         type="button"
         onClick={() => setOpen(!open)}
         className="text-gray-500 hover:text-gray-700"
-        title="Send email"
+        aria-label="Send email"
       >
         <Mail size={16} />
       </button>
@@ -687,7 +843,7 @@ const ContactsTable = ({
                       type="button"
                       onClick={() => onEdit(person)}
                       className="text-gray-500 hover:text-gray-700"
-                      title="Edit"
+                      aria-label="Edit contact"
                     >
                       <Edit size={16} />
                     </button>
@@ -695,7 +851,7 @@ const ContactsTable = ({
                       type="button"
                       onClick={() => onDelete(person.id)}
                       className="text-red-500 hover:text-red-700"
-                      title="Delete"
+                      aria-label="Delete contact"
                     >
                       <Trash2 size={16} />
                     </button>

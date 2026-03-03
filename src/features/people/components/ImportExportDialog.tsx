@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Download, Upload } from "lucide-react";
 import Papa from "papaparse";
 import { useRef, useState } from "react";
@@ -14,13 +15,22 @@ import {
   TabsRoot,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import {
+  useAllCompaniesQuery,
+  useAllPeopleQuery,
+  useCreateCompanyMutation,
+  useCreatePersonMutation,
+} from "@/generated/graphql";
+
+import type { Company, Person } from "@/features/people/types";
 
 interface ImportExportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   context: "contacts" | "companies";
   organizationId: string;
+  companies: Company[];
+  people: Person[];
 }
 
 const ImportExportDialog = ({
@@ -28,15 +38,26 @@ const ImportExportDialog = ({
   onOpenChange,
   context,
   organizationId,
+  companies,
+  people,
 }: ImportExportDialogProps) => {
-  const { getCompaniesForOrg, getPeopleForOrg, importPeople, importCompanies } =
-    usePeopleStore();
+  const queryClient = useQueryClient();
   const [importTab, setImportTab] = useState<string>("export");
   const [importError, setImportError] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const people = getPeopleForOrg(organizationId);
-  const companies = getCompaniesForOrg(organizationId);
+  const createCompanyMutation = useCreateCompanyMutation();
+  const createPersonMutation = useCreatePersonMutation();
+
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({
+      queryKey: useAllCompaniesQuery.getKey({ organizationId }),
+    });
+    queryClient.invalidateQueries({
+      queryKey: useAllPeopleQuery.getKey({ organizationId }),
+    });
+  };
 
   const exportJSON = () => {
     const data = context === "contacts" ? people : companies;
@@ -71,14 +92,69 @@ const ImportExportDialog = ({
     URL.revokeObjectURL(url);
   };
 
+  const importCompanies = async (
+    records: Omit<
+      Company,
+      "id" | "createdAt" | "updatedAt" | "organizationId"
+    >[],
+  ) => {
+    for (const record of records) {
+      await createCompanyMutation.mutateAsync({
+        input: {
+          company: {
+            organizationId,
+            name: record.name,
+            website: record.website ?? null,
+            industry: record.industry ?? null,
+            phone: record.phone ?? null,
+            email: record.email ?? null,
+            addressLine1: record.addressLine1 ?? null,
+            addressLine2: record.addressLine2 ?? null,
+            city: record.city ?? null,
+            state: record.state ?? null,
+            postalCode: record.postalCode ?? null,
+            country: record.country ?? null,
+            notes: record.notes ?? null,
+          },
+        },
+      });
+    }
+  };
+
+  const importPeople = async (
+    records: Omit<
+      Person,
+      "id" | "createdAt" | "updatedAt" | "organizationId"
+    >[],
+  ) => {
+    for (const record of records) {
+      await createPersonMutation.mutateAsync({
+        input: {
+          person: {
+            organizationId,
+            firstName: record.firstName,
+            lastName: record.lastName,
+            emails: record.emails ?? [],
+            phone: record.phone ?? null,
+            avatarUrl: record.avatarUrl ?? null,
+            tags: record.tags ?? null,
+            internal: record.internal ?? false,
+            notes: record.notes ?? null,
+          },
+        },
+      });
+    }
+  };
+
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImportError(null);
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
+        setImporting(true);
         const text = event.target?.result as string;
 
         if (file.name.endsWith(".json")) {
@@ -88,9 +164,9 @@ const ImportExportDialog = ({
             return;
           }
           if (context === "contacts") {
-            importPeople(data, organizationId);
+            await importPeople(data);
           } else {
-            importCompanies(data, organizationId);
+            await importCompanies(data);
           }
         } else if (file.name.endsWith(".csv")) {
           const result = Papa.parse<Record<string, string>>(text, {
@@ -113,7 +189,7 @@ const ImportExportDialog = ({
               internal: row.internal === "true",
               notes: row.notes || null,
             }));
-            importPeople(parsed, organizationId);
+            await importPeople(parsed);
           } else {
             const parsed = result.data.map((row) => ({
               name: row.name ?? "",
@@ -129,21 +205,25 @@ const ImportExportDialog = ({
               country: row.country || null,
               notes: row.notes || null,
             }));
-            importCompanies(parsed, organizationId);
+            await importCompanies(parsed);
           }
         } else {
           setImportError("Unsupported file type. Use .json or .csv");
           return;
         }
 
+        invalidateAll();
         onOpenChange(false);
       } catch (err) {
         setImportError(
           err instanceof Error ? err.message : "Failed to parse file",
         );
+      } finally {
+        setImporting(false);
       }
     };
 
+    reader.onerror = () => setImportError("Failed to read file");
     reader.readAsText(file);
     // Reset input
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -211,8 +291,12 @@ const ImportExportDialog = ({
                 type="file"
                 accept=".json,.csv"
                 onChange={handleImport}
+                disabled={importing}
                 className="block w-full text-gray-500 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-4 file:py-2 file:font-medium file:text-sm file:text-teal-700 hover:file:bg-teal-100"
               />
+              {importing && (
+                <p className="text-gray-500 text-sm">Importing...</p>
+              )}
               {importError && (
                 <p className="rounded-lg bg-red-50 px-3 py-2 text-red-700 text-sm">
                   {importError}

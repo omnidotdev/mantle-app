@@ -70,6 +70,7 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
                 type="button"
                 onClick={() => removeEmail(index)}
                 className="text-gray-400 hover:text-gray-600"
+                aria-label={`Remove ${email}`}
               >
                 <X size={14} />
               </button>

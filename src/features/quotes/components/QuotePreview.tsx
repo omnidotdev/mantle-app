@@ -1,7 +1,9 @@
+import { useMemo } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/features/invoices/types/invoice";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -39,13 +41,37 @@ const QuotePreview = ({
   organizationId,
 }: QuotePreviewProps) => {
   const { getProfileForOrg } = useSettingsStore();
-  const { getCompany, getPerson } = usePeopleStore();
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
 
-  const company = quote.companyId ? getCompany(quote.companyId) : null;
-  const contact = quote.contactId ? getPerson(quote.contactId) : null;
+  const { data: companiesData } = useAllCompaniesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const { data: peopleData } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const company = useMemo(() => {
+    if (!quote.companyId) return null;
+    return (
+      companiesData?.companies?.nodes?.find(
+        (n) => n?.rowId === quote.companyId,
+      ) ?? null
+    );
+  }, [companiesData, quote.companyId]);
+
+  const contact = useMemo(() => {
+    if (!quote.contactId) return null;
+    return (
+      peopleData?.people?.nodes?.find((n) => n?.rowId === quote.contactId) ??
+      null
+    );
+  }, [peopleData, quote.contactId]);
+
   const resolvedCompanyName = company?.name || "";
   const resolvedContactName = contact
     ? `${contact.firstName} ${contact.lastName}`

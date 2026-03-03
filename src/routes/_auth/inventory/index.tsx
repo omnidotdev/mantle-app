@@ -1,6 +1,15 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Edit, Eye, Package, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import {
+  ArrowLeft,
+  Edit,
+  Eye,
+  Loader2,
+  Package,
+  Plus,
+  Trash2,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -8,8 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AdjustmentLog from "@/features/inventory/components/AdjustmentLog";
 import ProductForm from "@/features/inventory/components/ProductForm";
-import { useInventoryStore } from "@/features/inventory/store/inventoryStore";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import {
+  useAllProductsQuery,
+  useCreateInventoryAdjustmentMutation,
+  useCreateProductMutation,
+  useDeleteProductMutation,
+  useInventoryAdjustmentsQuery,
+  useUpdateProductMutation,
+} from "@/generated/graphql";
 
 import type { Product } from "@/features/inventory/types/product";
 
@@ -27,20 +43,13 @@ const defaultProduct: Partial<Product> = {
 
 const InventoryPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const {
-    getProductsForOrg,
-    createProduct,
-    updateProduct,
-    deleteProduct,
-    getProduct,
-    addAdjustment,
-    getAdjustmentsForProduct,
-  } = useInventoryStore();
+  const queryClient = useQueryClient();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [currentProduct, setCurrentProduct] =
     useState<Partial<Product>>(defaultProduct);
+  const [saving, setSaving] = useState(false);
 
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
@@ -52,7 +61,81 @@ const InventoryPage = () => {
   const [adjustmentQuantity, setAdjustmentQuantity] = useState("");
   const [showAdjustmentForm, setShowAdjustmentForm] = useState(false);
 
-  const products = organizationId ? getProductsForOrg(organizationId) : [];
+  const { data: productsData, isLoading } = useAllProductsQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const products = useMemo(
+    () =>
+      (productsData?.products?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            organizationId: node.organizationId,
+            name: node.name,
+            description: node.description ?? null,
+            sku: node.sku ?? null,
+            unitPrice: node.unitPrice ?? null,
+            currentQuantity: node.currentQuantity ?? 0,
+            lowStockThreshold: node.lowStockThreshold ?? null,
+            isActive: node.isActive ?? true,
+            createdAt: node.createdAt ?? "",
+            updatedAt: node.updatedAt ?? "",
+          },
+        ];
+      }),
+    [productsData],
+  );
+
+  const { data: adjustmentsData } = useInventoryAdjustmentsQuery(
+    { productId: editingId ?? "" },
+    { enabled: !!editingId && viewMode === "detail" },
+  );
+
+  const adjustments = useMemo(
+    () =>
+      (adjustmentsData?.inventoryAdjustments?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            productId: node.productId,
+            quantityChange: node.quantityChange,
+            reason: node.reason,
+            referenceId: node.referenceId ?? null,
+            createdAt: node.createdAt ?? "",
+          },
+        ];
+      }),
+    [adjustmentsData],
+  );
+
+  const invalidateProducts = () => {
+    queryClient.invalidateQueries({
+      queryKey: useAllProductsQuery.getKey({
+        organizationId: organizationId ?? "",
+      }),
+    });
+  };
+
+  const invalidateAdjustments = () => {
+    if (editingId) {
+      queryClient.invalidateQueries({
+        queryKey: useInventoryAdjustmentsQuery.getKey({
+          productId: editingId,
+        }),
+      });
+    }
+  };
+
+  const createProductMutation = useCreateProductMutation();
+  const updateProductMutation = useUpdateProductMutation();
+  const deleteProductMutation = useDeleteProductMutation({
+    onSuccess: invalidateProducts,
+  });
+  const createAdjustmentMutation = useCreateInventoryAdjustmentMutation();
 
   if (!organizationId) {
     return (
@@ -60,6 +143,17 @@ const InventoryPage = () => {
         <p className="text-gray-500">
           Select an organization to view inventory
         </p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <Loader2
+          className="h-8 w-8 animate-spin text-gray-400"
+          aria-label="Loading inventory"
+        />
       </div>
     );
   }
@@ -82,25 +176,46 @@ const InventoryPage = () => {
     setViewMode("detail");
   };
 
-  const handleSaveProduct = () => {
-    if (editingId) {
-      updateProduct(editingId, currentProduct);
-    } else {
-      createProduct(
-        {
-          name: currentProduct.name ?? "",
-          description: currentProduct.description ?? null,
-          sku: currentProduct.sku ?? null,
-          unitPrice: currentProduct.unitPrice ?? null,
-          currentQuantity: currentProduct.currentQuantity ?? 0,
-          lowStockThreshold: currentProduct.lowStockThreshold ?? null,
-          isActive: currentProduct.isActive ?? true,
-        },
-        organizationId,
-      );
+  const handleSaveProduct = async () => {
+    setSaving(true);
+    try {
+      if (editingId) {
+        await updateProductMutation.mutateAsync({
+          input: {
+            rowId: editingId,
+            patch: {
+              name: currentProduct.name,
+              description: currentProduct.description,
+              sku: currentProduct.sku,
+              unitPrice: currentProduct.unitPrice,
+              currentQuantity: currentProduct.currentQuantity,
+              lowStockThreshold: currentProduct.lowStockThreshold,
+              isActive: currentProduct.isActive,
+            },
+          },
+        });
+      } else {
+        await createProductMutation.mutateAsync({
+          input: {
+            product: {
+              organizationId,
+              name: currentProduct.name ?? "",
+              description: currentProduct.description ?? null,
+              sku: currentProduct.sku ?? null,
+              unitPrice: currentProduct.unitPrice ?? null,
+              currentQuantity: currentProduct.currentQuantity ?? 0,
+              lowStockThreshold: currentProduct.lowStockThreshold ?? null,
+              isActive: currentProduct.isActive ?? true,
+            },
+          },
+        });
+      }
+      invalidateProducts();
+      setViewMode("list");
+      setEditingId(null);
+    } finally {
+      setSaving(false);
     }
-    setViewMode("list");
-    setEditingId(null);
   };
 
   const handleDeleteProduct = (id: string) => {
@@ -120,15 +235,22 @@ const InventoryPage = () => {
     setAdjustmentQuantity("");
   };
 
-  const handleAddAdjustment = () => {
+  const handleAddAdjustment = async () => {
     if (!editingId || !adjustmentReason.trim() || !adjustmentQuantity) return;
 
-    addAdjustment({
-      productId: editingId,
-      quantityChange: Number.parseInt(adjustmentQuantity, 10),
-      reason: adjustmentReason.trim(),
-      referenceId: null,
+    await createAdjustmentMutation.mutateAsync({
+      input: {
+        inventoryAdjustment: {
+          productId: editingId,
+          quantityChange: Number.parseInt(adjustmentQuantity, 10),
+          reason: adjustmentReason.trim(),
+          referenceId: null,
+        },
+      },
     });
+
+    invalidateProducts();
+    invalidateAdjustments();
 
     setAdjustmentReason("");
     setAdjustmentQuantity("");
@@ -137,7 +259,7 @@ const InventoryPage = () => {
 
   // Detail view
   if (viewMode === "detail" && editingId) {
-    const product = getProduct(editingId);
+    const product = products.find((p) => p.id === editingId);
 
     if (!product) {
       return (
@@ -146,8 +268,6 @@ const InventoryPage = () => {
         </div>
       );
     }
-
-    const adjustments = getAdjustmentsForProduct(editingId);
 
     return (
       <div className="p-6">
@@ -330,7 +450,11 @@ const InventoryPage = () => {
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title="Delete Product"
         description="Are you sure you want to delete this product? This action cannot be undone."
-        onConfirm={() => deleteProduct(deleteConfirm.id)}
+        onConfirm={() =>
+          deleteProductMutation.mutate({
+            input: { rowId: deleteConfirm.id },
+          })
+        }
       />
     </div>
   );
@@ -429,7 +553,7 @@ const ProductsTable = ({
                     type="button"
                     onClick={() => onView(product)}
                     className="text-gray-500 hover:text-gray-700"
-                    title="View details"
+                    aria-label="View product details"
                   >
                     <Eye size={16} />
                   </button>
@@ -437,7 +561,7 @@ const ProductsTable = ({
                     type="button"
                     onClick={() => onEdit(product)}
                     className="text-gray-500 hover:text-gray-700"
-                    title="Edit"
+                    aria-label="Edit product"
                   >
                     <Edit size={16} />
                   </button>
@@ -445,7 +569,7 @@ const ProductsTable = ({
                     type="button"
                     onClick={() => onDelete(product.id)}
                     className="text-red-500 hover:text-red-700"
-                    title="Delete"
+                    aria-label="Delete product"
                   >
                     <Trash2 size={16} />
                   </button>

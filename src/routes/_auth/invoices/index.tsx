@@ -1,7 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Edit, Eye, Loader2, Plus, Search, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import html2canvas from "html2canvas-pro";
+import jsPDF from "jspdf";
+import {
+  Download,
+  Edit,
+  Eye,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
@@ -69,6 +80,8 @@ const InvoicesPage = () => {
     open: boolean;
     id: string;
   }>({ open: false, id: "" });
+
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [currentInvoice, setCurrentInvoice] =
     useState<Partial<Invoice>>(defaultInvoice);
@@ -300,7 +313,7 @@ const InvoicesPage = () => {
             invoice: {
               organizationId: organizationId ?? "",
               invoiceNumber: currentInvoice.invoiceNumber ?? "",
-              companyId: currentInvoice.companyId ?? "",
+              companyId: currentInvoice.companyId || undefined,
               contactId: currentInvoice.contactId,
               status: currentInvoice.status ?? "draft",
               issueDate: currentInvoice.issueDate
@@ -326,10 +339,37 @@ const InvoicesPage = () => {
       }
 
       invalidateInvoices();
+      toast.success("Invoice saved");
       reset();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to save invoice";
+      toast.error(message);
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleDownloadPdf = async () => {
+    const el = previewRef.current;
+    if (!el) return;
+
+    toast.info("Generating PDF...");
+
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save(`invoice_${currentInvoice.invoiceNumber || "draft"}.pdf`);
   };
 
   const handleDelete = (id: string) => {
@@ -575,6 +615,14 @@ const InvoicesPage = () => {
             </button>
             <button
               type="button"
+              onClick={handleDownloadPdf}
+              className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+            >
+              <Download size={14} />
+              Download PDF
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 const originalTitle = document.title;
                 document.title = `invoice_${currentInvoice.invoiceNumber}`;
@@ -588,11 +636,13 @@ const InvoicesPage = () => {
           </div>
         </div>
 
-        <InvoicePreview
-          invoice={currentInvoice}
-          lineItems={currentLineItems}
-          organizationId={organizationId}
-        />
+        <div ref={previewRef}>
+          <InvoicePreview
+            invoice={currentInvoice}
+            lineItems={currentLineItems}
+            organizationId={organizationId}
+          />
+        </div>
       </div>
     );
   }

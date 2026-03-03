@@ -12,6 +12,7 @@ interface ContactFormProps {
   onPersonChange: (person: Partial<Person>) => void;
   onSave: () => void;
   onCancel: () => void;
+  saving?: boolean;
 }
 
 const ContactForm = ({
@@ -19,6 +20,7 @@ const ContactForm = ({
   onPersonChange,
   onSave,
   onCancel,
+  saving,
 }: ContactFormProps) => {
   const handleChange = (
     field: keyof Person,
@@ -123,7 +125,7 @@ const ContactForm = ({
         <button
           type="button"
           onClick={onSave}
-          disabled={!isValid}
+          disabled={!isValid || saving}
           className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save

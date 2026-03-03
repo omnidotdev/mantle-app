@@ -63,9 +63,7 @@ const AppSidebarFooter = () => {
             ) : (
               <PanelLeftIcon className="size-4" />
             )}
-            <span>
-              {open ? "Collapse" : "Expand"} Sidebar
-            </span>
+            <span>{open ? "Collapse" : "Expand"} Sidebar</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
 

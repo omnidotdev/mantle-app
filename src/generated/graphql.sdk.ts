@@ -16,10 +16,21 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A floating point number that requires more precision than IEEE 754 binary 64 */
   BigFloat: { input: string; output: string; }
+  /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
+  /** A calendar date in YYYY-MM-DD format. */
   Date: { input: Date; output: string; }
+  /**
+   * A point in time as described by the [ISO
+   * 8601](https://en.wikipedia.org/wiki/ISO_8601) and, if it has a timezone, [RFC
+   * 3339](https://datatracker.ietf.org/doc/html/rfc3339) standards. Input values
+   * that do not conform to both ISO 8601 and RFC 3339 may be coerced, which may lead
+   * to unexpected results.
+   */
   Datetime: { input: Date; output: string; }
+  /** A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
   UUID: { input: string; output: string; }
 };
 
@@ -1117,9 +1128,10 @@ export type InventoryAdjustmentPatch = {
 
 export type Invoice = Node & {
   __typename?: 'Invoice';
+  billTo?: Maybe<Scalars['String']['output']>;
   /** Reads a single `Company` that is related to this `Invoice`. */
   company?: Maybe<Company>;
-  companyId: Scalars['UUID']['output'];
+  companyId?: Maybe<Scalars['UUID']['output']>;
   /** Reads a single `Person` that is related to this `Invoice`. */
   contact?: Maybe<Person>;
   contactId?: Maybe<Scalars['UUID']['output']>;
@@ -1200,6 +1212,8 @@ export type InvoiceFilter = {
   and?: InputMaybe<Array<InvoiceFilter>>;
   /** Filter by the object’s `company` relation. */
   company?: InputMaybe<CompanyFilter>;
+  /** A related `company` exists. */
+  companyExists?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `companyId` field. */
   companyId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `contact` relation. */
@@ -1226,7 +1240,8 @@ export type InvoiceFilter = {
 
 /** An input for mutations affecting `Invoice` */
 export type InvoiceInput = {
-  companyId: Scalars['UUID']['input'];
+  billTo?: InputMaybe<Scalars['String']['input']>;
+  companyId?: InputMaybe<Scalars['UUID']['input']>;
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
@@ -1372,6 +1387,7 @@ export enum InvoiceOrderBy {
 
 /** Represents an update to a `Invoice`. Fields that are set will be updated. */
 export type InvoicePatch = {
+  billTo?: InputMaybe<Scalars['String']['input']>;
   companyId?: InputMaybe<Scalars['UUID']['input']>;
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
@@ -3293,7 +3309,7 @@ export type AllInvoicesQueryVariables = Exact<{
 }>;
 
 
-export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId: string, contactId?: string | null, status: string, issueDate: string, dueDate: string, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId?: string | null, contactId?: string | null, billTo?: string | null, status: string, issueDate: string, dueDate: string, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateInvoiceMutationVariables = Exact<{
   input: CreateInvoiceInput;
@@ -3428,6 +3444,20 @@ export type DeleteQuoteMutationVariables = Exact<{
 
 export type DeleteQuoteMutation = { __typename?: 'Mutation', deleteQuote?: { __typename?: 'DeleteQuotePayload', deletedQuoteId?: string | null } | null };
 
+export type CreateQuoteLineItemMutationVariables = Exact<{
+  input: CreateQuoteLineItemInput;
+}>;
+
+
+export type CreateQuoteLineItemMutation = { __typename?: 'Mutation', createQuoteLineItem?: { __typename?: 'CreateQuoteLineItemPayload', quoteLineItem?: { __typename?: 'QuoteLineItem', rowId: string } | null } | null };
+
+export type DeleteQuoteLineItemMutationVariables = Exact<{
+  input: DeleteQuoteLineItemInput;
+}>;
+
+
+export type DeleteQuoteLineItemMutation = { __typename?: 'Mutation', deleteQuoteLineItem?: { __typename?: 'DeleteQuoteLineItemPayload', deletedQuoteLineItemId?: string | null } | null };
+
 
 export const AllCompaniesDocument = gql`
     query AllCompanies($organizationId: String!) {
@@ -3489,6 +3519,7 @@ export const AllInvoicesDocument = gql`
       invoiceNumber
       companyId
       contactId
+      billTo
       status
       issueDate
       dueDate
@@ -3779,6 +3810,22 @@ export const DeleteQuoteDocument = gql`
   }
 }
     `;
+export const CreateQuoteLineItemDocument = gql`
+    mutation CreateQuoteLineItem($input: CreateQuoteLineItemInput!) {
+  createQuoteLineItem(input: $input) {
+    quoteLineItem {
+      rowId
+    }
+  }
+}
+    `;
+export const DeleteQuoteLineItemDocument = gql`
+    mutation DeleteQuoteLineItem($input: DeleteQuoteLineItemInput!) {
+  deleteQuoteLineItem(input: $input) {
+    deletedQuoteLineItemId
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -3858,6 +3905,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteQuote(variables: DeleteQuoteMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteQuoteMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteQuoteMutation>({ document: DeleteQuoteDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteQuote', 'mutation', variables);
+    },
+    CreateQuoteLineItem(variables: CreateQuoteLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateQuoteLineItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateQuoteLineItemMutation>({ document: CreateQuoteLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateQuoteLineItem', 'mutation', variables);
+    },
+    DeleteQuoteLineItem(variables: DeleteQuoteLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteQuoteLineItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteQuoteLineItemMutation>({ document: DeleteQuoteLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteQuoteLineItem', 'mutation', variables);
     }
   };
 }

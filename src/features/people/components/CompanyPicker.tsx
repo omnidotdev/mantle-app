@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import {
   Select,
   SelectContent,
@@ -5,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import { useAllCompaniesQuery } from "@/generated/graphql";
 
 interface CompanyPickerProps {
   value: string;
@@ -18,10 +20,19 @@ const CompanyPicker = ({
   onValueChange,
   organizationId,
 }: CompanyPickerProps) => {
-  const { companies: allCompanies, getCompaniesForOrg } = usePeopleStore();
-  const companies = organizationId
-    ? getCompaniesForOrg(organizationId)
-    : allCompanies;
+  const { data } = useAllCompaniesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const companies = useMemo(
+    () =>
+      (data?.companies?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [{ id: node.rowId, name: node.name }];
+      }),
+    [data],
+  );
 
   const items = companies.map((c) => c.id);
 

@@ -1,5 +1,7 @@
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import { useMemo } from "react";
+
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import ContractHeader from "./contract/ContractHeader";
 import ContractLegal from "./contract/ContractLegal";
 import ContractParties from "./contract/ContractParties";
@@ -22,15 +24,39 @@ const ContractPreview = ({
   organizationId,
 }: ContractPreviewProps) => {
   const { getProfileForOrg } = useSettingsStore();
-  const { getCompany, getPerson } = usePeopleStore();
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
   const currency = quote.currency || "USD";
   const date = quote.validUntil || new Date().toISOString().split("T")[0];
 
-  const company = quote.companyId ? getCompany(quote.companyId) : null;
-  const contact = quote.contactId ? getPerson(quote.contactId) : null;
+  const { data: companiesData } = useAllCompaniesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const { data: peopleData } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const company = useMemo(() => {
+    if (!quote.companyId) return null;
+    return (
+      companiesData?.companies?.nodes?.find(
+        (n) => n?.rowId === quote.companyId,
+      ) ?? null
+    );
+  }, [companiesData, quote.companyId]);
+
+  const contact = useMemo(() => {
+    if (!quote.contactId) return null;
+    return (
+      peopleData?.people?.nodes?.find((n) => n?.rowId === quote.contactId) ??
+      null
+    );
+  }, [peopleData, quote.contactId]);
+
   const resolvedClientName =
     quote.clientName ||
     (contact ? `${contact.firstName} ${contact.lastName}` : "");

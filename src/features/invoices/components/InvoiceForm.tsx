@@ -4,7 +4,10 @@ import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { formatCurrency } from "@/features/invoices/types/invoice";
+import {
+  INVOICE_STATUSES,
+  formatCurrency,
+} from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type {
@@ -277,12 +280,18 @@ const InvoiceForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="invoice-status">Status</Label>
-            <Input
+            <select
               id="invoice-status"
               value={invoice.status ?? "draft"}
-              readOnly
-              className="bg-gray-50 capitalize"
-            />
+              onChange={(e) => handleChange("status", e.target.value)}
+              className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              {INVOICE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -528,8 +537,7 @@ const InvoiceForm = ({
         <button
           type="button"
           onClick={onSave}
-          disabled={!invoice.billTo?.trim() && !invoice.companyId?.trim()}
-          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
         >
           Save
         </button>

@@ -9,6 +9,7 @@ interface CompanyFormProps {
   onCompanyChange: (company: Partial<Company>) => void;
   onSave: () => void;
   onCancel: () => void;
+  saving?: boolean;
 }
 
 const CompanyForm = ({
@@ -16,6 +17,7 @@ const CompanyForm = ({
   onCompanyChange,
   onSave,
   onCancel,
+  saving,
 }: CompanyFormProps) => {
   const handleChange = (field: keyof Company, value: string | null) => {
     onCompanyChange({ ...company, [field]: value });
@@ -179,7 +181,7 @@ const CompanyForm = ({
         <button
           type="button"
           onClick={onSave}
-          disabled={!company.name?.trim()}
+          disabled={!company.name?.trim() || saving}
           className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save

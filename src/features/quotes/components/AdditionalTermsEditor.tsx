@@ -65,6 +65,7 @@ const AdditionalTermsEditor = ({
                 type="button"
                 onClick={() => removeTerm(index)}
                 className="text-gray-400 hover:text-red-500"
+                aria-label="Remove term"
               >
                 <X size={14} />
               </button>

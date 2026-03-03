@@ -93,6 +93,7 @@ const TagList = ({ tags, onChange }: TagListProps) => {
                 type="button"
                 onClick={() => removeTag(tag)}
                 className="opacity-60 hover:opacity-100"
+                aria-label={`Remove ${tag} tag`}
               >
                 <X size={12} />
               </button>

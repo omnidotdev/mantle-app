@@ -1,7 +1,9 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { Toaster } from "sonner";
 
 import AppSidebar from "@/components/core/AppSidebar";
+import ErrorBoundary from "@/components/core/ErrorBoundary";
 import {
   SidebarInset,
   SidebarProvider,
@@ -50,10 +52,13 @@ function AuthLayout() {
             <div className="flex items-center p-2 md:hidden">
               <SidebarTrigger />
             </div>
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </SidebarInset>
         </div>
       </SidebarProvider>
+      <Toaster position="bottom-right" richColors />
     </OrganizationProvider>
   );
 }

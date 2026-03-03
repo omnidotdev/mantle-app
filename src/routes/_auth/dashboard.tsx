@@ -1,10 +1,14 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { DollarSign, FileText, Loader2, TrendingUp, Users } from "lucide-react";
+import { useMemo } from "react";
 
 import { formatCurrency } from "@/features/invoices/types/invoice";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
-import { useQuoteStore } from "@/features/quotes/store/quoteStore";
-import { useAllInvoicesQuery } from "@/generated/graphql";
+import {
+  useAllCompaniesQuery,
+  useAllInvoicesQuery,
+  useAllPeopleQuery,
+  useAllQuotesQuery,
+} from "@/generated/graphql";
 import appConfig from "@/lib/config/app.config";
 
 const statusColors: Record<string, string> = {
@@ -16,48 +20,99 @@ const statusColors: Record<string, string> = {
 
 const DashboardPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { getCompaniesForOrg, getPeopleForOrg } = usePeopleStore();
-  const { getQuotesForOrg } = useQuoteStore();
 
-  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
-  const people = organizationId ? getPeopleForOrg(organizationId) : [];
-  const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
+  const { data: companiesData, isLoading: companiesLoading } =
+    useAllCompaniesQuery(
+      { organizationId: organizationId ?? "" },
+      { enabled: !!organizationId },
+    );
+
+  const { data: peopleData, isLoading: peopleLoading } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const { data: quotesData, isLoading: quotesLoading } = useAllQuotesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
 
   const { data: invoiceData, isLoading: invoicesLoading } = useAllInvoicesQuery(
     { organizationId: organizationId ?? "" },
     { enabled: !!organizationId },
   );
 
-  const invoices = (invoiceData?.invoices?.nodes ?? []).flatMap((node) => {
-    if (!node) return [];
-    return [
-      {
-        id: node.rowId,
-        invoiceNumber: node.invoiceNumber,
-        companyName: node.company?.name ?? null,
-        status: (node.status ?? "draft") as string,
-        total: node.total ?? "0",
-        dueDate: node.dueDate ?? "",
-        issueDate: node.issueDate ?? "",
-        currency: node.currency ?? "USD",
-      },
-    ];
-  });
+  const companiesCount = companiesData?.companies?.nodes?.length ?? 0;
+  const peopleCount = peopleData?.people?.nodes?.length ?? 0;
 
-  const totalInvoiced = invoices.reduce(
-    (sum, inv) => sum + (Number.parseFloat(inv.total) || 0),
-    0,
+  const quotes = useMemo(
+    () =>
+      (quotesData?.quotes?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            status: (node.status ?? "draft") as string,
+          },
+        ];
+      }),
+    [quotesData],
   );
-  const paidTotal = invoices
-    .filter((inv) => inv.status === "paid")
-    .reduce((sum, inv) => sum + (Number.parseFloat(inv.total) || 0), 0);
-  const pendingCount = invoices.filter(
-    (inv) => inv.status !== "paid" && inv.status !== "void",
-  ).length;
 
-  const recentInvoices = [...invoices]
-    .sort((a, b) => b.issueDate.localeCompare(a.issueDate))
-    .slice(0, 5);
+  const invoices = useMemo(
+    () =>
+      (invoiceData?.invoices?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            invoiceNumber: node.invoiceNumber,
+            companyName: node.company?.name ?? null,
+            status: (node.status ?? "draft") as string,
+            total: node.total ?? "0",
+            dueDate: node.dueDate ?? "",
+            issueDate: node.issueDate ?? "",
+            currency: node.currency ?? "USD",
+          },
+        ];
+      }),
+    [invoiceData],
+  );
+
+  const totalInvoiced = useMemo(
+    () =>
+      invoices.reduce(
+        (sum, inv) => sum + (Number.parseFloat(inv.total) || 0),
+        0,
+      ),
+    [invoices],
+  );
+
+  const paidTotal = useMemo(
+    () =>
+      invoices
+        .filter((inv) => inv.status === "paid")
+        .reduce((sum, inv) => sum + (Number.parseFloat(inv.total) || 0), 0),
+    [invoices],
+  );
+
+  const pendingCount = useMemo(
+    () =>
+      invoices.filter((inv) => inv.status !== "paid" && inv.status !== "void")
+        .length,
+    [invoices],
+  );
+
+  const recentInvoices = useMemo(
+    () =>
+      [...invoices]
+        .sort((a, b) => b.issueDate.localeCompare(a.issueDate))
+        .slice(0, 5),
+    [invoices],
+  );
+
+  const isLoadingPeople = companiesLoading || peopleLoading;
+  const isLoadingFinancials = invoicesLoading;
 
   return (
     <div className="p-6">
@@ -79,8 +134,11 @@ const DashboardPage = () => {
               Total Invoiced
             </span>
           </div>
-          {invoicesLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          {isLoadingFinancials ? (
+            <Loader2
+              className="h-5 w-5 animate-spin text-muted-foreground"
+              aria-label="Loading"
+            />
           ) : (
             <p className="font-bold text-lg">
               {formatCurrency(totalInvoiced.toFixed(2))}
@@ -95,8 +153,11 @@ const DashboardPage = () => {
             </div>
             <span className="text-muted-foreground text-xs">Paid</span>
           </div>
-          {invoicesLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          {isLoadingFinancials ? (
+            <Loader2
+              className="h-5 w-5 animate-spin text-muted-foreground"
+              aria-label="Loading"
+            />
           ) : (
             <p className="font-bold text-lg">
               {formatCurrency(paidTotal.toFixed(2))}
@@ -111,8 +172,11 @@ const DashboardPage = () => {
             </div>
             <span className="text-muted-foreground text-xs">Pending</span>
           </div>
-          {invoicesLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          {isLoadingFinancials ? (
+            <Loader2
+              className="h-5 w-5 animate-spin text-muted-foreground"
+              aria-label="Loading"
+            />
           ) : (
             <p className="font-bold text-lg">{pendingCount}</p>
           )}
@@ -125,12 +189,21 @@ const DashboardPage = () => {
             </div>
             <span className="text-muted-foreground text-xs">People</span>
           </div>
-          <p className="font-bold text-lg">
-            {companies.length + people.length}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {companies.length} companies, {people.length} contacts
-          </p>
+          {isLoadingPeople ? (
+            <Loader2
+              className="h-5 w-5 animate-spin text-muted-foreground"
+              aria-label="Loading"
+            />
+          ) : (
+            <>
+              <p className="font-bold text-lg">
+                {companiesCount + peopleCount}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {companiesCount} companies, {peopleCount} contacts
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -197,7 +270,7 @@ const DashboardPage = () => {
       )}
 
       {/* Quote summary */}
-      {quotes.length > 0 && (
+      {!quotesLoading && quotes.length > 0 && (
         <div className="mt-4 rounded-lg border border-border bg-card px-4 py-3">
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground text-sm">

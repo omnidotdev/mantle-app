@@ -1,9 +1,9 @@
 import { Building2, Info, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 
 interface PopulateButtonProps {
   onPopulateClient: (fields: {
@@ -25,9 +25,42 @@ const PopulateButton = ({
   const [selectedContact, setSelectedContact] = useState("");
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  const { getCompany, getPerson } = usePeopleStore();
+  const { data: companiesData } = useAllCompaniesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
 
-  // Close on outside click, ignoring Portal-rendered elements (e.g. Select dropdowns)
+  const { data: peopleData } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const companies = useMemo(
+    () =>
+      (companiesData?.companies?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [{ id: node.rowId, name: node.name }];
+      }),
+    [companiesData],
+  );
+
+  const people = useMemo(
+    () =>
+      (peopleData?.people?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            firstName: node.firstName,
+            lastName: node.lastName,
+            emails: (node.emails as string[]) ?? [],
+          },
+        ];
+      }),
+    [peopleData],
+  );
+
+  // Close on outside click or ESC, ignoring Portal-rendered elements (e.g. Select dropdowns)
   useEffect(() => {
     if (!open) return;
 
@@ -45,15 +78,24 @@ const PopulateButton = ({
       setOpen(false);
     };
 
-    document.addEventListener("pointerdown", handleClickOutside);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
 
-    return () =>
+    document.addEventListener("pointerdown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [open]);
 
   const handleApplyClient = () => {
-    const company = getCompany(selectedCompany);
-    const contact = selectedContact ? getPerson(selectedContact) : null;
+    const company = companies.find((c) => c.id === selectedCompany);
+    const contact = selectedContact
+      ? people.find((p) => p.id === selectedContact)
+      : null;
 
     onPopulateClient({
       companyId: selectedCompany,
@@ -79,6 +121,8 @@ const PopulateButton = ({
       {open && (
         <div
           ref={popoverRef}
+          role="dialog"
+          aria-label="Populate client from Omni"
           className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg"
         >
           {/* Sender info note */}

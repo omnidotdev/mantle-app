@@ -65,8 +65,7 @@ export const Route = createRootRouteWithContext<{
       await fetchSessionAndMaintenanceMode();
 
     // Skip auth when maintenance page is shown
-    if (isMaintenanceMode)
-      return { session: null, isMaintenanceMode, theme };
+    if (isMaintenanceMode) return { session: null, isMaintenanceMode, theme };
 
     return { session, isMaintenanceMode, theme };
   },

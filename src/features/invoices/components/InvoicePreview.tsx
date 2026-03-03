@@ -3,8 +3,8 @@ import { useMemo, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency, formatDate } from "@/features/invoices/types/invoice";
-import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 
 import type {
   Invoice,

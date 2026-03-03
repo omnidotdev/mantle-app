@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import {
   Select,
   SelectContent,
@@ -5,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
+import { useAllPeopleQuery } from "@/generated/graphql";
 
 interface ContactPickerProps {
   value: string;
@@ -18,8 +20,25 @@ const ContactPicker = ({
   onValueChange,
   organizationId,
 }: ContactPickerProps) => {
-  const { people: allPeople, getPeopleForOrg } = usePeopleStore();
-  const people = organizationId ? getPeopleForOrg(organizationId) : allPeople;
+  const { data } = useAllPeopleQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const people = useMemo(
+    () =>
+      (data?.people?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            firstName: node.firstName,
+            lastName: node.lastName,
+          },
+        ];
+      }),
+    [data],
+  );
 
   const items = people.map((p) => p.id);
 

@@ -1,20 +1,25 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
+import { Edit, Eye, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/features/invoices/types/invoice";
-import { usePeopleStore } from "@/features/people/store/peopleStore";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
-import {
-  generateQuoteNumber,
-  useQuoteStore,
-} from "@/features/quotes/store/quoteStore";
+import { generateQuoteNumber } from "@/features/quotes/store/quoteStore";
 import { QUOTE_STATUSES } from "@/features/quotes/types/quote";
+import {
+  useAllCompaniesQuery,
+  useAllQuotesQuery,
+  useCreateQuoteLineItemMutation,
+  useCreateQuoteMutation,
+  useDeleteQuoteLineItemMutation,
+  useDeleteQuoteMutation,
+  useUpdateQuoteMutation,
+} from "@/generated/graphql";
 
-import type { StoredQuote } from "@/features/quotes/store/quoteStore";
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 
 type ViewMode = "list" | "create" | "edit" | "preview";
@@ -106,13 +111,12 @@ const PreviewToggle = ({
 
 const QuotesPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { getQuotesForOrg, createQuote, updateQuote, deleteQuote } =
-    useQuoteStore();
-  const { getCompaniesForOrg } = usePeopleStore();
+  const queryClient = useQueryClient();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
@@ -125,8 +129,101 @@ const QuotesPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewType, setPreviewType] = useState<PreviewType>("quote");
 
-  const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
-  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
+  const { data, isLoading } = useAllQuotesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const { data: companiesData } = useAllCompaniesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const quotes = useMemo(
+    () =>
+      (data?.quotes?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [
+          {
+            id: node.rowId,
+            organizationId: node.organizationId,
+            quoteNumber: node.quoteNumber,
+            companyId: node.companyId ?? "",
+            contactId: node.contactId ?? null,
+            title: node.title,
+            description: node.description ?? null,
+            status: (node.status ?? "draft") as Quote["status"],
+            validUntil: node.validUntil ?? "",
+            terms: node.terms ?? null,
+            notes: node.notes ?? null,
+            subtotal: node.subtotal ?? "0",
+            taxRate: node.taxRate ?? null,
+            taxAmount: node.taxAmount ?? "0",
+            total: node.total ?? "0",
+            currency: node.currency ?? "USD",
+            convertedInvoiceId: node.convertedInvoiceId ?? null,
+            projectType: node.projectType ?? null,
+            timeRange: node.timeRange ?? null,
+            additionalTerms: (node.additionalTerms as string[]) ?? null,
+            clientName: null,
+            clientEmail: null,
+            createdAt: node.createdAt ?? "",
+            updatedAt: node.updatedAt ?? "",
+            company: node.company ?? null,
+            contact: node.contact ?? null,
+            quoteLineItems: (node.quoteLineItems.nodes ?? []).flatMap((li) => {
+              if (!li) return [];
+              return [
+                {
+                  id: li.rowId,
+                  quoteId: li.quoteId,
+                  productId: li.productId ?? null,
+                  description: li.description,
+                  quantity: li.quantity,
+                  unitPrice: li.unitPrice,
+                  amount: li.amount,
+                  pricingType: (li.pricingType ??
+                    "fixed") as QuoteLineItem["pricingType"],
+                  estimatedHours: li.estimatedHours ?? null,
+                  royaltyPercentage: li.royaltyPercentage ?? null,
+                  hourlyRate: li.hourlyRate ?? null,
+                  weeklyCapHours:
+                    li.weeklyCapHours != null
+                      ? String(li.weeklyCapHours)
+                      : null,
+                  monthlyCapHours:
+                    li.monthlyCapHours != null
+                      ? String(li.monthlyCapHours)
+                      : null,
+                  maxCapHours:
+                    li.maxCapHours != null ? String(li.maxCapHours) : null,
+                  royaltyTimeframe:
+                    li.royaltyTimeframe != null
+                      ? String(li.royaltyTimeframe)
+                      : null,
+                  royaltyTimeframeUnit:
+                    (li.royaltyTimeframeUnit as QuoteLineItem["royaltyTimeframeUnit"]) ??
+                    null,
+                  royaltyThreshold: li.royaltyThreshold ?? null,
+                  royaltyBuyoutAmount: li.royaltyBuyoutAmount ?? null,
+                  sortOrder: li.sortOrder ?? 0,
+                },
+              ];
+            }),
+          },
+        ];
+      }),
+    [data],
+  );
+
+  const companies = useMemo(
+    () =>
+      (companiesData?.companies?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+        return [{ id: node.rowId, name: node.name }];
+      }),
+    [companiesData],
+  );
 
   const resolveCompanyName = useCallback(
     (companyId: string | undefined) =>
@@ -160,6 +257,23 @@ const QuotesPage = () => {
     [filteredQuotes],
   );
 
+  const invalidateQuotes = () => {
+    queryClient.invalidateQueries({
+      queryKey: useAllQuotesQuery.getKey({
+        organizationId: organizationId ?? "",
+      }),
+    });
+  };
+
+  const createMutation = useCreateQuoteMutation();
+  const updateMutation = useUpdateQuoteMutation();
+  const createLineItemMutation = useCreateQuoteLineItemMutation();
+  const deleteLineItemMutation = useDeleteQuoteLineItemMutation();
+
+  const deleteMutation = useDeleteQuoteMutation({
+    onSuccess: invalidateQuotes,
+  });
+
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -168,8 +282,19 @@ const QuotesPage = () => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <Loader2
+          className="h-8 w-8 animate-spin text-gray-400"
+          aria-label="Loading quotes"
+        />
+      </div>
+    );
+  }
+
   const handleCreateNew = () => {
-    const quoteNumber = generateQuoteNumber(quotes as StoredQuote[]);
+    const quoteNumber = generateQuoteNumber(quotes);
     setCurrentQuote({ ...defaultQuote, quoteNumber });
     setCurrentLineItems([{ ...defaultLineItem, id: crypto.randomUUID() }]);
     setEditingId(null);
@@ -177,52 +302,151 @@ const QuotesPage = () => {
     setViewMode("create");
   };
 
-  const handleEdit = (quote: StoredQuote) => {
+  const handleEdit = (quote: (typeof quotes)[number]) => {
     setCurrentQuote(quote);
     setCurrentLineItems(
-      quote.quoteLineItems ?? [{ ...defaultLineItem, id: crypto.randomUUID() }],
+      quote.quoteLineItems.length > 0
+        ? quote.quoteLineItems
+        : [{ ...defaultLineItem, id: crypto.randomUUID() }],
     );
     setEditingId(quote.id);
     setViewMode("edit");
   };
 
-  const handlePreview = (quote: StoredQuote) => {
+  const handlePreview = (quote: (typeof quotes)[number]) => {
     setCurrentQuote(quote);
-    setCurrentLineItems(quote.quoteLineItems ?? []);
+    setCurrentLineItems(quote.quoteLineItems);
     setEditingId(quote.id);
     setPreviewType("quote");
     setViewMode("preview");
   };
 
-  const handleSave = () => {
-    const quoteData = {
-      ...currentQuote,
-      quoteNumber: currentQuote.quoteNumber ?? "",
-      companyId: currentQuote.companyId ?? "",
-      title: currentQuote.title ?? "",
-      status: currentQuote.status ?? "draft",
-      validUntil: currentQuote.validUntil ?? "",
-      subtotal: currentQuote.subtotal ?? "0",
-      taxAmount: currentQuote.taxAmount ?? "0",
-      total: currentQuote.total ?? "0",
-      currency: currentQuote.currency ?? "USD",
-      quoteLineItems: currentLineItems as QuoteLineItem[],
-    };
+  const saveLineItems = async (quoteId: string) => {
+    const validItems = currentLineItems.filter((item) =>
+      item.description?.trim(),
+    );
 
-    if (editingId) {
-      updateQuote(editingId, quoteData);
-    } else {
-      createQuote(
-        quoteData as Omit<
-          Quote,
-          "id" | "createdAt" | "updatedAt" | "organizationId"
-        >,
-        organizationId,
-      );
+    await Promise.all(
+      validItems.map((item, index) =>
+        createLineItemMutation.mutateAsync({
+          input: {
+            quoteLineItem: {
+              quoteId,
+              description: item.description ?? "",
+              quantity: item.quantity ?? "1",
+              unitPrice: item.unitPrice ?? "0",
+              amount: item.amount ?? "0",
+              pricingType: item.pricingType ?? "fixed",
+              estimatedHours: item.estimatedHours ?? null,
+              royaltyPercentage: item.royaltyPercentage ?? null,
+              hourlyRate: item.hourlyRate ?? null,
+              weeklyCapHours: item.weeklyCapHours
+                ? Number(item.weeklyCapHours)
+                : null,
+              monthlyCapHours: item.monthlyCapHours
+                ? Number(item.monthlyCapHours)
+                : null,
+              maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
+              royaltyTimeframe: item.royaltyTimeframe
+                ? Number(item.royaltyTimeframe)
+                : null,
+              royaltyTimeframeUnit: item.royaltyTimeframeUnit ?? null,
+              royaltyThreshold: item.royaltyThreshold ?? null,
+              royaltyBuyoutAmount: item.royaltyBuyoutAmount ?? null,
+              sortOrder: index,
+            },
+          },
+        }),
+      ),
+    );
+  };
+
+  const deleteExistingLineItems = async () => {
+    const existing = quotes.find((q) => q.id === editingId);
+    if (!existing?.quoteLineItems.length) return;
+
+    await Promise.all(
+      existing.quoteLineItems.map((item) =>
+        deleteLineItemMutation.mutateAsync({
+          input: { rowId: item.id },
+        }),
+      ),
+    );
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (editingId) {
+        await updateMutation.mutateAsync({
+          input: {
+            rowId: editingId,
+            patch: {
+              quoteNumber: currentQuote.quoteNumber,
+              companyId: currentQuote.companyId || null,
+              contactId: currentQuote.contactId,
+              title: currentQuote.title,
+              description: currentQuote.description,
+              status: currentQuote.status,
+              validUntil: currentQuote.validUntil
+                ? new Date(currentQuote.validUntil)
+                : undefined,
+              terms: currentQuote.terms,
+              notes: currentQuote.notes,
+              subtotal: currentQuote.subtotal,
+              taxRate: currentQuote.taxRate,
+              taxAmount: currentQuote.taxAmount,
+              total: currentQuote.total,
+              currency: currentQuote.currency,
+              projectType: currentQuote.projectType,
+              timeRange: currentQuote.timeRange,
+              additionalTerms: currentQuote.additionalTerms,
+            },
+          },
+        });
+        await deleteExistingLineItems();
+        await saveLineItems(editingId);
+      } else {
+        const result = await createMutation.mutateAsync({
+          input: {
+            quote: {
+              organizationId: organizationId ?? "",
+              quoteNumber: currentQuote.quoteNumber ?? "",
+              companyId: currentQuote.companyId ?? "",
+              contactId: currentQuote.contactId,
+              title: currentQuote.title ?? "",
+              description: currentQuote.description,
+              status: currentQuote.status ?? "draft",
+              validUntil: new Date(
+                currentQuote.validUntil ||
+                  new Date().toISOString().split("T")[0],
+              ),
+              terms: currentQuote.terms,
+              notes: currentQuote.notes,
+              subtotal: currentQuote.subtotal,
+              taxRate: currentQuote.taxRate,
+              taxAmount: currentQuote.taxAmount,
+              total: currentQuote.total,
+              currency: currentQuote.currency ?? "USD",
+              projectType: currentQuote.projectType,
+              timeRange: currentQuote.timeRange,
+              additionalTerms: currentQuote.additionalTerms,
+            },
+          },
+        });
+
+        const quoteId = result.createQuote?.quote?.rowId;
+        if (quoteId) {
+          await saveLineItems(quoteId);
+        }
+      }
+
+      invalidateQuotes();
+      setViewMode("list");
+      setEditingId(null);
+    } finally {
+      setSaving(false);
     }
-
-    setViewMode("list");
-    setEditingId(null);
   };
 
   const handleDelete = (id: string) => {
@@ -393,7 +617,7 @@ const QuotesPage = () => {
                             type="button"
                             onClick={() => handlePreview(quote)}
                             className="text-gray-500 hover:text-gray-700"
-                            title="Preview"
+                            aria-label="Preview quote"
                           >
                             <Eye size={16} />
                           </button>
@@ -401,7 +625,7 @@ const QuotesPage = () => {
                             type="button"
                             onClick={() => handleEdit(quote)}
                             className="text-gray-500 hover:text-gray-700"
-                            title="Edit"
+                            aria-label="Edit quote"
                           >
                             <Edit size={16} />
                           </button>
@@ -409,7 +633,7 @@ const QuotesPage = () => {
                             type="button"
                             onClick={() => handleDelete(quote.id)}
                             className="text-red-500 hover:text-red-700"
-                            title="Delete"
+                            aria-label="Delete quote"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -430,7 +654,9 @@ const QuotesPage = () => {
           }
           title="Delete Quote"
           description="Are you sure you want to delete this quote? This action cannot be undone."
-          onConfirm={() => deleteQuote(deleteConfirm.id)}
+          onConfirm={() =>
+            deleteMutation.mutate({ input: { rowId: deleteConfirm.id } })
+          }
         />
       </div>
     );
@@ -504,9 +730,10 @@ const QuotesPage = () => {
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+            disabled={saving}
+            className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {editingId ? "Save Changes" : "Create Quote"}
+            {saving ? "Saving..." : editingId ? "Save Changes" : "Create Quote"}
           </button>
         </div>
       </div>
