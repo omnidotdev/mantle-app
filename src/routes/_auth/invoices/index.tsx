@@ -229,8 +229,8 @@ const InvoicesPage = () => {
   };
 
   const saveLineItems = async (invoiceId: string) => {
-    const validItems = currentLineItems.filter(
-      (item) => item.description?.trim(),
+    const validItems = currentLineItems.filter((item) =>
+      item.description?.trim(),
     );
 
     await Promise.all(

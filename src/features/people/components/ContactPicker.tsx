@@ -10,10 +10,16 @@ import { usePeopleStore } from "@/features/people/store/peopleStore";
 interface ContactPickerProps {
   value: string;
   onValueChange: (value: string) => void;
+  organizationId?: string;
 }
 
-const ContactPicker = ({ value, onValueChange }: ContactPickerProps) => {
-  const { people } = usePeopleStore();
+const ContactPicker = ({
+  value,
+  onValueChange,
+  organizationId,
+}: ContactPickerProps) => {
+  const { people: allPeople, getPeopleForOrg } = usePeopleStore();
+  const people = organizationId ? getPeopleForOrg(organizationId) : allPeople;
 
   const items = people.map((p) => p.id);
 

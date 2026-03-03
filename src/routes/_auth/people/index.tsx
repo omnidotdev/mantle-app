@@ -462,6 +462,9 @@ const EmailActionButton = ({
       {open && (
         <>
           <div
+            role="button"
+            tabIndex={-1}
+            aria-label="Close menu"
             className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
             onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
@@ -553,6 +556,7 @@ const ContactsTable = ({
           <input
             type="text"
             placeholder="Search contacts..."
+            aria-label="Search contacts"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"

@@ -76,101 +76,105 @@ function PublicLayout() {
           </a>
         </div>
 
-      <header className="w-full border-border border-b bg-background/80 backdrop-blur-lg">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🌋</span>
-            <span className="font-bold text-xl tracking-tight">
-              {appConfig.name}
-            </span>
-            <Badge className="hidden border-primary-500/20 bg-primary-500/10 text-shimmer text-xs sm:inline-flex">
-              Early Access
-            </Badge>
-          </a>
-
-          {/* Desktop nav */}
-          <div className="hidden items-center gap-3 md:flex">
-            <a
-              href={appConfig.links.docs}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
-            >
-              Docs
-            </a>
-            <a
-              href={appConfig.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
-            >
-              GitHub
+        <header className="w-full border-border border-b bg-background/80 backdrop-blur-lg">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <a href="/" className="flex items-center gap-2">
+              <span className="text-2xl">🌋</span>
+              <span className="font-bold text-xl tracking-tight">
+                {appConfig.name}
+              </span>
+              <Badge className="hidden border-primary-500/20 bg-primary-500/10 text-shimmer text-xs sm:inline-flex">
+                Early Access
+              </Badge>
             </a>
 
-            {session ? (
-              <Button variant="outline" onClick={signOut}>
-                Sign Out
-              </Button>
-            ) : (
-              <Button onClick={handleSignIn}>Sign In</Button>
-            )}
-          </div>
+            {/* Desktop nav */}
+            <div className="hidden items-center gap-3 md:flex">
+              <a
+                href={appConfig.links.docs}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
+              >
+                Docs
+              </a>
+              <a
+                href={appConfig.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
+              >
+                GitHub
+              </a>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <XIcon className="size-5" />
-              ) : (
-                <MenuIcon className="size-5" />
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        <div
-          className={cn(
-            "border-border border-t bg-background md:hidden",
-            mobileMenuOpen ? "block" : "hidden",
-          )}
-        >
-          <div className="space-y-1 px-4 py-3">
-            <a
-              href={appConfig.links.docs}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
-            >
-              Docs
-            </a>
-            <a
-              href={appConfig.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
-            >
-              GitHub
-            </a>
-            <div className="pt-2">
               {session ? (
-                <Button variant="outline" onClick={signOut} className="w-full">
+                <Button variant="outline" onClick={signOut}>
                   Sign Out
                 </Button>
               ) : (
-                <Button onClick={handleSignIn} className="w-full">
-                  Sign In
-                </Button>
+                <Button onClick={handleSignIn}>Sign In</Button>
               )}
             </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <XIcon className="size-5" />
+                ) : (
+                  <MenuIcon className="size-5" />
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-      </header>
+
+          {/* Mobile menu */}
+          <div
+            className={cn(
+              "border-border border-t bg-background md:hidden",
+              mobileMenuOpen ? "block" : "hidden",
+            )}
+          >
+            <div className="space-y-1 px-4 py-3">
+              <a
+                href={appConfig.links.docs}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
+              >
+                Docs
+              </a>
+              <a
+                href={appConfig.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
+              >
+                GitHub
+              </a>
+              <div className="pt-2">
+                {session ? (
+                  <Button
+                    variant="outline"
+                    onClick={signOut}
+                    className="w-full"
+                  >
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Button onClick={handleSignIn} className="w-full">
+                    Sign In
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </header>
       </div>
 
       {/* Main content */}
@@ -202,6 +206,7 @@ function PublicLayout() {
                 href={appConfig.links.github}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="GitHub"
                 className="text-base-400 transition-colors hover:text-primary"
               >
                 <GithubIcon size={20} />
@@ -210,6 +215,7 @@ function PublicLayout() {
                 href={appConfig.organization.discord}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Discord"
                 className="text-base-400 transition-colors hover:text-primary"
               >
                 <DiscordIcon size={20} />
@@ -218,6 +224,7 @@ function PublicLayout() {
                 href={appConfig.organization.x}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="X"
                 className="text-base-400 transition-colors hover:text-primary"
               >
                 <XIcon2 size={20} />
@@ -226,6 +233,7 @@ function PublicLayout() {
                 href={appConfig.organization.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="LinkedIn"
                 className="text-base-400 transition-colors hover:text-primary"
               >
                 <LinkedinIcon size={20} />

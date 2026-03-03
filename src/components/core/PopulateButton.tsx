@@ -13,9 +13,13 @@ interface PopulateButtonProps {
     contactName: string | null;
     contactEmail: string | null;
   }) => void;
+  organizationId?: string;
 }
 
-const PopulateButton = ({ onPopulateClient }: PopulateButtonProps) => {
+const PopulateButton = ({
+  onPopulateClient,
+  organizationId,
+}: PopulateButtonProps) => {
   const [open, setOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState("");
   const [selectedContact, setSelectedContact] = useState("");
@@ -93,10 +97,12 @@ const PopulateButton = ({ onPopulateClient }: PopulateButtonProps) => {
               <CompanyPicker
                 value={selectedCompany}
                 onValueChange={setSelectedCompany}
+                organizationId={organizationId}
               />
               <ContactPicker
                 value={selectedContact}
                 onValueChange={setSelectedContact}
+                organizationId={organizationId}
               />
               <button
                 type="button"

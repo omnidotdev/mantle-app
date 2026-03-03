@@ -52,8 +52,7 @@ const defaultQuote: Partial<Quote> = {
   clientEmail: null,
 };
 
-const defaultLineItem: Partial<QuoteLineItem> = {
-  id: crypto.randomUUID(),
+const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   description: "",
   quantity: "1",
   unitPrice: "0",

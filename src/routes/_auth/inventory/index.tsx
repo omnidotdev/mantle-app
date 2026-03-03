@@ -327,9 +327,7 @@ const InventoryPage = () => {
 
       <ConfirmDialog
         open={deleteConfirm.open}
-        onOpenChange={(open) =>
-          setDeleteConfirm((prev) => ({ ...prev, open }))
-        }
+        onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title="Delete Product"
         description="Are you sure you want to delete this product? This action cannot be undone."
         onConfirm={() => deleteProduct(deleteConfirm.id)}

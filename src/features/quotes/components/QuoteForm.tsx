@@ -18,6 +18,7 @@ interface QuoteFormProps {
   onLineItemsChange: (items: Partial<QuoteLineItem>[]) => void;
   onSave: () => void;
   onCancel: () => void;
+  organizationId?: string;
 }
 
 const QuoteForm = ({
@@ -27,6 +28,7 @@ const QuoteForm = ({
   onLineItemsChange,
   onSave,
   onCancel,
+  organizationId,
 }: QuoteFormProps) => {
   const handleChange = (
     field: keyof Quote,
@@ -219,6 +221,7 @@ const QuoteForm = ({
         <div className="flex items-center justify-between">
           <h3 className="font-medium text-gray-700 text-lg">Client</h3>
           <PopulateButton
+            organizationId={organizationId}
             onPopulateClient={({
               companyId,
               contactId,
@@ -242,6 +245,7 @@ const QuoteForm = ({
             <CompanyPicker
               value={quote.companyId ?? ""}
               onValueChange={(value) => handleChange("companyId", value)}
+              organizationId={organizationId}
             />
           </div>
 
@@ -252,6 +256,7 @@ const QuoteForm = ({
               onValueChange={(value) =>
                 handleChange("contactId", value || null)
               }
+              organizationId={organizationId}
             />
           </div>
 

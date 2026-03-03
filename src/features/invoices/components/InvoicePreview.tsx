@@ -57,7 +57,9 @@ const InvoicePreview = ({
                   {orgProfile.addressLine1}
                 </p>
               )}
-              {(orgProfile?.city || orgProfile?.state || orgProfile?.postalCode) && (
+              {(orgProfile?.city ||
+                orgProfile?.state ||
+                orgProfile?.postalCode) && (
                 <p className="text-sm text-teal-100">
                   {[orgProfile.city, orgProfile.state, orgProfile.postalCode]
                     .filter(Boolean)

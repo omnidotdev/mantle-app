@@ -20,6 +20,7 @@ interface InvoiceFormProps {
   onLineItemsChange: (items: Partial<InvoiceLineItem>[]) => void;
   onSave: () => void;
   onCancel: () => void;
+  organizationId?: string;
 }
 
 const InvoiceForm = ({
@@ -29,6 +30,7 @@ const InvoiceForm = ({
   onLineItemsChange,
   onSave,
   onCancel,
+  organizationId,
 }: InvoiceFormProps) => {
   const handleChange = (field: keyof Invoice, value: string | null) => {
     onInvoiceChange({ ...invoice, [field]: value });
@@ -155,6 +157,7 @@ const InvoiceForm = ({
         <div className="flex items-center justify-between">
           <h3 className="font-medium text-gray-700 text-lg">Client</h3>
           <PopulateButton
+            organizationId={organizationId}
             onPopulateClient={({ companyId, contactId }) => {
               onInvoiceChange({
                 ...invoice,
@@ -171,6 +174,7 @@ const InvoiceForm = ({
             <CompanyPicker
               value={invoice.companyId ?? ""}
               onValueChange={(value) => handleChange("companyId", value)}
+              organizationId={organizationId}
             />
           </div>
 
@@ -181,6 +185,7 @@ const InvoiceForm = ({
               onValueChange={(value) =>
                 handleChange("contactId", value || null)
               }
+              organizationId={organizationId}
             />
           </div>
         </div>

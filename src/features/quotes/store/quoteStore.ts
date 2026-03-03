@@ -5,9 +5,7 @@ import type { Quote } from "../types/quote";
 
 // TODO: Migrate to database persistence via GraphQL API
 
-type ViewMode = "list" | "create" | "edit" | "preview";
-
-interface StoredQuote extends Quote {}
+type StoredQuote = Quote;
 
 interface QuoteStore {
   quotes: StoredQuote[];
@@ -121,4 +119,4 @@ const useQuoteStore = create<QuoteStore>()(
 );
 
 export { useQuoteStore, generateQuoteNumber };
-export type { StoredQuote, ViewMode };
+export type { StoredQuote };

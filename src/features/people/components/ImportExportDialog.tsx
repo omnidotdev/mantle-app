@@ -29,10 +29,14 @@ const ImportExportDialog = ({
   context,
   organizationId,
 }: ImportExportDialogProps) => {
-  const { people, companies, importPeople, importCompanies } = usePeopleStore();
+  const { getCompaniesForOrg, getPeopleForOrg, importPeople, importCompanies } =
+    usePeopleStore();
   const [importTab, setImportTab] = useState<string>("export");
   const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const people = getPeopleForOrg(organizationId);
+  const companies = getCompaniesForOrg(organizationId);
 
   const exportJSON = () => {
     const data = context === "contacts" ? people : companies;

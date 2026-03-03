@@ -5,15 +5,11 @@ import type { Company, Person } from "../types";
 
 // TODO: Migrate to database persistence via GraphQL API
 
-type ViewMode = "list" | "create" | "edit";
 type ActiveTab = "companies" | "contacts" | "network";
 
 interface PeopleStore {
   companies: Company[];
   people: Person[];
-  viewMode: ViewMode;
-  activeTab: ActiveTab;
-  editingId: string | null;
 
   // Company CRUD
   createCompany: (
@@ -47,11 +43,6 @@ interface PeopleStore {
     >[],
     organizationId: string,
   ) => void;
-
-  // UI state
-  setViewMode: (mode: ViewMode) => void;
-  setActiveTab: (tab: ActiveTab) => void;
-  setEditingId: (id: string | null) => void;
 }
 
 const usePeopleStore = create<PeopleStore>()(
@@ -59,9 +50,6 @@ const usePeopleStore = create<PeopleStore>()(
     (set, get) => ({
       companies: [],
       people: [],
-      viewMode: "list",
-      activeTab: "companies",
-      editingId: null,
 
       createCompany: (company, organizationId) => {
         const now = new Date().toISOString();
@@ -172,10 +160,6 @@ const usePeopleStore = create<PeopleStore>()(
           companies: [...state.companies, ...created],
         }));
       },
-
-      setViewMode: (mode) => set({ viewMode: mode }),
-      setActiveTab: (tab) => set({ activeTab: tab }),
-      setEditingId: (id) => set({ editingId: id }),
     }),
     {
       name: "mantle-people",
@@ -208,4 +192,4 @@ const usePeopleStore = create<PeopleStore>()(
 );
 
 export { usePeopleStore };
-export type { ViewMode, ActiveTab };
+export type { ActiveTab };

@@ -32,15 +32,6 @@ export interface Person {
   updatedAt: string;
 }
 
-export interface CompanyMember {
-  id: string;
-  companyId: string;
-  personId: string;
-  title: string | null;
-  isPrimary: boolean;
-  createdAt: string;
-}
-
 export const COMMON_TAGS = [
   "employee",
   "client",
@@ -53,5 +44,3 @@ export const COMMON_TAGS = [
   "leadership",
   "contractor",
 ] as const;
-
-export type CommonTag = (typeof COMMON_TAGS)[number];
