@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Edit, Eye, Package, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -25,8 +25,9 @@ const defaultProduct: Partial<Product> = {
 };
 
 const InventoryPage = () => {
+  const { organizationId } = Route.useRouteContext();
   const {
-    products,
+    getProductsForOrg,
     createProduct,
     updateProduct,
     deleteProduct,
@@ -44,6 +45,18 @@ const InventoryPage = () => {
   const [adjustmentReason, setAdjustmentReason] = useState("");
   const [adjustmentQuantity, setAdjustmentQuantity] = useState("");
   const [showAdjustmentForm, setShowAdjustmentForm] = useState(false);
+
+  const products = organizationId ? getProductsForOrg(organizationId) : [];
+
+  if (!organizationId) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500">
+          Select an organization to view inventory
+        </p>
+      </div>
+    );
+  }
 
   // Product handlers
   const handleCreateProduct = () => {
@@ -67,15 +80,18 @@ const InventoryPage = () => {
     if (editingId) {
       updateProduct(editingId, currentProduct);
     } else {
-      createProduct({
-        name: currentProduct.name ?? "",
-        description: currentProduct.description ?? null,
-        sku: currentProduct.sku ?? null,
-        unitPrice: currentProduct.unitPrice ?? null,
-        currentQuantity: currentProduct.currentQuantity ?? 0,
-        lowStockThreshold: currentProduct.lowStockThreshold ?? null,
-        isActive: currentProduct.isActive ?? true,
-      });
+      createProduct(
+        {
+          name: currentProduct.name ?? "",
+          description: currentProduct.description ?? null,
+          sku: currentProduct.sku ?? null,
+          unitPrice: currentProduct.unitPrice ?? null,
+          currentQuantity: currentProduct.currentQuantity ?? 0,
+          lowStockThreshold: currentProduct.lowStockThreshold ?? null,
+          isActive: currentProduct.isActive ?? true,
+        },
+        organizationId,
+      );
     }
     setViewMode("list");
     setEditingId(null);
@@ -286,15 +302,7 @@ const InventoryPage = () => {
   return (
     <div className="mx-auto max-w-6xl p-8">
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <Link
-            to="/dashboard"
-            className="text-gray-500 text-sm hover:text-gray-700"
-          >
-            &larr; Back
-          </Link>
-          <h1 className="font-bold text-2xl">Inventory</h1>
-        </div>
+        <h1 className="font-bold text-2xl">Inventory</h1>
         <button
           type="button"
           onClick={handleCreateProduct}

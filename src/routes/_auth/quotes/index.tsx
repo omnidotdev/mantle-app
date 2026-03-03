@@ -106,8 +106,10 @@ const PreviewToggle = ({
 );
 
 const QuotesPage = () => {
-  const { quotes, createQuote, updateQuote, deleteQuote } = useQuoteStore();
-  const { companies } = usePeopleStore();
+  const { organizationId } = Route.useRouteContext();
+  const { getQuotesForOrg, createQuote, updateQuote, deleteQuote } =
+    useQuoteStore();
+  const { getCompaniesForOrg } = usePeopleStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchTerm, setSearchTerm] = useState("");
@@ -123,6 +125,9 @@ const QuotesPage = () => {
   >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewType, setPreviewType] = useState<PreviewType>("quote");
+
+  const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
+  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
 
   const resolveCompanyName = (companyId: string | undefined) =>
     companies.find((c) => c.id === companyId)?.name ?? null;

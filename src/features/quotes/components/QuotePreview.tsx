@@ -246,8 +246,8 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                                 {" "}
                                 \u2022{" "}
                                 {pluralizeUnit(
-                                  item.royaltyTimeframe,
-                                  item.royaltyTimeframeUnit,
+                                  item.royaltyTimeframe ?? null,
+                                  item.royaltyTimeframeUnit ?? null,
                                 )}
                               </span>
                             )}

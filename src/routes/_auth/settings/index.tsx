@@ -1,5 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -10,27 +9,31 @@ import type { OrganizationProfile } from "@/features/settings/types";
 
 type FormState = Omit<OrganizationProfile, "id" | "createdAt" | "updatedAt">;
 
-const defaultForm: FormState = {
-  organizationId: "default",
-  companyName: "",
-  contactName: "",
-  contactTitle: null,
-  email: "",
-  phone: null,
-  website: null,
-  addressLine1: null,
-  addressLine2: null,
-  city: null,
-  state: null,
-  postalCode: null,
-  country: null,
-  logoUrl: null,
-  registrationState: null,
-};
-
 const SettingsPage = () => {
-  const { profiles, createProfile, updateProfile } = useSettingsStore();
-  const existing = profiles[0];
+  const { organizationId } = Route.useRouteContext();
+  const { createProfile, updateProfile, getProfileForOrg } =
+    useSettingsStore();
+  const existing = organizationId
+    ? getProfileForOrg(organizationId)
+    : undefined;
+
+  const defaultForm: FormState = {
+    organizationId: organizationId ?? "",
+    companyName: "",
+    contactName: "",
+    contactTitle: null,
+    email: "",
+    phone: null,
+    website: null,
+    addressLine1: null,
+    addressLine2: null,
+    city: null,
+    state: null,
+    postalCode: null,
+    country: null,
+    logoUrl: null,
+    registrationState: null,
+  };
 
   const [form, setForm] = useState<FormState>(defaultForm);
   const [saved, setSaved] = useState(false);
@@ -74,17 +77,20 @@ const SettingsPage = () => {
   const isValid =
     form.companyName.trim() && form.contactName.trim() && form.email.trim();
 
+  if (!organizationId) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500">
+          Select an organization to view settings
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-3xl p-8">
       <div className="mb-6">
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
-        >
-          <ArrowLeft size={16} />
-          Back to Dashboard
-        </Link>
-        <h1 className="mt-2 font-bold text-2xl">Organization Profile</h1>
+        <h1 className="font-bold text-2xl">Organization Profile</h1>
         <p className="text-gray-500 text-sm">
           Configure your company details for auto-filling invoices and contracts
         </p>
