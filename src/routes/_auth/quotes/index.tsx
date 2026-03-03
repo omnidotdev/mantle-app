@@ -88,6 +88,7 @@ const PreviewToggle = ({
     <button
       type="button"
       onClick={() => onChange("quote")}
+      aria-pressed={value === "quote"}
       className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
         value === "quote"
           ? "bg-white text-gray-900 shadow-sm"
@@ -99,6 +100,7 @@ const PreviewToggle = ({
     <button
       type="button"
       onClick={() => onChange("contract")}
+      aria-pressed={value === "contract"}
       className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
         value === "contract"
           ? "bg-white text-gray-900 shadow-sm"
@@ -658,7 +660,17 @@ const QuotesPage = () => {
           title="Delete Quote"
           description="Are you sure you want to delete this quote? This action cannot be undone."
           onConfirm={() =>
-            deleteMutation.mutate({ input: { rowId: deleteConfirm.id } })
+            deleteMutation.mutate(
+              { input: { rowId: deleteConfirm.id } },
+              {
+                onError: (err) =>
+                  toast.error(
+                    err instanceof Error
+                      ? err.message
+                      : "Failed to delete quote",
+                  ),
+              },
+            )
           }
         />
       </div>

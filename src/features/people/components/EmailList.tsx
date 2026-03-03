@@ -45,6 +45,7 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="email@example.com"
+          aria-label="Add email address"
           className="flex-1"
         />
         <button

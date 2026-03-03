@@ -463,9 +463,17 @@ const InventoryPage = () => {
         title="Delete Product"
         description="Are you sure you want to delete this product? This action cannot be undone."
         onConfirm={() =>
-          deleteProductMutation.mutate({
-            input: { rowId: deleteConfirm.id },
-          })
+          deleteProductMutation.mutate(
+            { input: { rowId: deleteConfirm.id } },
+            {
+              onError: (err) =>
+                toast.error(
+                  err instanceof Error
+                    ? err.message
+                    : "Failed to delete product",
+                ),
+            },
+          )
         }
       />
     </div>

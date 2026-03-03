@@ -54,10 +54,10 @@ const InvoicePreview = ({
   }, [peopleData, invoice.contactId]);
 
   const subtotal = lineItems.reduce(
-    (sum, item) => sum + Number.parseFloat(item.amount || "0"),
+    (sum, item) => sum + (Number.parseFloat(item.amount || "0") || 0),
     0,
   );
-  const taxRate = Number.parseFloat(invoice.taxRate || "0");
+  const taxRate = Number.parseFloat(invoice.taxRate || "0") || 0;
   const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
   const currency = invoice.currency || "USD";
@@ -121,8 +121,8 @@ const InvoicePreview = ({
               <h4 className="mb-2 font-bold text-gray-700">Bill To:</h4>
               {invoice.billTo ? (
                 <div className="text-gray-800">
-                  {invoice.billTo.split("\n").map((line) => (
-                    <p key={`bill-${line}`}>{line}</p>
+                  {invoice.billTo.split("\n").map((line, i) => (
+                    <p key={`bill-${i}`}>{line}</p>
                   ))}
                 </div>
               ) : company ? (
@@ -244,8 +244,8 @@ const InvoicePreview = ({
             <div>
               <h4 className="mb-2 font-bold text-gray-700">Notes:</h4>
               <div className="text-gray-600">
-                {invoice.notes.split("\n").map((line) => (
-                  <p key={`note-${line}`}>{line}</p>
+                {invoice.notes.split("\n").map((line, i) => (
+                  <p key={`note-${i}`}>{line}</p>
                 ))}
               </div>
             </div>

@@ -59,7 +59,12 @@ const TagList = ({ tags, onChange }: TagListProps) => {
         {COMMON_TAGS.map((tag) => {
           const isActive = tags.includes(tag);
           return (
-            <button key={tag} type="button" onClick={() => togglePreset(tag)}>
+            <button
+              key={tag}
+              type="button"
+              onClick={() => togglePreset(tag)}
+              aria-pressed={isActive}
+            >
               <Badge
                 variant={isActive ? "solid" : "outline"}
                 className="cursor-pointer select-none"
@@ -77,6 +82,7 @@ const TagList = ({ tags, onChange }: TagListProps) => {
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Add custom tag (Enter or comma)"
+        aria-label="Add custom tag"
         className="max-w-xs"
       />
 

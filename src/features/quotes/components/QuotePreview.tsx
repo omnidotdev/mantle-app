@@ -364,8 +364,8 @@ const QuotePreview = ({
           <div className="mb-4">
             <h4 className="mb-2 font-bold text-gray-700">Terms:</h4>
             <div className="text-gray-600">
-              {quote.terms.split("\n").map((line) => (
-                <p key={`term-${line}`}>{line}</p>
+              {quote.terms.split("\n").map((line, i) => (
+                <p key={`term-${i}`}>{line}</p>
               ))}
             </div>
           </div>
@@ -428,8 +428,8 @@ const QuotePreview = ({
           <div>
             <h4 className="mb-2 font-bold text-gray-700">Notes:</h4>
             <div className="text-gray-600">
-              {quote.notes.split("\n").map((line) => (
-                <p key={`note-${line}`}>{line}</p>
+              {quote.notes.split("\n").map((line, i) => (
+                <p key={`note-${i}`}>{line}</p>
               ))}
             </div>
           </div>

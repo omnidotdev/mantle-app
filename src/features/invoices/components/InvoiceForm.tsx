@@ -515,9 +515,15 @@ const InvoiceForm = ({
 
       {/* Notes */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Notes</h3>
+        <Label
+          htmlFor="invoice-notes"
+          className="font-medium text-gray-700 text-lg"
+        >
+          Notes
+        </Label>
 
         <Textarea
+          id="invoice-notes"
           value={invoice.notes ?? ""}
           onChange={(e) => handleChange("notes", e.target.value || null)}
           rows={3}

@@ -40,6 +40,7 @@ const AdditionalTermsEditor = ({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Add a term or condition"
+          aria-label="Add additional term"
           className="flex-1"
         />
         <button

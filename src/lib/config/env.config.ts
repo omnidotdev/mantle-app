@@ -8,11 +8,9 @@ const env = { ...import.meta.env, ...process.env };
 
 export const API_URL = env.VITE_API_URL ?? "https://localhost:4000";
 export const API_GRAPHQL_URL = `${API_URL}/graphql`;
-export const isProd = import.meta.env.PROD;
-export const isDev = import.meta.env.DEV;
 
 // Auth config
-export const PORT = env.VITE_PORT ?? 3000;
+const PORT = env.VITE_PORT ?? 3000;
 export const BASE_URL =
   env.VITE_BASE_URL || env.BASE_URL || `https://localhost:${PORT}`;
 export const AUTH_BASE_URL = env.AUTH_BASE_URL || env.VITE_AUTH_BASE_URL;

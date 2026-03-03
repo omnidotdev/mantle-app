@@ -1,4 +1,3 @@
-import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, setCookie } from "@tanstack/react-start/server";
 
@@ -22,23 +21,6 @@ export const fetchSession = createServerFn().handler(async () => {
 const clearAuthCacheCookie = () => {
   setCookie(authCache.cookieName, "", { maxAge: 0, path: "/" });
 };
-
-export const clearAuthCache = createServerFn({ method: "POST" }).handler(
-  async () => {
-    clearAuthCacheCookie();
-  },
-);
-
-export const signOutAndRedirect = createServerFn({ method: "POST" }).handler(
-  async () => {
-    const request = getRequest();
-
-    await auth.api.signOut({ headers: request.headers });
-    clearAuthCacheCookie();
-
-    throw redirect({ to: "/" });
-  },
-);
 
 /**
  * Build the IDP end_session URL for federated logout

@@ -290,6 +290,7 @@ const ImportExportDialog = ({
                 ref={fileInputRef}
                 type="file"
                 accept=".json,.csv"
+                aria-label="Choose file to import"
                 onChange={handleImport}
                 disabled={importing}
                 className="block w-full text-gray-500 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-4 file:py-2 file:font-medium file:text-sm file:text-teal-700 hover:file:bg-teal-100"

@@ -482,13 +482,29 @@ const PeoplePage = () => {
         description="Are you sure you want to delete this record? This action cannot be undone."
         onConfirm={() => {
           if (deleteConfirm.type === "company") {
-            deleteCompanyMutation.mutate({
-              input: { rowId: deleteConfirm.id },
-            });
+            deleteCompanyMutation.mutate(
+              { input: { rowId: deleteConfirm.id } },
+              {
+                onError: (err) =>
+                  toast.error(
+                    err instanceof Error
+                      ? err.message
+                      : "Failed to delete company",
+                  ),
+              },
+            );
           } else {
-            deletePersonMutation.mutate({
-              input: { rowId: deleteConfirm.id },
-            });
+            deletePersonMutation.mutate(
+              { input: { rowId: deleteConfirm.id } },
+              {
+                onError: (err) =>
+                  toast.error(
+                    err instanceof Error
+                      ? err.message
+                      : "Failed to delete contact",
+                  ),
+              },
+            );
           }
         }}
       />
@@ -607,7 +623,7 @@ const EmailActionButton = ({
   if (emails.length === 1) {
     return (
       <a
-        href={`mailto:${emails[0]}?subject=Hello ${name}`}
+        href={`mailto:${emails[0]}?subject=${encodeURIComponent(`Hello ${name}`)}`}
         className="text-gray-500 hover:text-gray-700"
         aria-label={`Email ${emails[0]}`}
       >
@@ -637,7 +653,7 @@ const EmailActionButton = ({
             {emails.map((email) => (
               <a
                 key={email}
-                href={`mailto:${email}?subject=Hello ${name}`}
+                href={`mailto:${email}?subject=${encodeURIComponent(`Hello ${name}`)}`}
                 className="block px-4 py-2 text-gray-700 text-sm hover:bg-gray-50"
                 onClick={() => setOpen(false)}
               >
