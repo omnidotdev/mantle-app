@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +11,14 @@ type FormState = Omit<OrganizationProfile, "id" | "createdAt" | "updatedAt">;
 
 const SettingsPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { createProfile, updateProfile, getProfileForOrg } = useSettingsStore();
-  const existing = organizationId
-    ? getProfileForOrg(organizationId)
-    : undefined;
+  const { createProfile, updateProfile, profiles } = useSettingsStore();
+  const existing = useMemo(
+    () =>
+      organizationId
+        ? profiles.find((p) => p.organizationId === organizationId)
+        : undefined,
+    [profiles, organizationId],
+  );
 
   const defaultForm: FormState = {
     organizationId: organizationId ?? "",
@@ -85,12 +89,15 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
-      <div className="mb-6">
-        <h1 className="font-bold text-2xl">Organization Profile</h1>
-        <p className="text-gray-500 text-sm">
-          Configure your company details for auto-filling invoices and contracts
-        </p>
+    <div className="p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="font-semibold text-xl">Organization Profile</h1>
+          <p className="text-gray-500 text-sm">
+            Configure your company details for auto-filling invoices and
+            contracts
+          </p>
+        </div>
       </div>
 
       <div className="space-y-6 rounded-lg border border-gray-200 bg-white p-6">
@@ -287,7 +294,7 @@ const SettingsPage = () => {
             type="button"
             onClick={handleSave}
             disabled={!isValid}
-            className="rounded-lg bg-teal-600 px-6 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-teal-600 px-4 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Save Profile
           </button>

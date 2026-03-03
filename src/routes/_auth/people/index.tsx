@@ -195,12 +195,12 @@ const PeoplePage = () => {
         : "New Contact";
 
     return (
-      <div className="mx-auto max-w-6xl p-8">
+      <div className="p-6">
         <div className="mb-6">
           <button
             type="button"
             onClick={handleCancel}
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
+            className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
           >
             <ArrowLeft size={16} />
             Back to list
@@ -208,7 +208,7 @@ const PeoplePage = () => {
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-6 font-bold text-xl">{title}</h2>
+          <h2 className="mb-6 font-semibold text-lg">{title}</h2>
 
           {isCompanyForm ? (
             <CompanyForm
@@ -232,15 +232,15 @@ const PeoplePage = () => {
 
   // List view
   return (
-    <div className="mx-auto max-w-6xl p-8">
+    <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-bold text-2xl">People</h1>
+        <h1 className="font-semibold text-xl">People</h1>
         <div className="flex gap-2">
           {activeTab !== "network" && (
             <button
               type="button"
               onClick={() => setImportExportOpen(true)}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+              className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
             >
               <Share2 size={16} />
               Import/Export
@@ -254,9 +254,9 @@ const PeoplePage = () => {
                   ? handleCreateCompany
                   : handleCreateContact
               }
-              className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+              className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
             >
-              <Plus size={18} />
+              <Plus size={16} />
               {activeTab === "companies" ? "Add Company" : "Add Contact"}
             </button>
           )}

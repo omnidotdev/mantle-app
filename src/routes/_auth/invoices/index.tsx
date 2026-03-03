@@ -89,51 +89,57 @@ const InvoicesPage = () => {
     { enabled: !!organizationId },
   );
 
-  const invoices = (data?.invoices?.nodes ?? []).flatMap((node) => {
-    if (!node) return [];
+  const invoices = useMemo(
+    () =>
+      (data?.invoices?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
 
-    return [
-      {
-        id: node.rowId,
-        organizationId: node.organizationId,
-        invoiceNumber: node.invoiceNumber,
-        companyId: node.companyId,
-        contactId: node.contactId ?? null,
-        status: (node.status ?? "draft") as Invoice["status"],
-        issueDate: node.issueDate,
-        dueDate: node.dueDate,
-        notes: node.notes ?? null,
-        subtotal: node.subtotal ?? "0",
-        taxRate: node.taxRate ?? null,
-        taxAmount: node.taxAmount ?? "0",
-        total: node.total ?? "0",
-        currency: node.currency ?? "USD",
-        paidAt: node.paidAt ?? null,
-        paymentReference: node.paymentReference ?? null,
-        paymentLinkUrl: node.paymentLinkUrl ?? null,
-        createdAt: node.createdAt ?? "",
-        updatedAt: node.updatedAt ?? "",
-        company: node.company ?? null,
-        contact: node.contact ?? null,
-        invoiceLineItems: (node.invoiceLineItems.nodes ?? []).flatMap((li) => {
-          if (!li) return [];
+        return [
+          {
+            id: node.rowId,
+            organizationId: node.organizationId,
+            invoiceNumber: node.invoiceNumber,
+            companyId: node.companyId,
+            contactId: node.contactId ?? null,
+            status: (node.status ?? "draft") as Invoice["status"],
+            issueDate: node.issueDate,
+            dueDate: node.dueDate,
+            notes: node.notes ?? null,
+            subtotal: node.subtotal ?? "0",
+            taxRate: node.taxRate ?? null,
+            taxAmount: node.taxAmount ?? "0",
+            total: node.total ?? "0",
+            currency: node.currency ?? "USD",
+            paidAt: node.paidAt ?? null,
+            paymentReference: node.paymentReference ?? null,
+            paymentLinkUrl: node.paymentLinkUrl ?? null,
+            createdAt: node.createdAt ?? "",
+            updatedAt: node.updatedAt ?? "",
+            company: node.company ?? null,
+            contact: node.contact ?? null,
+            invoiceLineItems: (node.invoiceLineItems.nodes ?? []).flatMap(
+              (li) => {
+                if (!li) return [];
 
-          return [
-            {
-              id: li.rowId,
-              invoiceId: li.invoiceId,
-              productId: li.productId ?? null,
-              description: li.description,
-              quantity: li.quantity,
-              unitPrice: li.unitPrice,
-              amount: li.amount,
-              sortOrder: li.sortOrder ?? 0,
-            },
-          ];
-        }),
-      },
-    ];
-  });
+                return [
+                  {
+                    id: li.rowId,
+                    invoiceId: li.invoiceId,
+                    productId: li.productId ?? null,
+                    description: li.description,
+                    quantity: li.quantity,
+                    unitPrice: li.unitPrice,
+                    amount: li.amount,
+                    sortOrder: li.sortOrder ?? 0,
+                  },
+                ];
+              },
+            ),
+          },
+        ];
+      }),
+    [data],
+  );
 
   const filteredInvoices = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -344,7 +350,7 @@ const InvoicesPage = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="mx-auto flex max-w-6xl items-center justify-center p-8">
+      <div className="flex items-center justify-center p-6">
         <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
       </div>
     );
@@ -353,25 +359,25 @@ const InvoicesPage = () => {
   // List view
   if (viewMode === "list") {
     return (
-      <div className="mx-auto max-w-6xl p-8">
+      <div className="p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="font-bold text-2xl">Invoices</h1>
-          <div className="flex items-center gap-4">
-            <div className="rounded-lg border border-gray-200 bg-white px-4 py-2">
+          <h1 className="font-semibold text-xl">Invoices</h1>
+          <div className="flex items-center gap-3">
+            <div className="rounded-md border border-gray-200 bg-white px-3 py-1.5">
               <p className="text-gray-500 text-xs">
                 {filteredInvoices.length}{" "}
                 {filteredInvoices.length === 1 ? "invoice" : "invoices"}
               </p>
-              <p className="font-bold text-lg">
+              <p className="font-semibold">
                 {formatCurrency(filteredTotal.toFixed(2))}
               </p>
             </div>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+              className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
             >
-              <Plus size={18} />
+              <Plus size={16} />
               New Invoice
             </button>
           </div>
@@ -399,6 +405,7 @@ const InvoicesPage = () => {
                 <input
                   type="text"
                   placeholder="Search invoices..."
+                  aria-label="Search invoices"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
@@ -407,6 +414,7 @@ const InvoicesPage = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by status"
                 className="cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
               >
                 <option value="all">All statuses</option>
@@ -540,12 +548,12 @@ const InvoicesPage = () => {
   // Preview view
   if (viewMode === "preview") {
     return (
-      <div className="mx-auto max-w-4xl p-8 print:max-w-none print:p-0">
+      <div className="p-6 print:p-0">
         <div className="print-hide mb-6 flex items-center justify-between">
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 text-sm hover:text-gray-700"
           >
             &larr; Back to list
           </button>
@@ -553,7 +561,7 @@ const InvoicesPage = () => {
             <button
               type="button"
               onClick={() => setViewMode("edit")}
-              className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
             >
               Edit
             </button>
@@ -565,7 +573,7 @@ const InvoicesPage = () => {
                 window.print();
                 document.title = originalTitle;
               }}
-              className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+              className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
             >
               Print
             </button>
@@ -583,12 +591,12 @@ const InvoicesPage = () => {
 
   // Create/edit view
   return (
-    <div className="mx-auto max-w-6xl p-8">
+    <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <button
           type="button"
           onClick={() => setViewMode("list")}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-gray-500 text-sm hover:text-gray-700"
         >
           &larr; Back to list
         </button>
@@ -596,7 +604,7 @@ const InvoicesPage = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
           >
             Cancel
           </button>
@@ -604,7 +612,7 @@ const InvoicesPage = () => {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving
               ? "Saving..."
@@ -617,7 +625,7 @@ const InvoicesPage = () => {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 font-bold text-xl">
+          <h2 className="mb-4 font-semibold text-lg">
             {editingId ? "Edit Invoice" : "New Invoice"}
           </h2>
           <InvoiceForm
@@ -627,14 +635,16 @@ const InvoicesPage = () => {
             onLineItemsChange={setCurrentLineItems}
             onSave={handleSave}
             onCancel={handleCancel}
+            organizationId={organizationId}
           />
         </div>
 
         <div>
-          <h2 className="mb-4 font-bold text-xl">Preview</h2>
+          <h2 className="mb-4 font-semibold text-lg">Preview</h2>
           <InvoicePreview
             invoice={currentInvoice}
             lineItems={currentLineItems}
+            organizationId={organizationId}
           />
         </div>
       </div>

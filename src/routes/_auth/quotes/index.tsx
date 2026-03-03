@@ -257,25 +257,25 @@ const QuotesPage = () => {
   // List view
   if (viewMode === "list") {
     return (
-      <div className="mx-auto max-w-6xl p-8">
+      <div className="p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="font-bold text-2xl">Quotes</h1>
-          <div className="flex items-center gap-4">
-            <div className="rounded-lg border border-gray-200 bg-white px-4 py-2">
+          <h1 className="font-semibold text-xl">Quotes</h1>
+          <div className="flex items-center gap-3">
+            <div className="rounded-md border border-gray-200 bg-white px-3 py-1.5">
               <p className="text-gray-500 text-xs">
                 {filteredQuotes.length}{" "}
                 {filteredQuotes.length === 1 ? "quote" : "quotes"}
               </p>
-              <p className="font-bold text-lg">
+              <p className="font-semibold">
                 {formatCurrency(filteredTotal.toFixed(2))}
               </p>
             </div>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+              className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
             >
-              <Plus size={18} />
+              <Plus size={16} />
               New Quote
             </button>
           </div>
@@ -303,6 +303,7 @@ const QuotesPage = () => {
                 <input
                   type="text"
                   placeholder="Search quotes..."
+                  aria-label="Search quotes"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
@@ -311,6 +312,7 @@ const QuotesPage = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by status"
                 className="cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
               >
                 <option value="all">All statuses</option>
@@ -438,12 +440,12 @@ const QuotesPage = () => {
   // Preview view
   if (viewMode === "preview") {
     return (
-      <div className="mx-auto max-w-4xl p-8 print:max-w-none print:p-0">
+      <div className="p-6 print:p-0">
         <div className="print-hide mb-6 flex items-center justify-between">
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 text-sm hover:text-gray-700"
           >
             &larr; Back to list
           </button>
@@ -451,7 +453,7 @@ const QuotesPage = () => {
             <button
               type="button"
               onClick={() => setViewMode("edit")}
-              className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
             >
               Edit
             </button>
@@ -465,7 +467,7 @@ const QuotesPage = () => {
                 window.print();
                 document.title = originalTitle;
               }}
-              className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+              className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
             >
               Print
             </button>
@@ -483,12 +485,12 @@ const QuotesPage = () => {
 
   // Create/edit view
   return (
-    <div className="mx-auto max-w-6xl p-8">
+    <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <button
           type="button"
           onClick={() => setViewMode("list")}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-gray-500 text-sm hover:text-gray-700"
         >
           &larr; Back to list
         </button>
@@ -496,14 +498,14 @@ const QuotesPage = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+            className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
           >
             {editingId ? "Save Changes" : "Create Quote"}
           </button>
@@ -512,7 +514,7 @@ const QuotesPage = () => {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 font-bold text-xl">
+          <h2 className="mb-4 font-semibold text-lg">
             {editingId ? "Edit Quote" : "New Quote"}
           </h2>
           <QuoteForm
@@ -522,12 +524,13 @@ const QuotesPage = () => {
             onLineItemsChange={setCurrentLineItems}
             onSave={handleSave}
             onCancel={handleCancel}
+            organizationId={organizationId}
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between">
-            <h2 className="mb-4 font-bold text-xl">Preview</h2>
+            <h2 className="mb-4 font-semibold text-lg">Preview</h2>
             <PreviewToggle value={previewType} onChange={setPreviewType} />
           </div>
           {renderPreview()}

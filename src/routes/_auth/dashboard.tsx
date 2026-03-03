@@ -60,10 +60,12 @@ const DashboardPage = () => {
     .slice(0, 5);
 
   return (
-    <div className="mx-auto max-w-4xl p-8">
-      <div className="mb-8">
-        <h1 className="mb-2 font-bold text-3xl">{appConfig.name}</h1>
-        <p className="text-muted-foreground">{appConfig.tagline}</p>
+    <div className="p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="font-semibold text-xl">{appConfig.name}</h1>
+          <p className="text-muted-foreground text-sm">{appConfig.tagline}</p>
+        </div>
       </div>
 
       {/* Stat cards */}

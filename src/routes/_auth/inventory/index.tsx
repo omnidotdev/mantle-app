@@ -3,6 +3,7 @@ import { ArrowLeft, Edit, Eye, Package, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AdjustmentLog from "@/features/inventory/components/AdjustmentLog";
@@ -40,6 +41,11 @@ const InventoryPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [currentProduct, setCurrentProduct] =
     useState<Partial<Product>>(defaultProduct);
+
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    open: boolean;
+    id: string;
+  }>({ open: false, id: "" });
 
   // Adjustment inline form state
   const [adjustmentReason, setAdjustmentReason] = useState("");
@@ -98,9 +104,7 @@ const InventoryPage = () => {
   };
 
   const handleDeleteProduct = (id: string) => {
-    if (confirm("Delete this product?")) {
-      deleteProduct(id);
-    }
+    setDeleteConfirm({ open: true, id });
   };
 
   const handleCancel = () => {
@@ -137,7 +141,7 @@ const InventoryPage = () => {
 
     if (!product) {
       return (
-        <div className="mx-auto max-w-6xl p-8">
+        <div className="p-6">
           <p className="text-gray-500">Product not found</p>
         </div>
       );
@@ -146,12 +150,12 @@ const InventoryPage = () => {
     const adjustments = getAdjustmentsForProduct(editingId);
 
     return (
-      <div className="mx-auto max-w-6xl p-8">
+      <div className="p-6">
         <div className="mb-6">
           <button
             type="button"
             onClick={handleBackToList}
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
+            className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
           >
             <ArrowLeft size={16} />
             Back to list
@@ -162,7 +166,7 @@ const InventoryPage = () => {
         <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
           <div className="mb-4 flex items-start justify-between">
             <div>
-              <h2 className="font-bold text-xl">{product.name}</h2>
+              <h2 className="font-semibold text-lg">{product.name}</h2>
               {product.sku && (
                 <p className="text-gray-500 text-sm">SKU: {product.sku}</p>
               )}
@@ -215,13 +219,13 @@ const InventoryPage = () => {
 
         {/* Adjustment log */}
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-bold text-lg">Adjustment History</h3>
+          <h3 className="font-semibold text-base">Adjustment History</h3>
           <button
             type="button"
             onClick={() => setShowAdjustmentForm(!showAdjustmentForm)}
-            className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+            className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
           >
-            <Plus size={18} />
+            <Plus size={16} />
             Add Adjustment
           </button>
         </div>
@@ -253,7 +257,7 @@ const InventoryPage = () => {
                   type="button"
                   onClick={handleAddAdjustment}
                   disabled={!adjustmentReason.trim() || !adjustmentQuantity}
-                  className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Submit
                 </button>
@@ -272,12 +276,12 @@ const InventoryPage = () => {
     const title = editingId ? "Edit Product" : "New Product";
 
     return (
-      <div className="mx-auto max-w-6xl p-8">
+      <div className="p-6">
         <div className="mb-6">
           <button
             type="button"
             onClick={handleCancel}
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
+            className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
           >
             <ArrowLeft size={16} />
             Back to list
@@ -285,7 +289,7 @@ const InventoryPage = () => {
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-6 font-bold text-xl">{title}</h2>
+          <h2 className="mb-6 font-semibold text-lg">{title}</h2>
 
           <ProductForm
             product={currentProduct}
@@ -300,15 +304,15 @@ const InventoryPage = () => {
 
   // List view
   return (
-    <div className="mx-auto max-w-6xl p-8">
+    <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-bold text-2xl">Inventory</h1>
+        <h1 className="font-semibold text-xl">Inventory</h1>
         <button
           type="button"
           onClick={handleCreateProduct}
-          className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+          className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
         >
-          <Plus size={18} />
+          <Plus size={16} />
           Add Product
         </button>
       </div>
@@ -319,6 +323,16 @@ const InventoryPage = () => {
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
         onCreateNew={handleCreateProduct}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) =>
+          setDeleteConfirm((prev) => ({ ...prev, open }))
+        }
+        title="Delete Product"
+        description="Are you sure you want to delete this product? This action cannot be undone."
+        onConfirm={() => deleteProduct(deleteConfirm.id)}
       />
     </div>
   );
