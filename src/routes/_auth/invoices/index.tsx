@@ -1,8 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Edit, Eye, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
 import {
@@ -24,9 +25,6 @@ import type {
   Invoice,
   InvoiceLineItem,
 } from "@/features/invoices/types/invoice";
-
-// TODO: Replace with actual organization ID from auth context
-const ORGANIZATION_ID = "default";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-100 text-gray-700",
@@ -56,12 +54,17 @@ const defaultInvoice: Partial<Invoice> = {
 };
 
 const InvoicesPage = () => {
+  const { organizationId } = Route.useRouteContext();
   const { viewMode, editingId, setViewMode, setEditingId, reset } =
     useInvoiceUIStore();
   const queryClient = useQueryClient();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    open: boolean;
+    id: string;
+  }>({ open: false, id: "" });
 
   const [currentInvoice, setCurrentInvoice] =
     useState<Partial<Invoice>>(defaultInvoice);
@@ -79,7 +82,7 @@ const InvoicesPage = () => {
   ]);
 
   const { data, isLoading } = useAllInvoicesQuery({
-    organizationId: ORGANIZATION_ID,
+    organizationId: organizationId!,
   });
 
   const invoices = (data?.invoices?.nodes ?? []).flatMap((node) => {
@@ -156,7 +159,7 @@ const InvoicesPage = () => {
   const invalidateInvoices = () => {
     queryClient.invalidateQueries({
       queryKey: useAllInvoicesQuery.getKey({
-        organizationId: ORGANIZATION_ID,
+        organizationId: organizationId!,
       }),
     });
   };
@@ -253,7 +256,7 @@ const InvoicesPage = () => {
       createMutation.mutate({
         input: {
           invoice: {
-            organizationId: ORGANIZATION_ID,
+            organizationId: organizationId!,
             invoiceNumber: currentInvoice.invoiceNumber ?? "",
             companyId: currentInvoice.companyId ?? "",
             status: currentInvoice.status ?? "draft",
@@ -276,14 +279,20 @@ const InvoicesPage = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Delete this invoice?")) {
-      deleteMutation.mutate({ input: { rowId: id } });
-    }
+    setDeleteConfirm({ open: true, id });
   };
 
   const handleCancel = () => {
     reset();
   };
+
+  if (!organizationId) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500">Select an organization to view invoices</p>
+      </div>
+    );
+  }
 
   // Loading state
   if (isLoading) {
@@ -299,15 +308,7 @@ const InvoicesPage = () => {
     return (
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-6 flex items-center justify-between">
-          <div>
-            <Link
-              to="/dashboard"
-              className="text-gray-500 text-sm hover:text-gray-700"
-            >
-              &larr; Back
-            </Link>
-            <h1 className="font-bold text-2xl">Invoices</h1>
-          </div>
+          <h1 className="font-bold text-2xl">Invoices</h1>
           <div className="flex items-center gap-4">
             <div className="rounded-lg border border-gray-200 bg-white px-4 py-2">
               <p className="text-gray-500 text-xs">
@@ -397,6 +398,9 @@ const InvoicesPage = () => {
                   <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
                     Issue Date
                   </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    Due Date
+                  </th>
                   <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
                     Total
                   </th>
@@ -419,6 +423,9 @@ const InvoicesPage = () => {
                     </td>
                     <td className="px-4 py-3 text-gray-600 text-sm">
                       {invoice.issueDate}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 text-sm">
+                      {invoice.dueDate || "\u2014"}
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-sm">
                       {formatCurrency(invoice.total, invoice.currency)}
@@ -467,6 +474,18 @@ const InvoicesPage = () => {
             )}
           </div>
         )}
+
+        <ConfirmDialog
+          open={deleteConfirm.open}
+          onOpenChange={(open) =>
+            setDeleteConfirm((prev) => ({ ...prev, open }))
+          }
+          title="Delete Invoice"
+          description="Are you sure you want to delete this invoice? This action cannot be undone."
+          onConfirm={() =>
+            deleteMutation.mutate({ input: { rowId: deleteConfirm.id } })
+          }
+        />
       </div>
     );
   }

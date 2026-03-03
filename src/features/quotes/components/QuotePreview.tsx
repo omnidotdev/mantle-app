@@ -25,6 +25,13 @@ const pricingColors: Record<string, string> = {
   royalty: "bg-purple-100 text-purple-700",
 };
 
+const pluralizeUnit = (value: string | null, unit: string | null): string => {
+  if (!unit || unit === "perpetual") return "Perpetual";
+  const num = Number.parseFloat(value || "0");
+  const singular = unit.replace(/s$/, "");
+  return `${value} ${num === 1 ? singular : unit}`;
+};
+
 const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
   const { profiles } = useSettingsStore();
   const { getCompany, getPerson } = usePeopleStore();
@@ -46,8 +53,29 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
   const total = subtotal + taxAmount;
   const currency = quote.currency || "USD";
 
+  const hasHourly = lineItems.some((li) => li.pricingType === "hourly");
+  const hasRoyalty = lineItems.some((li) => li.pricingType === "royalty");
+
+  // Smart calculations
+  const hourlyMaxTotal = lineItems
+    .filter((li) => li.pricingType === "hourly")
+    .reduce((sum, li) => {
+      const rate = Number.parseFloat(li.hourlyRate || "0");
+      const maxHrs = Number.parseFloat(
+        li.maxCapHours || li.monthlyCapHours || "0",
+      );
+      return sum + rate * maxHrs;
+    }, 0);
+
+  const royaltyBuyoutTotal = lineItems
+    .filter((li) => li.pricingType === "royalty" && li.royaltyBuyoutAmount)
+    .reduce(
+      (sum, li) => sum + Number.parseFloat(li.royaltyBuyoutAmount || "0"),
+      0,
+    );
+
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
+    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
       {/* Gradient header */}
       <div className="rounded-t-lg bg-linear-to-r from-teal-700 to-teal-500 p-6 text-white print:rounded-none">
         <div className="mb-2 flex justify-between">
@@ -77,6 +105,26 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
         {/* Two-column: Prepared By / Prepared For */}
         <div className="mb-8 grid grid-cols-2 gap-8">
           <div>
+            <h4 className="mb-2 font-bold text-gray-700">Prepared By</h4>
+            <p className="text-gray-800">
+              {orgProfile?.companyName || "Your Company"}
+            </p>
+            {orgProfile?.email && (
+              <p className="text-gray-600 text-sm">{orgProfile.email}</p>
+            )}
+            {orgProfile?.phone && (
+              <p className="text-gray-600 text-sm">{orgProfile.phone}</p>
+            )}
+            {orgProfile?.addressLine1 && (
+              <p className="text-gray-600 text-sm">
+                {orgProfile.addressLine1}
+                {orgProfile.city && `, ${orgProfile.city}`}
+                {orgProfile.state && `, ${orgProfile.state}`}
+                {orgProfile.postalCode && ` ${orgProfile.postalCode}`}
+              </p>
+            )}
+          </div>
+          <div>
             <h4 className="mb-2 font-bold text-gray-700">Prepared For</h4>
             <p className="text-gray-800">
               {quote.clientName ||
@@ -91,7 +139,11 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
               <p className="text-gray-600">{resolvedCompanyName}</p>
             )}
           </div>
-          <div>
+        </div>
+
+        {/* Quote metadata */}
+        <div className="mb-8 flex justify-end">
+          <div className="w-1/3">
             <div className="mb-1 flex justify-between">
               <span className="font-bold text-gray-700">Quote #:</span>
               <span className="text-gray-600">
@@ -161,6 +213,12 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                                 {formatCurrency(item.hourlyRate, currency)}/hr
                               </span>
                             )}
+                            {item.estimatedHours && (
+                              <span>
+                                {" "}
+                                \u2022 Est: {item.estimatedHours}hrs
+                              </span>
+                            )}
                             {item.weeklyCapHours && (
                               <span>
                                 {" "}
@@ -187,9 +245,10 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                               <span>
                                 {" "}
                                 \u2022{" "}
-                                {item.royaltyTimeframeUnit === "perpetual"
-                                  ? "Perpetual"
-                                  : `${item.royaltyTimeframe} ${item.royaltyTimeframeUnit}`}
+                                {pluralizeUnit(
+                                  item.royaltyTimeframe,
+                                  item.royaltyTimeframeUnit,
+                                )}
                               </span>
                             )}
                             {item.royaltyBuyoutAmount && (
@@ -246,6 +305,29 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
               </div>
             </div>
           </div>
+
+          {/* Smart pricing summaries */}
+          {(hourlyMaxTotal > 0 || royaltyBuyoutTotal > 0) && (
+            <div className="mt-4 rounded border border-gray-200 bg-gray-50 p-3 text-gray-600 text-sm">
+              {hourlyMaxTotal > 0 && (
+                <p>
+                  \u2022 Hourly items max cost (at cap):{" "}
+                  <span className="font-medium">
+                    {formatCurrency(String(hourlyMaxTotal), currency)}
+                  </span>
+                </p>
+              )}
+              {royaltyBuyoutTotal > 0 && (
+                <p>
+                  \u2022 Royalty buyout option available:{" "}
+                  <span className="font-medium">
+                    {formatCurrency(String(royaltyBuyoutTotal), currency)}
+                  </span>{" "}
+                  (one-time)
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Terms */}
@@ -257,6 +339,46 @@ const QuotePreview = ({ quote, lineItems }: QuotePreviewProps) => {
                 <p key={`term-${line}`}>{line}</p>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Dynamic pricing terms */}
+        {(hasHourly || hasRoyalty) && (
+          <div className="mb-4">
+            <h4 className="mb-2 font-bold text-gray-700">
+              Pricing-Specific Terms:
+            </h4>
+            <ul className="list-disc pl-5 text-gray-600 text-sm">
+              {hasHourly && (
+                <>
+                  <li>
+                    Hourly work will be tracked and reported on a weekly basis
+                  </li>
+                  <li>
+                    Work will pause when hourly caps are reached unless
+                    additional hours are authorized in writing
+                  </li>
+                </>
+              )}
+              {hasRoyalty && (
+                <>
+                  <li>
+                    Royalty payments are due within 30 days of each reporting
+                    period
+                  </li>
+                  <li>
+                    Maintenance is included for the duration of the royalty
+                    period
+                  </li>
+                  {royaltyBuyoutTotal > 0 && (
+                    <li>
+                      Client may exercise the buyout option at any time to
+                      terminate royalty obligations
+                    </li>
+                  )}
+                </>
+              )}
+            </ul>
           </div>
         )}
 

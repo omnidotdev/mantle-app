@@ -1,8 +1,9 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Building2,
   Edit,
+  Mail,
   Network,
   Plus,
   Search,
@@ -13,6 +14,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import {
   TabsContent,
   TabsList,
@@ -57,9 +59,10 @@ const defaultPerson: Partial<Person> = {
 };
 
 const PeoplePage = () => {
+  const { organizationId } = Route.useRouteContext();
   const {
-    companies,
-    people,
+    getCompaniesForOrg,
+    getPeopleForOrg,
     createCompany,
     updateCompany,
     deleteCompany,
@@ -76,6 +79,22 @@ const PeoplePage = () => {
   const [currentPerson, setCurrentPerson] =
     useState<Partial<Person>>(defaultPerson);
   const [importExportOpen, setImportExportOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    open: boolean;
+    id: string;
+    type: "company" | "contact";
+  }>({ open: false, id: "", type: "company" });
+
+  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
+  const people = organizationId ? getPeopleForOrg(organizationId) : [];
+
+  if (!organizationId) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500">Select an organization to view people</p>
+      </div>
+    );
+  }
 
   // Company handlers
   const handleCreateCompany = () => {
@@ -94,29 +113,30 @@ const PeoplePage = () => {
     if (editingId) {
       updateCompany(editingId, currentCompany);
     } else {
-      createCompany({
-        name: currentCompany.name ?? "",
-        website: currentCompany.website ?? null,
-        industry: currentCompany.industry ?? null,
-        phone: currentCompany.phone ?? null,
-        email: currentCompany.email ?? null,
-        addressLine1: currentCompany.addressLine1 ?? null,
-        addressLine2: currentCompany.addressLine2 ?? null,
-        city: currentCompany.city ?? null,
-        state: currentCompany.state ?? null,
-        postalCode: currentCompany.postalCode ?? null,
-        country: currentCompany.country ?? null,
-        notes: currentCompany.notes ?? null,
-      });
+      createCompany(
+        {
+          name: currentCompany.name ?? "",
+          website: currentCompany.website ?? null,
+          industry: currentCompany.industry ?? null,
+          phone: currentCompany.phone ?? null,
+          email: currentCompany.email ?? null,
+          addressLine1: currentCompany.addressLine1 ?? null,
+          addressLine2: currentCompany.addressLine2 ?? null,
+          city: currentCompany.city ?? null,
+          state: currentCompany.state ?? null,
+          postalCode: currentCompany.postalCode ?? null,
+          country: currentCompany.country ?? null,
+          notes: currentCompany.notes ?? null,
+        },
+        organizationId,
+      );
     }
     setViewMode("list");
     setEditingId(null);
   };
 
   const handleDeleteCompany = (id: string) => {
-    if (confirm("Delete this company?")) {
-      deleteCompany(id);
-    }
+    setDeleteConfirm({ open: true, id, type: "company" });
   };
 
   // Contact handlers
@@ -136,25 +156,26 @@ const PeoplePage = () => {
     if (editingId) {
       updatePerson(editingId, currentPerson);
     } else {
-      createPerson({
-        firstName: currentPerson.firstName ?? "",
-        lastName: currentPerson.lastName ?? "",
-        emails: currentPerson.emails ?? [],
-        phone: currentPerson.phone ?? null,
-        avatarUrl: currentPerson.avatarUrl ?? null,
-        tags: currentPerson.tags ?? null,
-        internal: currentPerson.internal ?? false,
-        notes: currentPerson.notes ?? null,
-      });
+      createPerson(
+        {
+          firstName: currentPerson.firstName ?? "",
+          lastName: currentPerson.lastName ?? "",
+          emails: currentPerson.emails ?? [],
+          phone: currentPerson.phone ?? null,
+          avatarUrl: currentPerson.avatarUrl ?? null,
+          tags: currentPerson.tags ?? null,
+          internal: currentPerson.internal ?? false,
+          notes: currentPerson.notes ?? null,
+        },
+        organizationId,
+      );
     }
     setViewMode("list");
     setEditingId(null);
   };
 
   const handleDeleteContact = (id: string) => {
-    if (confirm("Delete this contact?")) {
-      deletePerson(id);
-    }
+    setDeleteConfirm({ open: true, id, type: "contact" });
   };
 
   const handleCancel = () => {
@@ -213,15 +234,7 @@ const PeoplePage = () => {
   return (
     <div className="mx-auto max-w-6xl p-8">
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <Link
-            to="/dashboard"
-            className="text-gray-500 text-sm hover:text-gray-700"
-          >
-            &larr; Back
-          </Link>
-          <h1 className="font-bold text-2xl">People</h1>
-        </div>
+        <h1 className="font-bold text-2xl">People</h1>
         <div className="flex gap-2">
           {activeTab !== "network" && (
             <button
@@ -296,6 +309,23 @@ const PeoplePage = () => {
         open={importExportOpen}
         onOpenChange={setImportExportOpen}
         context={activeTab === "companies" ? "companies" : "contacts"}
+        organizationId={organizationId}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) =>
+          setDeleteConfirm((prev) => ({ ...prev, open }))
+        }
+        title={`Delete ${deleteConfirm.type === "company" ? "Company" : "Contact"}`}
+        description="Are you sure you want to delete this record? This action cannot be undone."
+        onConfirm={() => {
+          if (deleteConfirm.type === "company") {
+            deleteCompany(deleteConfirm.id);
+          } else {
+            deletePerson(deleteConfirm.id);
+          }
+        }}
       />
     </div>
   );
@@ -353,7 +383,11 @@ const CompaniesTable = ({
         </thead>
         <tbody>
           {companies.map((company) => (
-            <tr key={company.id} className="border-gray-100 border-t">
+            <tr
+              key={company.id}
+              className="cursor-pointer border-gray-100 border-t hover:bg-gray-50"
+              onClick={() => onEdit(company)}
+            >
               <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
               <td className="px-4 py-3 text-gray-600 text-sm">
                 {company.industry ?? "\u2014"}
@@ -364,7 +398,10 @@ const CompaniesTable = ({
               <td className="px-4 py-3 text-gray-600 text-sm">
                 {company.phone ?? "\u2014"}
               </td>
-              <td className="px-4 py-3 text-right">
+              <td
+                className="px-4 py-3 text-right"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -388,6 +425,60 @@ const CompaniesTable = ({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+};
+
+// Email action dropdown
+const EmailActionButton = ({
+  emails,
+  name,
+}: { emails: string[]; name: string }) => {
+  const [open, setOpen] = useState(false);
+
+  if (emails.length === 1) {
+    return (
+      <a
+        href={`mailto:${emails[0]}?subject=Hello ${name}`}
+        className="text-gray-500 hover:text-gray-700"
+        title={`Email ${emails[0]}`}
+      >
+        <Mail size={16} />
+      </a>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="text-gray-500 hover:text-gray-700"
+        title="Send email"
+      >
+        <Mail size={16} />
+      </button>
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setOpen(false)}
+            onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+          />
+          <div className="absolute right-0 z-20 mt-1 min-w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+            {emails.map((email) => (
+              <a
+                key={email}
+                href={`mailto:${email}?subject=Hello ${name}`}
+                className="block px-4 py-2 text-gray-700 text-sm hover:bg-gray-50"
+                onClick={() => setOpen(false)}
+              >
+                {email}
+              </a>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -524,7 +615,11 @@ const ContactsTable = ({
         </thead>
         <tbody>
           {filteredPeople.map((person) => (
-            <tr key={person.id} className="border-gray-100 border-t">
+            <tr
+              key={person.id}
+              className="cursor-pointer border-gray-100 border-t hover:bg-gray-50"
+              onClick={() => onEdit(person)}
+            >
               <td className="px-4 py-3 font-medium text-sm">
                 {person.firstName} {person.lastName}
               </td>
@@ -568,8 +663,14 @@ const ContactsTable = ({
                   )}
                 </div>
               </td>
-              <td className="px-4 py-3 text-right">
+              <td
+                className="px-4 py-3 text-right"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex justify-end gap-2">
+                  {person.emails.length > 0 && (
+                    <EmailActionButton emails={person.emails} name={`${person.firstName} ${person.lastName}`} />
+                  )}
                   <button
                     type="button"
                     onClick={() => onEdit(person)}

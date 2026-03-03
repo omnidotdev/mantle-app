@@ -50,7 +50,7 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
         <button
           type="button"
           onClick={addEmail}
-          disabled={!input.trim()}
+          disabled={!input.trim() || !EMAIL_REGEX.test(input.trim())}
           className="flex items-center gap-1 rounded-lg bg-teal-600 px-3 py-2 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus size={14} />

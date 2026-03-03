@@ -13,10 +13,12 @@ interface QuoteStore {
   quotes: StoredQuote[];
   createQuote: (
     quote: Omit<Quote, "id" | "createdAt" | "updatedAt" | "organizationId">,
+    organizationId: string,
   ) => StoredQuote;
   updateQuote: (id: string, updates: Partial<Quote>) => void;
   deleteQuote: (id: string) => void;
   getQuote: (id: string) => StoredQuote | undefined;
+  getQuotesForOrg: (orgId: string) => StoredQuote[];
 }
 
 const generateQuoteNumber = (quotes: StoredQuote[]): string => {
@@ -33,12 +35,12 @@ const useQuoteStore = create<QuoteStore>()(
     (set, get) => ({
       quotes: [],
 
-      createQuote: (quote) => {
+      createQuote: (quote, organizationId) => {
         const now = new Date().toISOString();
         const newQuote: StoredQuote = {
           ...quote,
           id: crypto.randomUUID(),
-          organizationId: "",
+          organizationId,
           quoteNumber: quote.quoteNumber || generateQuoteNumber(get().quotes),
           createdAt: now,
           updatedAt: now,
@@ -70,6 +72,9 @@ const useQuoteStore = create<QuoteStore>()(
       getQuote: (id) => {
         return get().quotes.find((q) => q.id === id);
       },
+
+      getQuotesForOrg: (orgId) =>
+        get().quotes.filter((q) => q.organizationId === orgId),
     }),
     {
       name: "mantle-quotes",

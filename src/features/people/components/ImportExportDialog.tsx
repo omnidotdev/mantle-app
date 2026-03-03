@@ -20,15 +20,18 @@ interface ImportExportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   context: "contacts" | "companies";
+  organizationId: string;
 }
 
 const ImportExportDialog = ({
   open,
   onOpenChange,
   context,
+  organizationId,
 }: ImportExportDialogProps) => {
   const { people, companies, importPeople, importCompanies } = usePeopleStore();
   const [importTab, setImportTab] = useState<string>("export");
+  const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const exportJSON = () => {
@@ -67,54 +70,74 @@ const ImportExportDialog = ({
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImportError(null);
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const text = event.target?.result as string;
+      try {
+        const text = event.target?.result as string;
 
-      if (file.name.endsWith(".json")) {
-        const data = JSON.parse(text);
-        if (context === "contacts") {
-          importPeople(data);
+        if (file.name.endsWith(".json")) {
+          const data = JSON.parse(text);
+          if (!Array.isArray(data)) {
+            setImportError("Invalid JSON: expected an array of records");
+            return;
+          }
+          if (context === "contacts") {
+            importPeople(data, organizationId);
+          } else {
+            importCompanies(data, organizationId);
+          }
+        } else if (file.name.endsWith(".csv")) {
+          const result = Papa.parse<Record<string, string>>(text, {
+            header: true,
+          });
+          if (result.errors.length > 0) {
+            setImportError(
+              `CSV parse error: ${result.errors[0].message} (row ${result.errors[0].row})`,
+            );
+            return;
+          }
+          if (context === "contacts") {
+            const parsed = result.data.map((row) => ({
+              firstName: row.firstName ?? "",
+              lastName: row.lastName ?? "",
+              emails: row.emails ? row.emails.split(";").filter(Boolean) : [],
+              phone: row.phone || null,
+              avatarUrl: row.avatarUrl || null,
+              tags: row.tags ? row.tags.split(";").filter(Boolean) : null,
+              internal: row.internal === "true",
+              notes: row.notes || null,
+            }));
+            importPeople(parsed, organizationId);
+          } else {
+            const parsed = result.data.map((row) => ({
+              name: row.name ?? "",
+              website: row.website || null,
+              industry: row.industry || null,
+              phone: row.phone || null,
+              email: row.email || null,
+              addressLine1: row.addressLine1 || null,
+              addressLine2: row.addressLine2 || null,
+              city: row.city || null,
+              state: row.state || null,
+              postalCode: row.postalCode || null,
+              country: row.country || null,
+              notes: row.notes || null,
+            }));
+            importCompanies(parsed, organizationId);
+          }
         } else {
-          importCompanies(data);
+          setImportError("Unsupported file type. Use .json or .csv");
+          return;
         }
-      } else if (file.name.endsWith(".csv")) {
-        const result = Papa.parse<Record<string, string>>(text, {
-          header: true,
-        });
-        if (context === "contacts") {
-          const parsed = result.data.map((row) => ({
-            firstName: row.firstName ?? "",
-            lastName: row.lastName ?? "",
-            emails: row.emails ? row.emails.split(";").filter(Boolean) : [],
-            phone: row.phone || null,
-            avatarUrl: row.avatarUrl || null,
-            tags: row.tags ? row.tags.split(";").filter(Boolean) : null,
-            internal: row.internal === "true",
-            notes: row.notes || null,
-          }));
-          importPeople(parsed);
-        } else {
-          const parsed = result.data.map((row) => ({
-            name: row.name ?? "",
-            website: row.website || null,
-            industry: row.industry || null,
-            phone: row.phone || null,
-            email: row.email || null,
-            addressLine1: row.addressLine1 || null,
-            addressLine2: row.addressLine2 || null,
-            city: row.city || null,
-            state: row.state || null,
-            postalCode: row.postalCode || null,
-            country: row.country || null,
-            notes: row.notes || null,
-          }));
-          importCompanies(parsed);
-        }
+
+        onOpenChange(false);
+      } catch (err) {
+        setImportError(
+          err instanceof Error ? err.message : "Failed to parse file",
+        );
       }
-
-      onOpenChange(false);
     };
 
     reader.readAsText(file);
@@ -186,6 +209,11 @@ const ImportExportDialog = ({
                 onChange={handleImport}
                 className="block w-full text-gray-500 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-4 file:py-2 file:font-medium file:text-sm file:text-teal-700 hover:file:bg-teal-100"
               />
+              {importError && (
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-red-700 text-sm">
+                  {importError}
+                </p>
+              )}
             </div>
           </TabsContent>
         </TabsRoot>

@@ -12,10 +12,12 @@ interface InventoryStore {
   // Product CRUD
   createProduct: (
     product: Omit<Product, "id" | "createdAt" | "updatedAt" | "organizationId">,
+    organizationId: string,
   ) => Product;
   updateProduct: (id: string, updates: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
   getProduct: (id: string) => Product | undefined;
+  getProductsForOrg: (orgId: string) => Product[];
 
   // Adjustments
   addAdjustment: (
@@ -30,12 +32,12 @@ const useInventoryStore = create<InventoryStore>()(
       products: [],
       adjustments: [],
 
-      createProduct: (product) => {
+      createProduct: (product, organizationId) => {
         const now = new Date().toISOString();
         const newProduct: Product = {
           ...product,
           id: crypto.randomUUID(),
-          organizationId: "",
+          organizationId,
           createdAt: now,
           updatedAt: now,
         };
@@ -67,6 +69,9 @@ const useInventoryStore = create<InventoryStore>()(
       getProduct: (id) => {
         return get().products.find((p) => p.id === id);
       },
+
+      getProductsForOrg: (orgId) =>
+        get().products.filter((p) => p.organizationId === orgId),
 
       addAdjustment: (adjustment) => {
         const newAdjustment: InventoryAdjustment = {

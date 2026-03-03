@@ -30,7 +30,7 @@ const ContractPreview = ({ quote, lineItems }: ContractPreviewProps) => {
   const resolvedClientCompany = company?.name || "";
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
+    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
       <ContractHeader contractId={quote.quoteNumber || "CT-0001"} date={date} />
 
       <div className="space-y-6 p-6">

@@ -18,28 +18,34 @@ interface PeopleStore {
   // Company CRUD
   createCompany: (
     company: Omit<Company, "id" | "createdAt" | "updatedAt" | "organizationId">,
+    organizationId: string,
   ) => Company;
   updateCompany: (id: string, updates: Partial<Company>) => void;
   deleteCompany: (id: string) => void;
   getCompany: (id: string) => Company | undefined;
+  getCompaniesForOrg: (orgId: string) => Company[];
 
   // Person CRUD
   createPerson: (
     person: Omit<Person, "id" | "createdAt" | "updatedAt" | "organizationId">,
+    organizationId: string,
   ) => Person;
   updatePerson: (id: string, updates: Partial<Person>) => void;
   deletePerson: (id: string) => void;
   getPerson: (id: string) => Person | undefined;
+  getPeopleForOrg: (orgId: string) => Person[];
 
   // Bulk operations
   importPeople: (
     people: Omit<Person, "id" | "createdAt" | "updatedAt" | "organizationId">[],
+    organizationId: string,
   ) => void;
   importCompanies: (
     companies: Omit<
       Company,
       "id" | "createdAt" | "updatedAt" | "organizationId"
     >[],
+    organizationId: string,
   ) => void;
 
   // UI state
@@ -57,12 +63,12 @@ const usePeopleStore = create<PeopleStore>()(
       activeTab: "companies",
       editingId: null,
 
-      createCompany: (company) => {
+      createCompany: (company, organizationId) => {
         const now = new Date().toISOString();
         const newCompany: Company = {
           ...company,
           id: crypto.randomUUID(),
-          organizationId: "",
+          organizationId,
           createdAt: now,
           updatedAt: now,
         };
@@ -94,12 +100,15 @@ const usePeopleStore = create<PeopleStore>()(
         return get().companies.find((c) => c.id === id);
       },
 
-      createPerson: (person) => {
+      getCompaniesForOrg: (orgId) =>
+        get().companies.filter((c) => c.organizationId === orgId),
+
+      createPerson: (person, organizationId) => {
         const now = new Date().toISOString();
         const newPerson: Person = {
           ...person,
           id: crypto.randomUUID(),
-          organizationId: "",
+          organizationId,
           createdAt: now,
           updatedAt: now,
         };
@@ -131,12 +140,15 @@ const usePeopleStore = create<PeopleStore>()(
         return get().people.find((p) => p.id === id);
       },
 
-      importPeople: (newPeople) => {
+      getPeopleForOrg: (orgId) =>
+        get().people.filter((p) => p.organizationId === orgId),
+
+      importPeople: (newPeople, organizationId) => {
         const now = new Date().toISOString();
         const created = newPeople.map((p) => ({
           ...p,
           id: crypto.randomUUID(),
-          organizationId: "",
+          organizationId,
           createdAt: now,
           updatedAt: now,
         }));
@@ -146,12 +158,12 @@ const usePeopleStore = create<PeopleStore>()(
         }));
       },
 
-      importCompanies: (newCompanies) => {
+      importCompanies: (newCompanies, organizationId) => {
         const now = new Date().toISOString();
         const created = newCompanies.map((c) => ({
           ...c,
           id: crypto.randomUUID(),
-          organizationId: "",
+          organizationId,
           createdAt: now,
           updatedAt: now,
         }));

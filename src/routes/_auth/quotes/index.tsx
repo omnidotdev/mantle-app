@@ -1,7 +1,8 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import { usePeopleStore } from "@/features/people/store/peopleStore";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
@@ -105,12 +106,18 @@ const PreviewToggle = ({
 );
 
 const QuotesPage = () => {
-  const { quotes, createQuote, updateQuote, deleteQuote } = useQuoteStore();
-  const { companies } = usePeopleStore();
+  const { organizationId } = Route.useRouteContext();
+  const { getQuotesForOrg, createQuote, updateQuote, deleteQuote } =
+    useQuoteStore();
+  const { getCompaniesForOrg } = usePeopleStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    open: boolean;
+    id: string;
+  }>({ open: false, id: "" });
   const [currentQuote, setCurrentQuote] =
     useState<Partial<Quote>>(defaultQuote);
   const [currentLineItems, setCurrentLineItems] = useState<
@@ -118,6 +125,9 @@ const QuotesPage = () => {
   >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewType, setPreviewType] = useState<PreviewType>("quote");
+
+  const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
+  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
 
   const resolveCompanyName = (companyId: string | undefined) =>
     companies.find((c) => c.id === companyId)?.name ?? null;
@@ -148,6 +158,14 @@ const QuotesPage = () => {
       ),
     [filteredQuotes],
   );
+
+  if (!organizationId) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500">Select an organization to view quotes</p>
+      </div>
+    );
+  }
 
   const handleCreateNew = () => {
     const quoteNumber = generateQuoteNumber(quotes as StoredQuote[]);
@@ -206,9 +224,7 @@ const QuotesPage = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Delete this quote?")) {
-      deleteQuote(id);
-    }
+    setDeleteConfirm({ open: true, id });
   };
 
   const handleCancel = () => {
@@ -400,6 +416,16 @@ const QuotesPage = () => {
             )}
           </div>
         )}
+
+        <ConfirmDialog
+          open={deleteConfirm.open}
+          onOpenChange={(open) =>
+            setDeleteConfirm((prev) => ({ ...prev, open }))
+          }
+          title="Delete Quote"
+          description="Are you sure you want to delete this quote? This action cannot be undone."
+          onConfirm={() => deleteQuote(deleteConfirm.id)}
+        />
       </div>
     );
   }

@@ -69,10 +69,13 @@ const NetworkGraph = ({ people }: NetworkGraphProps) => {
       ctx.fillStyle = color;
       ctx.fill();
 
-      // Draw label
+      // Draw label with background
       ctx.font = "4px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
+      const textWidth = ctx.measureText(label).width;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fillRect(x - textWidth / 2 - 1, y + 7, textWidth + 2, 6);
       ctx.fillStyle = "#374151";
       ctx.fillText(label, x, y + 8);
     },
@@ -108,6 +111,9 @@ const NetworkGraph = ({ people }: NetworkGraphProps) => {
           width={600}
           height={400}
           linkColor={() => "#d1d5db"}
+          linkDirectionalParticles={2}
+          linkDirectionalParticleWidth={2}
+          linkDirectionalParticleColor={() => "#9ca3af"}
           backgroundColor="#ffffff"
         />
       </div>
