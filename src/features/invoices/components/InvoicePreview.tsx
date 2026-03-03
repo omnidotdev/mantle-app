@@ -193,21 +193,21 @@ const InvoicePreview = ({
                 {lineItems.map(
                   (item) =>
                     item.description && (
-                      <tr key={item.id} className="border-gray-200 border-b">
-                        <td className="px-4 py-3 text-gray-800">
+                      <tr key={item.id}>
+                        <td className="border-b border-gray-200 px-4 py-3 text-gray-800">
                           {item.description}
                         </td>
                         {showDetails && (
                           <>
-                            <td className="px-4 py-3 text-right text-gray-800">
+                            <td className="border-b border-gray-200 px-4 py-3 text-right text-gray-800">
                               {item.quantity}
                             </td>
-                            <td className="px-4 py-3 text-right text-gray-800">
+                            <td className="border-b border-gray-200 px-4 py-3 text-right text-gray-800">
                               {formatCurrency(item.unitPrice || "0", currency)}
                             </td>
                           </>
                         )}
-                        <td className="px-4 py-3 text-right text-gray-800">
+                        <td className="border-b border-gray-200 px-4 py-3 text-right text-gray-800">
                           {formatCurrency(item.amount || "0", currency)}
                         </td>
                       </tr>
