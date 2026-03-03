@@ -106,10 +106,8 @@ const PreviewToggle = ({
 );
 
 const QuotesPage = () => {
-  const { organizationId } = Route.useRouteContext();
-  const { getQuotesForOrg, createQuote, updateQuote, deleteQuote } =
-    useQuoteStore();
-  const { getCompaniesForOrg } = usePeopleStore();
+  const { quotes, createQuote, updateQuote, deleteQuote } = useQuoteStore();
+  const { companies } = usePeopleStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,9 +123,6 @@ const QuotesPage = () => {
   >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewType, setPreviewType] = useState<PreviewType>("quote");
-
-  const quotes = organizationId ? getQuotesForOrg(organizationId) : [];
-  const companies = organizationId ? getCompaniesForOrg(organizationId) : [];
 
   const resolveCompanyName = (companyId: string | undefined) =>
     companies.find((c) => c.id === companyId)?.name ?? null;
@@ -216,6 +211,7 @@ const QuotesPage = () => {
           Quote,
           "id" | "createdAt" | "updatedAt" | "organizationId"
         >,
+        organizationId,
       );
     }
 
@@ -246,15 +242,7 @@ const QuotesPage = () => {
     return (
       <div className="mx-auto max-w-6xl p-8">
         <div className="mb-6 flex items-center justify-between">
-          <div>
-            <Link
-              to="/dashboard"
-              className="text-gray-500 text-sm hover:text-gray-700"
-            >
-              &larr; Back
-            </Link>
-            <h1 className="font-bold text-2xl">Quotes</h1>
-          </div>
+          <h1 className="font-bold text-2xl">Quotes</h1>
           <div className="flex items-center gap-4">
             <div className="rounded-lg border border-gray-200 bg-white px-4 py-2">
               <p className="text-gray-500 text-xs">
