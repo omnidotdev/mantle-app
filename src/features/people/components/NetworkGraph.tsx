@@ -1,3 +1,4 @@
+import { Users } from "lucide-react";
 import { Suspense, lazy, useCallback, useMemo } from "react";
 
 import type { Person } from "@/features/people/types";
@@ -84,7 +85,8 @@ const NetworkGraph = ({ people }: NetworkGraphProps) => {
 
   if (people.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border-2 border-border border-dashed text-muted-foreground">
+      <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-border border-dashed text-muted-foreground">
+        <Users size={32} className="mb-2" />
         Add people to see the network graph
       </div>
     );

@@ -1,3 +1,5 @@
+import { ClipboardList } from "lucide-react";
+
 import type { InventoryAdjustment } from "@/features/inventory/types/product";
 
 interface AdjustmentLogProps {
@@ -8,6 +10,7 @@ const AdjustmentLog = ({ adjustments }: AdjustmentLogProps) => {
   if (adjustments.length === 0) {
     return (
       <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+        <ClipboardList size={32} className="mx-auto mb-2 text-muted-foreground" />
         <p className="text-muted-foreground">No adjustments recorded</p>
       </div>
     );

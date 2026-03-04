@@ -1,6 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Edit, Eye, Loader2, Plus, Search, Trash2 } from "lucide-react";
+import {
+  Edit,
+  Eye,
+  FileText,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -518,6 +526,7 @@ const QuotesPage = () => {
 
         {quotes.length === 0 ? (
           <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+            <FileText size={32} className="mx-auto mb-2 text-muted-foreground" />
             <p className="mb-4 text-muted-foreground">No quotes yet</p>
             <button
               type="button"

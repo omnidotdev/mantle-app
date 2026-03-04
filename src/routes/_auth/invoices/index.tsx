@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   Edit,
   Eye,
+  FileText,
   Loader2,
   Plus,
   Printer,
@@ -412,6 +413,7 @@ const InvoicesPage = () => {
 
         {invoices.length === 0 ? (
           <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+            <FileText size={32} className="mx-auto mb-2 text-muted-foreground" />
             <p className="mb-4 text-muted-foreground">No invoices yet</p>
             <button
               type="button"
