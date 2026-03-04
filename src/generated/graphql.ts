@@ -3457,6 +3457,41 @@ export type DeleteQuoteLineItemMutationVariables = Exact<{
 
 export type DeleteQuoteLineItemMutation = { __typename?: 'Mutation', deleteQuoteLineItem?: { __typename?: 'DeleteQuoteLineItemPayload', deletedQuoteLineItemId?: string | null } | null };
 
+export type CompanyMembersByCompanyQueryVariables = Exact<{
+  companyId: Scalars['UUID']['input'];
+}>;
+
+
+export type CompanyMembersByCompanyQuery = { __typename?: 'Query', companyMembers?: { __typename?: 'CompanyMemberConnection', nodes: Array<{ __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null, createdAt?: string | null, person?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null } | null> } | null };
+
+export type CompanyMembersByPersonQueryVariables = Exact<{
+  personId: Scalars['UUID']['input'];
+}>;
+
+
+export type CompanyMembersByPersonQuery = { __typename?: 'Query', companyMembers?: { __typename?: 'CompanyMemberConnection', nodes: Array<{ __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null, createdAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null } | null> } | null };
+
+export type CreateCompanyMemberMutationVariables = Exact<{
+  input: CreateCompanyMemberInput;
+}>;
+
+
+export type CreateCompanyMemberMutation = { __typename?: 'Mutation', createCompanyMember?: { __typename?: 'CreateCompanyMemberPayload', companyMember?: { __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null } | null } | null };
+
+export type UpdateCompanyMemberMutationVariables = Exact<{
+  input: UpdateCompanyMemberInput;
+}>;
+
+
+export type UpdateCompanyMemberMutation = { __typename?: 'Mutation', updateCompanyMember?: { __typename?: 'UpdateCompanyMemberPayload', companyMember?: { __typename?: 'CompanyMember', rowId: string, title?: string | null, isPrimary?: boolean | null } | null } | null };
+
+export type DeleteCompanyMemberMutationVariables = Exact<{
+  input: DeleteCompanyMemberInput;
+}>;
+
+
+export type DeleteCompanyMemberMutation = { __typename?: 'Mutation', deleteCompanyMember?: { __typename?: 'DeleteCompanyMemberPayload', deletedCompanyMemberId?: string | null } | null };
+
 
 
 export const AllCompaniesDocument = `
@@ -4697,3 +4732,172 @@ useDeleteQuoteLineItemMutation.getKey = () => ['DeleteQuoteLineItem'];
 
 
 useDeleteQuoteLineItemMutation.fetcher = (variables: DeleteQuoteLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteQuoteLineItemMutation, DeleteQuoteLineItemMutationVariables>(DeleteQuoteLineItemDocument, variables, options);
+
+export const CompanyMembersByCompanyDocument = `
+    query CompanyMembersByCompany($companyId: UUID!) {
+  companyMembers(condition: {companyId: $companyId}) {
+    nodes {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+      createdAt
+      person {
+        rowId
+        firstName
+        lastName
+      }
+    }
+  }
+}
+    `;
+
+export const useCompanyMembersByCompanyQuery = <
+      TData = CompanyMembersByCompanyQuery,
+      TError = unknown
+    >(
+      variables: CompanyMembersByCompanyQueryVariables,
+      options?: Omit<UseQueryOptions<CompanyMembersByCompanyQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<CompanyMembersByCompanyQuery, TError, TData>['queryKey'] }
+    ) => {
+
+    return useQuery<CompanyMembersByCompanyQuery, TError, TData>(
+      {
+    queryKey: ['CompanyMembersByCompany', variables],
+    queryFn: graphqlFetch<CompanyMembersByCompanyQuery, CompanyMembersByCompanyQueryVariables>(CompanyMembersByCompanyDocument, variables),
+    ...options
+  }
+    )};
+
+useCompanyMembersByCompanyQuery.getKey = (variables: CompanyMembersByCompanyQueryVariables) => ['CompanyMembersByCompany', variables];
+
+
+useCompanyMembersByCompanyQuery.fetcher = (variables: CompanyMembersByCompanyQueryVariables, options?: RequestInit['headers']) => graphqlFetch<CompanyMembersByCompanyQuery, CompanyMembersByCompanyQueryVariables>(CompanyMembersByCompanyDocument, variables, options);
+
+export const CompanyMembersByPersonDocument = `
+    query CompanyMembersByPerson($personId: UUID!) {
+  companyMembers(condition: {personId: $personId}) {
+    nodes {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+      createdAt
+      company {
+        rowId
+        name
+      }
+    }
+  }
+}
+    `;
+
+export const useCompanyMembersByPersonQuery = <
+      TData = CompanyMembersByPersonQuery,
+      TError = unknown
+    >(
+      variables: CompanyMembersByPersonQueryVariables,
+      options?: Omit<UseQueryOptions<CompanyMembersByPersonQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<CompanyMembersByPersonQuery, TError, TData>['queryKey'] }
+    ) => {
+
+    return useQuery<CompanyMembersByPersonQuery, TError, TData>(
+      {
+    queryKey: ['CompanyMembersByPerson', variables],
+    queryFn: graphqlFetch<CompanyMembersByPersonQuery, CompanyMembersByPersonQueryVariables>(CompanyMembersByPersonDocument, variables),
+    ...options
+  }
+    )};
+
+useCompanyMembersByPersonQuery.getKey = (variables: CompanyMembersByPersonQueryVariables) => ['CompanyMembersByPerson', variables];
+
+
+useCompanyMembersByPersonQuery.fetcher = (variables: CompanyMembersByPersonQueryVariables, options?: RequestInit['headers']) => graphqlFetch<CompanyMembersByPersonQuery, CompanyMembersByPersonQueryVariables>(CompanyMembersByPersonDocument, variables, options);
+
+export const CreateCompanyMemberDocument = `
+    mutation CreateCompanyMember($input: CreateCompanyMemberInput!) {
+  createCompanyMember(input: $input) {
+    companyMember {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+    }
+  }
+}
+    `;
+
+export const useCreateCompanyMemberMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<CreateCompanyMemberMutation, TError, CreateCompanyMemberMutationVariables, TContext>) => {
+
+    return useMutation<CreateCompanyMemberMutation, TError, CreateCompanyMemberMutationVariables, TContext>(
+      {
+    mutationKey: ['CreateCompanyMember'],
+    mutationFn: (variables?: CreateCompanyMemberMutationVariables) => graphqlFetch<CreateCompanyMemberMutation, CreateCompanyMemberMutationVariables>(CreateCompanyMemberDocument, variables)(),
+    ...options
+  }
+    )};
+
+useCreateCompanyMemberMutation.getKey = () => ['CreateCompanyMember'];
+
+
+useCreateCompanyMemberMutation.fetcher = (variables: CreateCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateCompanyMemberMutation, CreateCompanyMemberMutationVariables>(CreateCompanyMemberDocument, variables, options);
+
+export const UpdateCompanyMemberDocument = `
+    mutation UpdateCompanyMember($input: UpdateCompanyMemberInput!) {
+  updateCompanyMember(input: $input) {
+    companyMember {
+      rowId
+      title
+      isPrimary
+    }
+  }
+}
+    `;
+
+export const useUpdateCompanyMemberMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<UpdateCompanyMemberMutation, TError, UpdateCompanyMemberMutationVariables, TContext>) => {
+
+    return useMutation<UpdateCompanyMemberMutation, TError, UpdateCompanyMemberMutationVariables, TContext>(
+      {
+    mutationKey: ['UpdateCompanyMember'],
+    mutationFn: (variables?: UpdateCompanyMemberMutationVariables) => graphqlFetch<UpdateCompanyMemberMutation, UpdateCompanyMemberMutationVariables>(UpdateCompanyMemberDocument, variables)(),
+    ...options
+  }
+    )};
+
+useUpdateCompanyMemberMutation.getKey = () => ['UpdateCompanyMember'];
+
+
+useUpdateCompanyMemberMutation.fetcher = (variables: UpdateCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateCompanyMemberMutation, UpdateCompanyMemberMutationVariables>(UpdateCompanyMemberDocument, variables, options);
+
+export const DeleteCompanyMemberDocument = `
+    mutation DeleteCompanyMember($input: DeleteCompanyMemberInput!) {
+  deleteCompanyMember(input: $input) {
+    deletedCompanyMemberId
+  }
+}
+    `;
+
+export const useDeleteCompanyMemberMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<DeleteCompanyMemberMutation, TError, DeleteCompanyMemberMutationVariables, TContext>) => {
+
+    return useMutation<DeleteCompanyMemberMutation, TError, DeleteCompanyMemberMutationVariables, TContext>(
+      {
+    mutationKey: ['DeleteCompanyMember'],
+    mutationFn: (variables?: DeleteCompanyMemberMutationVariables) => graphqlFetch<DeleteCompanyMemberMutation, DeleteCompanyMemberMutationVariables>(DeleteCompanyMemberDocument, variables)(),
+    ...options
+  }
+    )};
+
+useDeleteCompanyMemberMutation.getKey = () => ['DeleteCompanyMember'];
+
+
+useDeleteCompanyMemberMutation.fetcher = (variables: DeleteCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteCompanyMemberMutation, DeleteCompanyMemberMutationVariables>(DeleteCompanyMemberDocument, variables, options);

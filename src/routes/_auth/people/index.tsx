@@ -25,6 +25,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import CompanyForm from "@/features/people/components/CompanyForm";
+import CompanyMembers from "@/features/people/components/CompanyMembers";
+import ContactCompanies from "@/features/people/components/ContactCompanies";
 import ContactForm from "@/features/people/components/ContactForm";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";
@@ -399,6 +401,19 @@ const PeoplePage = () => {
             />
           )}
         </div>
+
+        {editingId && isCompanyForm && (
+          <CompanyMembers
+            companyId={editingId}
+            organizationId={organizationId}
+          />
+        )}
+        {editingId && !isCompanyForm && (
+          <ContactCompanies
+            personId={editingId}
+            organizationId={organizationId}
+          />
+        )}
       </div>
     );
   }

@@ -1,0 +1,62 @@
+query CompanyMembersByCompany($companyId: UUID!) {
+  companyMembers(condition: { companyId: $companyId }) {
+    nodes {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+      createdAt
+      person {
+        rowId
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
+query CompanyMembersByPerson($personId: UUID!) {
+  companyMembers(condition: { personId: $personId }) {
+    nodes {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+      createdAt
+      company {
+        rowId
+        name
+      }
+    }
+  }
+}
+
+mutation CreateCompanyMember($input: CreateCompanyMemberInput!) {
+  createCompanyMember(input: $input) {
+    companyMember {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+    }
+  }
+}
+
+mutation UpdateCompanyMember($input: UpdateCompanyMemberInput!) {
+  updateCompanyMember(input: $input) {
+    companyMember {
+      rowId
+      title
+      isPrimary
+    }
+  }
+}
+
+mutation DeleteCompanyMember($input: DeleteCompanyMemberInput!) {
+  deleteCompanyMember(input: $input) {
+    deletedCompanyMemberId
+  }
+}
