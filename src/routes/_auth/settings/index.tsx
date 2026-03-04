@@ -97,7 +97,7 @@ const SettingsPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-semibold text-xl">Organization Profile</h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="mt-1 text-muted-foreground text-sm">
             Configure your company details for auto-filling invoices and
             contracts
           </p>

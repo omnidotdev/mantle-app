@@ -447,7 +447,13 @@ const InventoryPage = () => {
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-semibold text-xl">Inventory</h1>
+        <div>
+          <h1 className="font-semibold text-xl">Inventory</h1>
+          <p className="mt-1 text-muted-foreground text-sm">
+            {products.length}{" "}
+            {products.length === 1 ? "product" : "products"}
+          </p>
+        </div>
         <button
           type="button"
           onClick={handleCreateProduct}

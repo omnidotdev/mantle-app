@@ -422,7 +422,15 @@ const PeoplePage = () => {
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-semibold text-xl">People</h1>
+        <div>
+          <h1 className="font-semibold text-xl">People</h1>
+          <p className="mt-1 text-muted-foreground text-sm">
+            {companies.length}{" "}
+            {companies.length === 1 ? "company" : "companies"}
+            {" · "}
+            {people.length} {people.length === 1 ? "contact" : "contacts"}
+          </p>
+        </div>
         <div
           className={`flex gap-2 ${activeTab === "network" ? "invisible" : ""}`}
         >
