@@ -408,31 +408,29 @@ const PeoplePage = () => {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-semibold text-xl">People</h1>
-        <div className="flex gap-2">
-          {activeTab !== "network" && (
-            <button
-              type="button"
-              onClick={() => setImportExportOpen(true)}
-              className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-            >
-              <Share2 size={16} />
-              Import/Export
-            </button>
-          )}
-          {activeTab !== "network" && (
-            <button
-              type="button"
-              onClick={
-                activeTab === "companies"
-                  ? handleCreateCompany
-                  : handleCreateContact
-              }
-              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-            >
-              <Plus size={16} />
-              {activeTab === "companies" ? "Add Company" : "Add Contact"}
-            </button>
-          )}
+        <div
+          className={`flex gap-2 ${activeTab === "network" ? "invisible" : ""}`}
+        >
+          <button
+            type="button"
+            onClick={() => setImportExportOpen(true)}
+            className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
+          >
+            <Share2 size={16} />
+            Import/Export
+          </button>
+          <button
+            type="button"
+            onClick={
+              activeTab === "companies"
+                ? handleCreateCompany
+                : handleCreateContact
+            }
+            className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
+          >
+            <Plus size={16} />
+            {activeTab === "companies" ? "Add Company" : "Add Contact"}
+          </button>
         </div>
       </div>
 
@@ -474,7 +472,7 @@ const PeoplePage = () => {
         </TabsContent>
 
         <TabsContent value="network">
-          <NetworkSection people={people} />
+          {activeTab === "network" && <NetworkSection people={people} />}
         </TabsContent>
       </TabsRoot>
 
