@@ -389,7 +389,7 @@ const InvoicesPage = () => {
   // List view
   if (viewMode === "list") {
     return (
-      <div className="p-6">
+      <div className="min-w-0 p-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="font-semibold text-xl">Invoices</h1>

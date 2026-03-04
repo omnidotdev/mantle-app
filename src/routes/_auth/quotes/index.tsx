@@ -495,28 +495,25 @@ const QuotesPage = () => {
   // List view
   if (viewMode === "list") {
     return (
-      <div className="p-6">
+      <div className="min-w-0 p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="font-semibold text-xl">Quotes</h1>
-          <div className="flex items-center gap-3">
-            <div className="rounded-md border border-border bg-card px-3 py-1.5">
-              <p className="text-muted-foreground text-xs">
-                {filteredQuotes.length}{" "}
-                {filteredQuotes.length === 1 ? "quote" : "quotes"}
-              </p>
-              <p className="font-semibold">
-                {formatCurrency(filteredTotal.toFixed(2))}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleCreateNew}
-              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-            >
-              <Plus size={16} />
-              New Quote
-            </button>
+          <div>
+            <h1 className="font-semibold text-xl">Quotes</h1>
+            <p className="mt-1 text-muted-foreground text-sm">
+              {filteredQuotes.length}{" "}
+              {filteredQuotes.length === 1 ? "quote" : "quotes"}
+              {" · "}
+              {formatCurrency(filteredTotal.toFixed(2))}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={handleCreateNew}
+            className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
+          >
+            <Plus size={16} />
+            New Quote
+          </button>
         </div>
 
         {quotes.length === 0 ? (
