@@ -14,8 +14,8 @@ const AdjustmentLog = ({ adjustments }: AdjustmentLogProps) => {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <table className="w-full">
+    <div className="overflow-x-auto rounded-lg border border-border bg-card">
+      <table className="w-full min-w-[500px]">
         <thead className="bg-muted">
           <tr>
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">

@@ -531,7 +531,7 @@ const QuotesPage = () => {
             </button>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-border bg-card">
+          <div className="overflow-x-auto rounded-lg border border-border bg-card">
             <div className="flex gap-4 border-border border-b p-4">
               <div className="relative flex-1">
                 <Search
@@ -579,7 +579,7 @@ const QuotesPage = () => {
                 </button>
               </div>
             ) : (
-              <table className="w-full">
+              <table className="w-full min-w-[800px]">
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
