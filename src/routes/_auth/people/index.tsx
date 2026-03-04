@@ -183,7 +183,9 @@ const PeoplePage = () => {
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">Select an organization to view people</p>
+        <p className="text-muted-foreground">
+          Select an organization to view people
+        </p>
       </div>
     );
   }
@@ -192,7 +194,7 @@ const PeoplePage = () => {
     return (
       <div className="flex items-center justify-center p-6">
         <Loader2
-          className="h-8 w-8 animate-spin text-gray-400"
+          className="h-8 w-8 animate-spin text-muted-foreground"
           aria-label="Loading people"
         />
       </div>
@@ -369,14 +371,14 @@ const PeoplePage = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
+            className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
           >
             <ArrowLeft size={16} />
             Back to list
           </button>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           <h2 className="mb-6 font-semibold text-lg">{title}</h2>
 
           {isCompanyForm ? (
@@ -411,7 +413,7 @@ const PeoplePage = () => {
             <button
               type="button"
               onClick={() => setImportExportOpen(true)}
-              className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+              className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
             >
               <Share2 size={16} />
               Import/Export
@@ -425,7 +427,7 @@ const PeoplePage = () => {
                   ? handleCreateCompany
                   : handleCreateContact
               }
-              className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
             >
               <Plus size={16} />
               {activeTab === "companies" ? "Add Company" : "Add Contact"}
@@ -536,13 +538,13 @@ const CompaniesTable = ({
 }) => {
   if (companies.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
-        <Building2 size={32} className="mx-auto mb-2 text-gray-400" />
-        <p className="mb-4 text-gray-500">No companies yet</p>
+      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+        <Building2 size={32} className="mx-auto mb-2 text-muted-foreground" />
+        <p className="mb-4 text-muted-foreground">No companies yet</p>
         <button
           type="button"
           onClick={onCreateNew}
-          className="text-teal-600 hover:text-teal-700"
+          className="text-primary-600 hover:text-primary-700"
         >
           Add your first company
         </button>
@@ -551,23 +553,23 @@ const CompaniesTable = ({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full">
-        <thead className="bg-gray-50">
+        <thead className="bg-muted">
           <tr>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Name
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Industry
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Email
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Phone
             </th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
               Actions
             </th>
           </tr>
@@ -576,17 +578,17 @@ const CompaniesTable = ({
           {companies.map((company) => (
             <tr
               key={company.id}
-              className="cursor-pointer border-gray-100 border-t hover:bg-gray-50"
+              className="cursor-pointer border-border border-t hover:bg-muted"
               onClick={() => onEdit(company)}
             >
               <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {company.industry ?? "\u2014"}
               </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {company.email ?? "\u2014"}
               </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {company.phone ?? "\u2014"}
               </td>
               <td
@@ -597,7 +599,7 @@ const CompaniesTable = ({
                   <button
                     type="button"
                     onClick={() => onEdit(company)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-muted-foreground hover:text-foreground"
                     aria-label="Edit company"
                   >
                     <Edit size={16} />
@@ -605,7 +607,7 @@ const CompaniesTable = ({
                   <button
                     type="button"
                     onClick={() => onDelete(company.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-destructive hover:text-destructive/90"
                     aria-label="Delete company"
                   >
                     <Trash2 size={16} />
@@ -634,7 +636,7 @@ const EmailActionButton = ({
     return (
       <a
         href={`mailto:${emails[0]}?subject=${encodeURIComponent(`Hello ${name}`)}`}
-        className="text-gray-500 hover:text-gray-700"
+        className="text-muted-foreground hover:text-foreground"
         aria-label={`Email ${emails[0]}`}
       >
         <Mail size={16} />
@@ -647,7 +649,7 @@ const EmailActionButton = ({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="text-gray-500 hover:text-gray-700"
+        className="text-muted-foreground hover:text-foreground"
         aria-label="Send email"
       >
         <Mail size={16} />
@@ -659,12 +661,12 @@ const EmailActionButton = ({
             className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 z-20 mt-1 min-w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+          <div className="absolute right-0 z-20 mt-1 min-w-48 rounded-lg border border-border bg-card py-1 shadow-lg">
             {emails.map((email) => (
               <a
                 key={email}
                 href={`mailto:${email}?subject=${encodeURIComponent(`Hello ${name}`)}`}
-                className="block px-4 py-2 text-gray-700 text-sm hover:bg-gray-50"
+                className="block px-4 py-2 text-foreground text-sm hover:bg-muted"
                 onClick={() => setOpen(false)}
               >
                 {email}
@@ -721,13 +723,13 @@ const ContactsTable = ({
 
   if (people.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
-        <Users size={32} className="mx-auto mb-2 text-gray-400" />
-        <p className="mb-4 text-gray-500">No contacts yet</p>
+      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+        <Users size={32} className="mx-auto mb-2 text-muted-foreground" />
+        <p className="mb-4 text-muted-foreground">No contacts yet</p>
         <button
           type="button"
           onClick={onCreateNew}
-          className="text-teal-600 hover:text-teal-700"
+          className="text-primary-600 hover:text-primary-700"
         >
           Add your first contact
         </button>
@@ -736,11 +738,11 @@ const ContactsTable = ({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-      <div className="flex items-center gap-4 border-gray-200 border-b p-4">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex items-center gap-4 border-border border-b p-4">
         <div className="relative flex-1">
           <Search
-            className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+            className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
           <input
@@ -749,10 +751,10 @@ const ContactsTable = ({
             aria-label="Search contacts"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
           />
         </div>
-        <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+        <div className="inline-flex rounded-lg border border-border bg-muted p-1">
           {TYPE_BUTTONS.map((btn) => (
             <button
               key={btn.value}
@@ -760,8 +762,8 @@ const ContactsTable = ({
               onClick={() => setTypeFilter(btn.value)}
               className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
                 typeFilter === btn.value
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {btn.label}
@@ -772,38 +774,40 @@ const ContactsTable = ({
 
       {filteredPeople.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-gray-500">No contacts match your filters</p>
+          <p className="text-muted-foreground">
+            No contacts match your filters
+          </p>
           <button
             type="button"
             onClick={() => {
               setSearchTerm("");
               setTypeFilter("all");
             }}
-            className="mt-2 text-sm text-teal-600 hover:text-teal-700"
+            className="mt-2 text-primary-600 text-sm hover:text-primary-700"
           >
             Clear filters
           </button>
         </div>
       ) : (
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-muted">
             <tr>
-              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Name
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Email
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Phone
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Type
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Tags
               </th>
-              <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+              <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
                 Actions
               </th>
             </tr>
@@ -812,20 +816,20 @@ const ContactsTable = ({
             {filteredPeople.map((person) => (
               <tr
                 key={person.id}
-                className="cursor-pointer border-gray-100 border-t hover:bg-gray-50"
+                className="cursor-pointer border-border border-t hover:bg-muted"
                 onClick={() => onEdit(person)}
               >
                 <td className="px-4 py-3 font-medium text-sm">
                   {person.firstName} {person.lastName}
                 </td>
-                <td className="px-4 py-3 text-gray-600 text-sm">
+                <td className="px-4 py-3 text-foreground text-sm">
                   {person.emails.length > 0 ? (
                     person.emails.length === 1 ? (
                       person.emails[0]
                     ) : (
                       <span title={person.emails.join(", ")}>
                         {person.emails[0]}{" "}
-                        <span className="text-gray-400">
+                        <span className="text-muted-foreground">
                           +{person.emails.length - 1}
                         </span>
                       </span>
@@ -834,7 +838,7 @@ const ContactsTable = ({
                     "\u2014"
                   )}
                 </td>
-                <td className="px-4 py-3 text-gray-600 text-sm">
+                <td className="px-4 py-3 text-foreground text-sm">
                   {person.phone ?? "\u2014"}
                 </td>
                 <td className="px-4 py-3">
@@ -858,7 +862,9 @@ const ContactsTable = ({
                         </Badge>
                       ))
                     ) : (
-                      <span className="text-gray-400 text-sm">{"\u2014"}</span>
+                      <span className="text-muted-foreground text-sm">
+                        {"\u2014"}
+                      </span>
                     )}
                   </div>
                 </td>
@@ -876,7 +882,7 @@ const ContactsTable = ({
                     <button
                       type="button"
                       onClick={() => onEdit(person)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-muted-foreground hover:text-foreground"
                       aria-label="Edit contact"
                     >
                       <Edit size={16} />
@@ -884,7 +890,7 @@ const ContactsTable = ({
                     <button
                       type="button"
                       onClick={() => onDelete(person.id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-destructive hover:text-destructive/90"
                       aria-label="Delete contact"
                     >
                       <Trash2 size={16} />

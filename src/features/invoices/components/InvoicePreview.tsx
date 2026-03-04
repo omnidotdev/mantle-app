@@ -72,14 +72,14 @@ const InvoicePreview = ({
           checked={showDetails}
           onCheckedChange={setShowDetails}
         />
-        <Label htmlFor="show-details" className="text-gray-500 text-sm">
+        <Label htmlFor="show-details" className="text-muted-foreground text-sm">
           Show Qty &amp; Unit Price
         </Label>
       </div>
 
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
+      <div className="rounded-lg border border-border bg-card shadow-sm print:min-h-screen print:border-0 print:shadow-none">
         {/* Gradient header */}
-        <div className="rounded-t-lg bg-linear-to-r from-teal-700 to-teal-500 p-6 text-white print:rounded-none">
+        <div className="rounded-t-lg bg-linear-to-r from-primary-700 to-primary-500 p-6 text-white print:rounded-none">
           <div className="mb-2 flex justify-between">
             <div className="flex items-start gap-3">
               <img
@@ -93,14 +93,14 @@ const InvoicePreview = ({
                   {orgProfile?.companyName || "Your Company"}
                 </h3>
                 {orgProfile?.addressLine1 && (
-                  <p className="text-sm text-teal-100">
+                  <p className="text-primary-100 text-sm">
                     {orgProfile.addressLine1}
                   </p>
                 )}
                 {(orgProfile?.city ||
                   orgProfile?.state ||
                   orgProfile?.postalCode) && (
-                  <p className="text-sm text-teal-100">
+                  <p className="text-primary-100 text-sm">
                     {[
                       orgProfile.city,
                       [orgProfile.state, orgProfile.postalCode]
@@ -123,29 +123,36 @@ const InvoicePreview = ({
           {/* Invoice details and client */}
           <div className="mb-8 grid grid-cols-2 gap-8">
             <div>
-              <h4 className="mb-2 font-bold text-gray-700">Bill To:</h4>
+              <h4 className="mb-2 font-bold text-foreground">Bill To:</h4>
               {invoice.billTo ? (
-                <div className="text-gray-800">
+                <div className="text-foreground">
                   {invoice.billTo.split("\n").map((line, i) => (
                     <p key={`bill-${i}`}>{line}</p>
                   ))}
                 </div>
               ) : company ? (
                 <>
-                  <p className="text-gray-800">{company.name}</p>
+                  <p className="text-foreground">{company.name}</p>
                   {contact && (
-                    <p className="text-gray-600">
+                    <p className="text-foreground">
                       {contact.firstName} {contact.lastName}
                     </p>
                   )}
                   {company.email && (
-                    <p className="text-gray-500 text-sm">{company.email}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {company.email}
+                    </p>
                   )}
                   {company.addressLine1 && (
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {[
                         company.addressLine1,
-                        [company.city, [company.state, company.postalCode].filter(Boolean).join(" ")]
+                        [
+                          company.city,
+                          [company.state, company.postalCode]
+                            .filter(Boolean)
+                            .join(" "),
+                        ]
                           .filter(Boolean)
                           .join(", "),
                       ]
@@ -155,28 +162,30 @@ const InvoicePreview = ({
                   )}
                 </>
               ) : (
-                <p className="text-gray-400">Not specified</p>
+                <p className="text-muted-foreground">Not specified</p>
               )}
             </div>
             <div>
               <div className="mb-1 flex justify-between">
-                <span className="font-bold text-gray-700">Invoice ID:</span>
-                <span className="text-gray-600">
+                <span className="font-bold text-foreground">Invoice ID:</span>
+                <span className="text-foreground">
                   {invoice.invoiceNumber || "INV-0001"}
                 </span>
               </div>
               {invoice.issueDate && (
                 <div className="mb-1 flex justify-between">
-                  <span className="font-bold text-gray-700">Invoice Date:</span>
-                  <span className="text-gray-600">
+                  <span className="font-bold text-foreground">
+                    Invoice Date:
+                  </span>
+                  <span className="text-foreground">
                     {formatDate(invoice.issueDate)}
                   </span>
                 </div>
               )}
               {invoice.dueDate && (
                 <div className="mb-1 flex justify-between">
-                  <span className="font-bold text-gray-700">Due Date:</span>
-                  <span className="text-gray-600">
+                  <span className="font-bold text-foreground">Due Date:</span>
+                  <span className="text-foreground">
                     {formatDate(invoice.dueDate)}
                   </span>
                 </div>
@@ -188,7 +197,7 @@ const InvoicePreview = ({
           <div className="mb-8">
             <table className="w-full">
               <thead>
-                <tr className="bg-teal-600 text-white">
+                <tr className="bg-primary text-white">
                   <th className="px-4 py-2 text-left">Item Description</th>
                   {showDetails && (
                     <>
@@ -204,20 +213,20 @@ const InvoicePreview = ({
                   (item) =>
                     item.description && (
                       <tr key={item.id}>
-                        <td className="border-b border-gray-200 px-4 py-3 text-gray-800">
+                        <td className="border-border border-b px-4 py-3 text-foreground">
                           {item.description}
                         </td>
                         {showDetails && (
                           <>
-                            <td className="border-b border-gray-200 px-4 py-3 text-right text-gray-800">
+                            <td className="border-border border-b px-4 py-3 text-right text-foreground">
                               {item.quantity}
                             </td>
-                            <td className="border-b border-gray-200 px-4 py-3 text-right text-gray-800">
+                            <td className="border-border border-b px-4 py-3 text-right text-foreground">
                               {formatCurrency(item.unitPrice || "0", currency)}
                             </td>
                           </>
                         )}
-                        <td className="border-b border-gray-200 px-4 py-3 text-right text-gray-800">
+                        <td className="border-border border-b px-4 py-3 text-right text-foreground">
                           {formatCurrency(item.amount || "0", currency)}
                         </td>
                       </tr>
@@ -228,7 +237,7 @@ const InvoicePreview = ({
 
             {/* Totals */}
             <div className="mt-6 flex justify-end">
-              <div className="w-1/3 rounded bg-teal-100 p-3">
+              <div className="w-1/3 rounded bg-primary-100 p-3">
                 {hasTax && (
                   <>
                     <div className="mb-1 flex justify-between text-sm">
@@ -252,8 +261,8 @@ const InvoicePreview = ({
           {/* Notes */}
           {invoice.notes && (
             <div>
-              <h4 className="mb-2 font-bold text-gray-700">Notes:</h4>
-              <div className="text-gray-600">
+              <h4 className="mb-2 font-bold text-foreground">Notes:</h4>
+              <div className="text-foreground">
                 {invoice.notes.split("\n").map((line, i) => (
                   <p key={`note-${i}`}>{line}</p>
                 ))}

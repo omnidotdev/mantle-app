@@ -11,9 +11,11 @@ const ContractScope = ({
 }: ContractScopeProps) => {
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold text-gray-900 text-lg">1. Scope of Work</h3>
+      <h3 className="font-semibold text-foreground text-lg">
+        1. Scope of Work
+      </h3>
 
-      <div className="space-y-2 text-gray-700 text-sm">
+      <div className="space-y-2 text-foreground text-sm">
         <p>
           <strong>Project:</strong> {projectName}
         </p>
@@ -27,7 +29,7 @@ const ContractScope = ({
             <strong>Description:</strong> {description}
           </p>
         )}
-        <p className="text-gray-500 text-xs italic">
+        <p className="text-muted-foreground text-xs italic">
           Any modifications outside the defined scope will require a separate
           agreement or amendment to this contract.
         </p>

@@ -47,7 +47,7 @@ const AdditionalTermsEditor = ({
           type="button"
           onClick={addTerm}
           disabled={!input.trim()}
-          className="flex items-center gap-1 rounded-lg bg-teal-600 px-3 py-2 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus size={14} />
           Add
@@ -59,13 +59,13 @@ const AdditionalTermsEditor = ({
           {terms.map((term, index) => (
             <li
               key={`term-${index}`}
-              className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-gray-700 text-sm"
+              className="flex items-center justify-between rounded bg-muted px-3 py-2 text-foreground text-sm"
             >
               <span>{term}</span>
               <button
                 type="button"
                 onClick={() => removeTerm(index)}
-                className="text-gray-400 hover:text-red-500"
+                className="text-muted-foreground hover:text-destructive"
                 aria-label="Remove term"
               >
                 <X size={14} />

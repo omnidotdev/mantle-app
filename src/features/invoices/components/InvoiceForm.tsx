@@ -176,7 +176,7 @@ const InvoiceForm = ({
     <div className="space-y-6">
       {/* From (your company) */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">From</h3>
+        <h3 className="font-medium text-foreground text-lg">From</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -281,7 +281,7 @@ const InvoiceForm = ({
 
       {/* Invoice details */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Invoice Details</h3>
+        <h3 className="font-medium text-foreground text-lg">Invoice Details</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -326,7 +326,7 @@ const InvoiceForm = ({
       {/* Bill To */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-gray-700 text-lg">Bill To</h3>
+          <h3 className="font-medium text-foreground text-lg">Bill To</h3>
           <PopulateButton
             organizationId={organizationId}
             onPopulateClient={({
@@ -365,7 +365,7 @@ const InvoiceForm = ({
 
       {/* Dates */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Dates</h3>
+        <h3 className="font-medium text-foreground text-lg">Dates</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -392,22 +392,22 @@ const InvoiceForm = ({
 
       {/* Line items */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Line Items</h3>
+        <h3 className="font-medium text-foreground text-lg">Line Items</h3>
 
         {lineItems.map((item, index) => (
           <div
             key={item.id}
-            className="space-y-3 rounded-lg border border-gray-200 p-4"
+            className="space-y-3 rounded-lg border border-border p-4"
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-600 text-sm">
+              <span className="font-medium text-foreground text-sm">
                 Item {index + 1}
               </span>
               {lineItems.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleRemoveLineItem(index)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-destructive hover:text-destructive/80"
                   aria-label="Remove item"
                 >
                   <Trash2 size={14} />
@@ -462,7 +462,7 @@ const InvoiceForm = ({
                   id={`item-amount-${item.id}`}
                   value={formatCurrency(item.amount || "0", invoice.currency)}
                   readOnly
-                  className="bg-gray-50"
+                  className="bg-muted"
                 />
               </div>
             </div>
@@ -472,7 +472,7 @@ const InvoiceForm = ({
         <button
           type="button"
           onClick={handleAddLineItem}
-          className="flex items-center gap-1 text-teal-600 hover:text-teal-700"
+          className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
         >
           <Plus size={18} />
           <span>Add Line Item</span>
@@ -481,7 +481,7 @@ const InvoiceForm = ({
 
       {/* Financials */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Financials</h3>
+        <h3 className="font-medium text-foreground text-lg">Financials</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -490,7 +490,7 @@ const InvoiceForm = ({
               id="invoice-subtotal"
               value={formatCurrency(String(subtotal), invoice.currency)}
               readOnly
-              className="bg-gray-50"
+              className="bg-muted"
             />
           </div>
 
@@ -514,7 +514,7 @@ const InvoiceForm = ({
               id="invoice-tax-amount"
               value={formatCurrency(invoice.taxAmount || "0", invoice.currency)}
               readOnly
-              className="bg-gray-50"
+              className="bg-muted"
             />
           </div>
 
@@ -524,7 +524,7 @@ const InvoiceForm = ({
               id="invoice-total"
               value={formatCurrency(invoice.total || "0", invoice.currency)}
               readOnly
-              className="bg-gray-50 font-medium"
+              className="bg-muted font-medium"
             />
           </div>
 
@@ -544,7 +544,7 @@ const InvoiceForm = ({
       <div className="space-y-4">
         <Label
           htmlFor="invoice-notes"
-          className="font-medium text-gray-700 text-lg"
+          className="font-medium text-foreground text-lg"
         >
           Notes
         </Label>
@@ -559,18 +559,18 @@ const InvoiceForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 border-gray-200 border-t pt-4">
+      <div className="flex justify-end gap-2 border-border border-t pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
         >
           Cancel
         </button>
         <button
           type="button"
           onClick={onSave}
-          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
+          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700"
         >
           Save
         </button>

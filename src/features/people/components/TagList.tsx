@@ -11,12 +11,12 @@ interface TagListProps {
 }
 
 const TAG_COLORS: Record<string, string> = {
-  employee: "bg-blue-100 text-blue-700",
-  client: "bg-purple-100 text-purple-700",
-  prospect: "bg-yellow-100 text-yellow-700",
-  active: "bg-green-100 text-green-700",
-  inactive: "bg-gray-100 text-gray-600",
-  contractor: "bg-orange-100 text-orange-700",
+  employee: "bg-primary-100 text-primary-700",
+  client: "bg-secondary-100 text-secondary-700",
+  prospect: "bg-amber-100 text-amber-700",
+  active: "bg-emerald-100 text-emerald-700",
+  inactive: "bg-muted text-muted-foreground",
+  contractor: "bg-primary-50 text-primary-600",
   leadership: "bg-indigo-100 text-indigo-700",
   engineering: "bg-cyan-100 text-cyan-700",
   design: "bg-pink-100 text-pink-700",
@@ -92,7 +92,7 @@ const TagList = ({ tags, onChange }: TagListProps) => {
           {tags.map((tag) => (
             <span
               key={tag}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-medium text-xs ${TAG_COLORS[tag] ?? "bg-gray-100 text-gray-700"}`}
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-medium text-xs ${TAG_COLORS[tag] ?? "bg-muted text-muted-foreground"}`}
             >
               {tag}
               <button

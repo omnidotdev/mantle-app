@@ -27,7 +27,9 @@ const CompanyForm = ({
     <div className="space-y-6">
       {/* Basic information */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Basic Information</h3>
+        <h3 className="font-medium text-foreground text-lg">
+          Basic Information
+        </h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
@@ -87,7 +89,7 @@ const CompanyForm = ({
 
       {/* Address */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Address</h3>
+        <h3 className="font-medium text-foreground text-lg">Address</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
@@ -171,11 +173,11 @@ const CompanyForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 border-gray-200 border-t pt-4">
+      <div className="flex justify-end gap-2 border-border border-t pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
         >
           Cancel
         </button>
@@ -183,7 +185,7 @@ const CompanyForm = ({
           type="button"
           onClick={onSave}
           disabled={!company.name?.trim() || saving}
-          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save
         </button>

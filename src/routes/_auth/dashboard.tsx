@@ -12,10 +12,10 @@ import {
 import appConfig from "@/lib/config/app.config";
 
 const statusColors: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
-  paid: "bg-green-100 text-green-700",
-  overdue: "bg-red-100 text-red-700",
+  draft: "bg-muted text-muted-foreground",
+  sent: "bg-primary-100 text-primary-700",
+  paid: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  overdue: "bg-destructive/10 text-destructive",
 };
 
 const DashboardPage = () => {
@@ -125,10 +125,10 @@ const DashboardPage = () => {
 
       {/* Stat cards */}
       <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-teal-100 p-1.5">
-              <DollarSign className="h-4 w-4 text-teal-700" />
+            <div className="rounded-md bg-emerald-100 p-1.5">
+              <DollarSign className="h-4 w-4 text-emerald-700" />
             </div>
             <span className="text-muted-foreground text-xs">
               Total Invoiced
@@ -146,10 +146,10 @@ const DashboardPage = () => {
           )}
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-green-100 p-1.5">
-              <TrendingUp className="h-4 w-4 text-green-700" />
+            <div className="rounded-md bg-emerald-100 p-1.5">
+              <TrendingUp className="h-4 w-4 text-emerald-700" />
             </div>
             <span className="text-muted-foreground text-xs">Paid</span>
           </div>
@@ -165,10 +165,10 @@ const DashboardPage = () => {
           )}
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-blue-100 p-1.5">
-              <FileText className="h-4 w-4 text-blue-700" />
+            <div className="rounded-md bg-primary-200 p-1.5">
+              <FileText className="h-4 w-4 text-primary-800" />
             </div>
             <span className="text-muted-foreground text-xs">Pending</span>
           </div>
@@ -182,10 +182,10 @@ const DashboardPage = () => {
           )}
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-purple-100 p-1.5">
-              <Users className="h-4 w-4 text-purple-700" />
+            <div className="rounded-md bg-primary-100 p-1.5">
+              <Users className="h-4 w-4 text-primary-700" />
             </div>
             <span className="text-muted-foreground text-xs">People</span>
           </div>
@@ -217,7 +217,7 @@ const DashboardPage = () => {
               to={
                 `/${key}` as "/invoices" | "/people" | "/quotes" | "/inventory"
               }
-              className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
+              className="volcanic-glow flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
             >
               <span className="text-3xl">{config.icon}</span>
               <span className="font-medium text-card-foreground">
@@ -258,7 +258,7 @@ const DashboardPage = () => {
                     {formatCurrency(inv.total, inv.currency)}
                   </span>
                   <span
-                    className={`inline-block rounded-full px-2 py-0.5 text-xs ${statusColors[inv.status] || "bg-gray-100 text-gray-700"}`}
+                    className={`inline-block rounded-full px-2 py-0.5 text-xs ${statusColors[inv.status] || "bg-muted text-muted-foreground"}`}
                   >
                     {inv.status}
                   </span>

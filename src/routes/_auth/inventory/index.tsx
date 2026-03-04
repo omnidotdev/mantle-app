@@ -141,7 +141,7 @@ const InventoryPage = () => {
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">
+        <p className="text-muted-foreground">
           Select an organization to view inventory
         </p>
       </div>
@@ -152,7 +152,7 @@ const InventoryPage = () => {
     return (
       <div className="flex items-center justify-center p-6">
         <Loader2
-          className="h-8 w-8 animate-spin text-gray-400"
+          className="h-8 w-8 animate-spin text-muted-foreground"
           aria-label="Loading inventory"
         />
       </div>
@@ -280,7 +280,7 @@ const InventoryPage = () => {
     if (!product) {
       return (
         <div className="p-6">
-          <p className="text-gray-500">Product not found</p>
+          <p className="text-muted-foreground">Product not found</p>
         </div>
       );
     }
@@ -291,7 +291,7 @@ const InventoryPage = () => {
           <button
             type="button"
             onClick={handleBackToList}
-            className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
+            className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
           >
             <ArrowLeft size={16} />
             Back to list
@@ -299,12 +299,14 @@ const InventoryPage = () => {
         </div>
 
         {/* Product info summary */}
-        <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
+        <div className="mb-6 rounded-lg border border-border bg-card p-6">
           <div className="mb-4 flex items-start justify-between">
             <div>
               <h2 className="font-semibold text-lg">{product.name}</h2>
               {product.sku && (
-                <p className="text-gray-500 text-sm">SKU: {product.sku}</p>
+                <p className="text-muted-foreground text-sm">
+                  SKU: {product.sku}
+                </p>
               )}
             </div>
             <Badge variant={product.isActive ? "solid" : "outline"}>
@@ -313,12 +315,14 @@ const InventoryPage = () => {
           </div>
 
           {product.description && (
-            <p className="mb-4 text-gray-600 text-sm">{product.description}</p>
+            <p className="mb-4 text-foreground text-sm">
+              {product.description}
+            </p>
           )}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <p className="font-medium text-gray-500 text-xs uppercase">
+              <p className="font-medium text-muted-foreground text-xs uppercase">
                 Unit Price
               </p>
               <p className="font-medium text-lg">
@@ -328,22 +332,22 @@ const InventoryPage = () => {
               </p>
             </div>
             <div>
-              <p className="font-medium text-gray-500 text-xs uppercase">
+              <p className="font-medium text-muted-foreground text-xs uppercase">
                 Current Quantity
               </p>
               <p
                 className={`font-medium text-lg ${
                   product.lowStockThreshold != null &&
                   product.currentQuantity <= product.lowStockThreshold
-                    ? "text-red-600"
-                    : "text-green-600"
+                    ? "text-destructive"
+                    : "text-emerald-600 dark:text-emerald-400"
                 }`}
               >
                 {product.currentQuantity}
               </p>
             </div>
             <div>
-              <p className="font-medium text-gray-500 text-xs uppercase">
+              <p className="font-medium text-muted-foreground text-xs uppercase">
                 Low Stock Threshold
               </p>
               <p className="font-medium text-lg">
@@ -359,7 +363,7 @@ const InventoryPage = () => {
           <button
             type="button"
             onClick={() => setShowAdjustmentForm(!showAdjustmentForm)}
-            className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+            className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
           >
             <Plus size={16} />
             Add Adjustment
@@ -367,7 +371,7 @@ const InventoryPage = () => {
         </div>
 
         {showAdjustmentForm && (
-          <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4">
+          <div className="mb-4 rounded-lg border border-border bg-card p-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
                 <Label htmlFor="adjustment-reason">Reason</Label>
@@ -393,7 +397,7 @@ const InventoryPage = () => {
                   type="button"
                   onClick={handleAddAdjustment}
                   disabled={!adjustmentReason.trim() || !adjustmentQuantity}
-                  className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Submit
                 </button>
@@ -417,14 +421,14 @@ const InventoryPage = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="flex items-center gap-1 text-gray-500 text-sm hover:text-gray-700"
+            className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
           >
             <ArrowLeft size={16} />
             Back to list
           </button>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           <h2 className="mb-6 font-semibold text-lg">{title}</h2>
 
           <ProductForm
@@ -447,7 +451,7 @@ const InventoryPage = () => {
         <button
           type="button"
           onClick={handleCreateProduct}
-          className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
         >
           <Plus size={16} />
           Add Product
@@ -501,13 +505,13 @@ const ProductsTable = ({
 }) => {
   if (products.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
-        <Package size={32} className="mx-auto mb-2 text-gray-400" />
-        <p className="mb-4 text-gray-500">No products yet</p>
+      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+        <Package size={32} className="mx-auto mb-2 text-muted-foreground" />
+        <p className="mb-4 text-muted-foreground">No products yet</p>
         <button
           type="button"
           onClick={onCreateNew}
-          className="text-teal-600 hover:text-teal-700"
+          className="text-primary-600 hover:text-primary-700"
         >
           Add your first product
         </button>
@@ -516,38 +520,38 @@ const ProductsTable = ({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full">
-        <thead className="bg-gray-50">
+        <thead className="bg-muted">
           <tr>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Name
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               SKU
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Unit Price
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Quantity
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Status
             </th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
               Actions
             </th>
           </tr>
         </thead>
         <tbody>
           {products.map((product) => (
-            <tr key={product.id} className="border-gray-100 border-t">
+            <tr key={product.id} className="border-border border-t">
               <td className="px-4 py-3 font-medium text-sm">{product.name}</td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {product.sku ?? "\u2014"}
               </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {product.unitPrice
                   ? formatCurrency(product.unitPrice)
                   : "\u2014"}
@@ -557,8 +561,8 @@ const ProductsTable = ({
                   className={
                     product.lowStockThreshold != null &&
                     product.currentQuantity <= product.lowStockThreshold
-                      ? "font-medium text-red-600"
-                      : "font-medium text-green-600"
+                      ? "font-medium text-destructive"
+                      : "font-medium text-emerald-600 dark:text-emerald-400"
                   }
                 >
                   {product.currentQuantity}
@@ -577,7 +581,7 @@ const ProductsTable = ({
                   <button
                     type="button"
                     onClick={() => onView(product)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-muted-foreground hover:text-foreground"
                     aria-label="View product details"
                   >
                     <Eye size={16} />
@@ -585,7 +589,7 @@ const ProductsTable = ({
                   <button
                     type="button"
                     onClick={() => onEdit(product)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-muted-foreground hover:text-foreground"
                     aria-label="Edit product"
                   >
                     <Edit size={16} />
@@ -593,7 +597,7 @@ const ProductsTable = ({
                   <button
                     type="button"
                     onClick={() => onDelete(product.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-destructive hover:text-destructive/80"
                     aria-label="Delete product"
                   >
                     <Trash2 size={16} />

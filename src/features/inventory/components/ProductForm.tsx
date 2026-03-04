@@ -30,7 +30,9 @@ const ProductForm = ({
     <div className="space-y-6">
       {/* Basic information */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Basic Information</h3>
+        <h3 className="font-medium text-foreground text-lg">
+          Basic Information
+        </h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
@@ -71,7 +73,7 @@ const ProductForm = ({
 
       {/* Pricing */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Pricing</h3>
+        <h3 className="font-medium text-foreground text-lg">Pricing</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -93,7 +95,7 @@ const ProductForm = ({
 
       {/* Stock */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Stock</h3>
+        <h3 className="font-medium text-foreground text-lg">Stock</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -136,7 +138,7 @@ const ProductForm = ({
 
       {/* Status */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Status</h3>
+        <h3 className="font-medium text-foreground text-lg">Status</h3>
 
         <div className="flex items-center gap-2">
           <input
@@ -144,18 +146,18 @@ const ProductForm = ({
             type="checkbox"
             checked={product.isActive ?? true}
             onChange={(e) => handleChange("isActive", e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+            className="h-4 w-4 rounded border-input text-primary focus:ring-ring"
           />
           <Label htmlFor="product-active">Active</Label>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 border-gray-200 border-t pt-4">
+      <div className="flex justify-end gap-2 border-border border-t pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
         >
           Cancel
         </button>
@@ -163,7 +165,7 @@ const ProductForm = ({
           type="button"
           onClick={onSave}
           disabled={!product.name?.trim() || saving}
-          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save
         </button>

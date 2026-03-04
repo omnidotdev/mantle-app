@@ -52,7 +52,7 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           type="button"
           onClick={addEmail}
           disabled={!input.trim() || !EMAIL_REGEX.test(input.trim())}
-          className="flex items-center gap-1 rounded-lg bg-teal-600 px-3 py-2 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus size={14} />
           Add
@@ -64,13 +64,13 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           {emails.map((email, index) => (
             <span
               key={email}
-              className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-gray-700 text-sm"
+              className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-foreground text-sm"
             >
               {email}
               <button
                 type="button"
                 onClick={() => removeEmail(index)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
                 aria-label={`Remove ${email}`}
               >
                 <X size={14} />

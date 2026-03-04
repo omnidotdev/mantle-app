@@ -39,12 +39,12 @@ import type {
 } from "@/features/invoices/types/invoice";
 
 const statusColors: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
+  draft: "bg-muted text-muted-foreground",
+  sent: "bg-primary-100 text-primary-700",
   viewed: "bg-indigo-100 text-indigo-700",
-  paid: "bg-green-100 text-green-700",
-  overdue: "bg-red-100 text-red-700",
-  void: "bg-gray-100 text-gray-500",
+  paid: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  overdue: "bg-destructive/10 text-destructive",
+  void: "bg-muted text-muted-foreground",
 };
 
 const defaultInvoice: Partial<Invoice> = {
@@ -367,7 +367,9 @@ const InvoicesPage = () => {
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">Select an organization to view invoices</p>
+        <p className="text-muted-foreground">
+          Select an organization to view invoices
+        </p>
       </div>
     );
   }
@@ -377,7 +379,7 @@ const InvoicesPage = () => {
     return (
       <div className="flex items-center justify-center p-6">
         <Loader2
-          className="h-8 w-8 animate-spin text-gray-400"
+          className="h-8 w-8 animate-spin text-muted-foreground"
           aria-label="Loading invoices"
         />
       </div>
@@ -391,8 +393,8 @@ const InvoicesPage = () => {
         <div className="mb-6 flex items-center justify-between">
           <h1 className="font-semibold text-xl">Invoices</h1>
           <div className="flex items-center gap-3">
-            <div className="rounded-md border border-gray-200 bg-white px-3 py-1.5">
-              <p className="text-gray-500 text-xs">
+            <div className="rounded-md border border-border bg-card px-3 py-1.5">
+              <p className="text-muted-foreground text-xs">
                 {filteredInvoices.length}{" "}
                 {filteredInvoices.length === 1 ? "invoice" : "invoices"}
               </p>
@@ -403,7 +405,7 @@ const InvoicesPage = () => {
             <button
               type="button"
               onClick={handleCreateNew}
-              className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
             >
               <Plus size={16} />
               New Invoice
@@ -412,22 +414,22 @@ const InvoicesPage = () => {
         </div>
 
         {invoices.length === 0 ? (
-          <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
-            <p className="mb-4 text-gray-500">No invoices yet</p>
+          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+            <p className="mb-4 text-muted-foreground">No invoices yet</p>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="text-teal-600 hover:text-teal-700"
+              className="text-primary-600 hover:text-primary-700"
             >
               Create your first invoice
             </button>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div className="flex gap-4 border-gray-200 border-b p-4">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <div className="flex gap-4 border-border border-b p-4">
               <div className="relative flex-1">
                 <Search
-                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                   aria-hidden="true"
                 />
                 <input
@@ -436,14 +438,14 @@ const InvoicesPage = () => {
                   aria-label="Search invoices"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 aria-label="Filter by status"
-                className="cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className="cursor-pointer appearance-none rounded-lg border border-input bg-card px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
               >
                 <option value="all">All statuses</option>
                 {INVOICE_STATUSES.map((status) => (
@@ -456,60 +458,62 @@ const InvoicesPage = () => {
 
             {filteredInvoices.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-gray-500">No invoices match your filters</p>
+                <p className="text-muted-foreground">
+                  No invoices match your filters
+                </p>
                 <button
                   type="button"
                   onClick={() => {
                     setSearchTerm("");
                     setStatusFilter("all");
                   }}
-                  className="mt-2 text-sm text-teal-600 hover:text-teal-700"
+                  className="mt-2 text-primary-600 text-sm hover:text-primary-700"
                 >
                   Clear filters
                 </button>
               </div>
             ) : (
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Invoice #
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Company
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Issue Date
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Due Date
                     </th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
                       Total
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredInvoices.map((invoice) => (
-                    <tr key={invoice.id} className="border-gray-100 border-t">
+                    <tr key={invoice.id} className="border-border border-t">
                       <td className="px-4 py-3 font-mono text-sm">
                         {invoice.invoiceNumber}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         {invoice.company?.name ?? "\u2014"}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
+                      <td className="px-4 py-3 text-foreground text-sm">
                         {invoice.issueDate
                           ? formatDate(invoice.issueDate)
                           : "\u2014"}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
+                      <td className="px-4 py-3 text-foreground text-sm">
                         {invoice.dueDate
                           ? formatDate(invoice.dueDate)
                           : "\u2014"}
@@ -531,7 +535,7 @@ const InvoicesPage = () => {
                           <button
                             type="button"
                             onClick={() => handlePreview(invoice)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-muted-foreground hover:text-foreground"
                             aria-label="Preview invoice"
                           >
                             <Eye size={16} />
@@ -539,7 +543,7 @@ const InvoicesPage = () => {
                           <button
                             type="button"
                             onClick={() => handleEdit(invoice)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-muted-foreground hover:text-foreground"
                             aria-label="Edit invoice"
                           >
                             <Edit size={16} />
@@ -547,7 +551,7 @@ const InvoicesPage = () => {
                           <button
                             type="button"
                             onClick={() => handleDelete(invoice.id)}
-                            className="text-red-500 hover:text-red-700"
+                            className="text-destructive hover:text-destructive/80"
                             aria-label="Delete invoice"
                           >
                             <Trash2 size={16} />
@@ -585,7 +589,7 @@ const InvoicesPage = () => {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className="text-gray-500 text-sm hover:text-gray-700"
+            className="text-muted-foreground text-sm hover:text-foreground"
           >
             &larr; Back to list
           </button>
@@ -593,7 +597,7 @@ const InvoicesPage = () => {
             <button
               type="button"
               onClick={() => setViewMode("edit")}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+              className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
             >
               Edit
             </button>
@@ -605,7 +609,7 @@ const InvoicesPage = () => {
                 window.print();
                 document.title = originalTitle;
               }}
-              className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+              className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
             >
               Print
             </button>
@@ -630,7 +634,7 @@ const InvoicesPage = () => {
         <button
           type="button"
           onClick={() => setViewMode("list")}
-          className="text-gray-500 text-sm hover:text-gray-700"
+          className="text-muted-foreground text-sm hover:text-foreground"
         >
           &larr; Back to list
         </button>
@@ -638,7 +642,7 @@ const InvoicesPage = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+            className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
           >
             Cancel
           </button>
@@ -650,7 +654,7 @@ const InvoicesPage = () => {
               window.print();
               document.title = originalTitle;
             }}
-            className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+            className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
           >
             <Printer size={14} />
             Print
@@ -659,7 +663,7 @@ const InvoicesPage = () => {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving
               ? "Saving..."
@@ -671,7 +675,7 @@ const InvoicesPage = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 print:block">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 print:hidden">
+        <div className="rounded-lg border border-border bg-card p-6 print:hidden">
           <h2 className="mb-4 font-semibold text-lg">
             {editingId ? "Edit Invoice" : "New Invoice"}
           </h2>

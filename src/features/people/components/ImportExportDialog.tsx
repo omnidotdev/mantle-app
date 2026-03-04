@@ -255,7 +255,7 @@ const ImportExportDialog = ({
 
           <TabsContent value="export">
             <div className="space-y-3">
-              <p className="text-gray-600 text-sm">
+              <p className="text-foreground text-sm">
                 Export{" "}
                 {context === "contacts"
                   ? `${people.length} contacts`
@@ -265,14 +265,14 @@ const ImportExportDialog = ({
                 <button
                   type="button"
                   onClick={exportJSON}
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+                  className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
                 >
                   Export JSON
                 </button>
                 <button
                   type="button"
                   onClick={exportCSV}
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+                  className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
                 >
                   Export CSV
                 </button>
@@ -282,7 +282,7 @@ const ImportExportDialog = ({
 
           <TabsContent value="import">
             <div className="space-y-3">
-              <p className="text-gray-600 text-sm">
+              <p className="text-foreground text-sm">
                 Import {context === "contacts" ? "contacts" : "companies"} from
                 a JSON or CSV file
               </p>
@@ -293,13 +293,13 @@ const ImportExportDialog = ({
                 aria-label="Choose file to import"
                 onChange={handleImport}
                 disabled={importing}
-                className="block w-full text-gray-500 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-teal-50 file:px-4 file:py-2 file:font-medium file:text-sm file:text-teal-700 hover:file:bg-teal-100"
+                className="block w-full text-muted-foreground text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-medium file:text-primary-700 file:text-sm hover:file:bg-primary-100"
               />
               {importing && (
-                <p className="text-gray-500 text-sm">Importing...</p>
+                <p className="text-muted-foreground text-sm">Importing...</p>
               )}
               {importError && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-red-700 text-sm">
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive text-sm">
                   {importError}
                 </p>
               )}

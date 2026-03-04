@@ -19,9 +19,11 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold text-gray-900 text-lg">2. Payment Terms</h3>
+      <h3 className="font-semibold text-foreground text-lg">
+        2. Payment Terms
+      </h3>
 
-      <div className="space-y-2 text-gray-700 text-sm">
+      <div className="space-y-2 text-foreground text-sm">
         <p>
           Payment is due within 30 days of invoice date. No upfront payment is
           required. A late fee of 5% will be applied to overdue balances.
@@ -39,7 +41,7 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
               </thead>
               <tbody>
                 {fixedItems.map((item) => (
-                  <tr key={item.id} className="border-gray-100 border-b">
+                  <tr key={item.id} className="border-border border-b">
                     <td className="py-1">{item.description}</td>
                     <td className="py-1 text-right">
                       {formatCurrency(item.amount || "0", currency)}
@@ -61,7 +63,7 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
           <div className="mt-3">
             <h4 className="mb-1 font-medium">Hourly Rate Items</h4>
             {hourlyItems.map((item) => (
-              <div key={item.id} className="mb-2 rounded bg-gray-50 p-2">
+              <div key={item.id} className="mb-2 rounded bg-muted p-2">
                 <p className="font-medium">{item.description}</p>
                 <p>
                   Rate:{" "}
@@ -89,7 +91,7 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
           <div className="mt-3">
             <h4 className="mb-1 font-medium">Royalty Items</h4>
             {royaltyItems.map((item) => (
-              <div key={item.id} className="mb-2 rounded bg-gray-50 p-2">
+              <div key={item.id} className="mb-2 rounded bg-muted p-2">
                 <p className="font-medium">{item.description}</p>
                 {item.royaltyPercentage && (
                   <p>Royalty: {item.royaltyPercentage}%</p>

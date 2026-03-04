@@ -40,7 +40,7 @@ const AppSidebarFooter = () => {
               className="h-7 w-7 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-100 font-medium text-teal-700 text-xs">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-100 font-medium text-primary-700 text-xs">
               {(user.name?.[0] || user.email?.[0] || "?").toUpperCase()}
             </div>
           )}

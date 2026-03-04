@@ -84,7 +84,7 @@ const NetworkGraph = ({ people }: NetworkGraphProps) => {
 
   if (people.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border-2 border-gray-200 border-dashed text-gray-400">
+      <div className="flex h-64 items-center justify-center rounded-lg border-2 border-border border-dashed text-muted-foreground">
         Add people to see the network graph
       </div>
     );
@@ -93,12 +93,12 @@ const NetworkGraph = ({ people }: NetworkGraphProps) => {
   return (
     <Suspense
       fallback={
-        <div className="flex h-64 items-center justify-center text-gray-400">
+        <div className="flex h-64 items-center justify-center text-muted-foreground">
           Loading graph...
         </div>
       }
     >
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <ForceGraph2D
           graphData={graphData}
           nodeCanvasObject={paintNode}

@@ -14,18 +14,20 @@ interface QuotePreviewProps {
 }
 
 const statusColors: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
-  accepted: "bg-green-100 text-green-700",
-  declined: "bg-red-100 text-red-700",
-  expired: "bg-yellow-100 text-yellow-700",
-  converted: "bg-purple-100 text-purple-700",
+  draft: "bg-muted text-muted-foreground",
+  sent: "bg-primary-100 text-primary-700",
+  accepted:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  declined: "bg-destructive/10 text-destructive",
+  expired:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  converted: "bg-secondary-100 text-secondary-700",
 };
 
 const pricingColors: Record<string, string> = {
-  fixed: "bg-teal-100 text-teal-700",
-  hourly: "bg-blue-100 text-blue-700",
-  royalty: "bg-purple-100 text-purple-700",
+  fixed: "bg-primary-100 text-primary-700",
+  hourly: "bg-primary-200 text-primary-800",
+  royalty: "bg-secondary-100 text-secondary-700",
 };
 
 const pluralizeUnit = (value: string | null, unit: string | null): string => {
@@ -107,9 +109,9 @@ const QuotePreview = ({
     );
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
+    <div className="rounded-lg border border-border bg-card shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
       {/* Gradient header */}
-      <div className="rounded-t-lg bg-linear-to-r from-teal-700 to-teal-500 p-6 text-white print:rounded-none">
+      <div className="rounded-t-lg bg-linear-to-r from-primary-700 to-primary-500 p-6 text-white print:rounded-none">
         <div className="mb-2 flex justify-between">
           <div className="flex items-start gap-3">
             <img
@@ -123,7 +125,7 @@ const QuotePreview = ({
                 {orgProfile?.companyName || "Your Company"}
               </h3>
               {orgProfile?.email && (
-                <p className="text-sm text-teal-100">{orgProfile.email}</p>
+                <p className="text-primary-100 text-sm">{orgProfile.email}</p>
               )}
             </div>
           </div>
@@ -137,18 +139,18 @@ const QuotePreview = ({
         {/* Two-column: Prepared By / Prepared For */}
         <div className="mb-8 grid grid-cols-2 gap-8">
           <div>
-            <h4 className="mb-2 font-bold text-gray-700">Prepared By</h4>
-            <p className="text-gray-800">
+            <h4 className="mb-2 font-bold text-foreground">Prepared By</h4>
+            <p className="text-foreground">
               {orgProfile?.companyName || "Your Company"}
             </p>
             {orgProfile?.email && (
-              <p className="text-gray-600 text-sm">{orgProfile.email}</p>
+              <p className="text-foreground text-sm">{orgProfile.email}</p>
             )}
             {orgProfile?.phone && (
-              <p className="text-gray-600 text-sm">{orgProfile.phone}</p>
+              <p className="text-foreground text-sm">{orgProfile.phone}</p>
             )}
             {orgProfile?.addressLine1 && (
-              <p className="text-gray-600 text-sm">
+              <p className="text-foreground text-sm">
                 {orgProfile.addressLine1}
                 {orgProfile.city && `, ${orgProfile.city}`}
                 {orgProfile.state && `, ${orgProfile.state}`}
@@ -157,18 +159,18 @@ const QuotePreview = ({
             )}
           </div>
           <div>
-            <h4 className="mb-2 font-bold text-gray-700">Prepared For</h4>
-            <p className="text-gray-800">
+            <h4 className="mb-2 font-bold text-foreground">Prepared For</h4>
+            <p className="text-foreground">
               {quote.clientName ||
                 resolvedContactName ||
                 resolvedCompanyName ||
                 "Client not specified"}
             </p>
             {quote.clientEmail && (
-              <p className="text-gray-600 text-sm">{quote.clientEmail}</p>
+              <p className="text-foreground text-sm">{quote.clientEmail}</p>
             )}
             {resolvedCompanyName && !quote.clientName && (
-              <p className="text-gray-600">{resolvedCompanyName}</p>
+              <p className="text-foreground">{resolvedCompanyName}</p>
             )}
           </div>
         </div>
@@ -177,19 +179,19 @@ const QuotePreview = ({
         <div className="mb-8 flex justify-end">
           <div className="w-1/3">
             <div className="mb-1 flex justify-between">
-              <span className="font-bold text-gray-700">Quote #:</span>
-              <span className="text-gray-600">
+              <span className="font-bold text-foreground">Quote #:</span>
+              <span className="text-foreground">
                 {quote.quoteNumber || "QT-0001"}
               </span>
             </div>
             {quote.validUntil && (
               <div className="mb-1 flex justify-between">
-                <span className="font-bold text-gray-700">Valid Until:</span>
-                <span className="text-gray-600">{quote.validUntil}</span>
+                <span className="font-bold text-foreground">Valid Until:</span>
+                <span className="text-foreground">{quote.validUntil}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="font-bold text-gray-700">Status:</span>
+              <span className="font-bold text-foreground">Status:</span>
               <span
                 className={`inline-block rounded-full px-2 py-0.5 text-xs ${statusColors[quote.status || "draft"] || statusColors.draft}`}
               >
@@ -203,18 +205,18 @@ const QuotePreview = ({
         {(quote.title || quote.description || quote.projectType) && (
           <div className="mb-6">
             {quote.title && (
-              <h3 className="mb-1 font-bold text-gray-800 text-lg">
+              <h3 className="mb-1 font-bold text-foreground text-lg">
                 {quote.title}
               </h3>
             )}
             {quote.projectType && (
-              <p className="mb-1 text-gray-500 text-sm capitalize">
+              <p className="mb-1 text-muted-foreground text-sm capitalize">
                 {quote.projectType} project
                 {quote.timeRange && ` \u2022 ${quote.timeRange}`}
               </p>
             )}
             {quote.description && (
-              <p className="text-gray-600">{quote.description}</p>
+              <p className="text-foreground">{quote.description}</p>
             )}
           </div>
         )}
@@ -223,7 +225,7 @@ const QuotePreview = ({
         <div className="mb-8">
           <table className="w-full">
             <thead>
-              <tr className="bg-teal-600 text-white">
+              <tr className="bg-primary text-white">
                 <th className="px-4 py-2 text-left">Description</th>
                 <th className="px-4 py-2 text-left">Pricing</th>
                 <th className="px-4 py-2 text-right">Qty</th>
@@ -235,11 +237,11 @@ const QuotePreview = ({
               {lineItems.map(
                 (item) =>
                   item.description && (
-                    <tr key={item.id} className="border-gray-200 border-b">
-                      <td className="px-4 py-3 text-gray-800">
+                    <tr key={item.id} className="border-border border-b">
+                      <td className="px-4 py-3 text-foreground">
                         <div>{item.description}</div>
                         {item.pricingType === "hourly" && (
-                          <div className="mt-1 space-y-0.5 text-gray-500 text-xs">
+                          <div className="mt-1 space-y-0.5 text-muted-foreground text-xs">
                             {item.hourlyRate && (
                               <span>
                                 {formatCurrency(item.hourlyRate, currency)}/hr
@@ -266,7 +268,7 @@ const QuotePreview = ({
                           </div>
                         )}
                         {item.pricingType === "royalty" && (
-                          <div className="mt-1 space-y-0.5 text-gray-500 text-xs">
+                          <div className="mt-1 space-y-0.5 text-muted-foreground text-xs">
                             {item.royaltyPercentage && (
                               <span>{item.royaltyPercentage}% royalty</span>
                             )}
@@ -300,13 +302,13 @@ const QuotePreview = ({
                           {item.pricingType || "fixed"}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-right text-gray-800">
+                      <td className="px-4 py-3 text-right text-foreground">
                         {item.quantity}
                       </td>
-                      <td className="px-4 py-3 text-right text-gray-800">
+                      <td className="px-4 py-3 text-right text-foreground">
                         {formatCurrency(item.unitPrice || "0", currency)}
                       </td>
-                      <td className="px-4 py-3 text-right text-gray-800">
+                      <td className="px-4 py-3 text-right text-foreground">
                         {formatCurrency(item.amount || "0", currency)}
                       </td>
                     </tr>
@@ -317,7 +319,7 @@ const QuotePreview = ({
 
           {/* Totals */}
           <div className="mt-6 flex justify-end">
-            <div className="w-1/3 rounded bg-teal-100 p-3">
+            <div className="w-1/3 rounded bg-primary-100 p-3">
               <div className="mb-1 flex justify-between text-sm">
                 <span>Subtotal</span>
                 <span>{formatCurrency(String(subtotal), currency)}</span>
@@ -337,7 +339,7 @@ const QuotePreview = ({
 
           {/* Smart pricing summaries */}
           {(hourlyMaxTotal > 0 || royaltyBuyoutTotal > 0) && (
-            <div className="mt-4 rounded border border-gray-200 bg-gray-50 p-3 text-gray-600 text-sm">
+            <div className="mt-4 rounded border border-border bg-muted p-3 text-foreground text-sm">
               {hourlyMaxTotal > 0 && (
                 <p>
                   \u2022 Hourly items max cost (at cap):{" "}
@@ -362,8 +364,8 @@ const QuotePreview = ({
         {/* Terms */}
         {quote.terms && (
           <div className="mb-4">
-            <h4 className="mb-2 font-bold text-gray-700">Terms:</h4>
-            <div className="text-gray-600">
+            <h4 className="mb-2 font-bold text-foreground">Terms:</h4>
+            <div className="text-foreground">
               {quote.terms.split("\n").map((line, i) => (
                 <p key={`term-${i}`}>{line}</p>
               ))}
@@ -374,10 +376,10 @@ const QuotePreview = ({
         {/* Dynamic pricing terms */}
         {(hasHourly || hasRoyalty) && (
           <div className="mb-4">
-            <h4 className="mb-2 font-bold text-gray-700">
+            <h4 className="mb-2 font-bold text-foreground">
               Pricing-Specific Terms:
             </h4>
-            <ul className="list-disc pl-5 text-gray-600 text-sm">
+            <ul className="list-disc pl-5 text-foreground text-sm">
               {hasHourly && (
                 <>
                   <li>
@@ -414,8 +416,10 @@ const QuotePreview = ({
         {/* Additional terms */}
         {quote.additionalTerms && quote.additionalTerms.length > 0 && (
           <div className="mb-4">
-            <h4 className="mb-2 font-bold text-gray-700">Additional Terms:</h4>
-            <ul className="list-disc pl-5 text-gray-600">
+            <h4 className="mb-2 font-bold text-foreground">
+              Additional Terms:
+            </h4>
+            <ul className="list-disc pl-5 text-foreground">
               {quote.additionalTerms.map((term) => (
                 <li key={term}>{term}</li>
               ))}
@@ -426,8 +430,8 @@ const QuotePreview = ({
         {/* Notes */}
         {quote.notes && (
           <div>
-            <h4 className="mb-2 font-bold text-gray-700">Notes:</h4>
-            <div className="text-gray-600">
+            <h4 className="mb-2 font-bold text-foreground">Notes:</h4>
+            <div className="text-foreground">
               {quote.notes.split("\n").map((line, i) => (
                 <p key={`note-${i}`}>{line}</p>
               ))}

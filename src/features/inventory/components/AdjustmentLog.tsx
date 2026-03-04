@@ -7,53 +7,53 @@ interface AdjustmentLogProps {
 const AdjustmentLog = ({ adjustments }: AdjustmentLogProps) => {
   if (adjustments.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
-        <p className="text-gray-500">No adjustments recorded</p>
+      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+        <p className="text-muted-foreground">No adjustments recorded</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full">
-        <thead className="bg-gray-50">
+        <thead className="bg-muted">
           <tr>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Date
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Change
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Reason
             </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Reference ID
             </th>
           </tr>
         </thead>
         <tbody>
           {adjustments.map((adjustment) => (
-            <tr key={adjustment.id} className="border-gray-100 border-t">
-              <td className="px-4 py-3 text-gray-600 text-sm">
+            <tr key={adjustment.id} className="border-border border-t">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {new Date(adjustment.createdAt).toLocaleDateString()}
               </td>
               <td className="px-4 py-3 font-medium text-sm">
                 <span
                   className={
                     adjustment.quantityChange >= 0
-                      ? "text-green-600"
-                      : "text-red-600"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-destructive"
                   }
                 >
                   {adjustment.quantityChange >= 0 ? "+" : ""}
                   {adjustment.quantityChange}
                 </span>
               </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {adjustment.reason}
               </td>
-              <td className="px-4 py-3 text-gray-600 text-sm">
+              <td className="px-4 py-3 text-foreground text-sm">
                 {adjustment.referenceId ?? "\u2014"}
               </td>
             </tr>

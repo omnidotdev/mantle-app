@@ -32,16 +32,16 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
       return (
         <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 p-8">
-          <h2 className="font-semibold text-lg text-red-700">
+          <h2 className="font-semibold text-destructive text-lg">
             Something went wrong
           </h2>
-          <p className="max-w-md text-center text-gray-600 text-sm">
+          <p className="max-w-md text-center text-foreground text-sm">
             {this.state.error?.message || "An unexpected error occurred"}
           </p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700"
+            className="rounded-md bg-primary px-4 py-2 text-sm text-white hover:bg-primary-700"
           >
             Try again
           </button>

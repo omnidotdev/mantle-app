@@ -6,10 +6,10 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
   const governingState = registrationState || "Minnesota";
 
   return (
-    <div className="space-y-4 text-gray-700 text-sm">
+    <div className="space-y-4 text-foreground text-sm">
       {/* Section 10: Liability */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           10. Limitation of Liability
         </h3>
         <p>
@@ -21,7 +21,7 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 11: Compliance */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           11. Compliance Disclaimer
         </h3>
         <p>
@@ -33,7 +33,7 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 12: Termination */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           12. Termination & Refund Policy
         </h3>
         <p>
@@ -45,7 +45,7 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 13: Governing law */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           13. Governing Law & Dispute Resolution
         </h3>
         <p>
@@ -58,7 +58,7 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 14: Miscellaneous */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           14. Miscellaneous
         </h3>
         <p>

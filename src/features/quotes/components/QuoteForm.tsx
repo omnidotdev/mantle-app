@@ -167,7 +167,7 @@ const QuoteForm = ({
     <div className="space-y-6">
       {/* Quote details */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Quote Details</h3>
+        <h3 className="font-medium text-foreground text-lg">Quote Details</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
@@ -200,7 +200,7 @@ const QuoteForm = ({
               id="quote-number"
               value={quote.quoteNumber ?? ""}
               readOnly
-              className="bg-gray-50"
+              className="bg-muted"
             />
           </div>
 
@@ -210,7 +210,7 @@ const QuoteForm = ({
               id="quote-status"
               value={quote.status ?? "draft"}
               readOnly
-              className="bg-gray-50 capitalize"
+              className="bg-muted capitalize"
             />
           </div>
         </div>
@@ -219,7 +219,7 @@ const QuoteForm = ({
       {/* Client */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-gray-700 text-lg">Client</h3>
+          <h3 className="font-medium text-foreground text-lg">Client</h3>
           <PopulateButton
             organizationId={organizationId}
             onPopulateClient={({
@@ -289,7 +289,7 @@ const QuoteForm = ({
 
       {/* Project details */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Project Details</h3>
+        <h3 className="font-medium text-foreground text-lg">Project Details</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -337,22 +337,22 @@ const QuoteForm = ({
 
       {/* Line items */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Line Items</h3>
+        <h3 className="font-medium text-foreground text-lg">Line Items</h3>
 
         {lineItems.map((item, index) => (
           <div
             key={item.id}
-            className="space-y-3 rounded-lg border border-gray-200 p-4"
+            className="space-y-3 rounded-lg border border-border p-4"
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-600 text-sm">
+              <span className="font-medium text-foreground text-sm">
                 Item {index + 1}
               </span>
               {lineItems.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleRemoveLineItem(index)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-destructive hover:text-destructive"
                   aria-label="Remove item"
                 >
                   <Trash2 size={14} />
@@ -407,7 +407,7 @@ const QuoteForm = ({
                   id={`item-amount-${item.id}`}
                   value={formatCurrency(item.amount || "0", quote.currency)}
                   readOnly
-                  className="bg-gray-50"
+                  className="bg-muted"
                 />
               </div>
 
@@ -632,7 +632,7 @@ const QuoteForm = ({
         <button
           type="button"
           onClick={handleAddLineItem}
-          className="flex items-center gap-1 text-teal-600 hover:text-teal-700"
+          className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
         >
           <Plus size={18} />
           <span>Add Line Item</span>
@@ -641,7 +641,7 @@ const QuoteForm = ({
 
       {/* Financials */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Financials</h3>
+        <h3 className="font-medium text-foreground text-lg">Financials</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -650,7 +650,7 @@ const QuoteForm = ({
               id="quote-subtotal"
               value={formatCurrency(String(subtotal), quote.currency)}
               readOnly
-              className="bg-gray-50"
+              className="bg-muted"
             />
           </div>
 
@@ -674,7 +674,7 @@ const QuoteForm = ({
               id="quote-tax-amount"
               value={formatCurrency(quote.taxAmount || "0", quote.currency)}
               readOnly
-              className="bg-gray-50"
+              className="bg-muted"
             />
           </div>
 
@@ -684,7 +684,7 @@ const QuoteForm = ({
               id="quote-total"
               value={formatCurrency(quote.total || "0", quote.currency)}
               readOnly
-              className="bg-gray-50 font-medium"
+              className="bg-muted font-medium"
             />
           </div>
 
@@ -702,7 +702,7 @@ const QuoteForm = ({
 
       {/* Terms & notes */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-700 text-lg">Terms & Notes</h3>
+        <h3 className="font-medium text-foreground text-lg">Terms & Notes</h3>
 
         <div className="space-y-1.5">
           <Label htmlFor="quote-terms">Terms</Label>
@@ -738,11 +738,11 @@ const QuoteForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 border-gray-200 border-t pt-4">
+      <div className="flex justify-end gap-2 border-border border-t pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
         >
           Cancel
         </button>
@@ -750,7 +750,7 @@ const QuoteForm = ({
           type="button"
           onClick={onSave}
           disabled={!quote.title?.trim()}
-          className="rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Save
         </button>

@@ -15,10 +15,10 @@ const ContractTerms = ({
   const hasHourly = lineItems.some((li) => li.pricingType === "hourly");
 
   return (
-    <div className="space-y-4 text-gray-700 text-sm">
+    <div className="space-y-4 text-foreground text-sm">
       {/* Section 3: Timeline */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">3. Timeline</h3>
+        <h3 className="font-semibold text-foreground text-lg">3. Timeline</h3>
         <p>
           {timeRange
             ? `The estimated project timeline is ${timeRange}.`
@@ -29,7 +29,7 @@ const ContractTerms = ({
 
       {/* Section 4: Ownership */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           4. Ownership & Licensing
         </h3>
         <p>
@@ -42,7 +42,7 @@ const ContractTerms = ({
 
       {/* Section 5: Portfolio */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           5. Portfolio & Marketing Rights
         </h3>
         <p>
@@ -54,7 +54,7 @@ const ContractTerms = ({
 
       {/* Section 6: Confidentiality */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           6. Confidentiality
         </h3>
         <p>
@@ -66,7 +66,7 @@ const ContractTerms = ({
 
       {/* Section 7: Maintenance */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           7. Maintenance & Support
         </h3>
         <p>
@@ -85,7 +85,7 @@ const ContractTerms = ({
 
       {/* Section 8: Change requests */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           8. Change Requests & Scope Creep
         </h3>
         <p>
@@ -104,7 +104,7 @@ const ContractTerms = ({
 
       {/* Section 9: External costs */}
       <div>
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           9. External Provider Costs
         </h3>
         <p>
@@ -117,7 +117,7 @@ const ContractTerms = ({
       {/* Section 15: Additional terms */}
       {additionalTerms && additionalTerms.length > 0 && (
         <div>
-          <h3 className="font-semibold text-gray-900 text-lg">
+          <h3 className="font-semibold text-foreground text-lg">
             15. Additional Terms
           </h3>
           <ul className="list-disc space-y-1 pl-5">

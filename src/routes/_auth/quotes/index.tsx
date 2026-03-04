@@ -27,12 +27,14 @@ type ViewMode = "list" | "create" | "edit" | "preview";
 type PreviewType = "quote" | "contract";
 
 const statusColors: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
-  accepted: "bg-green-100 text-green-700",
-  declined: "bg-red-100 text-red-700",
-  expired: "bg-yellow-100 text-yellow-700",
-  converted: "bg-purple-100 text-purple-700",
+  draft: "bg-muted text-muted-foreground",
+  sent: "bg-primary-100 text-primary-700",
+  accepted:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  declined: "bg-destructive/10 text-destructive",
+  expired:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  converted: "bg-secondary-100 text-secondary-700",
 };
 
 const defaultQuote: Partial<Quote> = {
@@ -84,15 +86,15 @@ const PreviewToggle = ({
   value: PreviewType;
   onChange: (v: PreviewType) => void;
 }) => (
-  <div className="mb-4 inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+  <div className="mb-4 inline-flex rounded-lg border border-border bg-muted p-1">
     <button
       type="button"
       onClick={() => onChange("quote")}
       aria-pressed={value === "quote"}
       className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
         value === "quote"
-          ? "bg-white text-gray-900 shadow-sm"
-          : "text-gray-500 hover:text-gray-700"
+          ? "bg-card text-foreground shadow-sm"
+          : "text-muted-foreground hover:text-foreground"
       }`}
     >
       Quote
@@ -103,8 +105,8 @@ const PreviewToggle = ({
       aria-pressed={value === "contract"}
       className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
         value === "contract"
-          ? "bg-white text-gray-900 shadow-sm"
-          : "text-gray-500 hover:text-gray-700"
+          ? "bg-card text-foreground shadow-sm"
+          : "text-muted-foreground hover:text-foreground"
       }`}
     >
       Contract
@@ -280,7 +282,9 @@ const QuotesPage = () => {
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">Select an organization to view quotes</p>
+        <p className="text-muted-foreground">
+          Select an organization to view quotes
+        </p>
       </div>
     );
   }
@@ -289,7 +293,7 @@ const QuotesPage = () => {
     return (
       <div className="flex items-center justify-center p-6">
         <Loader2
-          className="h-8 w-8 animate-spin text-gray-400"
+          className="h-8 w-8 animate-spin text-muted-foreground"
           aria-label="Loading quotes"
         />
       </div>
@@ -495,8 +499,8 @@ const QuotesPage = () => {
         <div className="mb-6 flex items-center justify-between">
           <h1 className="font-semibold text-xl">Quotes</h1>
           <div className="flex items-center gap-3">
-            <div className="rounded-md border border-gray-200 bg-white px-3 py-1.5">
-              <p className="text-gray-500 text-xs">
+            <div className="rounded-md border border-border bg-card px-3 py-1.5">
+              <p className="text-muted-foreground text-xs">
                 {filteredQuotes.length}{" "}
                 {filteredQuotes.length === 1 ? "quote" : "quotes"}
               </p>
@@ -507,7 +511,7 @@ const QuotesPage = () => {
             <button
               type="button"
               onClick={handleCreateNew}
-              className="flex items-center gap-1.5 rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
             >
               <Plus size={16} />
               New Quote
@@ -516,22 +520,22 @@ const QuotesPage = () => {
         </div>
 
         {quotes.length === 0 ? (
-          <div className="rounded-lg border-2 border-gray-200 border-dashed py-12 text-center">
-            <p className="mb-4 text-gray-500">No quotes yet</p>
+          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+            <p className="mb-4 text-muted-foreground">No quotes yet</p>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="text-teal-600 hover:text-teal-700"
+              className="text-primary-600 hover:text-primary-700"
             >
               Create your first quote
             </button>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div className="flex gap-4 border-gray-200 border-b p-4">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <div className="flex gap-4 border-border border-b p-4">
               <div className="relative flex-1">
                 <Search
-                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                   aria-hidden="true"
                 />
                 <input
@@ -540,14 +544,14 @@ const QuotesPage = () => {
                   aria-label="Search quotes"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-9 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 aria-label="Filter by status"
-                className="cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className="cursor-pointer appearance-none rounded-lg border border-input bg-card px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
               >
                 <option value="all">All statuses</option>
                 {QUOTE_STATUSES.map((status) => (
@@ -560,53 +564,55 @@ const QuotesPage = () => {
 
             {filteredQuotes.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-gray-500">No quotes match your filters</p>
+                <p className="text-muted-foreground">
+                  No quotes match your filters
+                </p>
                 <button
                   type="button"
                   onClick={() => {
                     setSearchTerm("");
                     setStatusFilter("all");
                   }}
-                  className="mt-2 text-sm text-teal-600 hover:text-teal-700"
+                  className="mt-2 text-primary-600 text-sm hover:text-primary-700"
                 >
                   Clear filters
                 </button>
               </div>
             ) : (
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Quote #
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Title
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Company
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
                       Total
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                       Valid Until
                     </th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                    <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredQuotes.map((quote) => (
-                    <tr key={quote.id} className="border-gray-100 border-t">
+                    <tr key={quote.id} className="border-border border-t">
                       <td className="px-4 py-3 font-mono text-sm">
                         {quote.quoteNumber}
                       </td>
                       <td className="px-4 py-3 text-sm">{quote.title}</td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
+                      <td className="px-4 py-3 text-foreground text-sm">
                         {resolveCompanyName(quote.companyId) || "\u2014"}
                       </td>
                       <td className="px-4 py-3">
@@ -619,7 +625,7 @@ const QuotesPage = () => {
                       <td className="px-4 py-3 text-right font-medium text-sm">
                         {formatCurrency(quote.total, quote.currency)}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
+                      <td className="px-4 py-3 text-foreground text-sm">
                         {quote.validUntil || "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -627,7 +633,7 @@ const QuotesPage = () => {
                           <button
                             type="button"
                             onClick={() => handlePreview(quote)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-muted-foreground hover:text-foreground"
                             aria-label="Preview quote"
                           >
                             <Eye size={16} />
@@ -635,7 +641,7 @@ const QuotesPage = () => {
                           <button
                             type="button"
                             onClick={() => handleEdit(quote)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-muted-foreground hover:text-foreground"
                             aria-label="Edit quote"
                           >
                             <Edit size={16} />
@@ -643,7 +649,7 @@ const QuotesPage = () => {
                           <button
                             type="button"
                             onClick={() => handleDelete(quote.id)}
-                            className="text-red-500 hover:text-red-700"
+                            className="text-destructive hover:text-destructive"
                             aria-label="Delete quote"
                           >
                             <Trash2 size={16} />
@@ -691,7 +697,7 @@ const QuotesPage = () => {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className="text-gray-500 text-sm hover:text-gray-700"
+            className="text-muted-foreground text-sm hover:text-foreground"
           >
             &larr; Back to list
           </button>
@@ -699,7 +705,7 @@ const QuotesPage = () => {
             <button
               type="button"
               onClick={() => setViewMode("edit")}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+              className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
             >
               Edit
             </button>
@@ -713,7 +719,7 @@ const QuotesPage = () => {
                 window.print();
                 document.title = originalTitle;
               }}
-              className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700"
+              className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
             >
               Print
             </button>
@@ -736,7 +742,7 @@ const QuotesPage = () => {
         <button
           type="button"
           onClick={() => setViewMode("list")}
-          className="text-gray-500 text-sm hover:text-gray-700"
+          className="text-muted-foreground text-sm hover:text-foreground"
         >
           &larr; Back to list
         </button>
@@ -744,7 +750,7 @@ const QuotesPage = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+            className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
           >
             Cancel
           </button>
@@ -752,7 +758,7 @@ const QuotesPage = () => {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? "Saving..." : editingId ? "Save Changes" : "Create Quote"}
           </button>
@@ -760,7 +766,7 @@ const QuotesPage = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           <h2 className="mb-4 font-semibold text-lg">
             {editingId ? "Edit Quote" : "New Quote"}
           </h2>

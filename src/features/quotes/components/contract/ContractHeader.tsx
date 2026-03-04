@@ -7,7 +7,7 @@ interface ContractHeaderProps {
 
 const ContractHeader = ({ contractId, date }: ContractHeaderProps) => {
   return (
-    <div className="rounded-t-lg bg-linear-to-r from-teal-700 to-teal-500 p-8 text-white">
+    <div className="rounded-t-lg bg-linear-to-r from-primary-700 to-primary-500 p-8 text-white">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <img
@@ -18,7 +18,7 @@ const ContractHeader = ({ contractId, date }: ContractHeaderProps) => {
           />
           <div>
             <h1 className="font-bold text-2xl">Service Agreement</h1>
-            <p className="text-teal-100">Professional Services Contract</p>
+            <p className="text-primary-100">Professional Services Contract</p>
           </div>
         </div>
         <div className="text-right text-sm">

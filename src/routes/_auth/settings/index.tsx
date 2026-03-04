@@ -83,7 +83,9 @@ const SettingsPage = () => {
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">Select an organization to view settings</p>
+        <p className="text-muted-foreground">
+          Select an organization to view settings
+        </p>
       </div>
     );
   }
@@ -93,17 +95,17 @@ const SettingsPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-semibold text-xl">Organization Profile</h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             Configure your company details for auto-filling invoices and
             contracts
           </p>
         </div>
       </div>
 
-      <div className="space-y-6 rounded-lg border border-gray-200 bg-white p-6">
+      <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         {/* Company info */}
         <div className="space-y-4">
-          <h3 className="font-medium text-gray-700 text-lg">
+          <h3 className="font-medium text-foreground text-lg">
             Company Information
           </h3>
 
@@ -159,7 +161,9 @@ const SettingsPage = () => {
 
         {/* Contact info */}
         <div className="space-y-4">
-          <h3 className="font-medium text-gray-700 text-lg">Primary Contact</h3>
+          <h3 className="font-medium text-foreground text-lg">
+            Primary Contact
+          </h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -212,7 +216,7 @@ const SettingsPage = () => {
 
         {/* Address */}
         <div className="space-y-4">
-          <h3 className="font-medium text-gray-700 text-lg">Address</h3>
+          <h3 className="font-medium text-foreground text-lg">Address</h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5 sm:col-span-2">
@@ -286,15 +290,17 @@ const SettingsPage = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 border-gray-200 border-t pt-4">
+        <div className="flex items-center justify-end gap-3 border-border border-t pt-4">
           {saved && (
-            <span className="text-green-600 text-sm">Saved successfully</span>
+            <span className="text-emerald-600 text-sm dark:text-emerald-400">
+              Saved successfully
+            </span>
           )}
           <button
             type="button"
             onClick={handleSave}
             disabled={!isValid}
-            className="rounded-md bg-teal-600 px-4 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-primary px-4 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Save Profile
           </button>

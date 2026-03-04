@@ -27,8 +27,8 @@ const ConfirmDialog = ({
 }: ConfirmDialogProps) => {
   const confirmClass =
     variant === "danger"
-      ? "bg-red-600 text-white hover:bg-red-700"
-      : "bg-teal-600 text-white hover:bg-teal-700";
+      ? "bg-destructive text-white hover:bg-destructive/90"
+      : "bg-primary text-white hover:bg-primary-700";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -41,7 +41,7 @@ const ConfirmDialog = ({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+            className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
           >
             Cancel
           </button>

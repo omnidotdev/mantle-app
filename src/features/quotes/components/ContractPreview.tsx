@@ -63,7 +63,7 @@ const ContractPreview = ({
   const resolvedClientCompany = company?.name || "";
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
+    <div className="rounded-lg border border-border bg-card shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
       <ContractHeader contractId={quote.quoteNumber || "CT-0001"} date={date} />
 
       <div className="space-y-6 p-6">
@@ -75,7 +75,7 @@ const ContractPreview = ({
           date={date}
         />
 
-        <hr className="border-gray-200" />
+        <hr className="border-border" />
 
         <ContractScope
           projectName={quote.title || "Untitled Project"}
@@ -83,11 +83,11 @@ const ContractPreview = ({
           description={quote.description ?? null}
         />
 
-        <hr className="border-gray-200" />
+        <hr className="border-border" />
 
         <ContractPricing lineItems={lineItems} currency={currency} />
 
-        <hr className="border-gray-200" />
+        <hr className="border-border" />
 
         <ContractTerms
           timeRange={quote.timeRange ?? null}
@@ -95,13 +95,13 @@ const ContractPreview = ({
           lineItems={lineItems}
         />
 
-        <hr className="border-gray-200" />
+        <hr className="border-border" />
 
         <ContractLegal
           registrationState={orgProfile?.registrationState ?? null}
         />
 
-        <hr className="border-gray-200" />
+        <hr className="border-border" />
 
         <ContractSignatures
           orgProfile={orgProfile}

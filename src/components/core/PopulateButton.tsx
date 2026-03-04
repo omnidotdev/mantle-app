@@ -112,7 +112,7 @@ const PopulateButton = ({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-lg bg-teal-50 px-3 py-1.5 font-medium text-sm text-teal-700 hover:bg-teal-100"
+        className="flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 font-medium text-primary-700 text-sm hover:bg-primary-100"
       >
         <Zap size={14} />
         Populate with Omni
@@ -123,17 +123,17 @@ const PopulateButton = ({
           ref={popoverRef}
           role="dialog"
           aria-label="Populate client from Omni"
-          className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg"
+          className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border border-border bg-card p-4 shadow-lg"
         >
           {/* Sender info note */}
-          <div className="mb-4 flex items-start gap-2 rounded-md bg-gray-50 p-2 text-gray-500 text-xs">
+          <div className="mb-4 flex items-start gap-2 rounded-md bg-muted p-2 text-muted-foreground text-xs">
             <Info size={14} className="mt-0.5 shrink-0" />
             <span>Sender details auto-fill from org profile in Settings</span>
           </div>
 
           {/* Client section */}
           <div>
-            <h4 className="mb-2 flex items-center gap-1.5 font-medium text-gray-700 text-sm">
+            <h4 className="mb-2 flex items-center gap-1.5 font-medium text-foreground text-sm">
               <Building2 size={14} />
               Client
             </h4>
@@ -152,7 +152,7 @@ const PopulateButton = ({
                 type="button"
                 onClick={handleApplyClient}
                 disabled={!selectedCompany}
-                className="w-full rounded-md bg-teal-600 px-3 py-1.5 text-sm text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Apply Client
               </button>
