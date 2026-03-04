@@ -391,26 +391,23 @@ const InvoicesPage = () => {
     return (
       <div className="p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="font-semibold text-xl">Invoices</h1>
-          <div className="flex items-center gap-3">
-            <div className="rounded-md border border-border bg-card px-3 py-1.5">
-              <p className="text-muted-foreground text-xs">
-                {filteredInvoices.length}{" "}
-                {filteredInvoices.length === 1 ? "invoice" : "invoices"}
-              </p>
-              <p className="font-semibold">
-                {formatCurrency(filteredTotal.toFixed(2))}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleCreateNew}
-              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-            >
-              <Plus size={16} />
-              New Invoice
-            </button>
+          <div>
+            <h1 className="font-semibold text-xl">Invoices</h1>
+            <p className="mt-1 text-muted-foreground text-sm">
+              {filteredInvoices.length}{" "}
+              {filteredInvoices.length === 1 ? "invoice" : "invoices"}
+              {" · "}
+              {formatCurrency(filteredTotal.toFixed(2))}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={handleCreateNew}
+            className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
+          >
+            <Plus size={16} />
+            New Invoice
+          </button>
         </div>
 
         {invoices.length === 0 ? (
