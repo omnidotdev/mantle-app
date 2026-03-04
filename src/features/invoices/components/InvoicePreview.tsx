@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  DEFAULT_ACCENT,
+  getAccentVariants,
+} from "@/features/invoices/types/accentColor";
 import { formatCurrency, formatDate } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
@@ -28,6 +32,11 @@ const InvoicePreview = ({
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
+
+  const accent = useMemo(
+    () => getAccentVariants(orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT),
+    [orgProfile?.invoiceAccentColor],
+  );
 
   const { data: companiesData } = useAllCompaniesQuery(
     { organizationId: organizationId ?? "" },
@@ -79,7 +88,12 @@ const InvoicePreview = ({
 
       <div className="rounded-lg border border-border bg-card shadow-sm print:min-h-screen print:border-0 print:shadow-none">
         {/* Gradient header */}
-        <div className="rounded-t-lg bg-linear-to-r from-primary-700 to-primary-500 p-6 text-white print:rounded-none">
+        <div
+          className="rounded-t-lg p-6 text-white print:rounded-none"
+          style={{
+            background: `linear-gradient(to right, ${accent.gradientFrom}, ${accent.gradientTo})`,
+          }}
+        >
           <div className="mb-2 flex justify-between">
             <div className="flex items-start gap-3">
               <img
@@ -93,14 +107,14 @@ const InvoicePreview = ({
                   {orgProfile?.companyName || "Your Company"}
                 </h3>
                 {orgProfile?.addressLine1 && (
-                  <p className="text-primary-100 text-sm">
+                  <p className="text-sm" style={{ color: accent.subtleText }}>
                     {orgProfile.addressLine1}
                   </p>
                 )}
                 {(orgProfile?.city ||
                   orgProfile?.state ||
                   orgProfile?.postalCode) && (
-                  <p className="text-primary-100 text-sm">
+                  <p className="text-sm" style={{ color: accent.subtleText }}>
                     {[
                       orgProfile.city,
                       [orgProfile.state, orgProfile.postalCode]
@@ -197,7 +211,10 @@ const InvoicePreview = ({
           <div className="mb-8">
             <table className="w-full">
               <thead>
-                <tr className="bg-primary text-white">
+                <tr
+                  className="text-white"
+                  style={{ backgroundColor: accent.base }}
+                >
                   <th className="px-4 py-2 text-left">Item Description</th>
                   {showDetails && (
                     <>
@@ -237,7 +254,10 @@ const InvoicePreview = ({
 
             {/* Totals */}
             <div className="mt-6 flex justify-end">
-              <div className="w-1/3 rounded bg-primary-100 p-3">
+              <div
+                className="w-1/3 rounded p-3"
+                style={{ backgroundColor: accent.light }}
+              >
                 {hasTax && (
                   <>
                     <div className="mb-1 flex justify-between text-sm">
