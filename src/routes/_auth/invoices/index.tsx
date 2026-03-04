@@ -638,13 +638,6 @@ const InvoicesPage = () => {
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={handleCancel}
-            className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
             onClick={() => {
               const originalTitle = document.title;
               document.title = `invoice_${currentInvoice.invoiceNumber}`;
@@ -671,7 +664,7 @@ const InvoicesPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 print:block">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 print:block">
         <div className="rounded-lg border border-border bg-card p-6 print:hidden">
           <h2 className="mb-4 font-semibold text-lg">
             {editingId ? "Edit Invoice" : "New Invoice"}
@@ -682,7 +675,7 @@ const InvoicesPage = () => {
             lineItems={currentLineItems}
             onLineItemsChange={setCurrentLineItems}
             onSave={handleSave}
-            onCancel={handleCancel}
+
             organizationId={organizationId}
           />
         </div>

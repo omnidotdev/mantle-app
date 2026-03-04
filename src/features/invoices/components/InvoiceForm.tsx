@@ -1,9 +1,13 @@
-import { Plus, Sparkles, Trash2 } from "lucide-react";
+import { Check, Plus, Sparkles, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  ACCENT_PRESETS,
+  DEFAULT_ACCENT,
+} from "@/features/invoices/types/accentColor";
 import {
   INVOICE_STATUSES,
   formatCurrency,
@@ -21,7 +25,6 @@ interface InvoiceFormProps {
   lineItems: Partial<InvoiceLineItem>[];
   onLineItemsChange: (items: Partial<InvoiceLineItem>[]) => void;
   onSave: () => void;
-  onCancel: () => void;
   organizationId?: string;
 }
 
@@ -31,7 +34,6 @@ const InvoiceForm = ({
   lineItems,
   onLineItemsChange,
   onSave,
-  onCancel,
   organizationId,
 }: InvoiceFormProps) => {
   const handleChange = (field: keyof Invoice, value: string | null) => {
@@ -168,6 +170,7 @@ const InvoiceForm = ({
         country: null,
         logoUrl: null,
         registrationState: null,
+        invoiceAccentColor: null,
       });
     }
   };
@@ -275,6 +278,52 @@ const InvoiceForm = ({
                 placeholder="12345"
               />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Accent color */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-foreground text-lg">Invoice Theme</h3>
+        <div className="flex flex-wrap items-center gap-2">
+          {ACCENT_PRESETS.map((preset) => {
+            const isActive =
+              (orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT) ===
+              preset.value;
+
+            return (
+              <button
+                key={preset.value}
+                type="button"
+                onClick={() =>
+                  handleProfileChange("invoiceAccentColor", preset.value)
+                }
+                className="flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
+                style={{
+                  backgroundColor: preset.value,
+                  borderColor: isActive ? "var(--foreground)" : "transparent",
+                }}
+                aria-label={preset.label}
+                title={preset.label}
+              >
+                {isActive && <Check size={14} className="text-white" />}
+              </button>
+            );
+          })}
+          <div className="flex items-center gap-1.5">
+            <input
+              type="color"
+              value={orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT}
+              onChange={(e) =>
+                handleProfileChange("invoiceAccentColor", e.target.value)
+              }
+              className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
+              aria-label="Custom accent color"
+              title="Custom color"
+            />
+            <span className="font-mono text-muted-foreground text-xs">
+              {orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT}
+            </span>
           </div>
         </div>
       </div>
@@ -559,14 +608,7 @@ const InvoiceForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 border-border border-t pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
-        >
-          Cancel
-        </button>
+      <div className="flex justify-end border-border border-t pt-4">
         <button
           type="button"
           onClick={onSave}
