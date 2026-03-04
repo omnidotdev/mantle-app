@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import {
-  ArrowLeft,
   Building2,
   Edit,
   Loader2,
@@ -24,67 +24,30 @@ import {
   TabsRoot,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import CompanyForm from "@/features/people/components/CompanyForm";
-import CompanyMembers from "@/features/people/components/CompanyMembers";
-import ContactCompanies from "@/features/people/components/ContactCompanies";
-import ContactForm from "@/features/people/components/ContactForm";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";
+import { peopleListSearchSchema } from "@/features/people/searchParams";
 import {
   useAllCompaniesQuery,
   useAllPeopleQuery,
-  useCreateCompanyMutation,
-  useCreatePersonMutation,
   useDeleteCompanyMutation,
   useDeletePersonMutation,
-  useUpdateCompanyMutation,
-  useUpdatePersonMutation,
 } from "@/generated/graphql";
 
 import type { ActiveTab } from "@/features/people/store/peopleStore";
 import type { Company, Person } from "@/features/people/types";
 
-type ViewMode = "list" | "create" | "edit";
-
-const defaultCompany: Partial<Company> = {
-  name: "",
-  website: null,
-  industry: null,
-  phone: null,
-  email: null,
-  addressLine1: null,
-  addressLine2: null,
-  city: null,
-  state: null,
-  postalCode: null,
-  country: null,
-  notes: null,
-};
-
-const defaultPerson: Partial<Person> = {
-  firstName: "",
-  lastName: "",
-  emails: [],
-  phone: null,
-  avatarUrl: null,
-  tags: null,
-  internal: false,
-  notes: null,
-};
-
 const PeoplePage = () => {
   const { organizationId } = Route.useRouteContext();
+  const {
+    tab: activeTab,
+    search: searchTerm,
+    type: typeFilter,
+  } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const [activeTab, setActiveTab] = useState<ActiveTab>("companies");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [currentCompany, setCurrentCompany] =
-    useState<Partial<Company>>(defaultCompany);
-  const [currentPerson, setCurrentPerson] =
-    useState<Partial<Person>>(defaultPerson);
   const [importExportOpen, setImportExportOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
@@ -170,14 +133,10 @@ const PeoplePage = () => {
     });
   };
 
-  const createCompanyMutation = useCreateCompanyMutation();
-  const updateCompanyMutation = useUpdateCompanyMutation();
   const deleteCompanyMutation = useDeleteCompanyMutation({
     onSuccess: invalidateCompanies,
   });
 
-  const createPersonMutation = useCreatePersonMutation();
-  const updatePersonMutation = useUpdatePersonMutation();
   const deletePersonMutation = useDeletePersonMutation({
     onSuccess: invalidatePeople,
   });
@@ -203,222 +162,6 @@ const PeoplePage = () => {
     );
   }
 
-  // Company handlers
-  const handleCreateCompany = () => {
-    setCurrentCompany({ ...defaultCompany });
-    setEditingId(null);
-    setViewMode("create");
-  };
-
-  const handleEditCompany = (company: Company) => {
-    setCurrentCompany(company);
-    setEditingId(company.id);
-    setViewMode("edit");
-  };
-
-  const handleSaveCompany = async () => {
-    setSaving(true);
-    try {
-      if (editingId) {
-        await updateCompanyMutation.mutateAsync({
-          input: {
-            rowId: editingId,
-            patch: {
-              name: currentCompany.name,
-              website: currentCompany.website,
-              industry: currentCompany.industry,
-              phone: currentCompany.phone,
-              email: currentCompany.email,
-              addressLine1: currentCompany.addressLine1,
-              addressLine2: currentCompany.addressLine2,
-              city: currentCompany.city,
-              state: currentCompany.state,
-              postalCode: currentCompany.postalCode,
-              country: currentCompany.country,
-              notes: currentCompany.notes,
-            },
-          },
-        });
-      } else {
-        const result = await createCompanyMutation.mutateAsync({
-          input: {
-            company: {
-              organizationId,
-              name: currentCompany.name ?? "",
-              website: currentCompany.website ?? null,
-              industry: currentCompany.industry ?? null,
-              phone: currentCompany.phone ?? null,
-              email: currentCompany.email ?? null,
-              addressLine1: currentCompany.addressLine1 ?? null,
-              addressLine2: currentCompany.addressLine2 ?? null,
-              city: currentCompany.city ?? null,
-              state: currentCompany.state ?? null,
-              postalCode: currentCompany.postalCode ?? null,
-              country: currentCompany.country ?? null,
-              notes: currentCompany.notes ?? null,
-            },
-          },
-        });
-
-        const newId = result.createCompany?.company?.rowId;
-        if (newId) {
-          setEditingId(newId);
-          setViewMode("edit");
-        }
-      }
-      invalidateCompanies();
-      toast.success("Company saved");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save company",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDeleteCompany = (id: string) => {
-    setDeleteConfirm({ open: true, id, type: "company" });
-  };
-
-  // Contact handlers
-  const handleCreateContact = () => {
-    setCurrentPerson({ ...defaultPerson });
-    setEditingId(null);
-    setViewMode("create");
-  };
-
-  const handleEditContact = (person: Person) => {
-    setCurrentPerson(person);
-    setEditingId(person.id);
-    setViewMode("edit");
-  };
-
-  const handleSaveContact = async () => {
-    setSaving(true);
-    try {
-      if (editingId) {
-        await updatePersonMutation.mutateAsync({
-          input: {
-            rowId: editingId,
-            patch: {
-              firstName: currentPerson.firstName,
-              lastName: currentPerson.lastName,
-              emails: currentPerson.emails,
-              phone: currentPerson.phone,
-              avatarUrl: currentPerson.avatarUrl,
-              tags: currentPerson.tags,
-              internal: currentPerson.internal,
-              notes: currentPerson.notes,
-            },
-          },
-        });
-      } else {
-        const result = await createPersonMutation.mutateAsync({
-          input: {
-            person: {
-              organizationId,
-              firstName: currentPerson.firstName ?? "",
-              lastName: currentPerson.lastName ?? "",
-              emails: currentPerson.emails ?? [],
-              phone: currentPerson.phone ?? null,
-              avatarUrl: currentPerson.avatarUrl ?? null,
-              tags: currentPerson.tags ?? null,
-              internal: currentPerson.internal ?? false,
-              notes: currentPerson.notes ?? null,
-            },
-          },
-        });
-
-        const newId = result.createPerson?.person?.rowId;
-        if (newId) {
-          setEditingId(newId);
-          setViewMode("edit");
-        }
-      }
-      invalidatePeople();
-      toast.success("Contact saved");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save contact",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDeleteContact = (id: string) => {
-    setDeleteConfirm({ open: true, id, type: "contact" });
-  };
-
-  const handleCancel = () => {
-    setViewMode("list");
-    setEditingId(null);
-  };
-
-  // Create/edit views
-  if (viewMode === "create" || viewMode === "edit") {
-    const isCompanyForm = activeTab === "companies";
-    const title = isCompanyForm
-      ? editingId
-        ? "Edit Company"
-        : "New Company"
-      : editingId
-        ? "Edit Contact"
-        : "New Contact";
-
-    return (
-      <div className="p-6">
-        <div className="mb-6">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
-          >
-            <ArrowLeft size={16} />
-            Back to list
-          </button>
-        </div>
-
-        <div className="rounded-lg border border-border bg-card p-6">
-          <h2 className="mb-6 font-semibold text-lg">{title}</h2>
-
-          {isCompanyForm ? (
-            <CompanyForm
-              company={currentCompany}
-              onCompanyChange={setCurrentCompany}
-              onSave={handleSaveCompany}
-              onCancel={handleCancel}
-              saving={saving}
-            />
-          ) : (
-            <ContactForm
-              person={currentPerson}
-              onPersonChange={setCurrentPerson}
-              onSave={handleSaveContact}
-              onCancel={handleCancel}
-              saving={saving}
-            />
-          )}
-        </div>
-
-        {editingId && isCompanyForm && (
-          <CompanyMembers
-            companyId={editingId}
-            organizationId={organizationId}
-          />
-        )}
-        {editingId && !isCompanyForm && (
-          <ContactCompanies
-            personId={editingId}
-            organizationId={organizationId}
-          />
-        )}
-      </div>
-    );
-  }
-
-  // List view
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -427,7 +170,7 @@ const PeoplePage = () => {
           <p className="mt-1 text-muted-foreground text-sm">
             {companies.length}{" "}
             {companies.length === 1 ? "company" : "companies"}
-            {" · "}
+            {" \u00b7 "}
             {people.length} {people.length === 1 ? "contact" : "contacts"}
           </p>
         </div>
@@ -442,24 +185,27 @@ const PeoplePage = () => {
             <Share2 size={16} />
             Import/Export
           </button>
-          <button
-            type="button"
-            onClick={
+          <Link
+            to={
               activeTab === "companies"
-                ? handleCreateCompany
-                : handleCreateContact
+                ? "/people/companies/new"
+                : "/people/contacts/new"
             }
             className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
           >
             <Plus size={16} />
             {activeTab === "companies" ? "Add Company" : "Add Contact"}
-          </button>
+          </Link>
         </div>
       </div>
 
       <TabsRoot
         value={activeTab}
-        onValueChange={(details) => setActiveTab(details.value as ActiveTab)}
+        onValueChange={(details) =>
+          navigate({
+            search: (prev) => ({ ...prev, tab: details.value as ActiveTab }),
+          })
+        }
       >
         <TabsList className="mb-4">
           <TabsTrigger value="companies" className="flex items-center gap-2">
@@ -479,18 +225,26 @@ const PeoplePage = () => {
         <TabsContent value="companies">
           <CompaniesTable
             companies={companies}
-            onEdit={handleEditCompany}
-            onDelete={handleDeleteCompany}
-            onCreateNew={handleCreateCompany}
+            onDelete={(id) =>
+              setDeleteConfirm({ open: true, id, type: "company" })
+            }
           />
         </TabsContent>
 
         <TabsContent value="contacts">
           <ContactsTable
             people={people}
-            onEdit={handleEditContact}
-            onDelete={handleDeleteContact}
-            onCreateNew={handleCreateContact}
+            searchTerm={searchTerm}
+            typeFilter={typeFilter}
+            onSearchChange={(value) =>
+              navigate({ search: (prev) => ({ ...prev, search: value }) })
+            }
+            onTypeFilterChange={(value) =>
+              navigate({ search: (prev) => ({ ...prev, type: value }) })
+            }
+            onDelete={(id) =>
+              setDeleteConfirm({ open: true, id, type: "contact" })
+            }
           />
         </TabsContent>
 
@@ -545,30 +299,26 @@ const PeoplePage = () => {
   );
 };
 
-// Companies table sub-component
 const CompaniesTable = ({
   companies,
-  onEdit,
   onDelete,
-  onCreateNew,
 }: {
   companies: Company[];
-  onEdit: (company: Company) => void;
   onDelete: (id: string) => void;
-  onCreateNew: () => void;
 }) => {
+  const navigate = useNavigate();
+
   if (companies.length === 0) {
     return (
       <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
         <Building2 size={32} className="mx-auto mb-2 text-muted-foreground" />
         <p className="mb-4 text-muted-foreground">No companies yet</p>
-        <button
-          type="button"
-          onClick={onCreateNew}
+        <Link
+          to="/people/companies/new"
           className="text-primary-600 hover:text-primary-700"
         >
           Add your first company
-        </button>
+        </Link>
       </div>
     );
   }
@@ -600,7 +350,12 @@ const CompaniesTable = ({
             <tr
               key={company.id}
               className="cursor-pointer border-border border-t hover:bg-muted"
-              onClick={() => onEdit(company)}
+              onClick={() =>
+                navigate({
+                  to: "/people/companies/$companyId/edit",
+                  params: { companyId: company.id },
+                })
+              }
             >
               <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
               <td className="px-4 py-3 text-foreground text-sm">
@@ -617,14 +372,14 @@ const CompaniesTable = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onEdit(company)}
+                  <Link
+                    to="/people/companies/$companyId/edit"
+                    params={{ companyId: company.id }}
                     className="text-muted-foreground hover:text-foreground"
                     aria-label="Edit company"
                   >
                     <Edit size={16} />
-                  </button>
+                  </Link>
                   <button
                     type="button"
                     onClick={() => onDelete(company.id)}
@@ -643,7 +398,6 @@ const CompaniesTable = ({
   );
 };
 
-// Email action dropdown
 const EmailActionButton = ({
   emails,
   name,
@@ -700,7 +454,6 @@ const EmailActionButton = ({
   );
 };
 
-// Contacts table sub-component
 type ContactTypeFilter = "all" | "internal" | "external";
 
 const TYPE_BUTTONS: { value: ContactTypeFilter; label: string }[] = [
@@ -711,17 +464,20 @@ const TYPE_BUTTONS: { value: ContactTypeFilter; label: string }[] = [
 
 const ContactsTable = ({
   people,
-  onEdit,
+  searchTerm,
+  typeFilter,
+  onSearchChange,
+  onTypeFilterChange,
   onDelete,
-  onCreateNew,
 }: {
   people: Person[];
-  onEdit: (person: Person) => void;
+  searchTerm: string;
+  typeFilter: string;
+  onSearchChange: (value: string) => void;
+  onTypeFilterChange: (value: string) => void;
   onDelete: (id: string) => void;
-  onCreateNew: () => void;
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<ContactTypeFilter>("all");
+  const navigate = useNavigate();
 
   const filteredPeople = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -747,13 +503,12 @@ const ContactsTable = ({
       <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
         <Users size={32} className="mx-auto mb-2 text-muted-foreground" />
         <p className="mb-4 text-muted-foreground">No contacts yet</p>
-        <button
-          type="button"
-          onClick={onCreateNew}
+        <Link
+          to="/people/contacts/new"
           className="text-primary-600 hover:text-primary-700"
         >
           Add your first contact
-        </button>
+        </Link>
       </div>
     );
   }
@@ -771,7 +526,7 @@ const ContactsTable = ({
             placeholder="Search contacts..."
             aria-label="Search contacts"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
             className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
           />
         </div>
@@ -780,7 +535,7 @@ const ContactsTable = ({
             <button
               key={btn.value}
               type="button"
-              onClick={() => setTypeFilter(btn.value)}
+              onClick={() => onTypeFilterChange(btn.value)}
               className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
                 typeFilter === btn.value
                   ? "bg-card text-foreground shadow-sm"
@@ -801,8 +556,8 @@ const ContactsTable = ({
           <button
             type="button"
             onClick={() => {
-              setSearchTerm("");
-              setTypeFilter("all");
+              onSearchChange("");
+              onTypeFilterChange("all");
             }}
             className="mt-2 text-primary-600 text-sm hover:text-primary-700"
           >
@@ -838,7 +593,12 @@ const ContactsTable = ({
               <tr
                 key={person.id}
                 className="cursor-pointer border-border border-t hover:bg-muted"
-                onClick={() => onEdit(person)}
+                onClick={() =>
+                  navigate({
+                    to: "/people/contacts/$contactId/edit",
+                    params: { contactId: person.id },
+                  })
+                }
               >
                 <td className="px-4 py-3 font-medium text-sm">
                   {person.firstName} {person.lastName}
@@ -900,14 +660,14 @@ const ContactsTable = ({
                         name={`${person.firstName} ${person.lastName}`}
                       />
                     )}
-                    <button
-                      type="button"
-                      onClick={() => onEdit(person)}
+                    <Link
+                      to="/people/contacts/$contactId/edit"
+                      params={{ contactId: person.id }}
                       className="text-muted-foreground hover:text-foreground"
                       aria-label="Edit contact"
                     >
                       <Edit size={16} />
-                    </button>
+                    </Link>
                     <button
                       type="button"
                       onClick={() => onDelete(person.id)}
@@ -929,4 +689,5 @@ const ContactsTable = ({
 
 export const Route = createFileRoute("/_auth/people/")({
   component: PeoplePage,
+  validateSearch: zodValidator(peopleListSearchSchema),
 });

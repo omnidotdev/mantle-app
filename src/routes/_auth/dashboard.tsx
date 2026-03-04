@@ -119,7 +119,9 @@ const DashboardPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-semibold text-xl">{appConfig.name}</h1>
-          <p className="mt-1 text-muted-foreground text-sm">{appConfig.tagline}</p>
+          <p className="mt-1 text-muted-foreground text-sm">
+            {appConfig.tagline}
+          </p>
         </div>
       </div>
 

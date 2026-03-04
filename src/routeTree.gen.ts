@@ -12,6 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as AuthQuotesRouteImport } from './routes/_auth/quotes'
+import { Route as AuthPeopleRouteImport } from './routes/_auth/people'
+import { Route as AuthInvoicesRouteImport } from './routes/_auth/invoices'
+import { Route as AuthInventoryRouteImport } from './routes/_auth/inventory'
 import { Route as AuthDashboardRouteImport } from './routes/_auth/dashboard'
 import { Route as AuthSettingsIndexRouteImport } from './routes/_auth/settings/index'
 import { Route as AuthQuotesIndexRouteImport } from './routes/_auth/quotes/index'
@@ -19,6 +23,22 @@ import { Route as AuthPeopleIndexRouteImport } from './routes/_auth/people/index
 import { Route as AuthInvoicesIndexRouteImport } from './routes/_auth/invoices/index'
 import { Route as AuthInventoryIndexRouteImport } from './routes/_auth/inventory/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthQuotesNewRouteImport } from './routes/_auth/quotes/new'
+import { Route as AuthQuotesQuoteIdRouteImport } from './routes/_auth/quotes/$quoteId'
+import { Route as AuthInvoicesNewRouteImport } from './routes/_auth/invoices/new'
+import { Route as AuthInvoicesInvoiceIdRouteImport } from './routes/_auth/invoices/$invoiceId'
+import { Route as AuthInventoryNewRouteImport } from './routes/_auth/inventory/new'
+import { Route as AuthInventoryProductIdRouteImport } from './routes/_auth/inventory/$productId'
+import { Route as AuthQuotesQuoteIdIndexRouteImport } from './routes/_auth/quotes/$quoteId/index'
+import { Route as AuthInvoicesInvoiceIdIndexRouteImport } from './routes/_auth/invoices/$invoiceId/index'
+import { Route as AuthInventoryProductIdIndexRouteImport } from './routes/_auth/inventory/$productId/index'
+import { Route as AuthQuotesQuoteIdEditRouteImport } from './routes/_auth/quotes/$quoteId/edit'
+import { Route as AuthPeopleContactsNewRouteImport } from './routes/_auth/people/contacts/new'
+import { Route as AuthPeopleCompaniesNewRouteImport } from './routes/_auth/people/companies/new'
+import { Route as AuthInvoicesInvoiceIdEditRouteImport } from './routes/_auth/invoices/$invoiceId/edit'
+import { Route as AuthInventoryProductIdEditRouteImport } from './routes/_auth/inventory/$productId/edit'
+import { Route as AuthPeopleContactsContactIdEditRouteImport } from './routes/_auth/people/contacts/$contactId/edit'
+import { Route as AuthPeopleCompaniesCompanyIdEditRouteImport } from './routes/_auth/people/companies/$companyId/edit'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -33,6 +53,26 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRoute,
 } as any)
+const AuthQuotesRoute = AuthQuotesRouteImport.update({
+  id: '/quotes',
+  path: '/quotes',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthPeopleRoute = AuthPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthInvoicesRoute = AuthInvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthInventoryRoute = AuthInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthDashboardRoute = AuthDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -44,97 +84,289 @@ const AuthSettingsIndexRoute = AuthSettingsIndexRouteImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthQuotesIndexRoute = AuthQuotesIndexRouteImport.update({
-  id: '/quotes/',
-  path: '/quotes/',
-  getParentRoute: () => AuthRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthQuotesRoute,
 } as any)
 const AuthPeopleIndexRoute = AuthPeopleIndexRouteImport.update({
-  id: '/people/',
-  path: '/people/',
-  getParentRoute: () => AuthRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthPeopleRoute,
 } as any)
 const AuthInvoicesIndexRoute = AuthInvoicesIndexRouteImport.update({
-  id: '/invoices/',
-  path: '/invoices/',
-  getParentRoute: () => AuthRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthInvoicesRoute,
 } as any)
 const AuthInventoryIndexRoute = AuthInventoryIndexRouteImport.update({
-  id: '/inventory/',
-  path: '/inventory/',
-  getParentRoute: () => AuthRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthInventoryRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthQuotesNewRoute = AuthQuotesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthQuotesRoute,
+} as any)
+const AuthQuotesQuoteIdRoute = AuthQuotesQuoteIdRouteImport.update({
+  id: '/$quoteId',
+  path: '/$quoteId',
+  getParentRoute: () => AuthQuotesRoute,
+} as any)
+const AuthInvoicesNewRoute = AuthInvoicesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthInvoicesRoute,
+} as any)
+const AuthInvoicesInvoiceIdRoute = AuthInvoicesInvoiceIdRouteImport.update({
+  id: '/$invoiceId',
+  path: '/$invoiceId',
+  getParentRoute: () => AuthInvoicesRoute,
+} as any)
+const AuthInventoryNewRoute = AuthInventoryNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthInventoryRoute,
+} as any)
+const AuthInventoryProductIdRoute = AuthInventoryProductIdRouteImport.update({
+  id: '/$productId',
+  path: '/$productId',
+  getParentRoute: () => AuthInventoryRoute,
+} as any)
+const AuthQuotesQuoteIdIndexRoute = AuthQuotesQuoteIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthQuotesQuoteIdRoute,
+} as any)
+const AuthInvoicesInvoiceIdIndexRoute =
+  AuthInvoicesInvoiceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthInvoicesInvoiceIdRoute,
+  } as any)
+const AuthInventoryProductIdIndexRoute =
+  AuthInventoryProductIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthInventoryProductIdRoute,
+  } as any)
+const AuthQuotesQuoteIdEditRoute = AuthQuotesQuoteIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AuthQuotesQuoteIdRoute,
+} as any)
+const AuthPeopleContactsNewRoute = AuthPeopleContactsNewRouteImport.update({
+  id: '/contacts/new',
+  path: '/contacts/new',
+  getParentRoute: () => AuthPeopleRoute,
+} as any)
+const AuthPeopleCompaniesNewRoute = AuthPeopleCompaniesNewRouteImport.update({
+  id: '/companies/new',
+  path: '/companies/new',
+  getParentRoute: () => AuthPeopleRoute,
+} as any)
+const AuthInvoicesInvoiceIdEditRoute =
+  AuthInvoicesInvoiceIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => AuthInvoicesInvoiceIdRoute,
+  } as any)
+const AuthInventoryProductIdEditRoute =
+  AuthInventoryProductIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => AuthInventoryProductIdRoute,
+  } as any)
+const AuthPeopleContactsContactIdEditRoute =
+  AuthPeopleContactsContactIdEditRouteImport.update({
+    id: '/contacts/$contactId/edit',
+    path: '/contacts/$contactId/edit',
+    getParentRoute: () => AuthPeopleRoute,
+  } as any)
+const AuthPeopleCompaniesCompanyIdEditRoute =
+  AuthPeopleCompaniesCompanyIdEditRouteImport.update({
+    id: '/companies/$companyId/edit',
+    path: '/companies/$companyId/edit',
+    getParentRoute: () => AuthPeopleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardRoute
+  '/inventory': typeof AuthInventoryRouteWithChildren
+  '/invoices': typeof AuthInvoicesRouteWithChildren
+  '/people': typeof AuthPeopleRouteWithChildren
+  '/quotes': typeof AuthQuotesRouteWithChildren
+  '/inventory/$productId': typeof AuthInventoryProductIdRouteWithChildren
+  '/inventory/new': typeof AuthInventoryNewRoute
+  '/invoices/$invoiceId': typeof AuthInvoicesInvoiceIdRouteWithChildren
+  '/invoices/new': typeof AuthInvoicesNewRoute
+  '/quotes/$quoteId': typeof AuthQuotesQuoteIdRouteWithChildren
+  '/quotes/new': typeof AuthQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/inventory/': typeof AuthInventoryIndexRoute
   '/invoices/': typeof AuthInvoicesIndexRoute
   '/people/': typeof AuthPeopleIndexRoute
   '/quotes/': typeof AuthQuotesIndexRoute
   '/settings/': typeof AuthSettingsIndexRoute
+  '/inventory/$productId/edit': typeof AuthInventoryProductIdEditRoute
+  '/invoices/$invoiceId/edit': typeof AuthInvoicesInvoiceIdEditRoute
+  '/people/companies/new': typeof AuthPeopleCompaniesNewRoute
+  '/people/contacts/new': typeof AuthPeopleContactsNewRoute
+  '/quotes/$quoteId/edit': typeof AuthQuotesQuoteIdEditRoute
+  '/inventory/$productId/': typeof AuthInventoryProductIdIndexRoute
+  '/invoices/$invoiceId/': typeof AuthInvoicesInvoiceIdIndexRoute
+  '/quotes/$quoteId/': typeof AuthQuotesQuoteIdIndexRoute
+  '/people/companies/$companyId/edit': typeof AuthPeopleCompaniesCompanyIdEditRoute
+  '/people/contacts/$contactId/edit': typeof AuthPeopleContactsContactIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardRoute
+  '/inventory/new': typeof AuthInventoryNewRoute
+  '/invoices/new': typeof AuthInvoicesNewRoute
+  '/quotes/new': typeof AuthQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/inventory': typeof AuthInventoryIndexRoute
   '/invoices': typeof AuthInvoicesIndexRoute
   '/people': typeof AuthPeopleIndexRoute
   '/quotes': typeof AuthQuotesIndexRoute
   '/settings': typeof AuthSettingsIndexRoute
+  '/inventory/$productId/edit': typeof AuthInventoryProductIdEditRoute
+  '/invoices/$invoiceId/edit': typeof AuthInvoicesInvoiceIdEditRoute
+  '/people/companies/new': typeof AuthPeopleCompaniesNewRoute
+  '/people/contacts/new': typeof AuthPeopleContactsNewRoute
+  '/quotes/$quoteId/edit': typeof AuthQuotesQuoteIdEditRoute
+  '/inventory/$productId': typeof AuthInventoryProductIdIndexRoute
+  '/invoices/$invoiceId': typeof AuthInvoicesInvoiceIdIndexRoute
+  '/quotes/$quoteId': typeof AuthQuotesQuoteIdIndexRoute
+  '/people/companies/$companyId/edit': typeof AuthPeopleCompaniesCompanyIdEditRoute
+  '/people/contacts/$contactId/edit': typeof AuthPeopleContactsContactIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/_auth/dashboard': typeof AuthDashboardRoute
+  '/_auth/inventory': typeof AuthInventoryRouteWithChildren
+  '/_auth/invoices': typeof AuthInvoicesRouteWithChildren
+  '/_auth/people': typeof AuthPeopleRouteWithChildren
+  '/_auth/quotes': typeof AuthQuotesRouteWithChildren
   '/_public/': typeof PublicIndexRoute
+  '/_auth/inventory/$productId': typeof AuthInventoryProductIdRouteWithChildren
+  '/_auth/inventory/new': typeof AuthInventoryNewRoute
+  '/_auth/invoices/$invoiceId': typeof AuthInvoicesInvoiceIdRouteWithChildren
+  '/_auth/invoices/new': typeof AuthInvoicesNewRoute
+  '/_auth/quotes/$quoteId': typeof AuthQuotesQuoteIdRouteWithChildren
+  '/_auth/quotes/new': typeof AuthQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_auth/inventory/': typeof AuthInventoryIndexRoute
   '/_auth/invoices/': typeof AuthInvoicesIndexRoute
   '/_auth/people/': typeof AuthPeopleIndexRoute
   '/_auth/quotes/': typeof AuthQuotesIndexRoute
   '/_auth/settings/': typeof AuthSettingsIndexRoute
+  '/_auth/inventory/$productId/edit': typeof AuthInventoryProductIdEditRoute
+  '/_auth/invoices/$invoiceId/edit': typeof AuthInvoicesInvoiceIdEditRoute
+  '/_auth/people/companies/new': typeof AuthPeopleCompaniesNewRoute
+  '/_auth/people/contacts/new': typeof AuthPeopleContactsNewRoute
+  '/_auth/quotes/$quoteId/edit': typeof AuthQuotesQuoteIdEditRoute
+  '/_auth/inventory/$productId/': typeof AuthInventoryProductIdIndexRoute
+  '/_auth/invoices/$invoiceId/': typeof AuthInvoicesInvoiceIdIndexRoute
+  '/_auth/quotes/$quoteId/': typeof AuthQuotesQuoteIdIndexRoute
+  '/_auth/people/companies/$companyId/edit': typeof AuthPeopleCompaniesCompanyIdEditRoute
+  '/_auth/people/contacts/$contactId/edit': typeof AuthPeopleContactsContactIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/inventory'
+    | '/invoices'
+    | '/people'
+    | '/quotes'
+    | '/inventory/$productId'
+    | '/inventory/new'
+    | '/invoices/$invoiceId'
+    | '/invoices/new'
+    | '/quotes/$quoteId'
+    | '/quotes/new'
     | '/api/auth/$'
     | '/inventory/'
     | '/invoices/'
     | '/people/'
     | '/quotes/'
     | '/settings/'
+    | '/inventory/$productId/edit'
+    | '/invoices/$invoiceId/edit'
+    | '/people/companies/new'
+    | '/people/contacts/new'
+    | '/quotes/$quoteId/edit'
+    | '/inventory/$productId/'
+    | '/invoices/$invoiceId/'
+    | '/quotes/$quoteId/'
+    | '/people/companies/$companyId/edit'
+    | '/people/contacts/$contactId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
+    | '/inventory/new'
+    | '/invoices/new'
+    | '/quotes/new'
     | '/api/auth/$'
     | '/inventory'
     | '/invoices'
     | '/people'
     | '/quotes'
     | '/settings'
+    | '/inventory/$productId/edit'
+    | '/invoices/$invoiceId/edit'
+    | '/people/companies/new'
+    | '/people/contacts/new'
+    | '/quotes/$quoteId/edit'
+    | '/inventory/$productId'
+    | '/invoices/$invoiceId'
+    | '/quotes/$quoteId'
+    | '/people/companies/$companyId/edit'
+    | '/people/contacts/$contactId/edit'
   id:
     | '__root__'
     | '/_auth'
     | '/_public'
     | '/_auth/dashboard'
+    | '/_auth/inventory'
+    | '/_auth/invoices'
+    | '/_auth/people'
+    | '/_auth/quotes'
     | '/_public/'
+    | '/_auth/inventory/$productId'
+    | '/_auth/inventory/new'
+    | '/_auth/invoices/$invoiceId'
+    | '/_auth/invoices/new'
+    | '/_auth/quotes/$quoteId'
+    | '/_auth/quotes/new'
     | '/api/auth/$'
     | '/_auth/inventory/'
     | '/_auth/invoices/'
     | '/_auth/people/'
     | '/_auth/quotes/'
     | '/_auth/settings/'
+    | '/_auth/inventory/$productId/edit'
+    | '/_auth/invoices/$invoiceId/edit'
+    | '/_auth/people/companies/new'
+    | '/_auth/people/contacts/new'
+    | '/_auth/quotes/$quoteId/edit'
+    | '/_auth/inventory/$productId/'
+    | '/_auth/invoices/$invoiceId/'
+    | '/_auth/quotes/$quoteId/'
+    | '/_auth/people/companies/$companyId/edit'
+    | '/_auth/people/contacts/$contactId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,6 +398,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_auth/quotes': {
+      id: '/_auth/quotes'
+      path: '/quotes'
+      fullPath: '/quotes'
+      preLoaderRoute: typeof AuthQuotesRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/people': {
+      id: '/_auth/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof AuthPeopleRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/invoices': {
+      id: '/_auth/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof AuthInvoicesRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/inventory': {
+      id: '/_auth/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AuthInventoryRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/dashboard': {
       id: '/_auth/dashboard'
       path: '/dashboard'
@@ -182,31 +442,31 @@ declare module '@tanstack/react-router' {
     }
     '/_auth/quotes/': {
       id: '/_auth/quotes/'
-      path: '/quotes'
+      path: '/'
       fullPath: '/quotes/'
       preLoaderRoute: typeof AuthQuotesIndexRouteImport
-      parentRoute: typeof AuthRoute
+      parentRoute: typeof AuthQuotesRoute
     }
     '/_auth/people/': {
       id: '/_auth/people/'
-      path: '/people'
+      path: '/'
       fullPath: '/people/'
       preLoaderRoute: typeof AuthPeopleIndexRouteImport
-      parentRoute: typeof AuthRoute
+      parentRoute: typeof AuthPeopleRoute
     }
     '/_auth/invoices/': {
       id: '/_auth/invoices/'
-      path: '/invoices'
+      path: '/'
       fullPath: '/invoices/'
       preLoaderRoute: typeof AuthInvoicesIndexRouteImport
-      parentRoute: typeof AuthRoute
+      parentRoute: typeof AuthInvoicesRoute
     }
     '/_auth/inventory/': {
       id: '/_auth/inventory/'
-      path: '/inventory'
+      path: '/'
       fullPath: '/inventory/'
       preLoaderRoute: typeof AuthInventoryIndexRouteImport
-      parentRoute: typeof AuthRoute
+      parentRoute: typeof AuthInventoryRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -215,24 +475,248 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/quotes/new': {
+      id: '/_auth/quotes/new'
+      path: '/new'
+      fullPath: '/quotes/new'
+      preLoaderRoute: typeof AuthQuotesNewRouteImport
+      parentRoute: typeof AuthQuotesRoute
+    }
+    '/_auth/quotes/$quoteId': {
+      id: '/_auth/quotes/$quoteId'
+      path: '/$quoteId'
+      fullPath: '/quotes/$quoteId'
+      preLoaderRoute: typeof AuthQuotesQuoteIdRouteImport
+      parentRoute: typeof AuthQuotesRoute
+    }
+    '/_auth/invoices/new': {
+      id: '/_auth/invoices/new'
+      path: '/new'
+      fullPath: '/invoices/new'
+      preLoaderRoute: typeof AuthInvoicesNewRouteImport
+      parentRoute: typeof AuthInvoicesRoute
+    }
+    '/_auth/invoices/$invoiceId': {
+      id: '/_auth/invoices/$invoiceId'
+      path: '/$invoiceId'
+      fullPath: '/invoices/$invoiceId'
+      preLoaderRoute: typeof AuthInvoicesInvoiceIdRouteImport
+      parentRoute: typeof AuthInvoicesRoute
+    }
+    '/_auth/inventory/new': {
+      id: '/_auth/inventory/new'
+      path: '/new'
+      fullPath: '/inventory/new'
+      preLoaderRoute: typeof AuthInventoryNewRouteImport
+      parentRoute: typeof AuthInventoryRoute
+    }
+    '/_auth/inventory/$productId': {
+      id: '/_auth/inventory/$productId'
+      path: '/$productId'
+      fullPath: '/inventory/$productId'
+      preLoaderRoute: typeof AuthInventoryProductIdRouteImport
+      parentRoute: typeof AuthInventoryRoute
+    }
+    '/_auth/quotes/$quoteId/': {
+      id: '/_auth/quotes/$quoteId/'
+      path: '/'
+      fullPath: '/quotes/$quoteId/'
+      preLoaderRoute: typeof AuthQuotesQuoteIdIndexRouteImport
+      parentRoute: typeof AuthQuotesQuoteIdRoute
+    }
+    '/_auth/invoices/$invoiceId/': {
+      id: '/_auth/invoices/$invoiceId/'
+      path: '/'
+      fullPath: '/invoices/$invoiceId/'
+      preLoaderRoute: typeof AuthInvoicesInvoiceIdIndexRouteImport
+      parentRoute: typeof AuthInvoicesInvoiceIdRoute
+    }
+    '/_auth/inventory/$productId/': {
+      id: '/_auth/inventory/$productId/'
+      path: '/'
+      fullPath: '/inventory/$productId/'
+      preLoaderRoute: typeof AuthInventoryProductIdIndexRouteImport
+      parentRoute: typeof AuthInventoryProductIdRoute
+    }
+    '/_auth/quotes/$quoteId/edit': {
+      id: '/_auth/quotes/$quoteId/edit'
+      path: '/edit'
+      fullPath: '/quotes/$quoteId/edit'
+      preLoaderRoute: typeof AuthQuotesQuoteIdEditRouteImport
+      parentRoute: typeof AuthQuotesQuoteIdRoute
+    }
+    '/_auth/people/contacts/new': {
+      id: '/_auth/people/contacts/new'
+      path: '/contacts/new'
+      fullPath: '/people/contacts/new'
+      preLoaderRoute: typeof AuthPeopleContactsNewRouteImport
+      parentRoute: typeof AuthPeopleRoute
+    }
+    '/_auth/people/companies/new': {
+      id: '/_auth/people/companies/new'
+      path: '/companies/new'
+      fullPath: '/people/companies/new'
+      preLoaderRoute: typeof AuthPeopleCompaniesNewRouteImport
+      parentRoute: typeof AuthPeopleRoute
+    }
+    '/_auth/invoices/$invoiceId/edit': {
+      id: '/_auth/invoices/$invoiceId/edit'
+      path: '/edit'
+      fullPath: '/invoices/$invoiceId/edit'
+      preLoaderRoute: typeof AuthInvoicesInvoiceIdEditRouteImport
+      parentRoute: typeof AuthInvoicesInvoiceIdRoute
+    }
+    '/_auth/inventory/$productId/edit': {
+      id: '/_auth/inventory/$productId/edit'
+      path: '/edit'
+      fullPath: '/inventory/$productId/edit'
+      preLoaderRoute: typeof AuthInventoryProductIdEditRouteImport
+      parentRoute: typeof AuthInventoryProductIdRoute
+    }
+    '/_auth/people/contacts/$contactId/edit': {
+      id: '/_auth/people/contacts/$contactId/edit'
+      path: '/contacts/$contactId/edit'
+      fullPath: '/people/contacts/$contactId/edit'
+      preLoaderRoute: typeof AuthPeopleContactsContactIdEditRouteImport
+      parentRoute: typeof AuthPeopleRoute
+    }
+    '/_auth/people/companies/$companyId/edit': {
+      id: '/_auth/people/companies/$companyId/edit'
+      path: '/companies/$companyId/edit'
+      fullPath: '/people/companies/$companyId/edit'
+      preLoaderRoute: typeof AuthPeopleCompaniesCompanyIdEditRouteImport
+      parentRoute: typeof AuthPeopleRoute
+    }
   }
 }
 
+interface AuthInventoryProductIdRouteChildren {
+  AuthInventoryProductIdEditRoute: typeof AuthInventoryProductIdEditRoute
+  AuthInventoryProductIdIndexRoute: typeof AuthInventoryProductIdIndexRoute
+}
+
+const AuthInventoryProductIdRouteChildren: AuthInventoryProductIdRouteChildren =
+  {
+    AuthInventoryProductIdEditRoute: AuthInventoryProductIdEditRoute,
+    AuthInventoryProductIdIndexRoute: AuthInventoryProductIdIndexRoute,
+  }
+
+const AuthInventoryProductIdRouteWithChildren =
+  AuthInventoryProductIdRoute._addFileChildren(
+    AuthInventoryProductIdRouteChildren,
+  )
+
+interface AuthInventoryRouteChildren {
+  AuthInventoryProductIdRoute: typeof AuthInventoryProductIdRouteWithChildren
+  AuthInventoryNewRoute: typeof AuthInventoryNewRoute
+  AuthInventoryIndexRoute: typeof AuthInventoryIndexRoute
+}
+
+const AuthInventoryRouteChildren: AuthInventoryRouteChildren = {
+  AuthInventoryProductIdRoute: AuthInventoryProductIdRouteWithChildren,
+  AuthInventoryNewRoute: AuthInventoryNewRoute,
+  AuthInventoryIndexRoute: AuthInventoryIndexRoute,
+}
+
+const AuthInventoryRouteWithChildren = AuthInventoryRoute._addFileChildren(
+  AuthInventoryRouteChildren,
+)
+
+interface AuthInvoicesInvoiceIdRouteChildren {
+  AuthInvoicesInvoiceIdEditRoute: typeof AuthInvoicesInvoiceIdEditRoute
+  AuthInvoicesInvoiceIdIndexRoute: typeof AuthInvoicesInvoiceIdIndexRoute
+}
+
+const AuthInvoicesInvoiceIdRouteChildren: AuthInvoicesInvoiceIdRouteChildren = {
+  AuthInvoicesInvoiceIdEditRoute: AuthInvoicesInvoiceIdEditRoute,
+  AuthInvoicesInvoiceIdIndexRoute: AuthInvoicesInvoiceIdIndexRoute,
+}
+
+const AuthInvoicesInvoiceIdRouteWithChildren =
+  AuthInvoicesInvoiceIdRoute._addFileChildren(
+    AuthInvoicesInvoiceIdRouteChildren,
+  )
+
+interface AuthInvoicesRouteChildren {
+  AuthInvoicesInvoiceIdRoute: typeof AuthInvoicesInvoiceIdRouteWithChildren
+  AuthInvoicesNewRoute: typeof AuthInvoicesNewRoute
+  AuthInvoicesIndexRoute: typeof AuthInvoicesIndexRoute
+}
+
+const AuthInvoicesRouteChildren: AuthInvoicesRouteChildren = {
+  AuthInvoicesInvoiceIdRoute: AuthInvoicesInvoiceIdRouteWithChildren,
+  AuthInvoicesNewRoute: AuthInvoicesNewRoute,
+  AuthInvoicesIndexRoute: AuthInvoicesIndexRoute,
+}
+
+const AuthInvoicesRouteWithChildren = AuthInvoicesRoute._addFileChildren(
+  AuthInvoicesRouteChildren,
+)
+
+interface AuthPeopleRouteChildren {
+  AuthPeopleIndexRoute: typeof AuthPeopleIndexRoute
+  AuthPeopleCompaniesNewRoute: typeof AuthPeopleCompaniesNewRoute
+  AuthPeopleContactsNewRoute: typeof AuthPeopleContactsNewRoute
+  AuthPeopleCompaniesCompanyIdEditRoute: typeof AuthPeopleCompaniesCompanyIdEditRoute
+  AuthPeopleContactsContactIdEditRoute: typeof AuthPeopleContactsContactIdEditRoute
+}
+
+const AuthPeopleRouteChildren: AuthPeopleRouteChildren = {
+  AuthPeopleIndexRoute: AuthPeopleIndexRoute,
+  AuthPeopleCompaniesNewRoute: AuthPeopleCompaniesNewRoute,
+  AuthPeopleContactsNewRoute: AuthPeopleContactsNewRoute,
+  AuthPeopleCompaniesCompanyIdEditRoute: AuthPeopleCompaniesCompanyIdEditRoute,
+  AuthPeopleContactsContactIdEditRoute: AuthPeopleContactsContactIdEditRoute,
+}
+
+const AuthPeopleRouteWithChildren = AuthPeopleRoute._addFileChildren(
+  AuthPeopleRouteChildren,
+)
+
+interface AuthQuotesQuoteIdRouteChildren {
+  AuthQuotesQuoteIdEditRoute: typeof AuthQuotesQuoteIdEditRoute
+  AuthQuotesQuoteIdIndexRoute: typeof AuthQuotesQuoteIdIndexRoute
+}
+
+const AuthQuotesQuoteIdRouteChildren: AuthQuotesQuoteIdRouteChildren = {
+  AuthQuotesQuoteIdEditRoute: AuthQuotesQuoteIdEditRoute,
+  AuthQuotesQuoteIdIndexRoute: AuthQuotesQuoteIdIndexRoute,
+}
+
+const AuthQuotesQuoteIdRouteWithChildren =
+  AuthQuotesQuoteIdRoute._addFileChildren(AuthQuotesQuoteIdRouteChildren)
+
+interface AuthQuotesRouteChildren {
+  AuthQuotesQuoteIdRoute: typeof AuthQuotesQuoteIdRouteWithChildren
+  AuthQuotesNewRoute: typeof AuthQuotesNewRoute
+  AuthQuotesIndexRoute: typeof AuthQuotesIndexRoute
+}
+
+const AuthQuotesRouteChildren: AuthQuotesRouteChildren = {
+  AuthQuotesQuoteIdRoute: AuthQuotesQuoteIdRouteWithChildren,
+  AuthQuotesNewRoute: AuthQuotesNewRoute,
+  AuthQuotesIndexRoute: AuthQuotesIndexRoute,
+}
+
+const AuthQuotesRouteWithChildren = AuthQuotesRoute._addFileChildren(
+  AuthQuotesRouteChildren,
+)
+
 interface AuthRouteChildren {
   AuthDashboardRoute: typeof AuthDashboardRoute
-  AuthInventoryIndexRoute: typeof AuthInventoryIndexRoute
-  AuthInvoicesIndexRoute: typeof AuthInvoicesIndexRoute
-  AuthPeopleIndexRoute: typeof AuthPeopleIndexRoute
-  AuthQuotesIndexRoute: typeof AuthQuotesIndexRoute
+  AuthInventoryRoute: typeof AuthInventoryRouteWithChildren
+  AuthInvoicesRoute: typeof AuthInvoicesRouteWithChildren
+  AuthPeopleRoute: typeof AuthPeopleRouteWithChildren
+  AuthQuotesRoute: typeof AuthQuotesRouteWithChildren
   AuthSettingsIndexRoute: typeof AuthSettingsIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthDashboardRoute: AuthDashboardRoute,
-  AuthInventoryIndexRoute: AuthInventoryIndexRoute,
-  AuthInvoicesIndexRoute: AuthInvoicesIndexRoute,
-  AuthPeopleIndexRoute: AuthPeopleIndexRoute,
-  AuthQuotesIndexRoute: AuthQuotesIndexRoute,
+  AuthInventoryRoute: AuthInventoryRouteWithChildren,
+  AuthInvoicesRoute: AuthInvoicesRouteWithChildren,
+  AuthPeopleRoute: AuthPeopleRouteWithChildren,
+  AuthQuotesRoute: AuthQuotesRouteWithChildren,
   AuthSettingsIndexRoute: AuthSettingsIndexRoute,
 }
 
@@ -257,12 +741,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

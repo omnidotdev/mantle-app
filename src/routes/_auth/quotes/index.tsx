@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import {
   Edit,
   Eye,
@@ -14,25 +15,15 @@ import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/features/invoices/types/invoice";
-import ContractPreview from "@/features/quotes/components/ContractPreview";
-import QuoteForm from "@/features/quotes/components/QuoteForm";
-import QuotePreview from "@/features/quotes/components/QuotePreview";
-import { generateQuoteNumber } from "@/features/quotes/store/quoteStore";
+import { quoteListSearchSchema } from "@/features/quotes/searchParams";
 import { QUOTE_STATUSES } from "@/features/quotes/types/quote";
 import {
   useAllCompaniesQuery,
   useAllQuotesQuery,
-  useCreateQuoteLineItemMutation,
-  useCreateQuoteMutation,
-  useDeleteQuoteLineItemMutation,
   useDeleteQuoteMutation,
-  useUpdateQuoteMutation,
 } from "@/generated/graphql";
 
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
-
-type ViewMode = "list" | "create" | "edit" | "preview";
-type PreviewType = "quote" | "contract";
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -45,102 +36,16 @@ const statusColors: Record<string, string> = {
   converted: "bg-secondary-100 text-secondary-700",
 };
 
-const defaultQuote: Partial<Quote> = {
-  quoteNumber: "",
-  companyId: "",
-  contactId: null,
-  title: "",
-  description: null,
-  status: "draft",
-  validUntil: "",
-  terms: null,
-  notes: null,
-  subtotal: "0",
-  taxRate: null,
-  taxAmount: "0",
-  total: "0",
-  currency: "USD",
-  convertedInvoiceId: null,
-  projectType: null,
-  timeRange: null,
-  additionalTerms: null,
-  clientName: null,
-  clientEmail: null,
-};
-
-const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
-  description: "",
-  quantity: "1",
-  unitPrice: "0",
-  amount: "0",
-  pricingType: "fixed",
-  estimatedHours: null,
-  royaltyPercentage: null,
-  hourlyRate: null,
-  weeklyCapHours: null,
-  monthlyCapHours: null,
-  maxCapHours: null,
-  royaltyTimeframe: null,
-  royaltyTimeframeUnit: null,
-  royaltyThreshold: null,
-  royaltyBuyoutAmount: null,
-  sortOrder: 0,
-};
-
-const PreviewToggle = ({
-  value,
-  onChange,
-}: {
-  value: PreviewType;
-  onChange: (v: PreviewType) => void;
-}) => (
-  <div className="mb-4 inline-flex rounded-lg border border-border bg-muted p-1">
-    <button
-      type="button"
-      onClick={() => onChange("quote")}
-      aria-pressed={value === "quote"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "quote"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Quote
-    </button>
-    <button
-      type="button"
-      onClick={() => onChange("contract")}
-      aria-pressed={value === "contract"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "contract"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Contract
-    </button>
-  </div>
-);
-
-const QuotesPage = () => {
+const QuotesListPage = () => {
   const { organizationId } = Route.useRouteContext();
+  const { search: searchTerm, status: statusFilter } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
   }>({ open: false, id: "" });
-  const [currentQuote, setCurrentQuote] =
-    useState<Partial<Quote>>(defaultQuote);
-  const [currentLineItems, setCurrentLineItems] = useState<
-    Partial<QuoteLineItem>[]
-  >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [previewType, setPreviewType] = useState<PreviewType>("quote");
 
   const { data, isLoading } = useAllQuotesQuery(
     { organizationId: organizationId ?? "" },
@@ -278,11 +183,6 @@ const QuotesPage = () => {
     });
   };
 
-  const createMutation = useCreateQuoteMutation();
-  const updateMutation = useUpdateQuoteMutation();
-  const createLineItemMutation = useCreateQuoteLineItemMutation();
-  const deleteLineItemMutation = useDeleteQuoteLineItemMutation();
-
   const deleteMutation = useDeleteQuoteMutation({
     onSuccess: invalidateQuotes,
   });
@@ -308,497 +208,205 @@ const QuotesPage = () => {
     );
   }
 
-  const handleCreateNew = () => {
-    const quoteNumber = generateQuoteNumber(quotes);
-    setCurrentQuote({ ...defaultQuote, quoteNumber });
-    setCurrentLineItems([{ ...defaultLineItem, id: crypto.randomUUID() }]);
-    setEditingId(null);
-    setPreviewType("quote");
-    setViewMode("create");
-  };
-
-  const handleEdit = (quote: (typeof quotes)[number]) => {
-    setCurrentQuote(quote);
-    setCurrentLineItems(
-      quote.quoteLineItems.length > 0
-        ? quote.quoteLineItems
-        : [{ ...defaultLineItem, id: crypto.randomUUID() }],
-    );
-    setEditingId(quote.id);
-    setViewMode("edit");
-  };
-
-  const handlePreview = (quote: (typeof quotes)[number]) => {
-    setCurrentQuote(quote);
-    setCurrentLineItems(quote.quoteLineItems);
-    setEditingId(quote.id);
-    setPreviewType("quote");
-    setViewMode("preview");
-  };
-
-  const saveLineItems = async (quoteId: string) => {
-    const validItems = currentLineItems.filter((item) =>
-      item.description?.trim(),
-    );
-
-    await Promise.all(
-      validItems.map((item, index) =>
-        createLineItemMutation.mutateAsync({
-          input: {
-            quoteLineItem: {
-              quoteId,
-              description: item.description ?? "",
-              quantity: item.quantity ?? "1",
-              unitPrice: item.unitPrice ?? "0",
-              amount: item.amount ?? "0",
-              pricingType: item.pricingType ?? "fixed",
-              estimatedHours: item.estimatedHours ?? null,
-              royaltyPercentage: item.royaltyPercentage ?? null,
-              hourlyRate: item.hourlyRate ?? null,
-              weeklyCapHours: item.weeklyCapHours
-                ? Number(item.weeklyCapHours)
-                : null,
-              monthlyCapHours: item.monthlyCapHours
-                ? Number(item.monthlyCapHours)
-                : null,
-              maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
-              royaltyTimeframe: item.royaltyTimeframe
-                ? Number(item.royaltyTimeframe)
-                : null,
-              royaltyTimeframeUnit: item.royaltyTimeframeUnit ?? null,
-              royaltyThreshold: item.royaltyThreshold ?? null,
-              royaltyBuyoutAmount: item.royaltyBuyoutAmount ?? null,
-              sortOrder: index,
-            },
-          },
-        }),
-      ),
-    );
-  };
-
-  const deleteExistingLineItems = async () => {
-    const existing = quotes.find((q) => q.id === editingId);
-    if (!existing?.quoteLineItems.length) return;
-
-    await Promise.all(
-      existing.quoteLineItems.map((item) =>
-        deleteLineItemMutation.mutateAsync({
-          input: { rowId: item.id },
-        }),
-      ),
-    );
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      let newId: string | undefined;
-
-      if (editingId) {
-        await updateMutation.mutateAsync({
-          input: {
-            rowId: editingId,
-            patch: {
-              quoteNumber: currentQuote.quoteNumber,
-              companyId: currentQuote.companyId || null,
-              contactId: currentQuote.contactId,
-              title: currentQuote.title,
-              description: currentQuote.description,
-              status: currentQuote.status,
-              validUntil: currentQuote.validUntil
-                ? new Date(currentQuote.validUntil)
-                : undefined,
-              terms: currentQuote.terms,
-              notes: currentQuote.notes,
-              subtotal: currentQuote.subtotal,
-              taxRate: currentQuote.taxRate,
-              taxAmount: currentQuote.taxAmount,
-              total: currentQuote.total,
-              currency: currentQuote.currency,
-              projectType: currentQuote.projectType,
-              timeRange: currentQuote.timeRange,
-              additionalTerms: currentQuote.additionalTerms,
-            },
-          },
-        });
-        await deleteExistingLineItems();
-        await saveLineItems(editingId);
-      } else {
-        const result = await createMutation.mutateAsync({
-          input: {
-            quote: {
-              organizationId: organizationId ?? "",
-              quoteNumber: currentQuote.quoteNumber ?? "",
-              companyId: currentQuote.companyId ?? "",
-              contactId: currentQuote.contactId,
-              title: currentQuote.title ?? "",
-              description: currentQuote.description,
-              status: currentQuote.status ?? "draft",
-              validUntil: new Date(
-                currentQuote.validUntil ||
-                  new Date().toISOString().split("T")[0],
-              ),
-              terms: currentQuote.terms,
-              notes: currentQuote.notes,
-              subtotal: currentQuote.subtotal,
-              taxRate: currentQuote.taxRate,
-              taxAmount: currentQuote.taxAmount,
-              total: currentQuote.total,
-              currency: currentQuote.currency ?? "USD",
-              projectType: currentQuote.projectType,
-              timeRange: currentQuote.timeRange,
-              additionalTerms: currentQuote.additionalTerms,
-            },
-          },
-        });
-
-        newId = result.createQuote?.quote?.rowId;
-        if (newId) {
-          await saveLineItems(newId);
-        }
-      }
-
-      invalidateQuotes();
-      toast.success("Quote saved");
-
-      if (newId) {
-        setEditingId(newId);
-        setViewMode("edit");
-      }
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save quote");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = (id: string) => {
-    setDeleteConfirm({ open: true, id });
-  };
-
-  const handleCancel = () => {
-    setViewMode("list");
-    setEditingId(null);
-  };
-
-  const renderPreview = () => {
-    if (previewType === "contract") {
-      return (
-        <ContractPreview
-          quote={currentQuote}
-          lineItems={currentLineItems}
-          organizationId={organizationId}
-        />
-      );
-    }
-    return (
-      <QuotePreview
-        quote={currentQuote}
-        lineItems={currentLineItems}
-        organizationId={organizationId}
-      />
-    );
-  };
-
-  // List view
-  if (viewMode === "list") {
-    return (
-      <div className="min-w-0 p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="font-semibold text-xl">Quotes</h1>
-            <p className="mt-1 text-muted-foreground text-sm">
-              {filteredQuotes.length}{" "}
-              {filteredQuotes.length === 1 ? "quote" : "quotes"}
-              {" · "}
-              {formatCurrency(filteredTotal.toFixed(2))}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleCreateNew}
-            className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-          >
-            <Plus size={16} />
-            New Quote
-          </button>
-        </div>
-
-        {quotes.length === 0 ? (
-          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
-            <FileText size={32} className="mx-auto mb-2 text-muted-foreground" />
-            <p className="mb-4 text-muted-foreground">No quotes yet</p>
-            <button
-              type="button"
-              onClick={handleCreateNew}
-              className="text-primary-600 hover:text-primary-700"
-            >
-              Create your first quote
-            </button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-border bg-card">
-            <div className="flex gap-4 border-border border-b p-4">
-              <div className="relative flex-1">
-                <Search
-                  className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                <input
-                  type="text"
-                  placeholder="Search quotes..."
-                  aria-label="Search quotes"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                aria-label="Filter by status"
-                className="cursor-pointer appearance-none rounded-lg border border-input bg-card px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
-              >
-                <option value="all">All statuses</option>
-                {QUOTE_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {filteredQuotes.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-muted-foreground">
-                  No quotes match your filters
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setStatusFilter("all");
-                  }}
-                  className="mt-2 text-primary-600 text-sm hover:text-primary-700"
-                >
-                  Clear filters
-                </button>
-              </div>
-            ) : (
-              <table className="w-full min-w-[800px]">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                      Quote #
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                      Title
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                      Company
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-                      Total
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                      Valid Until
-                    </th>
-                    <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredQuotes.map((quote) => (
-                    <tr key={quote.id} className="border-border border-t">
-                      <td className="px-4 py-3 font-mono text-sm">
-                        {quote.quoteNumber}
-                      </td>
-                      <td className="px-4 py-3 text-sm">{quote.title}</td>
-                      <td className="px-4 py-3 text-foreground text-sm">
-                        {resolveCompanyName(quote.companyId) || "\u2014"}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[quote.status] || statusColors.draft}`}
-                        >
-                          {quote.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium text-sm">
-                        {formatCurrency(quote.total, quote.currency)}
-                      </td>
-                      <td className="px-4 py-3 text-foreground text-sm">
-                        {quote.validUntil || "\u2014"}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handlePreview(quote)}
-                            className="text-muted-foreground hover:text-foreground"
-                            aria-label="Preview quote"
-                          >
-                            <Eye size={16} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleEdit(quote)}
-                            className="text-muted-foreground hover:text-foreground"
-                            aria-label="Edit quote"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(quote.id)}
-                            className="text-destructive hover:text-destructive"
-                            aria-label="Delete quote"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
-
-        <ConfirmDialog
-          open={deleteConfirm.open}
-          onOpenChange={(open) =>
-            setDeleteConfirm((prev) => ({ ...prev, open }))
-          }
-          title="Delete Quote"
-          description="Are you sure you want to delete this quote? This action cannot be undone."
-          onConfirm={() =>
-            deleteMutation.mutate(
-              { input: { rowId: deleteConfirm.id } },
-              {
-                onError: (err) =>
-                  toast.error(
-                    err instanceof Error
-                      ? err.message
-                      : "Failed to delete quote",
-                  ),
-              },
-            )
-          }
-        />
-      </div>
-    );
-  }
-
-  // Preview view
-  if (viewMode === "preview") {
-    return (
-      <div className="p-6 print:p-0">
-        <div className="print-hide mb-6 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            className="text-muted-foreground text-sm hover:text-foreground"
-          >
-            &larr; Back to list
-          </button>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setViewMode("edit")}
-              className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const originalTitle = document.title;
-                const prefix =
-                  previewType === "contract" ? "contract" : "quote";
-                document.title = `${prefix}_${currentQuote.quoteNumber}`;
-                window.print();
-                document.title = originalTitle;
-              }}
-              className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-            >
-              Print
-            </button>
-          </div>
-        </div>
-
-        <div className="print-hide">
-          <PreviewToggle value={previewType} onChange={setPreviewType} />
-        </div>
-
-        {renderPreview()}
-      </div>
-    );
-  }
-
-  // Create/edit view
   return (
-    <div className="p-6">
+    <div className="min-w-0 p-6">
       <div className="mb-6 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => setViewMode("list")}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </button>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {saving ? "Saving..." : editingId ? "Save Changes" : "Create Quote"}
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-lg border border-border bg-card p-6">
-          <h2 className="mb-4 font-semibold text-lg">
-            {editingId ? "Edit Quote" : "New Quote"}
-          </h2>
-          <QuoteForm
-            quote={currentQuote}
-            onQuoteChange={setCurrentQuote}
-            lineItems={currentLineItems}
-            onLineItemsChange={setCurrentLineItems}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            organizationId={organizationId}
-          />
-        </div>
-
         <div>
-          <div className="flex items-center justify-between">
-            <h2 className="mb-4 font-semibold text-lg">Preview</h2>
-            <PreviewToggle value={previewType} onChange={setPreviewType} />
-          </div>
-          {renderPreview()}
+          <h1 className="font-semibold text-xl">Quotes</h1>
+          <p className="mt-1 text-muted-foreground text-sm">
+            {filteredQuotes.length}{" "}
+            {filteredQuotes.length === 1 ? "quote" : "quotes"}
+            {" · "}
+            {formatCurrency(filteredTotal.toFixed(2))}
+          </p>
         </div>
+        <Link
+          to="/quotes/new"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
+        >
+          <Plus size={16} />
+          New Quote
+        </Link>
       </div>
+
+      {quotes.length === 0 ? (
+        <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+          <FileText size={32} className="mx-auto mb-2 text-muted-foreground" />
+          <p className="mb-4 text-muted-foreground">No quotes yet</p>
+          <Link
+            to="/quotes/new"
+            className="text-primary-600 hover:text-primary-700"
+          >
+            Create your first quote
+          </Link>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-border bg-card">
+          <div className="flex gap-4 border-border border-b p-4">
+            <div className="relative flex-1">
+              <Search
+                className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <input
+                type="text"
+                placeholder="Search quotes..."
+                aria-label="Search quotes"
+                value={searchTerm}
+                onChange={(e) =>
+                  navigate({
+                    search: (prev) => ({ ...prev, search: e.target.value }),
+                  })
+                }
+                className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                navigate({
+                  search: (prev) => ({ ...prev, status: e.target.value }),
+                })
+              }
+              aria-label="Filter by status"
+              className="cursor-pointer appearance-none rounded-lg border border-input bg-card px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            >
+              <option value="all">All statuses</option>
+              {QUOTE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {filteredQuotes.length === 0 ? (
+            <div className="py-12 text-center">
+              <p className="text-muted-foreground">
+                No quotes match your filters
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate({
+                    search: { search: "", status: "all" },
+                  })
+                }
+                className="mt-2 text-primary-600 text-sm hover:text-primary-700"
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <table className="w-full min-w-[800px]">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                    Quote #
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                    Title
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                    Company
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
+                    Total
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                    Valid Until
+                  </th>
+                  <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredQuotes.map((quote) => (
+                  <tr key={quote.id} className="border-border border-t">
+                    <td className="px-4 py-3 font-mono text-sm">
+                      {quote.quoteNumber}
+                    </td>
+                    <td className="px-4 py-3 text-sm">{quote.title}</td>
+                    <td className="px-4 py-3 text-foreground text-sm">
+                      {resolveCompanyName(quote.companyId) || "\u2014"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[quote.status] || statusColors.draft}`}
+                      >
+                        {quote.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right font-medium text-sm">
+                      {formatCurrency(quote.total, quote.currency)}
+                    </td>
+                    <td className="px-4 py-3 text-foreground text-sm">
+                      {quote.validUntil || "\u2014"}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          to="/quotes/$quoteId"
+                          params={{ quoteId: quote.id }}
+                          className="text-muted-foreground hover:text-foreground"
+                          aria-label="Preview quote"
+                        >
+                          <Eye size={16} />
+                        </Link>
+                        <Link
+                          to="/quotes/$quoteId/edit"
+                          params={{ quoteId: quote.id }}
+                          className="text-muted-foreground hover:text-foreground"
+                          aria-label="Edit quote"
+                        >
+                          <Edit size={16} />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDeleteConfirm({ open: true, id: quote.id })
+                          }
+                          className="text-destructive hover:text-destructive/80"
+                          aria-label="Delete quote"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
+        title="Delete Quote"
+        description="Are you sure you want to delete this quote? This action cannot be undone."
+        onConfirm={() =>
+          deleteMutation.mutate(
+            { input: { rowId: deleteConfirm.id } },
+            {
+              onError: (err) =>
+                toast.error(
+                  err instanceof Error ? err.message : "Failed to delete quote",
+                ),
+            },
+          )
+        }
+      />
     </div>
   );
 };
 
 export const Route = createFileRoute("/_auth/quotes/")({
-  component: QuotesPage,
+  component: QuotesListPage,
+  validateSearch: zodValidator(quoteListSearchSchema),
 });
