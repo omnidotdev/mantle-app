@@ -220,7 +220,7 @@ const DashboardPage = () => {
               className="volcanic-glow flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
             >
               <span className="text-3xl">{config.icon}</span>
-              <span className="font-medium text-card-foreground">
+              <span className="text-center font-medium text-card-foreground">
                 {config.label}
               </span>
             </Link>
