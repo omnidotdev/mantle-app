@@ -25,7 +25,7 @@ const AppSidebarContent = () => {
   return (
     <SidebarContent>
       {/* Dashboard */}
-      <SidebarGroup>
+      <SidebarGroup className="pt-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
