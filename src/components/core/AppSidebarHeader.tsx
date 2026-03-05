@@ -23,7 +23,7 @@ import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
 const AppSidebarHeader = () => {
   const router = useRouter();
-  const { organizationId } = useRouteContext({ from: "/_auth" });
+  const { organizationId } = useRouteContext({ from: "/_app" });
   const orgCtx = useOrganization();
   const { closeMobileSidebar } = useSidebar();
 
