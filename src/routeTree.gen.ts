@@ -10,42 +10,42 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
-import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as AuthQuotesRouteImport } from './routes/_auth/quotes'
-import { Route as AuthPeopleRouteImport } from './routes/_auth/people'
-import { Route as AuthInvoicesRouteImport } from './routes/_auth/invoices'
-import { Route as AuthInventoryRouteImport } from './routes/_auth/inventory'
-import { Route as AuthDashboardRouteImport } from './routes/_auth/dashboard'
-import { Route as AuthSettingsIndexRouteImport } from './routes/_auth/settings/index'
-import { Route as AuthQuotesIndexRouteImport } from './routes/_auth/quotes/index'
-import { Route as AuthPeopleIndexRouteImport } from './routes/_auth/people/index'
-import { Route as AuthInvoicesIndexRouteImport } from './routes/_auth/invoices/index'
-import { Route as AuthInventoryIndexRouteImport } from './routes/_auth/inventory/index'
+import { Route as AppQuotesRouteImport } from './routes/_app/quotes'
+import { Route as AppPeopleRouteImport } from './routes/_app/people'
+import { Route as AppInvoicesRouteImport } from './routes/_app/invoices'
+import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
+import { Route as AppQuotesIndexRouteImport } from './routes/_app/quotes/index'
+import { Route as AppPeopleIndexRouteImport } from './routes/_app/people/index'
+import { Route as AppInvoicesIndexRouteImport } from './routes/_app/invoices/index'
+import { Route as AppInventoryIndexRouteImport } from './routes/_app/inventory/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AuthQuotesNewRouteImport } from './routes/_auth/quotes/new'
-import { Route as AuthQuotesQuoteIdRouteImport } from './routes/_auth/quotes/$quoteId'
-import { Route as AuthInvoicesNewRouteImport } from './routes/_auth/invoices/new'
-import { Route as AuthInvoicesInvoiceIdRouteImport } from './routes/_auth/invoices/$invoiceId'
-import { Route as AuthInventoryNewRouteImport } from './routes/_auth/inventory/new'
-import { Route as AuthInventoryProductIdRouteImport } from './routes/_auth/inventory/$productId'
-import { Route as AuthQuotesQuoteIdIndexRouteImport } from './routes/_auth/quotes/$quoteId/index'
-import { Route as AuthInvoicesInvoiceIdIndexRouteImport } from './routes/_auth/invoices/$invoiceId/index'
-import { Route as AuthInventoryProductIdIndexRouteImport } from './routes/_auth/inventory/$productId/index'
-import { Route as AuthQuotesQuoteIdEditRouteImport } from './routes/_auth/quotes/$quoteId/edit'
-import { Route as AuthPeopleContactsNewRouteImport } from './routes/_auth/people/contacts/new'
-import { Route as AuthPeopleCompaniesNewRouteImport } from './routes/_auth/people/companies/new'
-import { Route as AuthInvoicesInvoiceIdEditRouteImport } from './routes/_auth/invoices/$invoiceId/edit'
-import { Route as AuthInventoryProductIdEditRouteImport } from './routes/_auth/inventory/$productId/edit'
-import { Route as AuthPeopleContactsContactIdEditRouteImport } from './routes/_auth/people/contacts/$contactId/edit'
-import { Route as AuthPeopleCompaniesCompanyIdEditRouteImport } from './routes/_auth/people/companies/$companyId/edit'
+import { Route as AppQuotesNewRouteImport } from './routes/_app/quotes/new'
+import { Route as AppQuotesQuoteIdRouteImport } from './routes/_app/quotes/$quoteId'
+import { Route as AppInvoicesNewRouteImport } from './routes/_app/invoices/new'
+import { Route as AppInvoicesInvoiceIdRouteImport } from './routes/_app/invoices/$invoiceId'
+import { Route as AppInventoryNewRouteImport } from './routes/_app/inventory/new'
+import { Route as AppInventoryProductIdRouteImport } from './routes/_app/inventory/$productId'
+import { Route as AppQuotesQuoteIdIndexRouteImport } from './routes/_app/quotes/$quoteId/index'
+import { Route as AppInvoicesInvoiceIdIndexRouteImport } from './routes/_app/invoices/$invoiceId/index'
+import { Route as AppInventoryProductIdIndexRouteImport } from './routes/_app/inventory/$productId/index'
+import { Route as AppQuotesQuoteIdEditRouteImport } from './routes/_app/quotes/$quoteId/edit'
+import { Route as AppPeopleContactsNewRouteImport } from './routes/_app/people/contacts/new'
+import { Route as AppPeopleCompaniesNewRouteImport } from './routes/_app/people/companies/new'
+import { Route as AppInvoicesInvoiceIdEditRouteImport } from './routes/_app/invoices/$invoiceId/edit'
+import { Route as AppInventoryProductIdEditRouteImport } from './routes/_app/inventory/$productId/edit'
+import { Route as AppPeopleContactsContactIdEditRouteImport } from './routes/_app/people/contacts/$contactId/edit'
+import { Route as AppPeopleCompaniesCompanyIdEditRouteImport } from './routes/_app/people/companies/$companyId/edit'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -53,233 +53,233 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRoute,
 } as any)
-const AuthQuotesRoute = AuthQuotesRouteImport.update({
+const AppQuotesRoute = AppQuotesRouteImport.update({
   id: '/quotes',
   path: '/quotes',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthPeopleRoute = AuthPeopleRouteImport.update({
+const AppPeopleRoute = AppPeopleRouteImport.update({
   id: '/people',
   path: '/people',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthInvoicesRoute = AuthInvoicesRouteImport.update({
+const AppInvoicesRoute = AppInvoicesRouteImport.update({
   id: '/invoices',
   path: '/invoices',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthInventoryRoute = AuthInventoryRouteImport.update({
+const AppInventoryRoute = AppInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthDashboardRoute = AuthDashboardRouteImport.update({
+const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthSettingsIndexRoute = AuthSettingsIndexRouteImport.update({
+const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthQuotesIndexRoute = AuthQuotesIndexRouteImport.update({
+const AppQuotesIndexRoute = AppQuotesIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthQuotesRoute,
+  getParentRoute: () => AppQuotesRoute,
 } as any)
-const AuthPeopleIndexRoute = AuthPeopleIndexRouteImport.update({
+const AppPeopleIndexRoute = AppPeopleIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthPeopleRoute,
+  getParentRoute: () => AppPeopleRoute,
 } as any)
-const AuthInvoicesIndexRoute = AuthInvoicesIndexRouteImport.update({
+const AppInvoicesIndexRoute = AppInvoicesIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthInvoicesRoute,
+  getParentRoute: () => AppInvoicesRoute,
 } as any)
-const AuthInventoryIndexRoute = AuthInventoryIndexRouteImport.update({
+const AppInventoryIndexRoute = AppInventoryIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthInventoryRoute,
+  getParentRoute: () => AppInventoryRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthQuotesNewRoute = AuthQuotesNewRouteImport.update({
+const AppQuotesNewRoute = AppQuotesNewRouteImport.update({
   id: '/new',
   path: '/new',
-  getParentRoute: () => AuthQuotesRoute,
+  getParentRoute: () => AppQuotesRoute,
 } as any)
-const AuthQuotesQuoteIdRoute = AuthQuotesQuoteIdRouteImport.update({
+const AppQuotesQuoteIdRoute = AppQuotesQuoteIdRouteImport.update({
   id: '/$quoteId',
   path: '/$quoteId',
-  getParentRoute: () => AuthQuotesRoute,
+  getParentRoute: () => AppQuotesRoute,
 } as any)
-const AuthInvoicesNewRoute = AuthInvoicesNewRouteImport.update({
+const AppInvoicesNewRoute = AppInvoicesNewRouteImport.update({
   id: '/new',
   path: '/new',
-  getParentRoute: () => AuthInvoicesRoute,
+  getParentRoute: () => AppInvoicesRoute,
 } as any)
-const AuthInvoicesInvoiceIdRoute = AuthInvoicesInvoiceIdRouteImport.update({
+const AppInvoicesInvoiceIdRoute = AppInvoicesInvoiceIdRouteImport.update({
   id: '/$invoiceId',
   path: '/$invoiceId',
-  getParentRoute: () => AuthInvoicesRoute,
+  getParentRoute: () => AppInvoicesRoute,
 } as any)
-const AuthInventoryNewRoute = AuthInventoryNewRouteImport.update({
+const AppInventoryNewRoute = AppInventoryNewRouteImport.update({
   id: '/new',
   path: '/new',
-  getParentRoute: () => AuthInventoryRoute,
+  getParentRoute: () => AppInventoryRoute,
 } as any)
-const AuthInventoryProductIdRoute = AuthInventoryProductIdRouteImport.update({
+const AppInventoryProductIdRoute = AppInventoryProductIdRouteImport.update({
   id: '/$productId',
   path: '/$productId',
-  getParentRoute: () => AuthInventoryRoute,
+  getParentRoute: () => AppInventoryRoute,
 } as any)
-const AuthQuotesQuoteIdIndexRoute = AuthQuotesQuoteIdIndexRouteImport.update({
+const AppQuotesQuoteIdIndexRoute = AppQuotesQuoteIdIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthQuotesQuoteIdRoute,
+  getParentRoute: () => AppQuotesQuoteIdRoute,
 } as any)
-const AuthInvoicesInvoiceIdIndexRoute =
-  AuthInvoicesInvoiceIdIndexRouteImport.update({
+const AppInvoicesInvoiceIdIndexRoute =
+  AppInvoicesInvoiceIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthInvoicesInvoiceIdRoute,
+    getParentRoute: () => AppInvoicesInvoiceIdRoute,
   } as any)
-const AuthInventoryProductIdIndexRoute =
-  AuthInventoryProductIdIndexRouteImport.update({
+const AppInventoryProductIdIndexRoute =
+  AppInventoryProductIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthInventoryProductIdRoute,
+    getParentRoute: () => AppInventoryProductIdRoute,
   } as any)
-const AuthQuotesQuoteIdEditRoute = AuthQuotesQuoteIdEditRouteImport.update({
+const AppQuotesQuoteIdEditRoute = AppQuotesQuoteIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
-  getParentRoute: () => AuthQuotesQuoteIdRoute,
+  getParentRoute: () => AppQuotesQuoteIdRoute,
 } as any)
-const AuthPeopleContactsNewRoute = AuthPeopleContactsNewRouteImport.update({
+const AppPeopleContactsNewRoute = AppPeopleContactsNewRouteImport.update({
   id: '/contacts/new',
   path: '/contacts/new',
-  getParentRoute: () => AuthPeopleRoute,
+  getParentRoute: () => AppPeopleRoute,
 } as any)
-const AuthPeopleCompaniesNewRoute = AuthPeopleCompaniesNewRouteImport.update({
+const AppPeopleCompaniesNewRoute = AppPeopleCompaniesNewRouteImport.update({
   id: '/companies/new',
   path: '/companies/new',
-  getParentRoute: () => AuthPeopleRoute,
+  getParentRoute: () => AppPeopleRoute,
 } as any)
-const AuthInvoicesInvoiceIdEditRoute =
-  AuthInvoicesInvoiceIdEditRouteImport.update({
+const AppInvoicesInvoiceIdEditRoute =
+  AppInvoicesInvoiceIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => AuthInvoicesInvoiceIdRoute,
+    getParentRoute: () => AppInvoicesInvoiceIdRoute,
   } as any)
-const AuthInventoryProductIdEditRoute =
-  AuthInventoryProductIdEditRouteImport.update({
+const AppInventoryProductIdEditRoute =
+  AppInventoryProductIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => AuthInventoryProductIdRoute,
+    getParentRoute: () => AppInventoryProductIdRoute,
   } as any)
-const AuthPeopleContactsContactIdEditRoute =
-  AuthPeopleContactsContactIdEditRouteImport.update({
+const AppPeopleContactsContactIdEditRoute =
+  AppPeopleContactsContactIdEditRouteImport.update({
     id: '/contacts/$contactId/edit',
     path: '/contacts/$contactId/edit',
-    getParentRoute: () => AuthPeopleRoute,
+    getParentRoute: () => AppPeopleRoute,
   } as any)
-const AuthPeopleCompaniesCompanyIdEditRoute =
-  AuthPeopleCompaniesCompanyIdEditRouteImport.update({
+const AppPeopleCompaniesCompanyIdEditRoute =
+  AppPeopleCompaniesCompanyIdEditRouteImport.update({
     id: '/companies/$companyId/edit',
     path: '/companies/$companyId/edit',
-    getParentRoute: () => AuthPeopleRoute,
+    getParentRoute: () => AppPeopleRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AuthDashboardRoute
-  '/inventory': typeof AuthInventoryRouteWithChildren
-  '/invoices': typeof AuthInvoicesRouteWithChildren
-  '/people': typeof AuthPeopleRouteWithChildren
-  '/quotes': typeof AuthQuotesRouteWithChildren
-  '/inventory/$productId': typeof AuthInventoryProductIdRouteWithChildren
-  '/inventory/new': typeof AuthInventoryNewRoute
-  '/invoices/$invoiceId': typeof AuthInvoicesInvoiceIdRouteWithChildren
-  '/invoices/new': typeof AuthInvoicesNewRoute
-  '/quotes/$quoteId': typeof AuthQuotesQuoteIdRouteWithChildren
-  '/quotes/new': typeof AuthQuotesNewRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/inventory': typeof AppInventoryRouteWithChildren
+  '/invoices': typeof AppInvoicesRouteWithChildren
+  '/people': typeof AppPeopleRouteWithChildren
+  '/quotes': typeof AppQuotesRouteWithChildren
+  '/inventory/$productId': typeof AppInventoryProductIdRouteWithChildren
+  '/inventory/new': typeof AppInventoryNewRoute
+  '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRouteWithChildren
+  '/invoices/new': typeof AppInvoicesNewRoute
+  '/quotes/$quoteId': typeof AppQuotesQuoteIdRouteWithChildren
+  '/quotes/new': typeof AppQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/inventory/': typeof AuthInventoryIndexRoute
-  '/invoices/': typeof AuthInvoicesIndexRoute
-  '/people/': typeof AuthPeopleIndexRoute
-  '/quotes/': typeof AuthQuotesIndexRoute
-  '/settings/': typeof AuthSettingsIndexRoute
-  '/inventory/$productId/edit': typeof AuthInventoryProductIdEditRoute
-  '/invoices/$invoiceId/edit': typeof AuthInvoicesInvoiceIdEditRoute
-  '/people/companies/new': typeof AuthPeopleCompaniesNewRoute
-  '/people/contacts/new': typeof AuthPeopleContactsNewRoute
-  '/quotes/$quoteId/edit': typeof AuthQuotesQuoteIdEditRoute
-  '/inventory/$productId/': typeof AuthInventoryProductIdIndexRoute
-  '/invoices/$invoiceId/': typeof AuthInvoicesInvoiceIdIndexRoute
-  '/quotes/$quoteId/': typeof AuthQuotesQuoteIdIndexRoute
-  '/people/companies/$companyId/edit': typeof AuthPeopleCompaniesCompanyIdEditRoute
-  '/people/contacts/$contactId/edit': typeof AuthPeopleContactsContactIdEditRoute
+  '/inventory/': typeof AppInventoryIndexRoute
+  '/invoices/': typeof AppInvoicesIndexRoute
+  '/people/': typeof AppPeopleIndexRoute
+  '/quotes/': typeof AppQuotesIndexRoute
+  '/settings/': typeof AppSettingsIndexRoute
+  '/inventory/$productId/edit': typeof AppInventoryProductIdEditRoute
+  '/invoices/$invoiceId/edit': typeof AppInvoicesInvoiceIdEditRoute
+  '/people/companies/new': typeof AppPeopleCompaniesNewRoute
+  '/people/contacts/new': typeof AppPeopleContactsNewRoute
+  '/quotes/$quoteId/edit': typeof AppQuotesQuoteIdEditRoute
+  '/inventory/$productId/': typeof AppInventoryProductIdIndexRoute
+  '/invoices/$invoiceId/': typeof AppInvoicesInvoiceIdIndexRoute
+  '/quotes/$quoteId/': typeof AppQuotesQuoteIdIndexRoute
+  '/people/companies/$companyId/edit': typeof AppPeopleCompaniesCompanyIdEditRoute
+  '/people/contacts/$contactId/edit': typeof AppPeopleContactsContactIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AuthDashboardRoute
-  '/inventory/new': typeof AuthInventoryNewRoute
-  '/invoices/new': typeof AuthInvoicesNewRoute
-  '/quotes/new': typeof AuthQuotesNewRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/inventory/new': typeof AppInventoryNewRoute
+  '/invoices/new': typeof AppInvoicesNewRoute
+  '/quotes/new': typeof AppQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/inventory': typeof AuthInventoryIndexRoute
-  '/invoices': typeof AuthInvoicesIndexRoute
-  '/people': typeof AuthPeopleIndexRoute
-  '/quotes': typeof AuthQuotesIndexRoute
-  '/settings': typeof AuthSettingsIndexRoute
-  '/inventory/$productId/edit': typeof AuthInventoryProductIdEditRoute
-  '/invoices/$invoiceId/edit': typeof AuthInvoicesInvoiceIdEditRoute
-  '/people/companies/new': typeof AuthPeopleCompaniesNewRoute
-  '/people/contacts/new': typeof AuthPeopleContactsNewRoute
-  '/quotes/$quoteId/edit': typeof AuthQuotesQuoteIdEditRoute
-  '/inventory/$productId': typeof AuthInventoryProductIdIndexRoute
-  '/invoices/$invoiceId': typeof AuthInvoicesInvoiceIdIndexRoute
-  '/quotes/$quoteId': typeof AuthQuotesQuoteIdIndexRoute
-  '/people/companies/$companyId/edit': typeof AuthPeopleCompaniesCompanyIdEditRoute
-  '/people/contacts/$contactId/edit': typeof AuthPeopleContactsContactIdEditRoute
+  '/inventory': typeof AppInventoryIndexRoute
+  '/invoices': typeof AppInvoicesIndexRoute
+  '/people': typeof AppPeopleIndexRoute
+  '/quotes': typeof AppQuotesIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
+  '/inventory/$productId/edit': typeof AppInventoryProductIdEditRoute
+  '/invoices/$invoiceId/edit': typeof AppInvoicesInvoiceIdEditRoute
+  '/people/companies/new': typeof AppPeopleCompaniesNewRoute
+  '/people/contacts/new': typeof AppPeopleContactsNewRoute
+  '/quotes/$quoteId/edit': typeof AppQuotesQuoteIdEditRoute
+  '/inventory/$productId': typeof AppInventoryProductIdIndexRoute
+  '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdIndexRoute
+  '/quotes/$quoteId': typeof AppQuotesQuoteIdIndexRoute
+  '/people/companies/$companyId/edit': typeof AppPeopleCompaniesCompanyIdEditRoute
+  '/people/contacts/$contactId/edit': typeof AppPeopleContactsContactIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_auth': typeof AuthRouteWithChildren
+  '/_app': typeof AppRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
-  '/_auth/dashboard': typeof AuthDashboardRoute
-  '/_auth/inventory': typeof AuthInventoryRouteWithChildren
-  '/_auth/invoices': typeof AuthInvoicesRouteWithChildren
-  '/_auth/people': typeof AuthPeopleRouteWithChildren
-  '/_auth/quotes': typeof AuthQuotesRouteWithChildren
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/inventory': typeof AppInventoryRouteWithChildren
+  '/_app/invoices': typeof AppInvoicesRouteWithChildren
+  '/_app/people': typeof AppPeopleRouteWithChildren
+  '/_app/quotes': typeof AppQuotesRouteWithChildren
   '/_public/': typeof PublicIndexRoute
-  '/_auth/inventory/$productId': typeof AuthInventoryProductIdRouteWithChildren
-  '/_auth/inventory/new': typeof AuthInventoryNewRoute
-  '/_auth/invoices/$invoiceId': typeof AuthInvoicesInvoiceIdRouteWithChildren
-  '/_auth/invoices/new': typeof AuthInvoicesNewRoute
-  '/_auth/quotes/$quoteId': typeof AuthQuotesQuoteIdRouteWithChildren
-  '/_auth/quotes/new': typeof AuthQuotesNewRoute
+  '/_app/inventory/$productId': typeof AppInventoryProductIdRouteWithChildren
+  '/_app/inventory/new': typeof AppInventoryNewRoute
+  '/_app/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRouteWithChildren
+  '/_app/invoices/new': typeof AppInvoicesNewRoute
+  '/_app/quotes/$quoteId': typeof AppQuotesQuoteIdRouteWithChildren
+  '/_app/quotes/new': typeof AppQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_auth/inventory/': typeof AuthInventoryIndexRoute
-  '/_auth/invoices/': typeof AuthInvoicesIndexRoute
-  '/_auth/people/': typeof AuthPeopleIndexRoute
-  '/_auth/quotes/': typeof AuthQuotesIndexRoute
-  '/_auth/settings/': typeof AuthSettingsIndexRoute
-  '/_auth/inventory/$productId/edit': typeof AuthInventoryProductIdEditRoute
-  '/_auth/invoices/$invoiceId/edit': typeof AuthInvoicesInvoiceIdEditRoute
-  '/_auth/people/companies/new': typeof AuthPeopleCompaniesNewRoute
-  '/_auth/people/contacts/new': typeof AuthPeopleContactsNewRoute
-  '/_auth/quotes/$quoteId/edit': typeof AuthQuotesQuoteIdEditRoute
-  '/_auth/inventory/$productId/': typeof AuthInventoryProductIdIndexRoute
-  '/_auth/invoices/$invoiceId/': typeof AuthInvoicesInvoiceIdIndexRoute
-  '/_auth/quotes/$quoteId/': typeof AuthQuotesQuoteIdIndexRoute
-  '/_auth/people/companies/$companyId/edit': typeof AuthPeopleCompaniesCompanyIdEditRoute
-  '/_auth/people/contacts/$contactId/edit': typeof AuthPeopleContactsContactIdEditRoute
+  '/_app/inventory/': typeof AppInventoryIndexRoute
+  '/_app/invoices/': typeof AppInvoicesIndexRoute
+  '/_app/people/': typeof AppPeopleIndexRoute
+  '/_app/quotes/': typeof AppQuotesIndexRoute
+  '/_app/settings/': typeof AppSettingsIndexRoute
+  '/_app/inventory/$productId/edit': typeof AppInventoryProductIdEditRoute
+  '/_app/invoices/$invoiceId/edit': typeof AppInvoicesInvoiceIdEditRoute
+  '/_app/people/companies/new': typeof AppPeopleCompaniesNewRoute
+  '/_app/people/contacts/new': typeof AppPeopleContactsNewRoute
+  '/_app/quotes/$quoteId/edit': typeof AppQuotesQuoteIdEditRoute
+  '/_app/inventory/$productId/': typeof AppInventoryProductIdIndexRoute
+  '/_app/invoices/$invoiceId/': typeof AppInvoicesInvoiceIdIndexRoute
+  '/_app/quotes/$quoteId/': typeof AppQuotesQuoteIdIndexRoute
+  '/_app/people/companies/$companyId/edit': typeof AppPeopleCompaniesCompanyIdEditRoute
+  '/_app/people/contacts/$contactId/edit': typeof AppPeopleContactsContactIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -337,40 +337,40 @@ export interface FileRouteTypes {
     | '/people/contacts/$contactId/edit'
   id:
     | '__root__'
-    | '/_auth'
+    | '/_app'
     | '/_public'
-    | '/_auth/dashboard'
-    | '/_auth/inventory'
-    | '/_auth/invoices'
-    | '/_auth/people'
-    | '/_auth/quotes'
+    | '/_app/dashboard'
+    | '/_app/inventory'
+    | '/_app/invoices'
+    | '/_app/people'
+    | '/_app/quotes'
     | '/_public/'
-    | '/_auth/inventory/$productId'
-    | '/_auth/inventory/new'
-    | '/_auth/invoices/$invoiceId'
-    | '/_auth/invoices/new'
-    | '/_auth/quotes/$quoteId'
-    | '/_auth/quotes/new'
+    | '/_app/inventory/$productId'
+    | '/_app/inventory/new'
+    | '/_app/invoices/$invoiceId'
+    | '/_app/invoices/new'
+    | '/_app/quotes/$quoteId'
+    | '/_app/quotes/new'
     | '/api/auth/$'
-    | '/_auth/inventory/'
-    | '/_auth/invoices/'
-    | '/_auth/people/'
-    | '/_auth/quotes/'
-    | '/_auth/settings/'
-    | '/_auth/inventory/$productId/edit'
-    | '/_auth/invoices/$invoiceId/edit'
-    | '/_auth/people/companies/new'
-    | '/_auth/people/contacts/new'
-    | '/_auth/quotes/$quoteId/edit'
-    | '/_auth/inventory/$productId/'
-    | '/_auth/invoices/$invoiceId/'
-    | '/_auth/quotes/$quoteId/'
-    | '/_auth/people/companies/$companyId/edit'
-    | '/_auth/people/contacts/$contactId/edit'
+    | '/_app/inventory/'
+    | '/_app/invoices/'
+    | '/_app/people/'
+    | '/_app/quotes/'
+    | '/_app/settings/'
+    | '/_app/inventory/$productId/edit'
+    | '/_app/invoices/$invoiceId/edit'
+    | '/_app/people/companies/new'
+    | '/_app/people/contacts/new'
+    | '/_app/quotes/$quoteId/edit'
+    | '/_app/inventory/$productId/'
+    | '/_app/invoices/$invoiceId/'
+    | '/_app/quotes/$quoteId/'
+    | '/_app/people/companies/$companyId/edit'
+    | '/_app/people/contacts/$contactId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthRoute: typeof AuthRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -384,11 +384,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth': {
-      id: '/_auth'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthRouteImport
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/': {
@@ -398,75 +398,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_auth/quotes': {
-      id: '/_auth/quotes'
+    '/_app/quotes': {
+      id: '/_app/quotes'
       path: '/quotes'
       fullPath: '/quotes'
-      preLoaderRoute: typeof AuthQuotesRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AppQuotesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/people': {
-      id: '/_auth/people'
+    '/_app/people': {
+      id: '/_app/people'
       path: '/people'
       fullPath: '/people'
-      preLoaderRoute: typeof AuthPeopleRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AppPeopleRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/invoices': {
-      id: '/_auth/invoices'
+    '/_app/invoices': {
+      id: '/_app/invoices'
       path: '/invoices'
       fullPath: '/invoices'
-      preLoaderRoute: typeof AuthInvoicesRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AppInvoicesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/inventory': {
-      id: '/_auth/inventory'
+    '/_app/inventory': {
+      id: '/_app/inventory'
       path: '/inventory'
       fullPath: '/inventory'
-      preLoaderRoute: typeof AuthInventoryRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AppInventoryRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/dashboard': {
-      id: '/_auth/dashboard'
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthDashboardRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/settings/': {
-      id: '/_auth/settings/'
+    '/_app/settings/': {
+      id: '/_app/settings/'
       path: '/settings'
       fullPath: '/settings/'
-      preLoaderRoute: typeof AuthSettingsIndexRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AppSettingsIndexRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/quotes/': {
-      id: '/_auth/quotes/'
+    '/_app/quotes/': {
+      id: '/_app/quotes/'
       path: '/'
       fullPath: '/quotes/'
-      preLoaderRoute: typeof AuthQuotesIndexRouteImport
-      parentRoute: typeof AuthQuotesRoute
+      preLoaderRoute: typeof AppQuotesIndexRouteImport
+      parentRoute: typeof AppQuotesRoute
     }
-    '/_auth/people/': {
-      id: '/_auth/people/'
+    '/_app/people/': {
+      id: '/_app/people/'
       path: '/'
       fullPath: '/people/'
-      preLoaderRoute: typeof AuthPeopleIndexRouteImport
-      parentRoute: typeof AuthPeopleRoute
+      preLoaderRoute: typeof AppPeopleIndexRouteImport
+      parentRoute: typeof AppPeopleRoute
     }
-    '/_auth/invoices/': {
-      id: '/_auth/invoices/'
+    '/_app/invoices/': {
+      id: '/_app/invoices/'
       path: '/'
       fullPath: '/invoices/'
-      preLoaderRoute: typeof AuthInvoicesIndexRouteImport
-      parentRoute: typeof AuthInvoicesRoute
+      preLoaderRoute: typeof AppInvoicesIndexRouteImport
+      parentRoute: typeof AppInvoicesRoute
     }
-    '/_auth/inventory/': {
-      id: '/_auth/inventory/'
+    '/_app/inventory/': {
+      id: '/_app/inventory/'
       path: '/'
       fullPath: '/inventory/'
-      preLoaderRoute: typeof AuthInventoryIndexRouteImport
-      parentRoute: typeof AuthInventoryRoute
+      preLoaderRoute: typeof AppInventoryIndexRouteImport
+      parentRoute: typeof AppInventoryRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -475,252 +475,249 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/quotes/new': {
-      id: '/_auth/quotes/new'
+    '/_app/quotes/new': {
+      id: '/_app/quotes/new'
       path: '/new'
       fullPath: '/quotes/new'
-      preLoaderRoute: typeof AuthQuotesNewRouteImport
-      parentRoute: typeof AuthQuotesRoute
+      preLoaderRoute: typeof AppQuotesNewRouteImport
+      parentRoute: typeof AppQuotesRoute
     }
-    '/_auth/quotes/$quoteId': {
-      id: '/_auth/quotes/$quoteId'
+    '/_app/quotes/$quoteId': {
+      id: '/_app/quotes/$quoteId'
       path: '/$quoteId'
       fullPath: '/quotes/$quoteId'
-      preLoaderRoute: typeof AuthQuotesQuoteIdRouteImport
-      parentRoute: typeof AuthQuotesRoute
+      preLoaderRoute: typeof AppQuotesQuoteIdRouteImport
+      parentRoute: typeof AppQuotesRoute
     }
-    '/_auth/invoices/new': {
-      id: '/_auth/invoices/new'
+    '/_app/invoices/new': {
+      id: '/_app/invoices/new'
       path: '/new'
       fullPath: '/invoices/new'
-      preLoaderRoute: typeof AuthInvoicesNewRouteImport
-      parentRoute: typeof AuthInvoicesRoute
+      preLoaderRoute: typeof AppInvoicesNewRouteImport
+      parentRoute: typeof AppInvoicesRoute
     }
-    '/_auth/invoices/$invoiceId': {
-      id: '/_auth/invoices/$invoiceId'
+    '/_app/invoices/$invoiceId': {
+      id: '/_app/invoices/$invoiceId'
       path: '/$invoiceId'
       fullPath: '/invoices/$invoiceId'
-      preLoaderRoute: typeof AuthInvoicesInvoiceIdRouteImport
-      parentRoute: typeof AuthInvoicesRoute
+      preLoaderRoute: typeof AppInvoicesInvoiceIdRouteImport
+      parentRoute: typeof AppInvoicesRoute
     }
-    '/_auth/inventory/new': {
-      id: '/_auth/inventory/new'
+    '/_app/inventory/new': {
+      id: '/_app/inventory/new'
       path: '/new'
       fullPath: '/inventory/new'
-      preLoaderRoute: typeof AuthInventoryNewRouteImport
-      parentRoute: typeof AuthInventoryRoute
+      preLoaderRoute: typeof AppInventoryNewRouteImport
+      parentRoute: typeof AppInventoryRoute
     }
-    '/_auth/inventory/$productId': {
-      id: '/_auth/inventory/$productId'
+    '/_app/inventory/$productId': {
+      id: '/_app/inventory/$productId'
       path: '/$productId'
       fullPath: '/inventory/$productId'
-      preLoaderRoute: typeof AuthInventoryProductIdRouteImport
-      parentRoute: typeof AuthInventoryRoute
+      preLoaderRoute: typeof AppInventoryProductIdRouteImport
+      parentRoute: typeof AppInventoryRoute
     }
-    '/_auth/quotes/$quoteId/': {
-      id: '/_auth/quotes/$quoteId/'
+    '/_app/quotes/$quoteId/': {
+      id: '/_app/quotes/$quoteId/'
       path: '/'
       fullPath: '/quotes/$quoteId/'
-      preLoaderRoute: typeof AuthQuotesQuoteIdIndexRouteImport
-      parentRoute: typeof AuthQuotesQuoteIdRoute
+      preLoaderRoute: typeof AppQuotesQuoteIdIndexRouteImport
+      parentRoute: typeof AppQuotesQuoteIdRoute
     }
-    '/_auth/invoices/$invoiceId/': {
-      id: '/_auth/invoices/$invoiceId/'
+    '/_app/invoices/$invoiceId/': {
+      id: '/_app/invoices/$invoiceId/'
       path: '/'
       fullPath: '/invoices/$invoiceId/'
-      preLoaderRoute: typeof AuthInvoicesInvoiceIdIndexRouteImport
-      parentRoute: typeof AuthInvoicesInvoiceIdRoute
+      preLoaderRoute: typeof AppInvoicesInvoiceIdIndexRouteImport
+      parentRoute: typeof AppInvoicesInvoiceIdRoute
     }
-    '/_auth/inventory/$productId/': {
-      id: '/_auth/inventory/$productId/'
+    '/_app/inventory/$productId/': {
+      id: '/_app/inventory/$productId/'
       path: '/'
       fullPath: '/inventory/$productId/'
-      preLoaderRoute: typeof AuthInventoryProductIdIndexRouteImport
-      parentRoute: typeof AuthInventoryProductIdRoute
+      preLoaderRoute: typeof AppInventoryProductIdIndexRouteImport
+      parentRoute: typeof AppInventoryProductIdRoute
     }
-    '/_auth/quotes/$quoteId/edit': {
-      id: '/_auth/quotes/$quoteId/edit'
+    '/_app/quotes/$quoteId/edit': {
+      id: '/_app/quotes/$quoteId/edit'
       path: '/edit'
       fullPath: '/quotes/$quoteId/edit'
-      preLoaderRoute: typeof AuthQuotesQuoteIdEditRouteImport
-      parentRoute: typeof AuthQuotesQuoteIdRoute
+      preLoaderRoute: typeof AppQuotesQuoteIdEditRouteImport
+      parentRoute: typeof AppQuotesQuoteIdRoute
     }
-    '/_auth/people/contacts/new': {
-      id: '/_auth/people/contacts/new'
+    '/_app/people/contacts/new': {
+      id: '/_app/people/contacts/new'
       path: '/contacts/new'
       fullPath: '/people/contacts/new'
-      preLoaderRoute: typeof AuthPeopleContactsNewRouteImport
-      parentRoute: typeof AuthPeopleRoute
+      preLoaderRoute: typeof AppPeopleContactsNewRouteImport
+      parentRoute: typeof AppPeopleRoute
     }
-    '/_auth/people/companies/new': {
-      id: '/_auth/people/companies/new'
+    '/_app/people/companies/new': {
+      id: '/_app/people/companies/new'
       path: '/companies/new'
       fullPath: '/people/companies/new'
-      preLoaderRoute: typeof AuthPeopleCompaniesNewRouteImport
-      parentRoute: typeof AuthPeopleRoute
+      preLoaderRoute: typeof AppPeopleCompaniesNewRouteImport
+      parentRoute: typeof AppPeopleRoute
     }
-    '/_auth/invoices/$invoiceId/edit': {
-      id: '/_auth/invoices/$invoiceId/edit'
+    '/_app/invoices/$invoiceId/edit': {
+      id: '/_app/invoices/$invoiceId/edit'
       path: '/edit'
       fullPath: '/invoices/$invoiceId/edit'
-      preLoaderRoute: typeof AuthInvoicesInvoiceIdEditRouteImport
-      parentRoute: typeof AuthInvoicesInvoiceIdRoute
+      preLoaderRoute: typeof AppInvoicesInvoiceIdEditRouteImport
+      parentRoute: typeof AppInvoicesInvoiceIdRoute
     }
-    '/_auth/inventory/$productId/edit': {
-      id: '/_auth/inventory/$productId/edit'
+    '/_app/inventory/$productId/edit': {
+      id: '/_app/inventory/$productId/edit'
       path: '/edit'
       fullPath: '/inventory/$productId/edit'
-      preLoaderRoute: typeof AuthInventoryProductIdEditRouteImport
-      parentRoute: typeof AuthInventoryProductIdRoute
+      preLoaderRoute: typeof AppInventoryProductIdEditRouteImport
+      parentRoute: typeof AppInventoryProductIdRoute
     }
-    '/_auth/people/contacts/$contactId/edit': {
-      id: '/_auth/people/contacts/$contactId/edit'
+    '/_app/people/contacts/$contactId/edit': {
+      id: '/_app/people/contacts/$contactId/edit'
       path: '/contacts/$contactId/edit'
       fullPath: '/people/contacts/$contactId/edit'
-      preLoaderRoute: typeof AuthPeopleContactsContactIdEditRouteImport
-      parentRoute: typeof AuthPeopleRoute
+      preLoaderRoute: typeof AppPeopleContactsContactIdEditRouteImport
+      parentRoute: typeof AppPeopleRoute
     }
-    '/_auth/people/companies/$companyId/edit': {
-      id: '/_auth/people/companies/$companyId/edit'
+    '/_app/people/companies/$companyId/edit': {
+      id: '/_app/people/companies/$companyId/edit'
       path: '/companies/$companyId/edit'
       fullPath: '/people/companies/$companyId/edit'
-      preLoaderRoute: typeof AuthPeopleCompaniesCompanyIdEditRouteImport
-      parentRoute: typeof AuthPeopleRoute
+      preLoaderRoute: typeof AppPeopleCompaniesCompanyIdEditRouteImport
+      parentRoute: typeof AppPeopleRoute
     }
   }
 }
 
-interface AuthInventoryProductIdRouteChildren {
-  AuthInventoryProductIdEditRoute: typeof AuthInventoryProductIdEditRoute
-  AuthInventoryProductIdIndexRoute: typeof AuthInventoryProductIdIndexRoute
+interface AppInventoryProductIdRouteChildren {
+  AppInventoryProductIdEditRoute: typeof AppInventoryProductIdEditRoute
+  AppInventoryProductIdIndexRoute: typeof AppInventoryProductIdIndexRoute
 }
 
-const AuthInventoryProductIdRouteChildren: AuthInventoryProductIdRouteChildren =
-  {
-    AuthInventoryProductIdEditRoute: AuthInventoryProductIdEditRoute,
-    AuthInventoryProductIdIndexRoute: AuthInventoryProductIdIndexRoute,
-  }
+const AppInventoryProductIdRouteChildren: AppInventoryProductIdRouteChildren = {
+  AppInventoryProductIdEditRoute: AppInventoryProductIdEditRoute,
+  AppInventoryProductIdIndexRoute: AppInventoryProductIdIndexRoute,
+}
 
-const AuthInventoryProductIdRouteWithChildren =
-  AuthInventoryProductIdRoute._addFileChildren(
-    AuthInventoryProductIdRouteChildren,
+const AppInventoryProductIdRouteWithChildren =
+  AppInventoryProductIdRoute._addFileChildren(
+    AppInventoryProductIdRouteChildren,
   )
 
-interface AuthInventoryRouteChildren {
-  AuthInventoryProductIdRoute: typeof AuthInventoryProductIdRouteWithChildren
-  AuthInventoryNewRoute: typeof AuthInventoryNewRoute
-  AuthInventoryIndexRoute: typeof AuthInventoryIndexRoute
+interface AppInventoryRouteChildren {
+  AppInventoryProductIdRoute: typeof AppInventoryProductIdRouteWithChildren
+  AppInventoryNewRoute: typeof AppInventoryNewRoute
+  AppInventoryIndexRoute: typeof AppInventoryIndexRoute
 }
 
-const AuthInventoryRouteChildren: AuthInventoryRouteChildren = {
-  AuthInventoryProductIdRoute: AuthInventoryProductIdRouteWithChildren,
-  AuthInventoryNewRoute: AuthInventoryNewRoute,
-  AuthInventoryIndexRoute: AuthInventoryIndexRoute,
+const AppInventoryRouteChildren: AppInventoryRouteChildren = {
+  AppInventoryProductIdRoute: AppInventoryProductIdRouteWithChildren,
+  AppInventoryNewRoute: AppInventoryNewRoute,
+  AppInventoryIndexRoute: AppInventoryIndexRoute,
 }
 
-const AuthInventoryRouteWithChildren = AuthInventoryRoute._addFileChildren(
-  AuthInventoryRouteChildren,
+const AppInventoryRouteWithChildren = AppInventoryRoute._addFileChildren(
+  AppInventoryRouteChildren,
 )
 
-interface AuthInvoicesInvoiceIdRouteChildren {
-  AuthInvoicesInvoiceIdEditRoute: typeof AuthInvoicesInvoiceIdEditRoute
-  AuthInvoicesInvoiceIdIndexRoute: typeof AuthInvoicesInvoiceIdIndexRoute
+interface AppInvoicesInvoiceIdRouteChildren {
+  AppInvoicesInvoiceIdEditRoute: typeof AppInvoicesInvoiceIdEditRoute
+  AppInvoicesInvoiceIdIndexRoute: typeof AppInvoicesInvoiceIdIndexRoute
 }
 
-const AuthInvoicesInvoiceIdRouteChildren: AuthInvoicesInvoiceIdRouteChildren = {
-  AuthInvoicesInvoiceIdEditRoute: AuthInvoicesInvoiceIdEditRoute,
-  AuthInvoicesInvoiceIdIndexRoute: AuthInvoicesInvoiceIdIndexRoute,
+const AppInvoicesInvoiceIdRouteChildren: AppInvoicesInvoiceIdRouteChildren = {
+  AppInvoicesInvoiceIdEditRoute: AppInvoicesInvoiceIdEditRoute,
+  AppInvoicesInvoiceIdIndexRoute: AppInvoicesInvoiceIdIndexRoute,
 }
 
-const AuthInvoicesInvoiceIdRouteWithChildren =
-  AuthInvoicesInvoiceIdRoute._addFileChildren(
-    AuthInvoicesInvoiceIdRouteChildren,
-  )
+const AppInvoicesInvoiceIdRouteWithChildren =
+  AppInvoicesInvoiceIdRoute._addFileChildren(AppInvoicesInvoiceIdRouteChildren)
 
-interface AuthInvoicesRouteChildren {
-  AuthInvoicesInvoiceIdRoute: typeof AuthInvoicesInvoiceIdRouteWithChildren
-  AuthInvoicesNewRoute: typeof AuthInvoicesNewRoute
-  AuthInvoicesIndexRoute: typeof AuthInvoicesIndexRoute
+interface AppInvoicesRouteChildren {
+  AppInvoicesInvoiceIdRoute: typeof AppInvoicesInvoiceIdRouteWithChildren
+  AppInvoicesNewRoute: typeof AppInvoicesNewRoute
+  AppInvoicesIndexRoute: typeof AppInvoicesIndexRoute
 }
 
-const AuthInvoicesRouteChildren: AuthInvoicesRouteChildren = {
-  AuthInvoicesInvoiceIdRoute: AuthInvoicesInvoiceIdRouteWithChildren,
-  AuthInvoicesNewRoute: AuthInvoicesNewRoute,
-  AuthInvoicesIndexRoute: AuthInvoicesIndexRoute,
+const AppInvoicesRouteChildren: AppInvoicesRouteChildren = {
+  AppInvoicesInvoiceIdRoute: AppInvoicesInvoiceIdRouteWithChildren,
+  AppInvoicesNewRoute: AppInvoicesNewRoute,
+  AppInvoicesIndexRoute: AppInvoicesIndexRoute,
 }
 
-const AuthInvoicesRouteWithChildren = AuthInvoicesRoute._addFileChildren(
-  AuthInvoicesRouteChildren,
+const AppInvoicesRouteWithChildren = AppInvoicesRoute._addFileChildren(
+  AppInvoicesRouteChildren,
 )
 
-interface AuthPeopleRouteChildren {
-  AuthPeopleIndexRoute: typeof AuthPeopleIndexRoute
-  AuthPeopleCompaniesNewRoute: typeof AuthPeopleCompaniesNewRoute
-  AuthPeopleContactsNewRoute: typeof AuthPeopleContactsNewRoute
-  AuthPeopleCompaniesCompanyIdEditRoute: typeof AuthPeopleCompaniesCompanyIdEditRoute
-  AuthPeopleContactsContactIdEditRoute: typeof AuthPeopleContactsContactIdEditRoute
+interface AppPeopleRouteChildren {
+  AppPeopleIndexRoute: typeof AppPeopleIndexRoute
+  AppPeopleCompaniesNewRoute: typeof AppPeopleCompaniesNewRoute
+  AppPeopleContactsNewRoute: typeof AppPeopleContactsNewRoute
+  AppPeopleCompaniesCompanyIdEditRoute: typeof AppPeopleCompaniesCompanyIdEditRoute
+  AppPeopleContactsContactIdEditRoute: typeof AppPeopleContactsContactIdEditRoute
 }
 
-const AuthPeopleRouteChildren: AuthPeopleRouteChildren = {
-  AuthPeopleIndexRoute: AuthPeopleIndexRoute,
-  AuthPeopleCompaniesNewRoute: AuthPeopleCompaniesNewRoute,
-  AuthPeopleContactsNewRoute: AuthPeopleContactsNewRoute,
-  AuthPeopleCompaniesCompanyIdEditRoute: AuthPeopleCompaniesCompanyIdEditRoute,
-  AuthPeopleContactsContactIdEditRoute: AuthPeopleContactsContactIdEditRoute,
+const AppPeopleRouteChildren: AppPeopleRouteChildren = {
+  AppPeopleIndexRoute: AppPeopleIndexRoute,
+  AppPeopleCompaniesNewRoute: AppPeopleCompaniesNewRoute,
+  AppPeopleContactsNewRoute: AppPeopleContactsNewRoute,
+  AppPeopleCompaniesCompanyIdEditRoute: AppPeopleCompaniesCompanyIdEditRoute,
+  AppPeopleContactsContactIdEditRoute: AppPeopleContactsContactIdEditRoute,
 }
 
-const AuthPeopleRouteWithChildren = AuthPeopleRoute._addFileChildren(
-  AuthPeopleRouteChildren,
+const AppPeopleRouteWithChildren = AppPeopleRoute._addFileChildren(
+  AppPeopleRouteChildren,
 )
 
-interface AuthQuotesQuoteIdRouteChildren {
-  AuthQuotesQuoteIdEditRoute: typeof AuthQuotesQuoteIdEditRoute
-  AuthQuotesQuoteIdIndexRoute: typeof AuthQuotesQuoteIdIndexRoute
+interface AppQuotesQuoteIdRouteChildren {
+  AppQuotesQuoteIdEditRoute: typeof AppQuotesQuoteIdEditRoute
+  AppQuotesQuoteIdIndexRoute: typeof AppQuotesQuoteIdIndexRoute
 }
 
-const AuthQuotesQuoteIdRouteChildren: AuthQuotesQuoteIdRouteChildren = {
-  AuthQuotesQuoteIdEditRoute: AuthQuotesQuoteIdEditRoute,
-  AuthQuotesQuoteIdIndexRoute: AuthQuotesQuoteIdIndexRoute,
+const AppQuotesQuoteIdRouteChildren: AppQuotesQuoteIdRouteChildren = {
+  AppQuotesQuoteIdEditRoute: AppQuotesQuoteIdEditRoute,
+  AppQuotesQuoteIdIndexRoute: AppQuotesQuoteIdIndexRoute,
 }
 
-const AuthQuotesQuoteIdRouteWithChildren =
-  AuthQuotesQuoteIdRoute._addFileChildren(AuthQuotesQuoteIdRouteChildren)
+const AppQuotesQuoteIdRouteWithChildren =
+  AppQuotesQuoteIdRoute._addFileChildren(AppQuotesQuoteIdRouteChildren)
 
-interface AuthQuotesRouteChildren {
-  AuthQuotesQuoteIdRoute: typeof AuthQuotesQuoteIdRouteWithChildren
-  AuthQuotesNewRoute: typeof AuthQuotesNewRoute
-  AuthQuotesIndexRoute: typeof AuthQuotesIndexRoute
+interface AppQuotesRouteChildren {
+  AppQuotesQuoteIdRoute: typeof AppQuotesQuoteIdRouteWithChildren
+  AppQuotesNewRoute: typeof AppQuotesNewRoute
+  AppQuotesIndexRoute: typeof AppQuotesIndexRoute
 }
 
-const AuthQuotesRouteChildren: AuthQuotesRouteChildren = {
-  AuthQuotesQuoteIdRoute: AuthQuotesQuoteIdRouteWithChildren,
-  AuthQuotesNewRoute: AuthQuotesNewRoute,
-  AuthQuotesIndexRoute: AuthQuotesIndexRoute,
+const AppQuotesRouteChildren: AppQuotesRouteChildren = {
+  AppQuotesQuoteIdRoute: AppQuotesQuoteIdRouteWithChildren,
+  AppQuotesNewRoute: AppQuotesNewRoute,
+  AppQuotesIndexRoute: AppQuotesIndexRoute,
 }
 
-const AuthQuotesRouteWithChildren = AuthQuotesRoute._addFileChildren(
-  AuthQuotesRouteChildren,
+const AppQuotesRouteWithChildren = AppQuotesRoute._addFileChildren(
+  AppQuotesRouteChildren,
 )
 
-interface AuthRouteChildren {
-  AuthDashboardRoute: typeof AuthDashboardRoute
-  AuthInventoryRoute: typeof AuthInventoryRouteWithChildren
-  AuthInvoicesRoute: typeof AuthInvoicesRouteWithChildren
-  AuthPeopleRoute: typeof AuthPeopleRouteWithChildren
-  AuthQuotesRoute: typeof AuthQuotesRouteWithChildren
-  AuthSettingsIndexRoute: typeof AuthSettingsIndexRoute
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppInventoryRoute: typeof AppInventoryRouteWithChildren
+  AppInvoicesRoute: typeof AppInvoicesRouteWithChildren
+  AppPeopleRoute: typeof AppPeopleRouteWithChildren
+  AppQuotesRoute: typeof AppQuotesRouteWithChildren
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
 }
 
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthDashboardRoute: AuthDashboardRoute,
-  AuthInventoryRoute: AuthInventoryRouteWithChildren,
-  AuthInvoicesRoute: AuthInvoicesRouteWithChildren,
-  AuthPeopleRoute: AuthPeopleRouteWithChildren,
-  AuthQuotesRoute: AuthQuotesRouteWithChildren,
-  AuthSettingsIndexRoute: AuthSettingsIndexRoute,
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppInventoryRoute: AppInventoryRouteWithChildren,
+  AppInvoicesRoute: AppInvoicesRouteWithChildren,
+  AppPeopleRoute: AppPeopleRouteWithChildren,
+  AppQuotesRoute: AppQuotesRouteWithChildren,
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
 }
 
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface PublicRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
@@ -734,10 +731,19 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthRoute: AuthRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
