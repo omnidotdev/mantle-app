@@ -20,7 +20,7 @@ type PreviewType = "quote" | "contract";
 
 const defaultQuote: Partial<Quote> = {
   quoteNumber: "",
-  companyId: "",
+  companyId: null,
   contactId: null,
   title: "",
   description: null,
@@ -190,11 +190,6 @@ const NewQuotePage = () => {
   };
 
   const handleSave = async () => {
-    if (!currentQuote.companyId) {
-      toast.error("Please select a company");
-      return;
-    }
-
     setSaving(true);
     try {
       const result = await createMutation.mutateAsync({
@@ -202,7 +197,7 @@ const NewQuotePage = () => {
           quote: {
             organizationId: organizationId ?? "",
             quoteNumber: currentQuote.quoteNumber ?? "",
-            companyId: currentQuote.companyId,
+            companyId: currentQuote.companyId || null,
             contactId: currentQuote.contactId || null,
             title: currentQuote.title ?? "",
             description: currentQuote.description,

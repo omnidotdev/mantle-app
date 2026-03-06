@@ -100,7 +100,7 @@ const EditQuotePage = () => {
             id: node.rowId,
             organizationId: node.organizationId,
             quoteNumber: node.quoteNumber,
-            companyId: node.companyId ?? "",
+            companyId: node.companyId ?? null,
             contactId: node.contactId ?? null,
             title: node.title,
             description: node.description ?? null,
@@ -251,11 +251,6 @@ const EditQuotePage = () => {
   };
 
   const handleSave = async () => {
-    if (!currentQuote.companyId) {
-      toast.error("Please select a company");
-      return;
-    }
-
     setSaving(true);
     try {
       await updateMutation.mutateAsync({
@@ -263,7 +258,7 @@ const EditQuotePage = () => {
           rowId: quoteId,
           patch: {
             quoteNumber: currentQuote.quoteNumber,
-            companyId: currentQuote.companyId,
+            companyId: currentQuote.companyId || null,
             contactId: currentQuote.contactId || null,
             title: currentQuote.title,
             description: currentQuote.description,

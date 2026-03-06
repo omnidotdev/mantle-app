@@ -2377,7 +2377,7 @@ export type Quote = Node & {
   additionalTerms?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   /** Reads a single `Company` that is related to this `Quote`. */
   company?: Maybe<Company>;
-  companyId: Scalars['UUID']['output'];
+  companyId?: Maybe<Scalars['UUID']['output']>;
   /** Reads a single `Person` that is related to this `Quote`. */
   contact?: Maybe<Person>;
   contactId?: Maybe<Scalars['UUID']['output']>;
@@ -2493,7 +2493,7 @@ export type QuoteFilter = {
 /** An input for mutations affecting `Quote` */
 export type QuoteInput = {
   additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  companyId: Scalars['UUID']['input'];
+  companyId?: InputMaybe<Scalars['UUID']['input']>;
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   convertedInvoiceId?: InputMaybe<Scalars['UUID']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;

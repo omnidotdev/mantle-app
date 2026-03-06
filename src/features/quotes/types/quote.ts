@@ -41,7 +41,7 @@ export interface Quote {
   id: string;
   organizationId: string;
   quoteNumber: string;
-  companyId: string;
+  companyId: string | null;
   contactId: string | null;
   title: string;
   description: string | null;

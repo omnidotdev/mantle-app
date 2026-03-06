@@ -66,7 +66,7 @@ const QuotesListPage = () => {
             id: node.rowId,
             organizationId: node.organizationId,
             quoteNumber: node.quoteNumber,
-            companyId: node.companyId ?? "",
+            companyId: node.companyId ?? null,
             contactId: node.contactId ?? null,
             title: node.title,
             description: node.description ?? null,
@@ -144,7 +144,7 @@ const QuotesListPage = () => {
   );
 
   const resolveCompanyName = useCallback(
-    (companyId: string | undefined) =>
+    (companyId: string | null | undefined) =>
       companies.find((c) => c.id === companyId)?.name ?? null,
     [companies],
   );
