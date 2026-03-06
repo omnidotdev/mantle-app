@@ -190,6 +190,11 @@ const NewQuotePage = () => {
   };
 
   const handleSave = async () => {
+    if (!currentQuote.companyId) {
+      toast.error("Please select a company");
+      return;
+    }
+
     setSaving(true);
     try {
       const result = await createMutation.mutateAsync({
@@ -197,8 +202,8 @@ const NewQuotePage = () => {
           quote: {
             organizationId: organizationId ?? "",
             quoteNumber: currentQuote.quoteNumber ?? "",
-            companyId: currentQuote.companyId ?? "",
-            contactId: currentQuote.contactId,
+            companyId: currentQuote.companyId,
+            contactId: currentQuote.contactId || null,
             title: currentQuote.title ?? "",
             description: currentQuote.description,
             status: currentQuote.status ?? "draft",
