@@ -197,7 +197,7 @@ const NewQuotePage = () => {
           quote: {
             organizationId: organizationId ?? "",
             quoteNumber: currentQuote.quoteNumber ?? "",
-            companyId: currentQuote.companyId || null,
+            companyId: currentQuote.companyId || undefined,
             contactId: currentQuote.contactId || null,
             title: currentQuote.title ?? "",
             description: currentQuote.description,

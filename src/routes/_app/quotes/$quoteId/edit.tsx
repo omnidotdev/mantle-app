@@ -258,7 +258,7 @@ const EditQuotePage = () => {
           rowId: quoteId,
           patch: {
             quoteNumber: currentQuote.quoteNumber,
-            companyId: currentQuote.companyId || null,
+            companyId: currentQuote.companyId || undefined,
             contactId: currentQuote.contactId || null,
             title: currentQuote.title,
             description: currentQuote.description,
