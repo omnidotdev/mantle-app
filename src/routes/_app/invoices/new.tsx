@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Printer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
@@ -64,9 +64,11 @@ const NewInvoicePage = () => {
   ]);
 
   const generateNumber = useGenerateDocumentNumberMutation();
+  const hasGenerated = useRef(false);
 
   useEffect(() => {
-    if (organizationId && !currentInvoice.invoiceNumber) {
+    if (organizationId && !hasGenerated.current) {
+      hasGenerated.current = true;
       setGeneratingNumber(true);
       generateNumber
         .mutateAsync({
@@ -80,7 +82,7 @@ const NewInvoicePage = () => {
         })
         .finally(() => setGeneratingNumber(false));
     }
-  }, [organizationId]);
+  }, [organizationId, generateNumber]);
 
   const invalidateInvoices = () => {
     queryClient.invalidateQueries({
