@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 
 import type { OrganizationProfile } from "@/features/settings/types";
@@ -308,6 +309,9 @@ const SettingsPage = () => {
           </button>
         </div>
       </div>
+
+      {/* Document Numbering */}
+      <DocumentNumberingSettings organizationId={organizationId} />
     </div>
   );
 };
