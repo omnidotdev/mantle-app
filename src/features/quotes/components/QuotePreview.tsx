@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
@@ -13,21 +12,10 @@ interface QuotePreviewProps {
   organizationId?: string;
 }
 
-const statusColors: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "bg-primary-100 text-primary-700",
-  accepted:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  declined: "bg-destructive/10 text-destructive",
-  expired:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  converted: "bg-secondary-100 text-secondary-700",
-};
-
-const pricingColors: Record<string, string> = {
-  fixed: "bg-primary-100 text-primary-700",
-  hourly: "bg-primary-200 text-primary-800",
-  royalty: "bg-secondary-100 text-secondary-700",
+const pricingLabels: Record<string, string> = {
+  fixed: "Fixed Price",
+  hourly: "Hourly",
+  royalty: "Royalty",
 };
 
 const pluralizeUnit = (value: string | null, unit: string | null): string => {
@@ -36,6 +24,23 @@ const pluralizeUnit = (value: string | null, unit: string | null): string => {
   const singular = unit.replace(/s$/, "");
   return `${value} ${num === 1 ? singular : unit}`;
 };
+
+/** Format a date as "DD Month YYYY" (e.g. "11 February 2025") */
+const formatQuoteDate = (dateStr: string): string => {
+  if (!dateStr) return "";
+  const date = new Date(
+    dateStr.includes("T") ? dateStr : `${dateStr}T00:00:00`,
+  );
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const Divider = () => (
+  <div className="my-6 border-primary-300 border-t border-dashed" />
+);
 
 const QuotePreview = ({
   quote,
@@ -79,6 +84,26 @@ const QuotePreview = ({
     ? `${contact.firstName} ${contact.lastName}`
     : "";
 
+  const currency = quote.currency || "USD";
+
+  const fixedTotal = lineItems
+    .filter((li) => li.pricingType === "fixed")
+    .reduce(
+      (sum, item) => sum + (Number.parseFloat(item.amount || "0") || 0),
+      0,
+    );
+
+  const hasHourly = lineItems.some((li) => li.pricingType === "hourly");
+  const hasRoyalty = lineItems.some((li) => li.pricingType === "royalty");
+
+  const hourlyMaxMonthly = lineItems
+    .filter((li) => li.pricingType === "hourly")
+    .reduce((sum, li) => {
+      const rate = Number.parseFloat(li.hourlyRate || "0") || 0;
+      const monthlyHrs = Number.parseFloat(li.monthlyCapHours || "0") || 0;
+      return sum + rate * monthlyHrs;
+    }, 0);
+
   const subtotal = lineItems.reduce(
     (sum, item) => sum + (Number.parseFloat(item.amount || "0") || 0),
     0,
@@ -86,358 +111,370 @@ const QuotePreview = ({
   const taxRate = Number.parseFloat(quote.taxRate || "0") || 0;
   const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
-  const currency = quote.currency || "USD";
 
-  const hasHourly = lineItems.some((li) => li.pricingType === "hourly");
-  const hasRoyalty = lineItems.some((li) => li.pricingType === "royalty");
+  const displayDate = formatQuoteDate(
+    quote.createdAt || new Date().toISOString().split("T")[0],
+  );
 
-  // Smart calculations
-  const hourlyMaxTotal = lineItems
-    .filter((li) => li.pricingType === "hourly")
-    .reduce((sum, li) => {
-      const rate = Number.parseFloat(li.hourlyRate || "0") || 0;
-      const maxHrs =
-        Number.parseFloat(li.maxCapHours || li.monthlyCapHours || "0") || 0;
-      return sum + rate * maxHrs;
-    }, 0);
+  // Split line items: first item is base cost, rest are additional features
+  const validItems = lineItems.filter((li) => li.description?.trim());
+  const baseItem = validItems[0];
+  const additionalItems = validItems.slice(1);
 
-  const royaltyBuyoutTotal = lineItems
-    .filter((li) => li.pricingType === "royalty" && li.royaltyBuyoutAmount)
-    .reduce(
-      (sum, li) => sum + Number.parseFloat(li.royaltyBuyoutAmount || "0"),
-      0,
+  const renderLineItemCard = (item: Partial<QuoteLineItem>) => {
+    const isHourly = item.pricingType === "hourly";
+    const isRoyalty = item.pricingType === "royalty";
+
+    // Determine the displayed price
+    let priceDisplay: string;
+    if (isHourly && item.hourlyRate) {
+      priceDisplay = `${formatCurrency(item.hourlyRate, currency)}/hr`;
+    } else if (isRoyalty && item.royaltyPercentage) {
+      priceDisplay = `${item.royaltyPercentage}%`;
+    } else {
+      priceDisplay = formatCurrency(item.amount || "0", currency);
+    }
+
+    // Build sub-description for hourly/royalty items
+    let subDescription: string | null = null;
+    if (isHourly) {
+      const parts: string[] = [];
+      if (item.hourlyRate) {
+        parts.push(`Rate: ${formatCurrency(item.hourlyRate, currency)}/hr`);
+      }
+      if (item.monthlyCapHours) {
+        const maxMonthly =
+          (Number.parseFloat(item.hourlyRate || "0") || 0) *
+          (Number.parseFloat(item.monthlyCapHours) || 0);
+        parts.push(
+          `up to ${item.monthlyCapHours} hours per month (max ${formatCurrency(String(maxMonthly), currency)})`,
+        );
+      }
+      if (item.weeklyCapHours) {
+        parts.push(`Weekly cap: ${item.weeklyCapHours}hrs`);
+      }
+      if (item.maxCapHours) {
+        parts.push(`Max: ${item.maxCapHours}hrs`);
+      }
+      if (item.estimatedHours) {
+        parts.push(`Est: ${item.estimatedHours}hrs`);
+      }
+      subDescription = parts.join(" ");
+    } else if (isRoyalty) {
+      const parts: string[] = [];
+      if (item.royaltyPercentage) {
+        parts.push(`${item.royaltyPercentage}% royalty`);
+      }
+      if (item.royaltyTimeframeUnit) {
+        parts.push(
+          pluralizeUnit(
+            item.royaltyTimeframe ?? null,
+            item.royaltyTimeframeUnit ?? null,
+          ),
+        );
+      }
+      if (item.royaltyBuyoutAmount) {
+        parts.push(
+          `Buyout: ${formatCurrency(item.royaltyBuyoutAmount, currency)}`,
+        );
+      }
+      subDescription = parts.join(" \u2022 ");
+    }
+
+    return (
+      <div
+        key={item.id}
+        className="rounded-lg border border-border bg-card p-5"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <p className="font-medium text-foreground text-lg">
+              {item.description}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-3">
+            <span className="inline-block rounded-full border border-primary-300 bg-primary-50 px-3 py-0.5 font-medium text-primary-700 text-xs">
+              {pricingLabels[item.pricingType || "fixed"]}
+            </span>
+            <span className="font-semibold text-foreground text-xl">
+              {priceDisplay}
+            </span>
+          </div>
+        </div>
+        {subDescription && (
+          <p className="mt-2 text-muted-foreground text-sm">{subDescription}</p>
+        )}
+      </div>
     );
+  };
 
   return (
-    <div className="rounded-lg border border-border bg-card shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
-      {/* Gradient header */}
-      <div className="rounded-t-lg bg-linear-to-r from-primary-700 to-primary-500 p-6 text-white print:rounded-none">
-        <div className="mb-2 flex justify-between">
-          <div className="flex items-start gap-3">
-            <img
-              src="/omni-logo.svg"
-              alt="Omni Logo"
-              className="h-12 w-12 object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-            />
-            <div>
-              <h3 className="font-bold text-white text-xl">
-                {orgProfile?.companyName || "Your Company"}
-              </h3>
-              {orgProfile?.email && (
-                <p className="text-primary-100 text-sm">{orgProfile.email}</p>
-              )}
-            </div>
-          </div>
-          <div className="text-right">
-            <h1 className="font-bold text-4xl text-white">QUOTE</h1>
-          </div>
+    <div className="rounded-lg border border-border bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
+      {/* Header banner */}
+      <div className="flex items-center justify-between rounded-t-lg bg-linear-to-r from-primary-800 to-primary-500 px-8 py-6 text-white print:rounded-none">
+        <div className="flex items-center gap-4">
+          <img
+            src="/omni-logo.svg"
+            alt="Omni Logo"
+            className="h-10 w-10 object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
+          <h1 className="font-bold text-white text-xl leading-tight">
+            Quote for Professional Software
+            <br />
+            Development Services
+          </h1>
+        </div>
+        <div className="text-right text-sm">
+          <p>Date prepared: {displayDate}</p>
+          <p>Quote ID: {quote.quoteNumber || "—"}</p>
         </div>
       </div>
 
-      <div className="p-6">
-        {/* Two-column: Prepared By / Prepared For */}
-        <div className="mb-8 grid grid-cols-2 gap-8">
+      <div className="px-8 py-8">
+        {/* Prepared By / Prepared For */}
+        <div className="grid grid-cols-2 gap-12">
           <div>
-            <h4 className="mb-2 font-bold text-foreground">Prepared By</h4>
+            <p className="mb-1 text-muted-foreground text-sm">Prepared By</p>
+            <p className="font-semibold text-foreground">
+              {orgProfile?.contactName || "—"}
+            </p>
             <p className="text-foreground">
               {orgProfile?.companyName || "Your Company"}
             </p>
             {orgProfile?.email && (
               <p className="text-foreground text-sm">{orgProfile.email}</p>
             )}
-            {orgProfile?.phone && (
-              <p className="text-foreground text-sm">{orgProfile.phone}</p>
-            )}
-            {orgProfile?.addressLine1 && (
-              <p className="text-foreground text-sm">
-                {orgProfile.addressLine1}
-                {orgProfile.city && `, ${orgProfile.city}`}
-                {orgProfile.state && `, ${orgProfile.state}`}
-                {orgProfile.postalCode && ` ${orgProfile.postalCode}`}
-              </p>
-            )}
           </div>
           <div>
-            <h4 className="mb-2 font-bold text-foreground">Prepared For</h4>
-            <p className="text-foreground">
+            <p className="mb-1 text-muted-foreground text-sm">Prepared For</p>
+            <p className="font-semibold text-foreground">
               {quote.clientName ||
                 resolvedContactName ||
-                resolvedCompanyName ||
                 "Client not specified"}
             </p>
+            {resolvedCompanyName && (
+              <p className="text-foreground">{resolvedCompanyName}</p>
+            )}
             {quote.clientEmail && (
               <p className="text-foreground text-sm">{quote.clientEmail}</p>
             )}
-            {resolvedCompanyName && !quote.clientName && (
-              <p className="text-foreground">{resolvedCompanyName}</p>
+            {contact && !quote.clientEmail && contact.emails?.[0] && (
+              <p className="text-foreground text-sm">{contact.emails[0]}</p>
             )}
           </div>
         </div>
 
-        {/* Quote metadata */}
-        <div className="mb-8 flex justify-end">
-          <div className="w-1/3">
-            <div className="mb-1 flex justify-between">
-              <span className="font-bold text-foreground">Quote #:</span>
-              <span className="text-foreground">
-                {quote.quoteNumber || "QT-0001"}
-              </span>
-            </div>
-            {quote.validUntil && (
-              <div className="mb-1 flex justify-between">
-                <span className="font-bold text-foreground">Valid Until:</span>
-                <span className="text-foreground">{quote.validUntil}</span>
+        <Divider />
+
+        {/* Project Overview */}
+        {(quote.title || quote.description || quote.projectType) && (
+          <>
+            <h2 className="mb-4 font-bold text-foreground text-xl">
+              Project Overview
+            </h2>
+
+            {(quote.title || quote.projectType) && (
+              <div className="mb-4 grid grid-cols-2 gap-12">
+                {quote.title && (
+                  <div>
+                    <p className="mb-1 text-muted-foreground text-sm">
+                      Project Name
+                    </p>
+                    <p className="font-medium text-foreground text-lg">
+                      {quote.title}
+                    </p>
+                  </div>
+                )}
+                {quote.projectType && (
+                  <div>
+                    <p className="mb-1 text-muted-foreground text-sm">
+                      Project Type
+                    </p>
+                    <p className="font-medium text-foreground text-lg capitalize">
+                      {quote.projectType}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
-            <div className="flex justify-between">
-              <span className="font-bold text-foreground">Status:</span>
-              <span
-                className={`inline-block rounded-full px-2 py-0.5 text-xs ${statusColors[quote.status || "draft"] || statusColors.draft}`}
-              >
-                {quote.status || "draft"}
-              </span>
-            </div>
-          </div>
-        </div>
 
-        {/* Project overview */}
-        {(quote.title || quote.description || quote.projectType) && (
-          <div className="mb-6">
-            {quote.title && (
-              <h3 className="mb-1 font-bold text-foreground text-lg">
-                {quote.title}
-              </h3>
+            {quote.description && (
+              <div className="mb-4">
+                <p className="mb-1 text-muted-foreground text-sm">
+                  Description
+                </p>
+                <p className="text-foreground">{quote.description}</p>
+              </div>
             )}
-            {quote.projectType && (
-              <p className="mb-1 text-muted-foreground text-sm capitalize">
-                {quote.projectType} project
-                {quote.timeRange && ` \u2022 ${quote.timeRange}`}
+
+            {quote.timeRange && (
+              <div className="mb-2">
+                <p className="mb-0.5 text-muted-foreground text-sm">
+                  Estimated Timeline
+                </p>
+                <p className="text-muted-foreground text-sm italic">
+                  This is a rough estimate based on the current project scope
+                  and requirements. The final time estimate may vary as the
+                  project develops and requirements are refined.
+                </p>
+                <p className="mt-1 font-semibold text-foreground text-lg">
+                  {quote.timeRange}
+                </p>
+              </div>
+            )}
+
+            <Divider />
+          </>
+        )}
+
+        {/* Cost Breakdown */}
+        {validItems.length > 0 && (
+          <>
+            <h2 className="mb-5 font-bold text-foreground text-xl">
+              Cost Breakdown
+            </h2>
+
+            <div className="space-y-4">
+              {baseItem && renderLineItemCard(baseItem)}
+
+              {additionalItems.length > 0 && (
+                <>
+                  <p className="mt-6 mb-3 font-medium text-muted-foreground text-sm">
+                    Additional Features
+                  </p>
+                  {additionalItems.map((item) => renderLineItemCard(item))}
+                </>
+              )}
+            </div>
+
+            <Divider />
+          </>
+        )}
+
+        {/* Total Investment */}
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-bold text-foreground text-xl">
+            Total Investment
+          </h2>
+          <div className="text-right">
+            <p className="font-bold text-3xl text-primary">
+              {formatCurrency(
+                String(
+                  taxRate > 0 ? total : fixedTotal > 0 ? fixedTotal : total,
+                ),
+                currency,
+              )}
+            </p>
+            {hasHourly && hourlyMaxMonthly > 0 && (
+              <p className="mt-1 text-muted-foreground text-sm">
+                + hourly services (maximum{" "}
+                {formatCurrency(String(hourlyMaxMonthly), currency)}/mo)
               </p>
             )}
-            {quote.description && (
-              <p className="text-foreground">{quote.description}</p>
+            {hasRoyalty && (
+              <p className="mt-1 text-muted-foreground text-sm">
+                + royalty-based services
+              </p>
+            )}
+            {taxRate > 0 && (
+              <p className="mt-1 text-muted-foreground text-sm">
+                Includes {taxRate}% tax (
+                {formatCurrency(String(taxAmount), currency)})
+              </p>
             )}
           </div>
-        )}
-
-        {/* Line items table */}
-        <div className="mb-8">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-primary text-white">
-                <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Pricing</th>
-                <th className="px-4 py-2 text-right">Qty</th>
-                <th className="px-4 py-2 text-right">Unit Price</th>
-                <th className="px-4 py-2 text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lineItems.map(
-                (item) =>
-                  item.description && (
-                    <tr key={item.id} className="border-border border-b">
-                      <td className="px-4 py-3 text-foreground">
-                        <div>{item.description}</div>
-                        {item.pricingType === "hourly" && (
-                          <div className="mt-1 space-y-0.5 text-muted-foreground text-xs">
-                            {item.hourlyRate && (
-                              <span>
-                                {formatCurrency(item.hourlyRate, currency)}/hr
-                              </span>
-                            )}
-                            {item.estimatedHours && (
-                              <span> \u2022 Est: {item.estimatedHours}hrs</span>
-                            )}
-                            {item.weeklyCapHours && (
-                              <span>
-                                {" "}
-                                \u2022 Weekly: {item.weeklyCapHours}hrs
-                              </span>
-                            )}
-                            {item.monthlyCapHours && (
-                              <span>
-                                {" "}
-                                \u2022 Monthly: {item.monthlyCapHours}hrs
-                              </span>
-                            )}
-                            {item.maxCapHours && (
-                              <span> \u2022 Max: {item.maxCapHours}hrs</span>
-                            )}
-                          </div>
-                        )}
-                        {item.pricingType === "royalty" && (
-                          <div className="mt-1 space-y-0.5 text-muted-foreground text-xs">
-                            {item.royaltyPercentage && (
-                              <span>{item.royaltyPercentage}% royalty</span>
-                            )}
-                            {item.royaltyTimeframeUnit && (
-                              <span>
-                                {" "}
-                                \u2022{" "}
-                                {pluralizeUnit(
-                                  item.royaltyTimeframe ?? null,
-                                  item.royaltyTimeframeUnit ?? null,
-                                )}
-                              </span>
-                            )}
-                            {item.royaltyBuyoutAmount && (
-                              <span>
-                                {" "}
-                                \u2022 Buyout:{" "}
-                                {formatCurrency(
-                                  item.royaltyBuyoutAmount,
-                                  currency,
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          className={`text-xs ${pricingColors[item.pricingType || "fixed"]}`}
-                        >
-                          {item.pricingType || "fixed"}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right text-foreground">
-                        {item.quantity}
-                      </td>
-                      <td className="px-4 py-3 text-right text-foreground">
-                        {formatCurrency(item.unitPrice || "0", currency)}
-                      </td>
-                      <td className="px-4 py-3 text-right text-foreground">
-                        {formatCurrency(item.amount || "0", currency)}
-                      </td>
-                    </tr>
-                  ),
-              )}
-            </tbody>
-          </table>
-
-          {/* Totals */}
-          <div className="mt-6 flex justify-end">
-            <div className="w-1/3 rounded bg-primary-100 p-3">
-              <div className="mb-1 flex justify-between text-sm">
-                <span>Subtotal</span>
-                <span>{formatCurrency(String(subtotal), currency)}</span>
-              </div>
-              {taxRate > 0 && (
-                <div className="mb-1 flex justify-between text-sm">
-                  <span>Tax ({taxRate}%)</span>
-                  <span>{formatCurrency(String(taxAmount), currency)}</span>
-                </div>
-              )}
-              <div className="flex justify-between font-bold">
-                <span>TOTAL</span>
-                <span>{formatCurrency(String(total), currency)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Smart pricing summaries */}
-          {(hourlyMaxTotal > 0 || royaltyBuyoutTotal > 0) && (
-            <div className="mt-4 rounded border border-border bg-muted p-3 text-foreground text-sm">
-              {hourlyMaxTotal > 0 && (
-                <p>
-                  \u2022 Hourly items max cost (at cap):{" "}
-                  <span className="font-medium">
-                    {formatCurrency(String(hourlyMaxTotal), currency)}
-                  </span>
-                </p>
-              )}
-              {royaltyBuyoutTotal > 0 && (
-                <p>
-                  \u2022 Royalty buyout option available:{" "}
-                  <span className="font-medium">
-                    {formatCurrency(String(royaltyBuyoutTotal), currency)}
-                  </span>{" "}
-                  (one-time)
-                </p>
-              )}
-            </div>
-          )}
         </div>
 
-        {/* Terms */}
-        {quote.terms && (
-          <div className="mb-4">
-            <h4 className="mb-2 font-bold text-foreground">Terms:</h4>
-            <div className="text-foreground">
-              {quote.terms.split("\n").map((line, i) => (
-                <p key={`term-${i}`}>{line}</p>
-              ))}
-            </div>
-          </div>
-        )}
+        <Divider />
 
-        {/* Dynamic pricing terms */}
-        {(hasHourly || hasRoyalty) && (
-          <div className="mb-4">
-            <h4 className="mb-2 font-bold text-foreground">
-              Pricing-Specific Terms:
-            </h4>
-            <ul className="list-disc pl-5 text-foreground text-sm">
-              {hasHourly && (
-                <>
-                  <li>
-                    Hourly work will be tracked and reported on a weekly basis
-                  </li>
-                  <li>
-                    Work will pause when hourly caps are reached unless
-                    additional hours are authorized in writing
-                  </li>
-                </>
-              )}
-              {hasRoyalty && (
-                <>
-                  <li>
-                    Royalty payments are due within 30 days of each reporting
-                    period
-                  </li>
-                  <li>
-                    Maintenance is included for the duration of the royalty
-                    period
-                  </li>
-                  {royaltyBuyoutTotal > 0 && (
-                    <li>
-                      Client may exercise the buyout option at any time to
-                      terminate royalty obligations
-                    </li>
-                  )}
-                </>
-              )}
-            </ul>
-          </div>
-        )}
+        {/* Terms & Conditions */}
+        {(quote.terms || quote.additionalTerms?.length) && (
+          <>
+            <h2 className="mb-3 font-bold text-foreground text-xl">
+              Terms &amp; Conditions
+            </h2>
 
-        {/* Additional terms */}
-        {quote.additionalTerms && quote.additionalTerms.length > 0 && (
-          <div className="mb-4">
-            <h4 className="mb-2 font-bold text-foreground">
-              Additional Terms:
-            </h4>
-            <ul className="list-disc pl-5 text-foreground">
-              {quote.additionalTerms.map((term) => (
-                <li key={term}>{term}</li>
-              ))}
-            </ul>
-          </div>
+            <p className="mb-4 text-foreground italic">
+              This quote is not legally binding and is subject to a formal
+              agreement. If the client accepts this quote, a separate contract
+              governing all legally binding terms will be prepared for
+              signature.
+            </p>
+
+            {quote.terms && (
+              <ul className="mb-4 list-disc space-y-2 pl-5 text-foreground">
+                {quote.terms.split("\n").map(
+                  (line) =>
+                    line.trim() && (
+                      <li key={line}>
+                        {line.includes(":") ? (
+                          <>
+                            <strong>{line.split(":")[0]}:</strong>
+                            {line.slice(line.indexOf(":") + 1)}
+                          </>
+                        ) : (
+                          line
+                        )}
+                      </li>
+                    ),
+                )}
+              </ul>
+            )}
+
+            {quote.additionalTerms && quote.additionalTerms.length > 0 && (
+              <ul className="list-disc space-y-2 pl-5 text-foreground">
+                {quote.additionalTerms.map((term) => (
+                  <li key={term}>
+                    {term.includes(":") ? (
+                      <>
+                        <strong>{term.split(":")[0]}:</strong>
+                        {term.slice(term.indexOf(":") + 1)}
+                      </>
+                    ) : (
+                      term
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <Divider />
+          </>
         )}
 
         {/* Notes */}
         {quote.notes && (
-          <div>
-            <h4 className="mb-2 font-bold text-foreground">Notes:</h4>
-            <div className="text-foreground">
-              {quote.notes.split("\n").map((line, i) => (
-                <p key={`note-${i}`}>{line}</p>
-              ))}
+          <>
+            <div className="mb-4">
+              <h4 className="mb-2 font-bold text-foreground">Notes</h4>
+              <div className="text-foreground">
+                {quote.notes.split("\n").map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
             </div>
-          </div>
+            <Divider />
+          </>
         )}
+
+        {/* Footer */}
+        <div className="pt-2 text-center">
+          <p className="mb-4 text-foreground italic">
+            We appreciate the opportunity to work with you and look forward to
+            bringing your vision to life.
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <img
+              src="/omni-logo.svg"
+              alt="Omni Logo"
+              className="h-6 w-6 object-contain"
+            />
+            <span className="font-bold text-foreground">
+              {orgProfile?.companyName || "Omni LLC"}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
