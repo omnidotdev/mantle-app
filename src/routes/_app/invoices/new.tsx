@@ -1,16 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Printer } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
-import { generateInvoiceNumber } from "@/features/invoices/store/invoiceStore";
 import {
-  useAllInvoicesQuery,
   useCreateInvoiceLineItemMutation,
   useCreateInvoiceMutation,
+  useGenerateDocumentNumberMutation,
 } from "@/generated/graphql";
 
 import type {
@@ -43,74 +42,12 @@ const NewInvoicePage = () => {
   const queryClient = useQueryClient();
 
   const [saving, setSaving] = useState(false);
+  const [generatingNumber, setGeneratingNumber] = useState(false);
 
-  const { data, isLoading } = useAllInvoicesQuery(
-    { organizationId: organizationId ?? "" },
-    { enabled: !!organizationId },
-  );
-
-  const invoices = useMemo(
-    () =>
-      (data?.invoices?.nodes ?? []).flatMap((node) => {
-        if (!node) return [];
-
-        return [
-          {
-            id: node.rowId,
-            organizationId: node.organizationId,
-            invoiceNumber: node.invoiceNumber,
-            companyId: node.companyId ?? null,
-            contactId: node.contactId ?? null,
-            billTo: node.billTo ?? null,
-            status: (node.status ?? "draft") as Invoice["status"],
-            issueDate: node.issueDate,
-            dueDate: node.dueDate ?? null,
-            notes: node.notes ?? null,
-            subtotal: node.subtotal ?? "0",
-            taxRate: node.taxRate ?? null,
-            taxAmount: node.taxAmount ?? "0",
-            total: node.total ?? "0",
-            currency: node.currency ?? "USD",
-            paidAt: node.paidAt ?? null,
-            paymentReference: node.paymentReference ?? null,
-            paymentLinkUrl: node.paymentLinkUrl ?? null,
-            createdAt: node.createdAt ?? "",
-            updatedAt: node.updatedAt ?? "",
-            company: node.company ?? null,
-            contact: node.contact ?? null,
-            invoiceLineItems: (node.invoiceLineItems.nodes ?? []).flatMap(
-              (li) => {
-                if (!li) return [];
-
-                return [
-                  {
-                    id: li.rowId,
-                    invoiceId: li.invoiceId,
-                    productId: li.productId ?? null,
-                    description: li.description,
-                    quantity: li.quantity,
-                    unitPrice: li.unitPrice,
-                    amount: li.amount,
-                    sortOrder: li.sortOrder ?? 0,
-                  },
-                ];
-              },
-            ),
-          },
-        ];
-      }),
-    [data],
-  );
-
-  const invoiceNumber = useMemo(
-    () => generateInvoiceNumber(invoices),
-    [invoices],
-  );
   const today = new Date().toISOString().split("T")[0];
 
   const [currentInvoice, setCurrentInvoice] = useState<Partial<Invoice>>({
     ...defaultInvoice,
-    invoiceNumber,
     issueDate: today,
   });
   const [currentLineItems, setCurrentLineItems] = useState<
@@ -126,17 +63,28 @@ const NewInvoicePage = () => {
     },
   ]);
 
+  const generateNumber = useGenerateDocumentNumberMutation();
+
   useEffect(() => {
-    if (invoiceNumber && !currentInvoice.invoiceNumber) {
-      setCurrentInvoice((prev) => ({ ...prev, invoiceNumber }));
+    if (organizationId && !currentInvoice.invoiceNumber) {
+      setGeneratingNumber(true);
+      generateNumber
+        .mutateAsync({
+          input: { organizationId, documentType: "invoice" },
+        })
+        .then((result) => {
+          const num = result.generateDocumentNumber?.documentNumber;
+          if (num) {
+            setCurrentInvoice((prev) => ({ ...prev, invoiceNumber: num }));
+          }
+        })
+        .finally(() => setGeneratingNumber(false));
     }
-  }, [invoiceNumber, currentInvoice.invoiceNumber]);
+  }, [organizationId]);
 
   const invalidateInvoices = () => {
     queryClient.invalidateQueries({
-      queryKey: useAllInvoicesQuery.getKey({
-        organizationId: organizationId ?? "",
-      }),
+      queryKey: ["AllInvoices"],
     });
   };
 
@@ -227,7 +175,7 @@ const NewInvoicePage = () => {
     );
   }
 
-  if (isLoading) {
+  if (generatingNumber) {
     return (
       <div className="flex items-center justify-center p-6">
         <Loader2
