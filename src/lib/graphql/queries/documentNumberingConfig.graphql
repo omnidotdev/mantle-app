@@ -1,0 +1,56 @@
+query DocumentNumberingConfigs($organizationId: String!) {
+  documentNumberingConfigs(
+    condition: { organizationId: $organizationId }
+  ) {
+    nodes {
+      rowId
+      organizationId
+      documentType
+      prefix
+      separator
+      dateFormat
+      idStrategy
+      sequentialPadding
+      randomLength
+      nextSequentialNumber
+    }
+  }
+}
+
+mutation CreateDocumentNumberingConfig(
+  $input: CreateDocumentNumberingConfigInput!
+) {
+  createDocumentNumberingConfig(input: $input) {
+    documentNumberingConfig {
+      rowId
+      prefix
+      separator
+      dateFormat
+      idStrategy
+      sequentialPadding
+      randomLength
+    }
+  }
+}
+
+mutation UpdateDocumentNumberingConfig(
+  $input: UpdateDocumentNumberingConfigInput!
+) {
+  updateDocumentNumberingConfig(input: $input) {
+    documentNumberingConfig {
+      rowId
+      prefix
+      separator
+      dateFormat
+      idStrategy
+      sequentialPadding
+      randomLength
+    }
+  }
+}
+
+mutation GenerateDocumentNumber($input: GenerateDocumentNumberInput!) {
+  generateDocumentNumber(input: $input) {
+    documentNumber
+  }
+}

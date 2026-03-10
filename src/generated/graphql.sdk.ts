@@ -405,6 +405,39 @@ export type CreateCompanyPayloadCompanyEdgeArgs = {
   orderBy?: Array<CompanyOrderBy>;
 };
 
+/** All input for the create `DocumentNumberingConfig` mutation. */
+export type CreateDocumentNumberingConfigInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `DocumentNumberingConfig` to be created by this mutation. */
+  documentNumberingConfig: DocumentNumberingConfigInput;
+};
+
+/** The output of our create `DocumentNumberingConfig` mutation. */
+export type CreateDocumentNumberingConfigPayload = {
+  __typename?: 'CreateDocumentNumberingConfigPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `DocumentNumberingConfig` that was created by this mutation. */
+  documentNumberingConfig?: Maybe<DocumentNumberingConfig>;
+  /** An edge for our `DocumentNumberingConfig`. May be used by Relay 1. */
+  documentNumberingConfigEdge?: Maybe<DocumentNumberingConfigEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `DocumentNumberingConfig` mutation. */
+export type CreateDocumentNumberingConfigPayloadDocumentNumberingConfigEdgeArgs = {
+  orderBy?: Array<DocumentNumberingConfigOrderBy>;
+};
+
 /** All input for the create `InventoryAdjustment` mutation. */
 export type CreateInventoryAdjustmentInput = {
   /**
@@ -724,6 +757,50 @@ export type DeleteCompanyPayloadCompanyEdgeArgs = {
   orderBy?: Array<CompanyOrderBy>;
 };
 
+/** All input for the `deleteDocumentNumberingConfigById` mutation. */
+export type DeleteDocumentNumberingConfigByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `DocumentNumberingConfig` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteDocumentNumberingConfig` mutation. */
+export type DeleteDocumentNumberingConfigInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `DocumentNumberingConfig` mutation. */
+export type DeleteDocumentNumberingConfigPayload = {
+  __typename?: 'DeleteDocumentNumberingConfigPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedDocumentNumberingConfigId?: Maybe<Scalars['ID']['output']>;
+  /** The `DocumentNumberingConfig` that was deleted by this mutation. */
+  documentNumberingConfig?: Maybe<DocumentNumberingConfig>;
+  /** An edge for our `DocumentNumberingConfig`. May be used by Relay 1. */
+  documentNumberingConfigEdge?: Maybe<DocumentNumberingConfigEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `DocumentNumberingConfig` mutation. */
+export type DeleteDocumentNumberingConfigPayloadDocumentNumberingConfigEdgeArgs = {
+  orderBy?: Array<DocumentNumberingConfigOrderBy>;
+};
+
 /** All input for the `deleteInventoryAdjustmentById` mutation. */
 export type DeleteInventoryAdjustmentByIdInput = {
   /**
@@ -1030,6 +1107,130 @@ export type DeleteQuotePayload = {
 /** The output of our delete `Quote` mutation. */
 export type DeleteQuotePayloadQuoteEdgeArgs = {
   orderBy?: Array<QuoteOrderBy>;
+};
+
+export type DocumentNumberingConfig = Node & {
+  __typename?: 'DocumentNumberingConfig';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  dateFormat?: Maybe<Scalars['String']['output']>;
+  documentType: Scalars['String']['output'];
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  idStrategy: Scalars['String']['output'];
+  nextSequentialNumber: Scalars['Int']['output'];
+  organizationId: Scalars['String']['output'];
+  prefix: Scalars['String']['output'];
+  randomLength: Scalars['Int']['output'];
+  rowId: Scalars['UUID']['output'];
+  separator: Scalars['String']['output'];
+  sequentialPadding: Scalars['Int']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+/**
+ * A condition to be used against `DocumentNumberingConfig` object types. All
+ * fields are tested for equality and combined with a logical ‘and.’
+ */
+export type DocumentNumberingConfigCondition = {
+  /** Checks for equality with the object’s `documentType` field. */
+  documentType?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `DocumentNumberingConfig` values. */
+export type DocumentNumberingConfigConnection = {
+  __typename?: 'DocumentNumberingConfigConnection';
+  /** A list of edges which contains the `DocumentNumberingConfig` and cursor to aid in pagination. */
+  edges: Array<Maybe<DocumentNumberingConfigEdge>>;
+  /** A list of `DocumentNumberingConfig` objects. */
+  nodes: Array<Maybe<DocumentNumberingConfig>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `DocumentNumberingConfig` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `DocumentNumberingConfig` edge in the connection. */
+export type DocumentNumberingConfigEdge = {
+  __typename?: 'DocumentNumberingConfigEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `DocumentNumberingConfig` at the end of the edge. */
+  node?: Maybe<DocumentNumberingConfig>;
+};
+
+/** A filter to be used against `DocumentNumberingConfig` object types. All fields are combined with a logical ‘and.’ */
+export type DocumentNumberingConfigFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<DocumentNumberingConfigFilter>>;
+  /** Filter by the object’s `documentType` field. */
+  documentType?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<DocumentNumberingConfigFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<DocumentNumberingConfigFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `DocumentNumberingConfig` */
+export type DocumentNumberingConfigInput = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  dateFormat?: InputMaybe<Scalars['String']['input']>;
+  documentType: Scalars['String']['input'];
+  idStrategy?: InputMaybe<Scalars['String']['input']>;
+  nextSequentialNumber?: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  prefix?: InputMaybe<Scalars['String']['input']>;
+  randomLength?: InputMaybe<Scalars['Int']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  separator?: InputMaybe<Scalars['String']['input']>;
+  sequentialPadding?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+/** Methods to use when ordering `DocumentNumberingConfig`. */
+export enum DocumentNumberingConfigOrderBy {
+  DocumentTypeAsc = 'DOCUMENT_TYPE_ASC',
+  DocumentTypeDesc = 'DOCUMENT_TYPE_DESC',
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `DocumentNumberingConfig`. Fields that are set will be updated. */
+export type DocumentNumberingConfigPatch = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  dateFormat?: InputMaybe<Scalars['String']['input']>;
+  documentType?: InputMaybe<Scalars['String']['input']>;
+  idStrategy?: InputMaybe<Scalars['String']['input']>;
+  nextSequentialNumber?: InputMaybe<Scalars['Int']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  prefix?: InputMaybe<Scalars['String']['input']>;
+  randomLength?: InputMaybe<Scalars['Int']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  separator?: InputMaybe<Scalars['String']['input']>;
+  sequentialPadding?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+export type GenerateDocumentNumberInput = {
+  documentType: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+};
+
+export type GenerateDocumentNumberPayload = {
+  __typename?: 'GenerateDocumentNumberPayload';
+  documentNumber: Scalars['String']['output'];
 };
 
 export type InventoryAdjustment = Node & {
@@ -1426,6 +1627,8 @@ export type Mutation = {
   createCompany?: Maybe<CreateCompanyPayload>;
   /** Creates a single `CompanyMember`. */
   createCompanyMember?: Maybe<CreateCompanyMemberPayload>;
+  /** Creates a single `DocumentNumberingConfig`. */
+  createDocumentNumberingConfig?: Maybe<CreateDocumentNumberingConfigPayload>;
   /** Creates a single `InventoryAdjustment`. */
   createInventoryAdjustment?: Maybe<CreateInventoryAdjustmentPayload>;
   /** Creates a single `Invoice`. */
@@ -1448,6 +1651,10 @@ export type Mutation = {
   deleteCompanyMember?: Maybe<DeleteCompanyMemberPayload>;
   /** Deletes a single `CompanyMember` using its globally unique id. */
   deleteCompanyMemberById?: Maybe<DeleteCompanyMemberPayload>;
+  /** Deletes a single `DocumentNumberingConfig` using a unique key. */
+  deleteDocumentNumberingConfig?: Maybe<DeleteDocumentNumberingConfigPayload>;
+  /** Deletes a single `DocumentNumberingConfig` using its globally unique id. */
+  deleteDocumentNumberingConfigById?: Maybe<DeleteDocumentNumberingConfigPayload>;
   /** Deletes a single `InventoryAdjustment` using a unique key. */
   deleteInventoryAdjustment?: Maybe<DeleteInventoryAdjustmentPayload>;
   /** Deletes a single `InventoryAdjustment` using its globally unique id. */
@@ -1476,6 +1683,7 @@ export type Mutation = {
   deleteQuoteLineItem?: Maybe<DeleteQuoteLineItemPayload>;
   /** Deletes a single `QuoteLineItem` using its globally unique id. */
   deleteQuoteLineItemById?: Maybe<DeleteQuoteLineItemPayload>;
+  generateDocumentNumber?: Maybe<GenerateDocumentNumberPayload>;
   /** Updates a single `Company` using a unique key and a patch. */
   updateCompany?: Maybe<UpdateCompanyPayload>;
   /** Updates a single `Company` using its globally unique id and a patch. */
@@ -1484,6 +1692,10 @@ export type Mutation = {
   updateCompanyMember?: Maybe<UpdateCompanyMemberPayload>;
   /** Updates a single `CompanyMember` using its globally unique id and a patch. */
   updateCompanyMemberById?: Maybe<UpdateCompanyMemberPayload>;
+  /** Updates a single `DocumentNumberingConfig` using a unique key and a patch. */
+  updateDocumentNumberingConfig?: Maybe<UpdateDocumentNumberingConfigPayload>;
+  /** Updates a single `DocumentNumberingConfig` using its globally unique id and a patch. */
+  updateDocumentNumberingConfigById?: Maybe<UpdateDocumentNumberingConfigPayload>;
   /** Updates a single `InventoryAdjustment` using a unique key and a patch. */
   updateInventoryAdjustment?: Maybe<UpdateInventoryAdjustmentPayload>;
   /** Updates a single `InventoryAdjustment` using its globally unique id and a patch. */
@@ -1524,6 +1736,12 @@ export type MutationCreateCompanyArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateCompanyMemberArgs = {
   input: CreateCompanyMemberInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateDocumentNumberingConfigArgs = {
+  input: CreateDocumentNumberingConfigInput;
 };
 
 
@@ -1590,6 +1808,18 @@ export type MutationDeleteCompanyMemberArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteCompanyMemberByIdArgs = {
   input: DeleteCompanyMemberByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteDocumentNumberingConfigArgs = {
+  input: DeleteDocumentNumberingConfigInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteDocumentNumberingConfigByIdArgs = {
+  input: DeleteDocumentNumberingConfigByIdInput;
 };
 
 
@@ -1678,6 +1908,12 @@ export type MutationDeleteQuoteLineItemByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationGenerateDocumentNumberArgs = {
+  input: GenerateDocumentNumberInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateCompanyArgs = {
   input: UpdateCompanyInput;
 };
@@ -1698,6 +1934,18 @@ export type MutationUpdateCompanyMemberArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateCompanyMemberByIdArgs = {
   input: UpdateCompanyMemberByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateDocumentNumberingConfigArgs = {
+  input: UpdateDocumentNumberingConfigInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateDocumentNumberingConfigByIdArgs = {
+  input: UpdateDocumentNumberingConfigByIdInput;
 };
 
 
@@ -2089,6 +2337,12 @@ export type Query = Node & {
   companyMemberById?: Maybe<CompanyMember>;
   /** Reads and enables pagination through a set of `CompanyMember`. */
   companyMembers?: Maybe<CompanyMemberConnection>;
+  /** Get a single `DocumentNumberingConfig`. */
+  documentNumberingConfig?: Maybe<DocumentNumberingConfig>;
+  /** Reads a single `DocumentNumberingConfig` using its globally unique `ID`. */
+  documentNumberingConfigById?: Maybe<DocumentNumberingConfig>;
+  /** Reads and enables pagination through a set of `DocumentNumberingConfig`. */
+  documentNumberingConfigs?: Maybe<DocumentNumberingConfigConnection>;
   /** The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`. */
   id: Scalars['ID']['output'];
   /** Get a single `InventoryAdjustment`. */
@@ -2190,6 +2444,31 @@ export type QueryCompanyMembersArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<CompanyMemberOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryDocumentNumberingConfigArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryDocumentNumberingConfigByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryDocumentNumberingConfigsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<DocumentNumberingConfigCondition>;
+  filter?: InputMaybe<DocumentNumberingConfigFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DocumentNumberingConfigOrderBy>>;
 };
 
 
@@ -2463,6 +2742,8 @@ export type QuoteFilter = {
   and?: InputMaybe<Array<QuoteFilter>>;
   /** Filter by the object’s `company` relation. */
   company?: InputMaybe<CompanyFilter>;
+  /** A related `company` exists. */
+  companyExists?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `companyId` field. */
   companyId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `contact` relation. */
@@ -2947,6 +3228,53 @@ export type UpdateCompanyPayloadCompanyEdgeArgs = {
   orderBy?: Array<CompanyOrderBy>;
 };
 
+/** All input for the `updateDocumentNumberingConfigById` mutation. */
+export type UpdateDocumentNumberingConfigByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `DocumentNumberingConfig` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `DocumentNumberingConfig` being updated. */
+  patch: DocumentNumberingConfigPatch;
+};
+
+/** All input for the `updateDocumentNumberingConfig` mutation. */
+export type UpdateDocumentNumberingConfigInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `DocumentNumberingConfig` being updated. */
+  patch: DocumentNumberingConfigPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `DocumentNumberingConfig` mutation. */
+export type UpdateDocumentNumberingConfigPayload = {
+  __typename?: 'UpdateDocumentNumberingConfigPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `DocumentNumberingConfig` that was updated by this mutation. */
+  documentNumberingConfig?: Maybe<DocumentNumberingConfig>;
+  /** An edge for our `DocumentNumberingConfig`. May be used by Relay 1. */
+  documentNumberingConfigEdge?: Maybe<DocumentNumberingConfigEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `DocumentNumberingConfig` mutation. */
+export type UpdateDocumentNumberingConfigPayloadDocumentNumberingConfigEdgeArgs = {
+  orderBy?: Array<DocumentNumberingConfigOrderBy>;
+};
+
 /** All input for the `updateInventoryAdjustmentById` mutation. */
 export type UpdateInventoryAdjustmentByIdInput = {
   /**
@@ -3304,6 +3632,69 @@ export type DeleteCompanyMutationVariables = Exact<{
 
 export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany?: { __typename?: 'DeleteCompanyPayload', deletedCompanyId?: string | null } | null };
 
+export type CompanyMembersByCompanyQueryVariables = Exact<{
+  companyId: Scalars['UUID']['input'];
+}>;
+
+
+export type CompanyMembersByCompanyQuery = { __typename?: 'Query', companyMembers?: { __typename?: 'CompanyMemberConnection', nodes: Array<{ __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null, createdAt?: string | null, person?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null } | null> } | null };
+
+export type CompanyMembersByPersonQueryVariables = Exact<{
+  personId: Scalars['UUID']['input'];
+}>;
+
+
+export type CompanyMembersByPersonQuery = { __typename?: 'Query', companyMembers?: { __typename?: 'CompanyMemberConnection', nodes: Array<{ __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null, createdAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null } | null> } | null };
+
+export type CreateCompanyMemberMutationVariables = Exact<{
+  input: CreateCompanyMemberInput;
+}>;
+
+
+export type CreateCompanyMemberMutation = { __typename?: 'Mutation', createCompanyMember?: { __typename?: 'CreateCompanyMemberPayload', companyMember?: { __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null } | null } | null };
+
+export type UpdateCompanyMemberMutationVariables = Exact<{
+  input: UpdateCompanyMemberInput;
+}>;
+
+
+export type UpdateCompanyMemberMutation = { __typename?: 'Mutation', updateCompanyMember?: { __typename?: 'UpdateCompanyMemberPayload', companyMember?: { __typename?: 'CompanyMember', rowId: string, title?: string | null, isPrimary?: boolean | null } | null } | null };
+
+export type DeleteCompanyMemberMutationVariables = Exact<{
+  input: DeleteCompanyMemberInput;
+}>;
+
+
+export type DeleteCompanyMemberMutation = { __typename?: 'Mutation', deleteCompanyMember?: { __typename?: 'DeleteCompanyMemberPayload', deletedCompanyMemberId?: string | null } | null };
+
+export type DocumentNumberingConfigsQueryVariables = Exact<{
+  organizationId: Scalars['String']['input'];
+}>;
+
+
+export type DocumentNumberingConfigsQuery = { __typename?: 'Query', documentNumberingConfigs?: { __typename?: 'DocumentNumberingConfigConnection', nodes: Array<{ __typename?: 'DocumentNumberingConfig', rowId: string, organizationId: string, documentType: string, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
+
+export type CreateDocumentNumberingConfigMutationVariables = Exact<{
+  input: CreateDocumentNumberingConfigInput;
+}>;
+
+
+export type CreateDocumentNumberingConfigMutation = { __typename?: 'Mutation', createDocumentNumberingConfig?: { __typename?: 'CreateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+
+export type UpdateDocumentNumberingConfigMutationVariables = Exact<{
+  input: UpdateDocumentNumberingConfigInput;
+}>;
+
+
+export type UpdateDocumentNumberingConfigMutation = { __typename?: 'Mutation', updateDocumentNumberingConfig?: { __typename?: 'UpdateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+
+export type GenerateDocumentNumberMutationVariables = Exact<{
+  input: GenerateDocumentNumberInput;
+}>;
+
+
+export type GenerateDocumentNumberMutation = { __typename?: 'Mutation', generateDocumentNumber?: { __typename?: 'GenerateDocumentNumberPayload', documentNumber: string } | null };
+
 export type AllInvoicesQueryVariables = Exact<{
   organizationId: Scalars['String']['input'];
 }>;
@@ -3421,7 +3812,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId: string, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -3507,6 +3898,129 @@ export const DeleteCompanyDocument = gql`
     mutation DeleteCompany($input: DeleteCompanyInput!) {
   deleteCompany(input: $input) {
     deletedCompanyId
+  }
+}
+    `;
+export const CompanyMembersByCompanyDocument = gql`
+    query CompanyMembersByCompany($companyId: UUID!) {
+  companyMembers(condition: {companyId: $companyId}) {
+    nodes {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+      createdAt
+      person {
+        rowId
+        firstName
+        lastName
+      }
+    }
+  }
+}
+    `;
+export const CompanyMembersByPersonDocument = gql`
+    query CompanyMembersByPerson($personId: UUID!) {
+  companyMembers(condition: {personId: $personId}) {
+    nodes {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+      createdAt
+      company {
+        rowId
+        name
+      }
+    }
+  }
+}
+    `;
+export const CreateCompanyMemberDocument = gql`
+    mutation CreateCompanyMember($input: CreateCompanyMemberInput!) {
+  createCompanyMember(input: $input) {
+    companyMember {
+      rowId
+      companyId
+      personId
+      title
+      isPrimary
+    }
+  }
+}
+    `;
+export const UpdateCompanyMemberDocument = gql`
+    mutation UpdateCompanyMember($input: UpdateCompanyMemberInput!) {
+  updateCompanyMember(input: $input) {
+    companyMember {
+      rowId
+      title
+      isPrimary
+    }
+  }
+}
+    `;
+export const DeleteCompanyMemberDocument = gql`
+    mutation DeleteCompanyMember($input: DeleteCompanyMemberInput!) {
+  deleteCompanyMember(input: $input) {
+    deletedCompanyMemberId
+  }
+}
+    `;
+export const DocumentNumberingConfigsDocument = gql`
+    query DocumentNumberingConfigs($organizationId: String!) {
+  documentNumberingConfigs(condition: {organizationId: $organizationId}) {
+    nodes {
+      rowId
+      organizationId
+      documentType
+      prefix
+      separator
+      dateFormat
+      idStrategy
+      sequentialPadding
+      randomLength
+      nextSequentialNumber
+    }
+  }
+}
+    `;
+export const CreateDocumentNumberingConfigDocument = gql`
+    mutation CreateDocumentNumberingConfig($input: CreateDocumentNumberingConfigInput!) {
+  createDocumentNumberingConfig(input: $input) {
+    documentNumberingConfig {
+      rowId
+      prefix
+      separator
+      dateFormat
+      idStrategy
+      sequentialPadding
+      randomLength
+    }
+  }
+}
+    `;
+export const UpdateDocumentNumberingConfigDocument = gql`
+    mutation UpdateDocumentNumberingConfig($input: UpdateDocumentNumberingConfigInput!) {
+  updateDocumentNumberingConfig(input: $input) {
+    documentNumberingConfig {
+      rowId
+      prefix
+      separator
+      dateFormat
+      idStrategy
+      sequentialPadding
+      randomLength
+    }
+  }
+}
+    `;
+export const GenerateDocumentNumberDocument = gql`
+    mutation GenerateDocumentNumber($input: GenerateDocumentNumberInput!) {
+  generateDocumentNumber(input: $input) {
+    documentNumber
   }
 }
     `;
@@ -3845,6 +4359,33 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteCompany(variables: DeleteCompanyMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteCompanyMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteCompanyMutation>({ document: DeleteCompanyDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteCompany', 'mutation', variables);
+    },
+    CompanyMembersByCompany(variables: CompanyMembersByCompanyQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CompanyMembersByCompanyQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CompanyMembersByCompanyQuery>({ document: CompanyMembersByCompanyDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CompanyMembersByCompany', 'query', variables);
+    },
+    CompanyMembersByPerson(variables: CompanyMembersByPersonQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CompanyMembersByPersonQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CompanyMembersByPersonQuery>({ document: CompanyMembersByPersonDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CompanyMembersByPerson', 'query', variables);
+    },
+    CreateCompanyMember(variables: CreateCompanyMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateCompanyMemberMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCompanyMemberMutation>({ document: CreateCompanyMemberDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateCompanyMember', 'mutation', variables);
+    },
+    UpdateCompanyMember(variables: UpdateCompanyMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateCompanyMemberMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCompanyMemberMutation>({ document: UpdateCompanyMemberDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateCompanyMember', 'mutation', variables);
+    },
+    DeleteCompanyMember(variables: DeleteCompanyMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteCompanyMemberMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteCompanyMemberMutation>({ document: DeleteCompanyMemberDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteCompanyMember', 'mutation', variables);
+    },
+    DocumentNumberingConfigs(variables: DocumentNumberingConfigsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DocumentNumberingConfigsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DocumentNumberingConfigsQuery>({ document: DocumentNumberingConfigsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DocumentNumberingConfigs', 'query', variables);
+    },
+    CreateDocumentNumberingConfig(variables: CreateDocumentNumberingConfigMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateDocumentNumberingConfigMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateDocumentNumberingConfigMutation>({ document: CreateDocumentNumberingConfigDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateDocumentNumberingConfig', 'mutation', variables);
+    },
+    UpdateDocumentNumberingConfig(variables: UpdateDocumentNumberingConfigMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateDocumentNumberingConfigMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateDocumentNumberingConfigMutation>({ document: UpdateDocumentNumberingConfigDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateDocumentNumberingConfig', 'mutation', variables);
+    },
+    GenerateDocumentNumber(variables: GenerateDocumentNumberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GenerateDocumentNumberMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GenerateDocumentNumberMutation>({ document: GenerateDocumentNumberDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GenerateDocumentNumber', 'mutation', variables);
     },
     AllInvoices(variables: AllInvoicesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<AllInvoicesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<AllInvoicesQuery>({ document: AllInvoicesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'AllInvoices', 'query', variables);
