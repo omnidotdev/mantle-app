@@ -1,17 +1,16 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Printer } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
-import { generateQuoteNumber } from "@/features/quotes/store/quoteStore";
 import {
-  useAllQuotesQuery,
   useCreateQuoteLineItemMutation,
   useCreateQuoteMutation,
+  useGenerateDocumentNumberMutation,
 } from "@/generated/graphql";
 
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
@@ -101,48 +100,38 @@ const NewQuotePage = () => {
   const queryClient = useQueryClient();
 
   const [saving, setSaving] = useState(false);
+  const [generatingNumber, setGeneratingNumber] = useState(false);
   const [previewType, setPreviewType] = useState<PreviewType>("quote");
-
-  const { data, isLoading } = useAllQuotesQuery(
-    { organizationId: organizationId ?? "" },
-    { enabled: !!organizationId },
-  );
-
-  const quotes = useMemo(
-    () =>
-      (data?.quotes?.nodes ?? []).flatMap((node) => {
-        if (!node) return [];
-        return [
-          {
-            id: node.rowId,
-            quoteNumber: node.quoteNumber,
-          },
-        ];
-      }),
-    [data],
-  );
-
-  const quoteNumber = useMemo(() => generateQuoteNumber(quotes), [quotes]);
 
   const [currentQuote, setCurrentQuote] = useState<Partial<Quote>>({
     ...defaultQuote,
-    quoteNumber,
   });
   const [currentLineItems, setCurrentLineItems] = useState<
     Partial<QuoteLineItem>[]
   >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
 
+  const generateNumber = useGenerateDocumentNumberMutation();
+
   useEffect(() => {
-    if (quoteNumber && !currentQuote.quoteNumber) {
-      setCurrentQuote((prev) => ({ ...prev, quoteNumber }));
+    if (organizationId && !currentQuote.quoteNumber) {
+      setGeneratingNumber(true);
+      generateNumber
+        .mutateAsync({
+          input: { organizationId, documentType: "quote" },
+        })
+        .then((result) => {
+          const num = result.generateDocumentNumber?.documentNumber;
+          if (num) {
+            setCurrentQuote((prev) => ({ ...prev, quoteNumber: num }));
+          }
+        })
+        .finally(() => setGeneratingNumber(false));
     }
-  }, [quoteNumber, currentQuote.quoteNumber]);
+  }, [organizationId]);
 
   const invalidateQuotes = () => {
     queryClient.invalidateQueries({
-      queryKey: useAllQuotesQuery.getKey({
-        organizationId: organizationId ?? "",
-      }),
+      queryKey: ["AllQuotes"],
     });
   };
 
@@ -269,7 +258,7 @@ const NewQuotePage = () => {
     );
   }
 
-  if (isLoading) {
+  if (generatingNumber) {
     return (
       <div className="flex items-center justify-center p-6">
         <Loader2
