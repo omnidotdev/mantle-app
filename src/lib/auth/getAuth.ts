@@ -1,4 +1,4 @@
-import { ensureFreshAccessToken, extractOrgClaims } from "@omnidotdev/providers";
+import { extractOrgClaims } from "@omnidotdev/providers";
 import { setCookie } from "@tanstack/react-start/server";
 
 import auth from "@/lib/auth/auth";
@@ -36,18 +36,25 @@ export async function getAuth(request: Request) {
 
     // Get tokens from Gatekeeper via Better Auth
     try {
-      const tokenResult = await ensureFreshAccessToken({
-        getAccessToken: () =>
-          auth.api.getAccessToken({
-            body: { providerId: "omni" },
-            headers: request.headers,
-          }),
-        refreshToken: () =>
-          auth.api.refreshToken({
-            body: { providerId: "omni" },
-            headers: request.headers,
-          }),
+      let tokenResult = await auth.api.getAccessToken({
+        body: { providerId: "omni" },
+        headers: request.headers,
       });
+
+      // If token fetch fails or is expired, try refreshing
+      if (!tokenResult?.accessToken) {
+        const refreshResult = await auth.api.refreshToken({
+          body: { providerId: "omni" },
+          headers: request.headers,
+        });
+        tokenResult = {
+          accessToken: refreshResult.accessToken ?? "",
+          accessTokenExpiresAt: refreshResult.accessTokenExpiresAt,
+          scopes: refreshResult.scope ? refreshResult.scope.split(" ") : [],
+          idToken: refreshResult.idToken ?? undefined,
+        };
+      }
+
       accessToken = tokenResult?.accessToken;
 
       if (!accessToken) {
