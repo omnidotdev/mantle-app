@@ -254,7 +254,8 @@ button {
     color-adjust: exact !important;
   }
 
-  .print-hide {
+  .print-hide,
+  [data-sonner-toaster] {
     display: none !important;
   }
 
