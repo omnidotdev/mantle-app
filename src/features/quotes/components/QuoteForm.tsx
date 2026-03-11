@@ -15,6 +15,8 @@ import ContactPicker from "@/features/people/components/ContactPicker";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import AdditionalTermsEditor from "./AdditionalTermsEditor";
 
+import { QUOTE_STATUSES } from "../types/quote";
+
 import type { Quote, QuoteLineItem } from "../types/quote";
 
 type IdStrategy = "sequential" | "random";
@@ -334,12 +336,18 @@ const QuoteForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="quote-status">Status</Label>
-            <Input
+            <select
               id="quote-status"
               value={quote.status ?? "draft"}
-              readOnly
-              className="bg-muted capitalize"
-            />
+              onChange={(e) => handleChange("status", e.target.value)}
+              className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              {QUOTE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
