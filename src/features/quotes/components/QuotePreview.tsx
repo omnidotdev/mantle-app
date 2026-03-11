@@ -43,8 +43,8 @@ const formatQuoteDate = (dateStr: string): string => {
   });
 };
 
-const Divider = () => (
-  <div className="my-6 border-primary-300 border-t border-dashed" />
+const Divider = ({ color }: { color: string }) => (
+  <div className="my-6 border-t border-dashed" style={{ borderColor: color }} />
 );
 
 const QuotePreview = ({
@@ -308,7 +308,7 @@ const QuotePreview = ({
           </div>
         </div>
 
-        <Divider />
+        <Divider color={accent.base} />
 
         {/* Project Overview */}
         {(quote.title || quote.description || quote.projectType) && (
@@ -367,7 +367,7 @@ const QuotePreview = ({
               </div>
             )}
 
-            <Divider />
+            <Divider color={accent.base} />
           </>
         )}
 
@@ -391,7 +391,7 @@ const QuotePreview = ({
               )}
             </div>
 
-            <Divider />
+            <Divider color={accent.base} />
           </>
         )}
 
@@ -431,7 +431,7 @@ const QuotePreview = ({
           </div>
         </div>
 
-        <Divider />
+        <Divider color={accent.base} />
 
         {/* Terms & Conditions */}
         {(quote.terms || quote.additionalTerms?.length) && (
@@ -487,7 +487,7 @@ const QuotePreview = ({
               </ul>
             )}
 
-            <Divider />
+            <Divider color={accent.base} />
           </>
         )}
 
@@ -502,7 +502,7 @@ const QuotePreview = ({
                 ))}
               </div>
             </div>
-            <Divider />
+            <Divider color={accent.base} />
           </>
         )}
 
