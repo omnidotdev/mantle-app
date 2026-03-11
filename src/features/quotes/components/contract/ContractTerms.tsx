@@ -106,8 +106,8 @@ const ContractTerms = ({
         {hasMinBilling && (
           <p className="mt-1">
             Hourly-billed items with a minimum billing increment will be billed
-            at no less than the specified minimum per task, regardless of actual
-            time spent.
+            at no less than the specified minimum, regardless of actual time
+            spent.
           </p>
         )}
       </div>

@@ -175,7 +175,7 @@ const QuotePreview = ({
         parts.push(`Est: ${item.estimatedHours}hrs`);
       }
       if (Number(item.minimumBillingMinutes) > 0) {
-        parts.push(`Min: ${item.minimumBillingMinutes}min per task`);
+        parts.push(`Min: ${item.minimumBillingMinutes}min`);
       }
       autoSubDescription = parts.join(" ");
     } else if (isRoyalty) {
