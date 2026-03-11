@@ -86,6 +86,9 @@ const QuotePreviewPage = () => {
             additionalTerms: (node.additionalTerms as string[]) ?? null,
             clientName: null,
             clientEmail: null,
+            additionalItemsLabel:
+              ((node as Record<string, unknown>)
+                .additionalItemsLabel as string) ?? null,
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
             company: node.company ?? null,
@@ -98,6 +101,9 @@ const QuotePreviewPage = () => {
                   quoteId: li.quoteId,
                   productId: li.productId ?? null,
                   description: li.description,
+                  subtitle:
+                    ((li as Record<string, unknown>).subtitle as string) ??
+                    null,
                   quantity: li.quantity,
                   unitPrice: li.unitPrice,
                   amount: li.amount,

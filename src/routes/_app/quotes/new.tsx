@@ -133,9 +133,7 @@ const NewQuotePage = () => {
 
   const [regenerating, setRegenerating] = useState(false);
 
-  const handleRegenerateNumber = async (
-    strategy: "sequential" | "random",
-  ) => {
+  const handleRegenerateNumber = async (strategy: "sequential" | "random") => {
     if (!organizationId) return;
     setRegenerating(true);
     try {

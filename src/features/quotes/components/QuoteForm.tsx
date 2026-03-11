@@ -386,10 +386,7 @@ const QuoteForm = ({
               id="quote-additional-items-label"
               value={quote.additionalItemsLabel ?? ""}
               onChange={(e) =>
-                handleChange(
-                  "additionalItemsLabel",
-                  e.target.value || null,
-                )
+                handleChange("additionalItemsLabel", e.target.value || null)
               }
               placeholder="Additional Features"
             />

@@ -120,6 +120,9 @@ const EditQuotePage = () => {
             additionalTerms: (node.additionalTerms as string[]) ?? null,
             clientName: node.clientName ?? null,
             clientEmail: node.clientEmail ?? null,
+            additionalItemsLabel:
+              ((node as Record<string, unknown>)
+                .additionalItemsLabel as string) ?? null,
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
             company: node.company ?? null,
@@ -132,6 +135,9 @@ const EditQuotePage = () => {
                   quoteId: li.quoteId,
                   productId: li.productId ?? null,
                   description: li.description,
+                  subtitle:
+                    ((li as Record<string, unknown>).subtitle as string) ??
+                    null,
                   quantity: li.quantity,
                   unitPrice: li.unitPrice,
                   amount: li.amount,
@@ -200,9 +206,7 @@ const EditQuotePage = () => {
   const generateNumber = useGenerateDocumentNumberMutation();
   const [regenerating, setRegenerating] = useState(false);
 
-  const handleRegenerateNumber = async (
-    strategy: "sequential" | "random",
-  ) => {
+  const handleRegenerateNumber = async (strategy: "sequential" | "random") => {
     if (!organizationId) return;
     setRegenerating(true);
     try {
