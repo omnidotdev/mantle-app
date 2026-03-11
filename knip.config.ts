@@ -22,22 +22,17 @@ const knipConfig: KnipConfig = {
   },
   // used for proper management of Thornberry components, see https://knip.dev/reference/configuration#ignoreexportsusedinfile
   ignoreExportsUsedInFile: true,
-  ignore: ["src/generated/**", "src/routeTree.gen.ts"],
+  ignore: ["src/generated/**"],
   ignoreDependencies: [
     // used by GraphQL Code Generator scripts
     "dotenv",
     // UI libraries (some not yet used)
     "@internationalized/date",
     "@tanstack/react-form",
-    "@tanstack/zod-adapter",
-    "dayjs",
     "jose",
     "ms",
-    "react-icons",
-    "sonner",
     "ts-pattern",
     "usehooks-ts",
-    "zod",
     // Dev dependencies
     "@graphql-codegen/import-types-preset",
     "@tanstack/react-devtools",

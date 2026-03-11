@@ -11,6 +11,7 @@ import {
   useAllQuotesQuery,
   useCreateQuoteLineItemMutation,
   useDeleteQuoteLineItemMutation,
+  useGenerateDocumentNumberMutation,
   useUpdateQuoteMutation,
 } from "@/generated/graphql";
 
@@ -196,6 +197,26 @@ const EditQuotePage = () => {
   const updateMutation = useUpdateQuoteMutation();
   const createLineItemMutation = useCreateQuoteLineItemMutation();
   const deleteLineItemMutation = useDeleteQuoteLineItemMutation();
+  const generateNumber = useGenerateDocumentNumberMutation();
+  const [regenerating, setRegenerating] = useState(false);
+
+  const handleRegenerateNumber = async (
+    strategy: "sequential" | "random",
+  ) => {
+    if (!organizationId) return;
+    setRegenerating(true);
+    try {
+      const result = await generateNumber.mutateAsync({
+        input: { organizationId, documentType: "quote", idStrategy: strategy },
+      });
+      const num = result.generateDocumentNumber?.documentNumber;
+      if (num) {
+        setCurrentQuote((prev) => ({ ...prev, quoteNumber: num }));
+      }
+    } finally {
+      setRegenerating(false);
+    }
+  };
 
   const saveLineItems = async (id: string) => {
     const validItems = currentLineItems.filter((item) =>
@@ -395,6 +416,8 @@ const EditQuotePage = () => {
             onSave={handleSave}
             onCancel={() => navigate({ to: "/quotes" })}
             organizationId={organizationId}
+            onRegenerateNumber={handleRegenerateNumber}
+            isRegenerating={regenerating}
           />
         </div>
 

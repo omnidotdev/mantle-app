@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import AdditionalTermsEditor from "./AdditionalTermsEditor";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
+type IdStrategy = "sequential" | "random";
+
 interface QuoteFormProps {
   quote: Partial<Quote>;
   onQuoteChange: (quote: Partial<Quote>) => void;
@@ -19,6 +21,8 @@ interface QuoteFormProps {
   onSave: () => void;
   onCancel: () => void;
   organizationId?: string;
+  onRegenerateNumber?: (strategy: IdStrategy) => void;
+  isRegenerating?: boolean;
 }
 
 const QuoteForm = ({
@@ -29,6 +33,8 @@ const QuoteForm = ({
   onSave,
   onCancel,
   organizationId,
+  onRegenerateNumber,
+  isRegenerating,
 }: QuoteFormProps) => {
   const handleChange = (
     field: keyof Quote,
@@ -72,6 +78,10 @@ const QuoteForm = ({
           updatedItem.royaltyPercentage = "5";
           updatedItem.royaltyTimeframe = "12";
           updatedItem.royaltyTimeframeUnit = "months";
+        } else if (value === "complimentary") {
+          updatedItem.quantity = "1";
+          updatedItem.unitPrice = "0";
+          updatedItem.amount = "0";
         }
       }
 
@@ -133,6 +143,7 @@ const QuoteForm = ({
       {
         id: crypto.randomUUID(),
         description: "",
+        subtitle: null,
         quantity: "1",
         unitPrice: "0",
         amount: "0",
@@ -196,12 +207,46 @@ const QuoteForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="quote-number">Quote Number</Label>
-            <Input
-              id="quote-number"
-              value={quote.quoteNumber ?? ""}
-              readOnly
-              className="bg-muted"
-            />
+            <div className="flex gap-2">
+              <Input
+                id="quote-number"
+                value={quote.quoteNumber ?? ""}
+                readOnly
+                className="bg-muted"
+              />
+              {onRegenerateNumber && (
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onRegenerateNumber("sequential")}
+                    disabled={isRegenerating}
+                    title="Generate sequential number"
+                    className="flex h-9 items-center gap-1 rounded-md border border-input px-2 text-muted-foreground text-xs hover:bg-muted hover:text-foreground disabled:opacity-50"
+                  >
+                    {isRegenerating ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <RefreshCw size={14} />
+                    )}
+                    Seq
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onRegenerateNumber("random")}
+                    disabled={isRegenerating}
+                    title="Generate random number"
+                    className="flex h-9 items-center gap-1 rounded-md border border-input px-2 text-muted-foreground text-xs hover:bg-muted hover:text-foreground disabled:opacity-50"
+                  >
+                    {isRegenerating ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <RefreshCw size={14} />
+                    )}
+                    Rand
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="space-y-1.5">
@@ -332,6 +377,23 @@ const QuoteForm = ({
               onChange={(e) => handleChange("validUntil", e.target.value)}
             />
           </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-additional-items-label">
+              Additional Items Section Label
+            </Label>
+            <Input
+              id="quote-additional-items-label"
+              value={quote.additionalItemsLabel ?? ""}
+              onChange={(e) =>
+                handleChange(
+                  "additionalItemsLabel",
+                  e.target.value || null,
+                )
+              }
+              placeholder="Additional Features"
+            />
+          </div>
         </div>
       </div>
 
@@ -346,7 +408,7 @@ const QuoteForm = ({
           >
             <div className="flex items-center justify-between">
               <span className="font-medium text-foreground text-sm">
-                Item {index + 1}
+                {index === 0 ? "Base Development Cost" : `Item ${index + 1}`}
               </span>
               {lineItems.length > 1 && (
                 <button
@@ -368,7 +430,34 @@ const QuoteForm = ({
                 onChange={(e) =>
                   handleLineItemChange(index, "description", e.target.value)
                 }
-                placeholder="Item description"
+                placeholder={
+                  index === 0
+                    ? "e.g. Base Development Cost"
+                    : "Item description"
+                }
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor={`item-subtitle-${item.id}`}>
+                Detail / Sub-description
+              </Label>
+              <Textarea
+                id={`item-subtitle-${item.id}`}
+                value={item.subtitle ?? ""}
+                onChange={(e) =>
+                  handleLineItemChange(
+                    index,
+                    "subtitle",
+                    e.target.value || null,
+                  )
+                }
+                rows={2}
+                placeholder={
+                  index === 0
+                    ? "e.g. Includes project setup, core development, testing, deployment, and 30 days of as-needed post-launch maintenance and support."
+                    : "Optional detail text shown below the item"
+                }
               />
             </div>
 
@@ -424,6 +513,7 @@ const QuoteForm = ({
                   <option value="fixed">Fixed</option>
                   <option value="hourly">Hourly</option>
                   <option value="royalty">Royalty</option>
+                  <option value="complimentary">Complimentary</option>
                 </select>
               </div>
             </div>

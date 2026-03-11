@@ -1224,6 +1224,7 @@ export type DocumentNumberingConfigPatch = {
 
 export type GenerateDocumentNumberInput = {
   documentType: Scalars['String']['input'];
+  idStrategy?: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
 };
 

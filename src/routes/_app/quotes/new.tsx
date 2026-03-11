@@ -131,6 +131,26 @@ const NewQuotePage = () => {
     }
   }, [organizationId, generateNumber]);
 
+  const [regenerating, setRegenerating] = useState(false);
+
+  const handleRegenerateNumber = async (
+    strategy: "sequential" | "random",
+  ) => {
+    if (!organizationId) return;
+    setRegenerating(true);
+    try {
+      const result = await generateNumber.mutateAsync({
+        input: { organizationId, documentType: "quote", idStrategy: strategy },
+      });
+      const num = result.generateDocumentNumber?.documentNumber;
+      if (num) {
+        setCurrentQuote((prev) => ({ ...prev, quoteNumber: num }));
+      }
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
   const invalidateQuotes = () => {
     queryClient.invalidateQueries({
       queryKey: ["AllQuotes"],
@@ -319,6 +339,8 @@ const NewQuotePage = () => {
             onSave={handleSave}
             onCancel={() => navigate({ to: "/quotes" })}
             organizationId={organizationId}
+            onRegenerateNumber={handleRegenerateNumber}
+            isRegenerating={regenerating}
           />
         </div>
 
