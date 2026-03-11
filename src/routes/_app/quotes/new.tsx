@@ -189,11 +189,9 @@ const NewQuotePage = () => {
                 ? Number(item.monthlyCapHours)
                 : null,
               maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
-              ...((item.minimumBillingMinutes
-                ? {
-                    minimumBillingMinutes: Number(item.minimumBillingMinutes),
-                  }
-                : {}) as Record<string, number>),
+              minimumBillingMinutes: item.minimumBillingMinutes
+                ? Number(item.minimumBillingMinutes)
+                : null,
               royaltyTimeframe: item.royaltyTimeframe
                 ? Number(item.royaltyTimeframe)
                 : null,

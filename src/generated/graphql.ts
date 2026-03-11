@@ -525,6 +525,39 @@ export type CreateInvoicePayloadInvoiceEdgeArgs = {
   orderBy?: Array<InvoiceOrderBy>;
 };
 
+/** All input for the create `OrganizationSetting` mutation. */
+export type CreateOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `OrganizationSetting` to be created by this mutation. */
+  organizationSetting: OrganizationSettingInput;
+};
+
+/** The output of our create `OrganizationSetting` mutation. */
+export type CreateOrganizationSettingPayload = {
+  __typename?: 'CreateOrganizationSettingPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `OrganizationSetting` that was created by this mutation. */
+  organizationSetting?: Maybe<OrganizationSetting>;
+  /** An edge for our `OrganizationSetting`. May be used by Relay 1. */
+  organizationSettingEdge?: Maybe<OrganizationSettingEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `OrganizationSetting` mutation. */
+export type CreateOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
+  orderBy?: Array<OrganizationSettingOrderBy>;
+};
+
 /** All input for the create `Person` mutation. */
 export type CreatePersonInput = {
   /**
@@ -919,6 +952,50 @@ export type DeleteInvoicePayload = {
 /** The output of our delete `Invoice` mutation. */
 export type DeleteInvoicePayloadInvoiceEdgeArgs = {
   orderBy?: Array<InvoiceOrderBy>;
+};
+
+/** All input for the `deleteOrganizationSettingById` mutation. */
+export type DeleteOrganizationSettingByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `OrganizationSetting` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteOrganizationSetting` mutation. */
+export type DeleteOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `OrganizationSetting` mutation. */
+export type DeleteOrganizationSettingPayload = {
+  __typename?: 'DeleteOrganizationSettingPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedOrganizationSettingId?: Maybe<Scalars['ID']['output']>;
+  /** The `OrganizationSetting` that was deleted by this mutation. */
+  organizationSetting?: Maybe<OrganizationSetting>;
+  /** An edge for our `OrganizationSetting`. May be used by Relay 1. */
+  organizationSettingEdge?: Maybe<OrganizationSettingEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `OrganizationSetting` mutation. */
+export type DeleteOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
+  orderBy?: Array<OrganizationSettingOrderBy>;
 };
 
 /** All input for the `deletePersonById` mutation. */
@@ -1627,6 +1704,8 @@ export type Mutation = {
   createInvoice?: Maybe<CreateInvoicePayload>;
   /** Creates a single `InvoiceLineItem`. */
   createInvoiceLineItem?: Maybe<CreateInvoiceLineItemPayload>;
+  /** Creates a single `OrganizationSetting`. */
+  createOrganizationSetting?: Maybe<CreateOrganizationSettingPayload>;
   /** Creates a single `Person`. */
   createPerson?: Maybe<CreatePersonPayload>;
   /** Creates a single `Product`. */
@@ -1659,6 +1738,10 @@ export type Mutation = {
   deleteInvoiceLineItem?: Maybe<DeleteInvoiceLineItemPayload>;
   /** Deletes a single `InvoiceLineItem` using its globally unique id. */
   deleteInvoiceLineItemById?: Maybe<DeleteInvoiceLineItemPayload>;
+  /** Deletes a single `OrganizationSetting` using a unique key. */
+  deleteOrganizationSetting?: Maybe<DeleteOrganizationSettingPayload>;
+  /** Deletes a single `OrganizationSetting` using its globally unique id. */
+  deleteOrganizationSettingById?: Maybe<DeleteOrganizationSettingPayload>;
   /** Deletes a single `Person` using a unique key. */
   deletePerson?: Maybe<DeletePersonPayload>;
   /** Deletes a single `Person` using its globally unique id. */
@@ -1700,6 +1783,10 @@ export type Mutation = {
   updateInvoiceLineItem?: Maybe<UpdateInvoiceLineItemPayload>;
   /** Updates a single `InvoiceLineItem` using its globally unique id and a patch. */
   updateInvoiceLineItemById?: Maybe<UpdateInvoiceLineItemPayload>;
+  /** Updates a single `OrganizationSetting` using a unique key and a patch. */
+  updateOrganizationSetting?: Maybe<UpdateOrganizationSettingPayload>;
+  /** Updates a single `OrganizationSetting` using its globally unique id and a patch. */
+  updateOrganizationSettingById?: Maybe<UpdateOrganizationSettingPayload>;
   /** Updates a single `Person` using a unique key and a patch. */
   updatePerson?: Maybe<UpdatePersonPayload>;
   /** Updates a single `Person` using its globally unique id and a patch. */
@@ -1752,6 +1839,12 @@ export type MutationCreateInvoiceArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateInvoiceLineItemArgs = {
   input: CreateInvoiceLineItemInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateOrganizationSettingArgs = {
+  input: CreateOrganizationSettingInput;
 };
 
 
@@ -1848,6 +1941,18 @@ export type MutationDeleteInvoiceLineItemArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteInvoiceLineItemByIdArgs = {
   input: DeleteInvoiceLineItemByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteOrganizationSettingArgs = {
+  input: DeleteOrganizationSettingInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteOrganizationSettingByIdArgs = {
+  input: DeleteOrganizationSettingByIdInput;
 };
 
 
@@ -1978,6 +2083,18 @@ export type MutationUpdateInvoiceLineItemByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateOrganizationSettingArgs = {
+  input: UpdateOrganizationSettingInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateOrganizationSettingByIdArgs = {
+  input: UpdateOrganizationSettingByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdatePersonArgs = {
   input: UpdatePersonInput;
 };
@@ -2028,6 +2145,93 @@ export type MutationUpdateQuoteLineItemByIdArgs = {
 export type Node = {
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
+};
+
+export type OrganizationSetting = Node & {
+  __typename?: 'OrganizationSetting';
+  accentColor?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  rowId: Scalars['UUID']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+/**
+ * A condition to be used against `OrganizationSetting` object types. All fields
+ * are tested for equality and combined with a logical ‘and.’
+ */
+export type OrganizationSettingCondition = {
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `OrganizationSetting` values. */
+export type OrganizationSettingConnection = {
+  __typename?: 'OrganizationSettingConnection';
+  /** A list of edges which contains the `OrganizationSetting` and cursor to aid in pagination. */
+  edges: Array<Maybe<OrganizationSettingEdge>>;
+  /** A list of `OrganizationSetting` objects. */
+  nodes: Array<Maybe<OrganizationSetting>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `OrganizationSetting` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `OrganizationSetting` edge in the connection. */
+export type OrganizationSettingEdge = {
+  __typename?: 'OrganizationSettingEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `OrganizationSetting` at the end of the edge. */
+  node?: Maybe<OrganizationSetting>;
+};
+
+/** A filter to be used against `OrganizationSetting` object types. All fields are combined with a logical ‘and.’ */
+export type OrganizationSettingFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<OrganizationSettingFilter>>;
+  /** Negates the expression. */
+  not?: InputMaybe<OrganizationSettingFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<OrganizationSettingFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `OrganizationSetting` */
+export type OrganizationSettingInput = {
+  accentColor?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  organizationId: Scalars['String']['input'];
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+/** Methods to use when ordering `OrganizationSetting`. */
+export enum OrganizationSettingOrderBy {
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `OrganizationSetting`. Fields that are set will be updated. */
+export type OrganizationSettingPatch = {
+  accentColor?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
 };
 
 /** Information about pagination in a connection. */
@@ -2357,6 +2561,12 @@ export type Query = Node & {
   invoices?: Maybe<InvoiceConnection>;
   /** Fetches an object given its globally unique `ID`. */
   node?: Maybe<Node>;
+  /** Get a single `OrganizationSetting`. */
+  organizationSetting?: Maybe<OrganizationSetting>;
+  /** Reads a single `OrganizationSetting` using its globally unique `ID`. */
+  organizationSettingById?: Maybe<OrganizationSetting>;
+  /** Reads and enables pagination through a set of `OrganizationSetting`. */
+  organizationSettings?: Maybe<OrganizationSettingConnection>;
   /** Reads and enables pagination through a set of `Person`. */
   people?: Maybe<PersonConnection>;
   /** Get a single `Person`. */
@@ -2542,6 +2752,31 @@ export type QueryInvoicesArgs = {
 /** The root query type which gives access points into the data universe. */
 export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryOrganizationSettingArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryOrganizationSettingByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryOrganizationSettingsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<OrganizationSettingCondition>;
+  filter?: InputMaybe<OrganizationSettingFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<OrganizationSettingOrderBy>>;
 };
 
 
@@ -2805,6 +3040,7 @@ export type QuoteLineItem = Node & {
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   maxCapHours?: Maybe<Scalars['Int']['output']>;
+  minimumBillingMinutes?: Maybe<Scalars['Int']['output']>;
   monthlyCapHours?: Maybe<Scalars['Int']['output']>;
   pricingType: Scalars['String']['output'];
   /** Reads a single `Product` that is related to this `QuoteLineItem`. */
@@ -2886,6 +3122,7 @@ export type QuoteLineItemInput = {
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
   maxCapHours?: InputMaybe<Scalars['Int']['input']>;
+  minimumBillingMinutes?: InputMaybe<Scalars['Int']['input']>;
   monthlyCapHours?: InputMaybe<Scalars['Int']['input']>;
   pricingType?: InputMaybe<Scalars['String']['input']>;
   productId?: InputMaybe<Scalars['UUID']['input']>;
@@ -2921,6 +3158,7 @@ export type QuoteLineItemPatch = {
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
   maxCapHours?: InputMaybe<Scalars['Int']['input']>;
+  minimumBillingMinutes?: InputMaybe<Scalars['Int']['input']>;
   monthlyCapHours?: InputMaybe<Scalars['Int']['input']>;
   pricingType?: InputMaybe<Scalars['String']['input']>;
   productId?: InputMaybe<Scalars['UUID']['input']>;
@@ -3420,6 +3658,53 @@ export type UpdateInvoicePayloadInvoiceEdgeArgs = {
   orderBy?: Array<InvoiceOrderBy>;
 };
 
+/** All input for the `updateOrganizationSettingById` mutation. */
+export type UpdateOrganizationSettingByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `OrganizationSetting` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `OrganizationSetting` being updated. */
+  patch: OrganizationSettingPatch;
+};
+
+/** All input for the `updateOrganizationSetting` mutation. */
+export type UpdateOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `OrganizationSetting` being updated. */
+  patch: OrganizationSettingPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `OrganizationSetting` mutation. */
+export type UpdateOrganizationSettingPayload = {
+  __typename?: 'UpdateOrganizationSettingPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `OrganizationSetting` that was updated by this mutation. */
+  organizationSetting?: Maybe<OrganizationSetting>;
+  /** An edge for our `OrganizationSetting`. May be used by Relay 1. */
+  organizationSettingEdge?: Maybe<OrganizationSettingEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `OrganizationSetting` mutation. */
+export type UpdateOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
+  orderBy?: Array<OrganizationSettingOrderBy>;
+};
+
 /** All input for the `updatePersonById` mutation. */
 export type UpdatePersonByIdInput = {
   /**
@@ -3816,7 +4101,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, clientName?: string | null, clientEmail?: string | null, additionalItemsLabel?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, subtitle?: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, clientName?: string | null, clientEmail?: string | null, additionalItemsLabel?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, subtitle?: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, minimumBillingMinutes?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -5352,6 +5637,7 @@ export const AllQuotesDocument = `
           weeklyCapHours
           monthlyCapHours
           maxCapHours
+          minimumBillingMinutes
           royaltyPercentage
           royaltyTimeframe
           royaltyTimeframeUnit

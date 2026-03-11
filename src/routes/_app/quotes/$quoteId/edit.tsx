@@ -159,11 +159,8 @@ const EditQuotePage = () => {
                   maxCapHours:
                     li.maxCapHours != null ? String(li.maxCapHours) : null,
                   minimumBillingMinutes:
-                    (li as Record<string, unknown>).minimumBillingMinutes !=
-                    null
-                      ? String(
-                          (li as Record<string, unknown>).minimumBillingMinutes,
-                        )
+                    li.minimumBillingMinutes != null
+                      ? String(li.minimumBillingMinutes)
                       : null,
                   royaltyTimeframe:
                     li.royaltyTimeframe != null
@@ -258,6 +255,9 @@ const EditQuotePage = () => {
                 ? Number(item.monthlyCapHours)
                 : null,
               maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
+              minimumBillingMinutes: item.minimumBillingMinutes
+                ? Number(item.minimumBillingMinutes)
+                : null,
               royaltyTimeframe: item.royaltyTimeframe
                 ? Number(item.royaltyTimeframe)
                 : null,
