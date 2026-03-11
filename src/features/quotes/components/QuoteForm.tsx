@@ -1,6 +1,7 @@
 import { Check, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
+import SortableList from "@/components/core/SortableList";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -480,343 +481,348 @@ const QuoteForm = ({
       <div className="space-y-4">
         <h3 className="font-medium text-foreground text-lg">Line Items</h3>
 
-        {lineItems.map((item, index) => (
-          <div
-            key={item.id}
-            className="space-y-3 rounded-lg border border-border p-4"
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-foreground text-sm">
-                {index === 0 ? "Base Development Cost" : `Item ${index + 1}`}
-              </span>
-              {lineItems.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveLineItem(index)}
-                  className="text-destructive hover:text-destructive"
-                  aria-label="Remove item"
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
-            </div>
+        <SortableList
+          items={lineItems}
+          onReorder={onLineItemsChange}
+          renderItem={(item, index) => (
+            <div className="space-y-3 rounded-lg border border-border p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground text-sm">
+                  {index === 0 ? "Base Development Cost" : `Item ${index + 1}`}
+                </span>
+                {lineItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveLineItem(index)}
+                    className="text-destructive hover:text-destructive"
+                    aria-label="Remove item"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
-              <Input
-                id={`item-desc-${item.id}`}
-                value={item.description ?? ""}
-                onChange={(e) =>
-                  handleLineItemChange(index, "description", e.target.value)
-                }
-                placeholder={
-                  index === 0
-                    ? "e.g. Base Development Cost"
-                    : "Item description"
-                }
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor={`item-subtitle-${item.id}`}>
-                Detail / Sub-description
-              </Label>
-              <Textarea
-                id={`item-subtitle-${item.id}`}
-                value={item.subtitle ?? ""}
-                onChange={(e) =>
-                  handleLineItemChange(
-                    index,
-                    "subtitle",
-                    e.target.value || null,
-                  )
-                }
-                rows={2}
-                placeholder={
-                  index === 0
-                    ? "e.g. Includes project setup, core development, testing, deployment, and 30 days of as-needed post-launch maintenance and support."
-                    : "Optional detail text shown below the item"
-                }
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="space-y-1.5">
-                <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
                 <Input
-                  id={`item-qty-${item.id}`}
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={item.quantity ?? "1"}
+                  id={`item-desc-${item.id}`}
+                  value={item.description ?? ""}
                   onChange={(e) =>
-                    handleLineItemChange(index, "quantity", e.target.value)
+                    handleLineItemChange(index, "description", e.target.value)
+                  }
+                  placeholder={
+                    index === 0
+                      ? "e.g. Base Development Cost"
+                      : "Item description"
                   }
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
-                <Input
-                  id={`item-price-${item.id}`}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={item.unitPrice ?? "0"}
+                <Label htmlFor={`item-subtitle-${item.id}`}>
+                  Detail / Sub-description
+                </Label>
+                <Textarea
+                  id={`item-subtitle-${item.id}`}
+                  value={item.subtitle ?? ""}
                   onChange={(e) =>
-                    handleLineItemChange(index, "unitPrice", e.target.value)
+                    handleLineItemChange(
+                      index,
+                      "subtitle",
+                      e.target.value || null,
+                    )
+                  }
+                  rows={2}
+                  placeholder={
+                    index === 0
+                      ? "e.g. Includes project setup, core development, testing, deployment, and 30 days of as-needed post-launch maintenance and support."
+                      : "Optional detail text shown below the item"
                   }
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
-                <Input
-                  id={`item-amount-${item.id}`}
-                  value={formatCurrency(item.amount || "0", quote.currency)}
-                  readOnly
-                  className="bg-muted"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-pricing-${item.id}`}>Pricing Type</Label>
-                <select
-                  id={`item-pricing-${item.id}`}
-                  value={item.pricingType ?? "fixed"}
-                  onChange={(e) =>
-                    handleLineItemChange(index, "pricingType", e.target.value)
-                  }
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
-                >
-                  <option value="fixed">Fixed</option>
-                  <option value="hourly">Hourly</option>
-                  <option value="royalty">Royalty</option>
-                  <option value="complimentary">Complimentary</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Hourly fields */}
-            {item.pricingType === "hourly" && (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-est-hrs-${item.id}`}>
-                    Estimated Hours
-                  </Label>
+                  <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
                   <Input
-                    id={`item-est-hrs-${item.id}`}
+                    id={`item-qty-${item.id}`}
                     type="number"
                     min="0"
                     step="1"
-                    value={item.estimatedHours ?? ""}
+                    value={item.quantity ?? "1"}
                     onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "estimatedHours",
-                        e.target.value || null,
-                      )
+                      handleLineItemChange(index, "quantity", e.target.value)
                     }
-                    placeholder="e.g. 200"
                   />
                 </div>
+
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-rate-${item.id}`}>Hourly Rate</Label>
+                  <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
                   <Input
-                    id={`item-rate-${item.id}`}
+                    id={`item-price-${item.id}`}
                     type="number"
                     min="0"
                     step="0.01"
-                    value={item.hourlyRate ?? ""}
+                    value={item.unitPrice ?? "0"}
                     onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "hourlyRate",
-                        e.target.value || null,
-                      )
+                      handleLineItemChange(index, "unitPrice", e.target.value)
                     }
-                    placeholder="$/hr"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-weekly-${item.id}`}>
-                    Weekly Cap (hrs)
-                  </Label>
-                  <Input
-                    id={`item-weekly-${item.id}`}
-                    type="number"
-                    min="0"
-                    value={item.weeklyCapHours ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "weeklyCapHours",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="e.g. 40"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-monthly-${item.id}`}>
-                    Monthly Cap (hrs)
-                  </Label>
-                  <Input
-                    id={`item-monthly-${item.id}`}
-                    type="number"
-                    min="0"
-                    value={item.monthlyCapHours ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "monthlyCapHours",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="e.g. 160"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-max-${item.id}`}>Max Cap (hrs)</Label>
-                  <Input
-                    id={`item-max-${item.id}`}
-                    type="number"
-                    min="0"
-                    value={item.maxCapHours ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "maxCapHours",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="Total max"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-min-billing-${item.id}`}>
-                    Min Billing (min)
-                  </Label>
-                  <Input
-                    id={`item-min-billing-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="5"
-                    value={item.minimumBillingMinutes ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "minimumBillingMinutes",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="e.g. 30"
-                  />
-                </div>
-              </div>
-            )}
 
-            {/* Royalty fields */}
-            {item.pricingType === "royalty" && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-royalty-${item.id}`}>Royalty %</Label>
+                  <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
                   <Input
-                    id={`item-royalty-${item.id}`}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={item.royaltyPercentage ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "royaltyPercentage",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="e.g. 5"
+                    id={`item-amount-${item.id}`}
+                    value={formatCurrency(item.amount || "0", quote.currency)}
+                    readOnly
+                    className="bg-muted"
                   />
                 </div>
+
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-rtf-${item.id}`}>Timeframe</Label>
-                  <Input
-                    id={`item-rtf-${item.id}`}
-                    type="number"
-                    min="0"
-                    value={item.royaltyTimeframe ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "royaltyTimeframe",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="Duration"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-rtfu-${item.id}`}>Unit</Label>
+                  <Label htmlFor={`item-pricing-${item.id}`}>
+                    Pricing Type
+                  </Label>
                   <select
-                    id={`item-rtfu-${item.id}`}
-                    value={item.royaltyTimeframeUnit ?? ""}
+                    id={`item-pricing-${item.id}`}
+                    value={item.pricingType ?? "fixed"}
                     onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "royaltyTimeframeUnit",
-                        e.target.value || null,
-                      )
+                      handleLineItemChange(index, "pricingType", e.target.value)
                     }
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
                   >
-                    <option value="">Select</option>
-                    <option value="months">Months</option>
-                    <option value="years">Years</option>
-                    <option value="perpetual">Perpetual</option>
+                    <option value="fixed">Fixed</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="royalty">Royalty</option>
+                    <option value="complimentary">Complimentary</option>
                   </select>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-threshold-${item.id}`}>Threshold</Label>
-                  <Input
-                    id={`item-threshold-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={item.royaltyThreshold ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "royaltyThreshold",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="Revenue threshold"
-                  />
-                </div>
-                <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor={`item-buyout-${item.id}`}>
-                    Buyout Amount
-                  </Label>
-                  <Input
-                    id={`item-buyout-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={item.royaltyBuyoutAmount ?? ""}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        index,
-                        "royaltyBuyoutAmount",
-                        e.target.value || null,
-                      )
-                    }
-                    placeholder="One-time buyout"
-                  />
-                </div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Hourly fields */}
+              {item.pricingType === "hourly" && (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-est-hrs-${item.id}`}>
+                      Estimated Hours
+                    </Label>
+                    <Input
+                      id={`item-est-hrs-${item.id}`}
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={item.estimatedHours ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "estimatedHours",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="e.g. 200"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-rate-${item.id}`}>Hourly Rate</Label>
+                    <Input
+                      id={`item-rate-${item.id}`}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.hourlyRate ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "hourlyRate",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="$/hr"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-weekly-${item.id}`}>
+                      Weekly Cap (hrs)
+                    </Label>
+                    <Input
+                      id={`item-weekly-${item.id}`}
+                      type="number"
+                      min="0"
+                      value={item.weeklyCapHours ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "weeklyCapHours",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="e.g. 40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-monthly-${item.id}`}>
+                      Monthly Cap (hrs)
+                    </Label>
+                    <Input
+                      id={`item-monthly-${item.id}`}
+                      type="number"
+                      min="0"
+                      value={item.monthlyCapHours ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "monthlyCapHours",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="e.g. 160"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-max-${item.id}`}>Max Cap (hrs)</Label>
+                    <Input
+                      id={`item-max-${item.id}`}
+                      type="number"
+                      min="0"
+                      value={item.maxCapHours ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "maxCapHours",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="Total max"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-min-billing-${item.id}`}>
+                      Min Billing (min)
+                    </Label>
+                    <Input
+                      id={`item-min-billing-${item.id}`}
+                      type="number"
+                      min="0"
+                      step="5"
+                      value={item.minimumBillingMinutes ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "minimumBillingMinutes",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="e.g. 30"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Royalty fields */}
+              {item.pricingType === "royalty" && (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-royalty-${item.id}`}>Royalty %</Label>
+                    <Input
+                      id={`item-royalty-${item.id}`}
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value={item.royaltyPercentage ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "royaltyPercentage",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="e.g. 5"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-rtf-${item.id}`}>Timeframe</Label>
+                    <Input
+                      id={`item-rtf-${item.id}`}
+                      type="number"
+                      min="0"
+                      value={item.royaltyTimeframe ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "royaltyTimeframe",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="Duration"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-rtfu-${item.id}`}>Unit</Label>
+                    <select
+                      id={`item-rtfu-${item.id}`}
+                      value={item.royaltyTimeframeUnit ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "royaltyTimeframeUnit",
+                          e.target.value || null,
+                        )
+                      }
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
+                    >
+                      <option value="">Select</option>
+                      <option value="months">Months</option>
+                      <option value="years">Years</option>
+                      <option value="perpetual">Perpetual</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-threshold-${item.id}`}>
+                      Threshold
+                    </Label>
+                    <Input
+                      id={`item-threshold-${item.id}`}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.royaltyThreshold ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "royaltyThreshold",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="Revenue threshold"
+                    />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label htmlFor={`item-buyout-${item.id}`}>
+                      Buyout Amount
+                    </Label>
+                    <Input
+                      id={`item-buyout-${item.id}`}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.royaltyBuyoutAmount ?? ""}
+                      onChange={(e) =>
+                        handleLineItemChange(
+                          index,
+                          "royaltyBuyoutAmount",
+                          e.target.value || null,
+                        )
+                      }
+                      placeholder="One-time buyout"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        />
 
         <button
           type="button"

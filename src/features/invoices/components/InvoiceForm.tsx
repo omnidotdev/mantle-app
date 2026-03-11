@@ -1,6 +1,7 @@
 import { Check, Plus, Sparkles, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
+import SortableList from "@/components/core/SortableList";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -440,80 +441,81 @@ const InvoiceForm = ({
       <div className="space-y-4">
         <h3 className="font-medium text-foreground text-lg">Line Items</h3>
 
-        {lineItems.map((item, index) => (
-          <div
-            key={item.id}
-            className="space-y-3 rounded-lg border border-border p-4"
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-foreground text-sm">
-                Item {index + 1}
-              </span>
-              {lineItems.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveLineItem(index)}
-                  className="text-destructive hover:text-destructive/80"
-                  aria-label="Remove item"
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
-            </div>
+        <SortableList
+          items={lineItems}
+          onReorder={onLineItemsChange}
+          renderItem={(item, index) => (
+            <div className="space-y-3 rounded-lg border border-border p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground text-sm">
+                  Item {index + 1}
+                </span>
+                {lineItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveLineItem(index)}
+                    className="text-destructive hover:text-destructive/80"
+                    aria-label="Remove item"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
-              <Input
-                id={`item-desc-${item.id}`}
-                value={item.description ?? ""}
-                onChange={(e) =>
-                  handleLineItemChange(index, "description", e.target.value)
-                }
-                placeholder="Item description"
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
                 <Input
-                  id={`item-qty-${item.id}`}
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={item.quantity ?? "1"}
+                  id={`item-desc-${item.id}`}
+                  value={item.description ?? ""}
                   onChange={(e) =>
-                    handleLineItemChange(index, "quantity", e.target.value)
+                    handleLineItemChange(index, "description", e.target.value)
                   }
+                  placeholder="Item description"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
-                <Input
-                  id={`item-price-${item.id}`}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={item.unitPrice ?? "0"}
-                  onChange={(e) =>
-                    handleLineItemChange(index, "unitPrice", e.target.value)
-                  }
-                />
-              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                  <Input
+                    id={`item-qty-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={item.quantity ?? "1"}
+                    onChange={(e) =>
+                      handleLineItemChange(index, "quantity", e.target.value)
+                    }
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
-                <Input
-                  id={`item-amount-${item.id}`}
-                  value={formatCurrency(item.amount || "0", invoice.currency)}
-                  readOnly
-                  className="bg-muted"
-                />
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
+                  <Input
+                    id={`item-price-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.unitPrice ?? "0"}
+                    onChange={(e) =>
+                      handleLineItemChange(index, "unitPrice", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
+                  <Input
+                    id={`item-amount-${item.id}`}
+                    value={formatCurrency(item.amount || "0", invoice.currency)}
+                    readOnly
+                    className="bg-muted"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )}
+        />
 
         <button
           type="button"
