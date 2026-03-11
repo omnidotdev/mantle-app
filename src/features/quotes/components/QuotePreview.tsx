@@ -427,21 +427,24 @@ const QuotePreview = ({
 
             {quote.terms && (
               <ul className="mb-4 list-disc space-y-2 pl-5 text-foreground">
-                {quote.terms.split("\n").map(
-                  (line) =>
-                    line.trim() && (
-                      <li key={line}>
-                        {line.includes(":") ? (
-                          <>
-                            <strong>{line.split(":")[0]}:</strong>
-                            {line.slice(line.indexOf(":") + 1)}
-                          </>
-                        ) : (
-                          line
-                        )}
-                      </li>
-                    ),
-                )}
+                {quote.terms.split("\n").map((rawLine) => {
+                  const line = rawLine
+                    .replace("{timeRange}", quote.timeRange || "TBD")
+                    .trim();
+                  if (!line) return null;
+                  return (
+                    <li key={line}>
+                      {line.includes(":") ? (
+                        <>
+                          <strong>{line.split(":")[0]}:</strong>
+                          {line.slice(line.indexOf(":") + 1)}
+                        </>
+                      ) : (
+                        line
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
 

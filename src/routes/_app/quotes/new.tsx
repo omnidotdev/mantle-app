@@ -13,7 +13,11 @@ import {
   useGenerateDocumentNumberMutation,
 } from "@/generated/graphql";
 
-import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
+import {
+  DEFAULT_QUOTE_TERMS,
+  type Quote,
+  type QuoteLineItem,
+} from "@/features/quotes/types/quote";
 
 type PreviewType = "quote" | "contract";
 
@@ -25,7 +29,7 @@ const defaultQuote: Partial<Quote> = {
   description: null,
   status: "draft",
   validUntil: "",
-  terms: null,
+  terms: DEFAULT_QUOTE_TERMS,
   notes: null,
   subtotal: "0",
   taxRate: null,
