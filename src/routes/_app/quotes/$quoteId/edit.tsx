@@ -258,11 +258,6 @@ const EditQuotePage = () => {
                 ? Number(item.monthlyCapHours)
                 : null,
               maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
-              ...(item.minimumBillingMinutes
-                ? {
-                    minimumBillingMinutes: Number(item.minimumBillingMinutes),
-                  }
-                : {}),
               royaltyTimeframe: item.royaltyTimeframe
                 ? Number(item.royaltyTimeframe)
                 : null,
