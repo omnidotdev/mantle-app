@@ -18,3 +18,8 @@ jobs:
         run: bun install
       - name: Run tests
         run: bun test
+      - name: Type check
+        run: bunx tsc --noEmit
+
+      - name: Knip
+        run: bun knip

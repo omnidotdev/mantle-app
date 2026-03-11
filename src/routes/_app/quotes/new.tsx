@@ -36,12 +36,14 @@ const defaultQuote: Partial<Quote> = {
   projectType: null,
   timeRange: null,
   additionalTerms: null,
+  additionalItemsLabel: null,
   clientName: null,
   clientEmail: null,
 };
 
 const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   description: "",
+  subtitle: null,
   quantity: "1",
   unitPrice: "0",
   amount: "0",
@@ -170,6 +172,7 @@ const NewQuotePage = () => {
             quoteLineItem: {
               quoteId,
               description: item.description ?? "",
+              subtitle: item.subtitle ?? null,
               quantity: item.quantity ?? "1",
               unitPrice: item.unitPrice ?? "0",
               amount: item.amount ?? "0",
@@ -226,6 +229,7 @@ const NewQuotePage = () => {
             projectType: currentQuote.projectType,
             timeRange: currentQuote.timeRange,
             additionalTerms: currentQuote.additionalTerms,
+            additionalItemsLabel: currentQuote.additionalItemsLabel,
           },
         },
       });

@@ -8,6 +8,7 @@ query AllQuotes($organizationId: String!) {
       contactId
       clientName
       clientEmail
+      additionalItemsLabel
       title
       description
       status
@@ -40,6 +41,7 @@ query AllQuotes($organizationId: String!) {
           quoteId
           productId
           description
+          subtitle
           quantity
           unitPrice
           amount

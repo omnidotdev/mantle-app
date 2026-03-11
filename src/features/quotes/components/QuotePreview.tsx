@@ -16,6 +16,7 @@ const pricingLabels: Record<string, string> = {
   fixed: "Fixed Price",
   hourly: "Hourly",
   royalty: "Royalty",
+  complimentary: "Complimentary",
 };
 
 const pluralizeUnit = (value: string | null, unit: string | null): string => {
@@ -124,10 +125,13 @@ const QuotePreview = ({
   const renderLineItemCard = (item: Partial<QuoteLineItem>) => {
     const isHourly = item.pricingType === "hourly";
     const isRoyalty = item.pricingType === "royalty";
+    const isComplimentary = item.pricingType === "complimentary";
 
     // Determine the displayed price
     let priceDisplay: string;
-    if (isHourly && item.hourlyRate) {
+    if (isComplimentary) {
+      priceDisplay = "FREE";
+    } else if (isHourly && item.hourlyRate) {
       priceDisplay = `${formatCurrency(item.hourlyRate, currency)}/hr`;
     } else if (isRoyalty && item.royaltyPercentage) {
       priceDisplay = `${item.royaltyPercentage}%`;
@@ -135,8 +139,8 @@ const QuotePreview = ({
       priceDisplay = formatCurrency(item.amount || "0", currency);
     }
 
-    // Build sub-description for hourly/royalty items
-    let subDescription: string | null = null;
+    // Build auto sub-description for hourly/royalty items
+    let autoSubDescription: string | null = null;
     if (isHourly) {
       const parts: string[] = [];
       if (item.hourlyRate) {
@@ -159,7 +163,7 @@ const QuotePreview = ({
       if (item.estimatedHours) {
         parts.push(`Est: ${item.estimatedHours}hrs`);
       }
-      subDescription = parts.join(" ");
+      autoSubDescription = parts.join(" ");
     } else if (isRoyalty) {
       const parts: string[] = [];
       if (item.royaltyPercentage) {
@@ -178,8 +182,13 @@ const QuotePreview = ({
           `Buyout: ${formatCurrency(item.royaltyBuyoutAmount, currency)}`,
         );
       }
-      subDescription = parts.join(" \u2022 ");
+      autoSubDescription = parts.join(" \u2022 ");
     }
+
+    // Badge style varies for complimentary items
+    const badgeClass = isComplimentary
+      ? "inline-block rounded-full border border-emerald-300 bg-emerald-50 px-3 py-0.5 font-medium text-emerald-700 text-xs"
+      : "inline-block rounded-full border border-primary-300 bg-primary-50 px-3 py-0.5 font-medium text-primary-700 text-xs";
 
     return (
       <div
@@ -193,7 +202,7 @@ const QuotePreview = ({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
-            <span className="inline-block rounded-full border border-primary-300 bg-primary-50 px-3 py-0.5 font-medium text-primary-700 text-xs">
+            <span className={badgeClass}>
               {pricingLabels[item.pricingType || "fixed"]}
             </span>
             <span className="font-semibold text-foreground text-xl">
@@ -201,8 +210,15 @@ const QuotePreview = ({
             </span>
           </div>
         </div>
-        {subDescription && (
-          <p className="mt-2 text-muted-foreground text-sm">{subDescription}</p>
+        {item.subtitle && (
+          <p className="mt-2 text-muted-foreground text-sm italic">
+            {item.subtitle}
+          </p>
+        )}
+        {autoSubDescription && (
+          <p className="mt-1 text-muted-foreground text-sm">
+            {autoSubDescription}
+          </p>
         )}
       </div>
     );
@@ -341,7 +357,7 @@ const QuotePreview = ({
               {additionalItems.length > 0 && (
                 <>
                   <p className="mt-6 mb-3 font-medium text-muted-foreground text-sm">
-                    Additional Features
+                    {quote.additionalItemsLabel || "Additional Features"}
                   </p>
                   {additionalItems.map((item) => renderLineItemCard(item))}
                 </>
@@ -366,10 +382,12 @@ const QuotePreview = ({
                 currency,
               )}
             </p>
-            {hasHourly && hourlyMaxMonthly > 0 && (
+            {hasHourly && (
               <p className="mt-1 text-muted-foreground text-sm">
-                + hourly services (maximum{" "}
-                {formatCurrency(String(hourlyMaxMonthly), currency)}/mo)
+                + hourly services
+                {hourlyMaxMonthly > 0
+                  ? ` (maximum ${formatCurrency(String(hourlyMaxMonthly), currency)}/mo)`
+                  : ""}
               </p>
             )}
             {hasRoyalty && (

@@ -9,7 +9,12 @@ export const QUOTE_STATUSES = [
 
 export type QuoteStatus = (typeof QUOTE_STATUSES)[number];
 
-export const PRICING_TYPES = ["fixed", "hourly", "royalty"] as const;
+export const PRICING_TYPES = [
+  "fixed",
+  "hourly",
+  "royalty",
+  "complimentary",
+] as const;
 
 export type PricingType = (typeof PRICING_TYPES)[number];
 
@@ -18,6 +23,7 @@ export interface QuoteLineItem {
   quoteId: string;
   productId: string | null;
   description: string;
+  subtitle: string | null;
   quantity: string;
   unitPrice: string;
   amount: string;
@@ -64,4 +70,5 @@ export interface Quote {
   additionalTerms: string[] | null;
   clientName: string | null;
   clientEmail: string | null;
+  additionalItemsLabel: string | null;
 }

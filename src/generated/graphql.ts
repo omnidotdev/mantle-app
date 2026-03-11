@@ -15,21 +15,10 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A floating point number that requires more precision than IEEE 754 binary 64 */
   BigFloat: { input: string; output: string; }
-  /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
-  /** A calendar date in YYYY-MM-DD format. */
   Date: { input: Date; output: string; }
-  /**
-   * A point in time as described by the [ISO
-   * 8601](https://en.wikipedia.org/wiki/ISO_8601) and, if it has a timezone, [RFC
-   * 3339](https://datatracker.ietf.org/doc/html/rfc3339) standards. Input values
-   * that do not conform to both ISO 8601 and RFC 3339 may be coerced, which may lead
-   * to unexpected results.
-   */
   Datetime: { input: Date; output: string; }
-  /** A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
   UUID: { input: string; output: string; }
 };
 
@@ -2654,11 +2643,12 @@ export type QueryQuotesArgs = {
 
 export type Quote = Node & {
   __typename?: 'Quote';
+  additionalItemsLabel?: Maybe<Scalars['String']['output']>;
   additionalTerms?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  /** Reads a single `Company` that is related to this `Quote`. */
-  company?: Maybe<Company>;
   clientEmail?: Maybe<Scalars['String']['output']>;
   clientName?: Maybe<Scalars['String']['output']>;
+  /** Reads a single `Company` that is related to this `Quote`. */
+  company?: Maybe<Company>;
   companyId?: Maybe<Scalars['UUID']['output']>;
   /** Reads a single `Person` that is related to this `Quote`. */
   contact?: Maybe<Person>;
@@ -2776,6 +2766,7 @@ export type QuoteFilter = {
 
 /** An input for mutations affecting `Quote` */
 export type QuoteInput = {
+  additionalItemsLabel?: InputMaybe<Scalars['String']['input']>;
   additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   clientEmail?: InputMaybe<Scalars['String']['input']>;
   clientName?: InputMaybe<Scalars['String']['input']>;
@@ -2827,6 +2818,7 @@ export type QuoteLineItem = Node & {
   royaltyTimeframe?: Maybe<Scalars['Int']['output']>;
   royaltyTimeframeUnit?: Maybe<Scalars['String']['output']>;
   sortOrder?: Maybe<Scalars['Int']['output']>;
+  subtitle?: Maybe<Scalars['String']['output']>;
   unitPrice: Scalars['BigFloat']['output'];
   weeklyCapHours?: Maybe<Scalars['Int']['output']>;
 };
@@ -2903,6 +2895,7 @@ export type QuoteLineItemInput = {
   royaltyTimeframe?: InputMaybe<Scalars['Int']['input']>;
   royaltyTimeframeUnit?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['Int']['input']>;
+  subtitle?: InputMaybe<Scalars['String']['input']>;
   unitPrice: Scalars['BigFloat']['input'];
   weeklyCapHours?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -2937,6 +2930,7 @@ export type QuoteLineItemPatch = {
   royaltyTimeframe?: InputMaybe<Scalars['Int']['input']>;
   royaltyTimeframeUnit?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['Int']['input']>;
+  subtitle?: InputMaybe<Scalars['String']['input']>;
   unitPrice?: InputMaybe<Scalars['BigFloat']['input']>;
   weeklyCapHours?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -2960,6 +2954,7 @@ export enum QuoteOrderBy {
 
 /** Represents an update to a `Quote`. Fields that are set will be updated. */
 export type QuotePatch = {
+  additionalItemsLabel?: InputMaybe<Scalars['String']['input']>;
   additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   clientEmail?: InputMaybe<Scalars['String']['input']>;
   clientName?: InputMaybe<Scalars['String']['input']>;
@@ -3818,7 +3813,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, clientEmail?: string | null, clientName?: string | null, companyId?: string | null, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, clientName?: string | null, clientEmail?: string | null, additionalItemsLabel?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, subtitle?: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -5308,6 +5303,7 @@ export const AllQuotesDocument = `
       contactId
       clientName
       clientEmail
+      additionalItemsLabel
       title
       description
       status
@@ -5340,6 +5336,7 @@ export const AllQuotesDocument = `
           quoteId
           productId
           description
+          subtitle
           quantity
           unitPrice
           amount
