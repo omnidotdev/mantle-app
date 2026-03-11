@@ -122,6 +122,13 @@ const QuotePreviewPage = () => {
                       : null,
                   maxCapHours:
                     li.maxCapHours != null ? String(li.maxCapHours) : null,
+                  minimumBillingMinutes:
+                    (li as Record<string, unknown>).minimumBillingMinutes !=
+                    null
+                      ? String(
+                          (li as Record<string, unknown>).minimumBillingMinutes,
+                        )
+                      : null,
                   royaltyTimeframe:
                     li.royaltyTimeframe != null
                       ? String(li.royaltyTimeframe)

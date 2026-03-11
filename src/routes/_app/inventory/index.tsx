@@ -158,6 +158,9 @@ const ProductsTable = ({
         <thead className="bg-muted">
           <tr>
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+              Actions
+            </th>
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Name
             </th>
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
@@ -172,14 +175,39 @@ const ProductsTable = ({
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Status
             </th>
-            <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-              Actions
-            </th>
           </tr>
         </thead>
         <tbody>
           {products.map((product) => (
             <tr key={product.id} className="border-border border-t">
+              <td className="px-4 py-3">
+                <div className="flex gap-2">
+                  <Link
+                    to="/inventory/$productId"
+                    params={{ productId: product.id }}
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="View product details"
+                  >
+                    <Eye size={16} />
+                  </Link>
+                  <Link
+                    to="/inventory/$productId/edit"
+                    params={{ productId: product.id }}
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Edit product"
+                  >
+                    <Edit size={16} />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(product.id)}
+                    className="text-destructive hover:text-destructive/80"
+                    aria-label="Delete product"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </td>
               <td className="px-4 py-3 font-medium text-sm">{product.name}</td>
               <td className="px-4 py-3 text-foreground text-sm">
                 {product.sku ?? "\u2014"}
@@ -208,34 +236,6 @@ const ProductsTable = ({
                 >
                   {product.isActive ? "Active" : "Inactive"}
                 </Badge>
-              </td>
-              <td className="px-4 py-3 text-right">
-                <div className="flex justify-end gap-2">
-                  <Link
-                    to="/inventory/$productId"
-                    params={{ productId: product.id }}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="View product details"
-                  >
-                    <Eye size={16} />
-                  </Link>
-                  <Link
-                    to="/inventory/$productId/edit"
-                    params={{ productId: product.id }}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="Edit product"
-                  >
-                    <Edit size={16} />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(product.id)}
-                    className="text-destructive hover:text-destructive/80"
-                    aria-label="Delete product"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
               </td>
             </tr>
           ))}

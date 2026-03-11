@@ -36,6 +36,7 @@ export interface QuoteLineItem {
   weeklyCapHours: string | null;
   monthlyCapHours: string | null;
   maxCapHours: string | null;
+  minimumBillingMinutes: string | null;
   // Royalty details
   royaltyTimeframe: string | null;
   royaltyTimeframeUnit: "months" | "years" | "perpetual" | null;

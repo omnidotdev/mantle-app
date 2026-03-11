@@ -76,14 +76,20 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
                   )}
                   /hr
                 </p>
-                {item.weeklyCapHours && (
+                {Number(item.weeklyCapHours) > 0 && (
                   <p>Weekly cap: {item.weeklyCapHours} hours</p>
                 )}
-                {item.monthlyCapHours && (
+                {Number(item.monthlyCapHours) > 0 && (
                   <p>Monthly cap: {item.monthlyCapHours} hours</p>
                 )}
-                {item.maxCapHours && (
+                {Number(item.maxCapHours) > 0 && (
                   <p>Maximum total: {item.maxCapHours} hours</p>
+                )}
+                {Number(item.minimumBillingMinutes) > 0 && (
+                  <p>
+                    Minimum billing increment: {item.minimumBillingMinutes}{" "}
+                    minutes per task
+                  </p>
                 )}
               </div>
             ))}

@@ -54,6 +54,7 @@ const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   weeklyCapHours: null,
   monthlyCapHours: null,
   maxCapHours: null,
+  minimumBillingMinutes: null,
   royaltyTimeframe: null,
   royaltyTimeframeUnit: null,
   royaltyThreshold: null,
@@ -187,6 +188,11 @@ const NewQuotePage = () => {
                 ? Number(item.monthlyCapHours)
                 : null,
               maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
+              ...((item.minimumBillingMinutes
+                ? {
+                    minimumBillingMinutes: Number(item.minimumBillingMinutes),
+                  }
+                : {}) as Record<string, number>),
               royaltyTimeframe: item.royaltyTimeframe
                 ? Number(item.royaltyTimeframe)
                 : null,

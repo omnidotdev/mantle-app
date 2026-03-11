@@ -51,6 +51,7 @@ query AllQuotes($organizationId: String!) {
           weeklyCapHours
           monthlyCapHours
           maxCapHours
+          minimumBillingMinutes
           royaltyPercentage
           royaltyTimeframe
           royaltyTimeframeUnit

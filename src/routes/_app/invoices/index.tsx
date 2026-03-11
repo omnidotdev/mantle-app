@@ -256,6 +256,9 @@ const InvoicesListPage = () => {
               <thead className="bg-muted">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                    Actions
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                     Invoice #
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
@@ -273,42 +276,13 @@ const InvoicesListPage = () => {
                   <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-                    Actions
-                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredInvoices.map((invoice) => (
                   <tr key={invoice.id} className="border-border border-t">
-                    <td className="px-4 py-3 font-mono text-sm">
-                      {invoice.invoiceNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {invoice.company?.name ?? "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-foreground text-sm">
-                      {invoice.issueDate
-                        ? formatDate(invoice.issueDate)
-                        : "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-foreground text-sm">
-                      {invoice.dueDate ? formatDate(invoice.dueDate) : "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-sm">
-                      {formatCurrency(invoice.total, invoice.currency)}
-                    </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`inline-block rounded-full px-2 py-1 text-xs ${
-                          statusColors[invoice.status] || statusColors.draft
-                        }`}
-                      >
-                        {invoice.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex gap-2">
                         <Link
                           to="/invoices/$invoiceId"
                           params={{ invoiceId: invoice.id }}
@@ -336,6 +310,32 @@ const InvoicesListPage = () => {
                           <Trash2 size={16} />
                         </button>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-sm">
+                      {invoice.invoiceNumber}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {invoice.company?.name ?? "\u2014"}
+                    </td>
+                    <td className="px-4 py-3 text-foreground text-sm">
+                      {invoice.issueDate
+                        ? formatDate(invoice.issueDate)
+                        : "\u2014"}
+                    </td>
+                    <td className="px-4 py-3 text-foreground text-sm">
+                      {invoice.dueDate ? formatDate(invoice.dueDate) : "\u2014"}
+                    </td>
+                    <td className="px-4 py-3 text-right font-medium text-sm">
+                      {formatCurrency(invoice.total, invoice.currency)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-block rounded-full px-2 py-1 text-xs ${
+                          statusColors[invoice.status] || statusColors.draft
+                        }`}
+                      >
+                        {invoice.status}
+                      </span>
                     </td>
                   </tr>
                 ))}

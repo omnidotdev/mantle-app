@@ -98,7 +98,9 @@ const QuotePreview = ({
   const hasRoyalty = lineItems.some((li) => li.pricingType === "royalty");
 
   const hourlyMaxMonthly = lineItems
-    .filter((li) => li.pricingType === "hourly")
+    .filter(
+      (li) => li.pricingType === "hourly" && Number(li.monthlyCapHours) > 0,
+    )
     .reduce((sum, li) => {
       const rate = Number.parseFloat(li.hourlyRate || "0") || 0;
       const monthlyHrs = Number.parseFloat(li.monthlyCapHours || "0") || 0;
@@ -146,22 +148,25 @@ const QuotePreview = ({
       if (item.hourlyRate) {
         parts.push(`Rate: ${formatCurrency(item.hourlyRate, currency)}/hr`);
       }
-      if (item.monthlyCapHours) {
+      if (Number(item.monthlyCapHours) > 0) {
         const maxMonthly =
           (Number.parseFloat(item.hourlyRate || "0") || 0) *
-          (Number.parseFloat(item.monthlyCapHours) || 0);
+          (Number.parseFloat(item.monthlyCapHours || "0") || 0);
         parts.push(
           `up to ${item.monthlyCapHours} hours per month (max ${formatCurrency(String(maxMonthly), currency)})`,
         );
       }
-      if (item.weeklyCapHours) {
+      if (Number(item.weeklyCapHours) > 0) {
         parts.push(`Weekly cap: ${item.weeklyCapHours}hrs`);
       }
-      if (item.maxCapHours) {
+      if (Number(item.maxCapHours) > 0) {
         parts.push(`Max: ${item.maxCapHours}hrs`);
       }
       if (item.estimatedHours) {
         parts.push(`Est: ${item.estimatedHours}hrs`);
+      }
+      if (Number(item.minimumBillingMinutes) > 0) {
+        parts.push(`Min: ${item.minimumBillingMinutes}min per task`);
       }
       autoSubDescription = parts.join(" ");
     } else if (isRoyalty) {
@@ -357,7 +362,7 @@ const QuotePreview = ({
               {additionalItems.length > 0 && (
                 <>
                   <p className="mt-6 mb-3 font-medium text-muted-foreground text-sm">
-                    {quote.additionalItemsLabel || "Additional Features"}
+                    {quote.additionalItemsLabel || "Additional Deliverables"}
                   </p>
                   {additionalItems.map((item) => renderLineItemCard(item))}
                 </>

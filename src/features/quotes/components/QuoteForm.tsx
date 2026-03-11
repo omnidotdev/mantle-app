@@ -61,6 +61,7 @@ const QuoteForm = ({
         updatedItem.monthlyCapHours = null;
         updatedItem.maxCapHours = null;
         updatedItem.estimatedHours = null;
+        updatedItem.minimumBillingMinutes = null;
 
         // Clear royalty fields
         updatedItem.royaltyPercentage = null;
@@ -74,6 +75,7 @@ const QuoteForm = ({
           updatedItem.hourlyRate = "150";
           updatedItem.weeklyCapHours = "10";
           updatedItem.monthlyCapHours = "40";
+          updatedItem.minimumBillingMinutes = "30";
         } else if (value === "royalty") {
           updatedItem.royaltyPercentage = "5";
           updatedItem.royaltyTimeframe = "12";
@@ -154,6 +156,7 @@ const QuoteForm = ({
         weeklyCapHours: null,
         monthlyCapHours: null,
         maxCapHours: null,
+        minimumBillingMinutes: null,
         royaltyTimeframe: null,
         royaltyTimeframeUnit: null,
         royaltyThreshold: null,
@@ -609,6 +612,26 @@ const QuoteForm = ({
                       )
                     }
                     placeholder="Total max"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`item-min-billing-${item.id}`}>
+                    Min Billing (min)
+                  </Label>
+                  <Input
+                    id={`item-min-billing-${item.id}`}
+                    type="number"
+                    min="0"
+                    step="5"
+                    value={item.minimumBillingMinutes ?? ""}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        index,
+                        "minimumBillingMinutes",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="e.g. 30"
                   />
                 </div>
               </div>

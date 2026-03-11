@@ -329,6 +329,9 @@ const CompaniesTable = ({
         <thead className="bg-muted">
           <tr>
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+              Actions
+            </th>
+            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Name
             </th>
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
@@ -339,9 +342,6 @@ const CompaniesTable = ({
             </th>
             <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
               Phone
-            </th>
-            <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-              Actions
             </th>
           </tr>
         </thead>
@@ -357,21 +357,8 @@ const CompaniesTable = ({
                 })
               }
             >
-              <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {company.industry ?? "\u2014"}
-              </td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {company.email ?? "\u2014"}
-              </td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {company.phone ?? "\u2014"}
-              </td>
-              <td
-                className="px-4 py-3 text-right"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex justify-end gap-2">
+              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-2">
                   <Link
                     to="/people/companies/$companyId/edit"
                     params={{ companyId: company.id }}
@@ -389,6 +376,16 @@ const CompaniesTable = ({
                     <Trash2 size={16} />
                   </button>
                 </div>
+              </td>
+              <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
+              <td className="px-4 py-3 text-foreground text-sm">
+                {company.industry ?? "\u2014"}
+              </td>
+              <td className="px-4 py-3 text-foreground text-sm">
+                {company.email ?? "\u2014"}
+              </td>
+              <td className="px-4 py-3 text-foreground text-sm">
+                {company.phone ?? "\u2014"}
               </td>
             </tr>
           ))}
@@ -569,6 +566,9 @@ const ContactsTable = ({
           <thead className="bg-muted">
             <tr>
               <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
+                Actions
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Name
               </th>
               <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
@@ -582,9 +582,6 @@ const ContactsTable = ({
               </th>
               <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
                 Tags
-              </th>
-              <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-                Actions
               </th>
             </tr>
           </thead>
@@ -600,6 +597,32 @@ const ContactsTable = ({
                   })
                 }
               >
+                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex gap-2">
+                    {person.emails.length > 0 && (
+                      <EmailActionButton
+                        emails={person.emails}
+                        name={`${person.firstName} ${person.lastName}`}
+                      />
+                    )}
+                    <Link
+                      to="/people/contacts/$contactId/edit"
+                      params={{ contactId: person.id }}
+                      className="text-muted-foreground hover:text-foreground"
+                      aria-label="Edit contact"
+                    >
+                      <Edit size={16} />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => onDelete(person.id)}
+                      className="text-destructive hover:text-destructive/90"
+                      aria-label="Delete contact"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </td>
                 <td className="px-4 py-3 font-medium text-sm">
                   {person.firstName} {person.lastName}
                 </td>
@@ -647,35 +670,6 @@ const ContactsTable = ({
                         {"\u2014"}
                       </span>
                     )}
-                  </div>
-                </td>
-                <td
-                  className="px-4 py-3 text-right"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex justify-end gap-2">
-                    {person.emails.length > 0 && (
-                      <EmailActionButton
-                        emails={person.emails}
-                        name={`${person.firstName} ${person.lastName}`}
-                      />
-                    )}
-                    <Link
-                      to="/people/contacts/$contactId/edit"
-                      params={{ contactId: person.id }}
-                      className="text-muted-foreground hover:text-foreground"
-                      aria-label="Edit contact"
-                    >
-                      <Edit size={16} />
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => onDelete(person.id)}
-                      className="text-destructive hover:text-destructive/90"
-                      aria-label="Delete contact"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </td>
               </tr>
