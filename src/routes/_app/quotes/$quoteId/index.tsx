@@ -204,7 +204,7 @@ const QuotePreviewPage = () => {
 
   return (
     <div className="p-6 print:p-0">
-      <div className="print-hide mb-6 flex items-center justify-between">
+      <div className="print-hide sticky top-0 z-10 mb-6 flex items-center justify-between bg-background py-4">
         <Link
           to="/quotes"
           className="text-muted-foreground text-sm hover:text-foreground"
