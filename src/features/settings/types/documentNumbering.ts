@@ -1,4 +1,5 @@
 type DocumentNumberingPreview = {
+  globalPrefix: string;
   prefix: string;
   separator: string;
   dateFormat: string | null;
@@ -12,6 +13,10 @@ type DocumentNumberingPreview = {
  */
 const formatPreview = (config: DocumentNumberingPreview): string => {
   const parts: string[] = [];
+
+  if (config.globalPrefix) {
+    parts.push(config.globalPrefix);
+  }
 
   if (config.prefix) {
     parts.push(config.prefix);

@@ -1,11 +1,10 @@
 query DocumentNumberingConfigs($organizationId: String!) {
-  documentNumberingConfigs(
-    condition: { organizationId: $organizationId }
-  ) {
+  documentNumberingConfigs(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
       documentType
+      globalPrefix
       prefix
       separator
       dateFormat
@@ -23,6 +22,7 @@ mutation CreateDocumentNumberingConfig(
   createDocumentNumberingConfig(input: $input) {
     documentNumberingConfig {
       rowId
+      globalPrefix
       prefix
       separator
       dateFormat
@@ -39,6 +39,7 @@ mutation UpdateDocumentNumberingConfig(
   updateDocumentNumberingConfig(input: $input) {
     documentNumberingConfig {
       rowId
+      globalPrefix
       prefix
       separator
       dateFormat

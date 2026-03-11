@@ -28,6 +28,7 @@ import type { DocumentNumberingPreview } from "@/features/settings/types/documen
 type DocumentType = "quote" | "invoice";
 
 type FormState = {
+  globalPrefix: string;
   prefix: string;
   separator: string;
   dateFormat: string | null;
@@ -38,6 +39,7 @@ type FormState = {
 
 const defaultConfig: Record<DocumentType, FormState> = {
   quote: {
+    globalPrefix: "",
     prefix: "QT",
     separator: "-",
     dateFormat: null,
@@ -46,6 +48,7 @@ const defaultConfig: Record<DocumentType, FormState> = {
     randomLength: 8,
   },
   invoice: {
+    globalPrefix: "",
     prefix: "INV",
     separator: "-",
     dateFormat: null,
@@ -112,6 +115,7 @@ const DocumentNumberingForm = ({
   documentType: DocumentType;
   existingConfig?: {
     rowId: string;
+    globalPrefix?: string | null;
     prefix: string;
     separator: string;
     dateFormat?: string | null;
@@ -128,6 +132,7 @@ const DocumentNumberingForm = ({
   useEffect(() => {
     if (existingConfig) {
       setForm({
+        globalPrefix: existingConfig.globalPrefix ?? "",
         prefix: existingConfig.prefix,
         separator: existingConfig.separator,
         dateFormat: existingConfig.dateFormat ?? null,
@@ -152,6 +157,7 @@ const DocumentNumberingForm = ({
 
   const handleSave = async () => {
     const patch = {
+      globalPrefix: form.globalPrefix,
       prefix: form.prefix,
       separator: form.separator,
       dateFormat: form.dateFormat,
@@ -191,6 +197,16 @@ const DocumentNumberingForm = ({
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor={`${documentType}-global-prefix`}>Company Prefix</Label>
+          <Input
+            id={`${documentType}-global-prefix`}
+            value={form.globalPrefix}
+            onChange={(e) => handleChange("globalPrefix", e.target.value)}
+            placeholder="e.g. ACME"
+          />
+        </div>
+
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-prefix`}>Prefix</Label>
           <Input

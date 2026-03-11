@@ -1103,6 +1103,7 @@ export type DocumentNumberingConfig = Node & {
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   dateFormat?: Maybe<Scalars['String']['output']>;
   documentType: Scalars['String']['output'];
+  globalPrefix?: Maybe<Scalars['String']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   idStrategy: Scalars['String']['output'];
@@ -1172,6 +1173,7 @@ export type DocumentNumberingConfigInput = {
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   dateFormat?: InputMaybe<Scalars['String']['input']>;
   documentType: Scalars['String']['input'];
+  globalPrefix?: InputMaybe<Scalars['String']['input']>;
   idStrategy?: InputMaybe<Scalars['String']['input']>;
   nextSequentialNumber?: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
@@ -1201,6 +1203,7 @@ export type DocumentNumberingConfigPatch = {
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   dateFormat?: InputMaybe<Scalars['String']['input']>;
   documentType?: InputMaybe<Scalars['String']['input']>;
+  globalPrefix?: InputMaybe<Scalars['String']['input']>;
   idStrategy?: InputMaybe<Scalars['String']['input']>;
   nextSequentialNumber?: InputMaybe<Scalars['Int']['input']>;
   organizationId?: InputMaybe<Scalars['String']['input']>;
@@ -3674,21 +3677,21 @@ export type DocumentNumberingConfigsQueryVariables = Exact<{
 }>;
 
 
-export type DocumentNumberingConfigsQuery = { __typename?: 'Query', documentNumberingConfigs?: { __typename?: 'DocumentNumberingConfigConnection', nodes: Array<{ __typename?: 'DocumentNumberingConfig', rowId: string, organizationId: string, documentType: string, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
+export type DocumentNumberingConfigsQuery = { __typename?: 'Query', documentNumberingConfigs?: { __typename?: 'DocumentNumberingConfigConnection', nodes: Array<{ __typename?: 'DocumentNumberingConfig', rowId: string, organizationId: string, documentType: string, globalPrefix?: string | null, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
 
 export type CreateDocumentNumberingConfigMutationVariables = Exact<{
   input: CreateDocumentNumberingConfigInput;
 }>;
 
 
-export type CreateDocumentNumberingConfigMutation = { __typename?: 'Mutation', createDocumentNumberingConfig?: { __typename?: 'CreateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+export type CreateDocumentNumberingConfigMutation = { __typename?: 'Mutation', createDocumentNumberingConfig?: { __typename?: 'CreateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, globalPrefix?: string | null, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
 
 export type UpdateDocumentNumberingConfigMutationVariables = Exact<{
   input: UpdateDocumentNumberingConfigInput;
 }>;
 
 
-export type UpdateDocumentNumberingConfigMutation = { __typename?: 'Mutation', updateDocumentNumberingConfig?: { __typename?: 'UpdateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+export type UpdateDocumentNumberingConfigMutation = { __typename?: 'Mutation', updateDocumentNumberingConfig?: { __typename?: 'UpdateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, globalPrefix?: string | null, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
 
 export type GenerateDocumentNumberMutationVariables = Exact<{
   input: GenerateDocumentNumberInput;
@@ -3978,6 +3981,7 @@ export const DocumentNumberingConfigsDocument = gql`
       rowId
       organizationId
       documentType
+      globalPrefix
       prefix
       separator
       dateFormat
@@ -3994,6 +3998,7 @@ export const CreateDocumentNumberingConfigDocument = gql`
   createDocumentNumberingConfig(input: $input) {
     documentNumberingConfig {
       rowId
+      globalPrefix
       prefix
       separator
       dateFormat
@@ -4009,6 +4014,7 @@ export const UpdateDocumentNumberingConfigDocument = gql`
   updateDocumentNumberingConfig(input: $input) {
     documentNumberingConfig {
       rowId
+      globalPrefix
       prefix
       separator
       dateFormat
