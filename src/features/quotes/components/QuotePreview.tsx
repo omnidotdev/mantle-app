@@ -247,7 +247,7 @@ const QuotePreview = ({
   };
 
   return (
-    <div className="rounded-lg border border-border bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
+    <div className="rounded-lg border border-border bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
       {/* Header banner */}
       <div
         className="flex items-center justify-between rounded-t-lg px-8 py-6 text-white print:rounded-none"
