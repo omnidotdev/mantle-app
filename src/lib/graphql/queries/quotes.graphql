@@ -6,6 +6,8 @@ query AllQuotes($organizationId: String!) {
       quoteNumber
       companyId
       contactId
+      clientName
+      clientEmail
       title
       description
       status

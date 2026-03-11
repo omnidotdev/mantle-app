@@ -2656,6 +2656,8 @@ export type Quote = Node & {
   additionalTerms?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   /** Reads a single `Company` that is related to this `Quote`. */
   company?: Maybe<Company>;
+  clientEmail?: Maybe<Scalars['String']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
   companyId?: Maybe<Scalars['UUID']['output']>;
   /** Reads a single `Person` that is related to this `Quote`. */
   contact?: Maybe<Person>;
@@ -2774,6 +2776,8 @@ export type QuoteFilter = {
 /** An input for mutations affecting `Quote` */
 export type QuoteInput = {
   additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  clientEmail?: InputMaybe<Scalars['String']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
   companyId?: InputMaybe<Scalars['UUID']['input']>;
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   convertedInvoiceId?: InputMaybe<Scalars['UUID']['input']>;
@@ -2956,6 +2960,8 @@ export enum QuoteOrderBy {
 /** Represents an update to a `Quote`. Fields that are set will be updated. */
 export type QuotePatch = {
   additionalTerms?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  clientEmail?: InputMaybe<Scalars['String']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
   companyId?: InputMaybe<Scalars['UUID']['input']>;
   contactId?: InputMaybe<Scalars['UUID']['input']>;
   convertedInvoiceId?: InputMaybe<Scalars['UUID']['input']>;
@@ -3811,7 +3817,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, clientEmail?: string | null, clientName?: string | null, companyId?: string | null, contactId?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -5299,6 +5305,8 @@ export const AllQuotesDocument = `
       quoteNumber
       companyId
       contactId
+      clientName
+      clientEmail
       title
       description
       status
