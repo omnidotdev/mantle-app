@@ -182,8 +182,6 @@ const EditCompanyPage = () => {
   );
 };
 
-export const Route = createFileRoute("/_app/people/companies/$companyId/edit")(
-  {
-    component: EditCompanyPage,
-  },
-);
+export const Route = createFileRoute("/_app/people/companies/$companyId/edit")({
+  component: EditCompanyPage,
+});

@@ -62,9 +62,7 @@ const ContactCompanies = ({
       setNewTitle("");
       toast.success("Company added");
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to add company",
-      );
+      toast.error(err instanceof Error ? err.message : "Failed to add company");
     }
   };
 
@@ -143,14 +141,10 @@ const ContactCompanies = ({
                 }
                 className={`p-1 ${membership.isPrimary ? "text-amber-500" : "text-muted-foreground hover:text-foreground"}`}
                 aria-label={
-                  membership.isPrimary
-                    ? "Remove primary"
-                    : "Set as primary"
+                  membership.isPrimary ? "Remove primary" : "Set as primary"
                 }
                 title={
-                  membership.isPrimary
-                    ? "Primary company"
-                    : "Set as primary"
+                  membership.isPrimary ? "Primary company" : "Set as primary"
                 }
               >
                 <Star

@@ -227,9 +227,7 @@ const QuoteForm = ({
               <button
                 key={preset.value}
                 type="button"
-                onClick={() =>
-                  handleProfileChange("accentColor", preset.value)
-                }
+                onClick={() => handleProfileChange("accentColor", preset.value)}
                 className="flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
                 style={{
                   backgroundColor: preset.value,

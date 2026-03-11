@@ -7,17 +7,14 @@ import { toast } from "sonner";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
+import { DEFAULT_QUOTE_TERMS } from "@/features/quotes/types/quote";
 import {
   useCreateQuoteLineItemMutation,
   useCreateQuoteMutation,
   useGenerateDocumentNumberMutation,
 } from "@/generated/graphql";
 
-import {
-  DEFAULT_QUOTE_TERMS,
-  type Quote,
-  type QuoteLineItem,
-} from "@/features/quotes/types/quote";
+import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 
 type PreviewType = "quote" | "contract";
 

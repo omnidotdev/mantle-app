@@ -13,6 +13,9 @@ const ContractTerms = ({
 }: ContractTermsProps) => {
   const hasRoyalty = lineItems.some((li) => li.pricingType === "royalty");
   const hasHourly = lineItems.some((li) => li.pricingType === "hourly");
+  const hasMinBilling = lineItems.some(
+    (li) => li.pricingType === "hourly" && Number(li.minimumBillingMinutes) > 0,
+  );
 
   return (
     <div className="space-y-4 text-foreground text-sm">
@@ -98,6 +101,13 @@ const ContractTerms = ({
             Hourly-billed items will be tracked and reported on a weekly basis.
             Work will pause when hourly caps are reached unless the Client
             authorizes additional hours in writing.
+          </p>
+        )}
+        {hasMinBilling && (
+          <p className="mt-1">
+            Hourly-billed items with a minimum billing increment will be billed
+            at no less than the specified minimum per task, regardless of actual
+            time spent.
           </p>
         )}
       </div>

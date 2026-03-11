@@ -59,9 +59,7 @@ const CompanyMembers = ({ companyId, organizationId }: CompanyMembersProps) => {
       setNewTitle("");
       toast.success("Member added");
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to add member",
-      );
+      toast.error(err instanceof Error ? err.message : "Failed to add member");
     }
   };
 
