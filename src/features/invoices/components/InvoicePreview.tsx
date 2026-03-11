@@ -34,8 +34,8 @@ const InvoicePreview = ({
     : undefined;
 
   const accent = useMemo(
-    () => getAccentVariants(orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT),
-    [orgProfile?.invoiceAccentColor],
+    () => getAccentVariants(orgProfile?.accentColor ?? DEFAULT_ACCENT),
+    [orgProfile?.accentColor],
   );
 
   const { data: companiesData } = useAllCompaniesQuery(

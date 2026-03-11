@@ -1,5 +1,9 @@
 import { useMemo } from "react";
 
+import {
+  DEFAULT_ACCENT,
+  getAccentVariants,
+} from "@/features/invoices/types/accentColor";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
@@ -52,6 +56,11 @@ const QuotePreview = ({
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
+
+  const accent = useMemo(
+    () => getAccentVariants(orgProfile?.accentColor ?? DEFAULT_ACCENT),
+    [orgProfile?.accentColor],
+  );
 
   const { data: companiesData } = useAllCompaniesQuery(
     { organizationId: organizationId ?? "" },
@@ -191,9 +200,17 @@ const QuotePreview = ({
     }
 
     // Badge style varies for complimentary items
+    const badgeStyle = isComplimentary
+      ? undefined
+      : {
+          borderColor: accent.light,
+          backgroundColor: accent.light,
+          color: accent.gradientFrom,
+        };
+
     const badgeClass = isComplimentary
       ? "inline-block rounded-full border border-emerald-300 bg-emerald-50 px-3 py-0.5 font-medium text-emerald-700 text-xs"
-      : "inline-block rounded-full border border-primary-300 bg-primary-50 px-3 py-0.5 font-medium text-primary-700 text-xs";
+      : "inline-block rounded-full border px-3 py-0.5 font-medium text-xs";
 
     return (
       <div
@@ -207,7 +224,7 @@ const QuotePreview = ({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
-            <span className={badgeClass}>
+            <span className={badgeClass} style={badgeStyle}>
               {pricingLabels[item.pricingType || "fixed"]}
             </span>
             <span className="font-semibold text-foreground text-xl">
@@ -232,7 +249,12 @@ const QuotePreview = ({
   return (
     <div className="rounded-lg border border-border bg-white shadow-sm print:mx-auto print:min-h-screen print:w-[210mm] print:border-0 print:shadow-none">
       {/* Header banner */}
-      <div className="flex items-center justify-between rounded-t-lg bg-linear-to-r from-primary-800 to-primary-500 px-8 py-6 text-white print:rounded-none">
+      <div
+        className="flex items-center justify-between rounded-t-lg px-8 py-6 text-white print:rounded-none"
+        style={{
+          background: `linear-gradient(to right, ${accent.gradientFrom}, ${accent.gradientTo})`,
+        }}
+      >
         <div className="flex items-center gap-4">
           <img
             src="/omni-logo.svg"
@@ -379,7 +401,7 @@ const QuotePreview = ({
             Total Investment
           </h2>
           <div className="text-right">
-            <p className="font-bold text-3xl text-primary">
+            <p className="font-bold text-3xl" style={{ color: accent.base }}>
               {formatCurrency(
                 String(
                   taxRate > 0 ? total : fixedTotal > 0 ? fixedTotal : total,

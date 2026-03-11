@@ -37,7 +37,7 @@ const SettingsPage = () => {
     country: null,
     logoUrl: null,
     registrationState: null,
-    invoiceAccentColor: null,
+    accentColor: null,
   };
 
   const [form, setForm] = useState<FormState>(defaultForm);
@@ -61,7 +61,7 @@ const SettingsPage = () => {
         country: existing.country,
         logoUrl: existing.logoUrl,
         registrationState: existing.registrationState,
-        invoiceAccentColor: existing.invoiceAccentColor,
+        accentColor: existing.accentColor,
       });
     }
   }, [existing]);

@@ -1,12 +1,17 @@
-import { Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Check, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  ACCENT_PRESETS,
+  DEFAULT_ACCENT,
+} from "@/features/invoices/types/accentColor";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
+import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import AdditionalTermsEditor from "./AdditionalTermsEditor";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
@@ -36,6 +41,37 @@ const QuoteForm = ({
   onRegenerateNumber,
   isRegenerating,
 }: QuoteFormProps) => {
+  const { getProfileForOrg, updateProfile, createProfile } = useSettingsStore();
+  const orgProfile = organizationId
+    ? getProfileForOrg(organizationId)
+    : undefined;
+
+  const handleProfileChange = (field: string, value: string | null) => {
+    if (!organizationId) return;
+    if (orgProfile) {
+      updateProfile(orgProfile.id, { [field]: value });
+    } else {
+      createProfile({
+        organizationId,
+        companyName: "",
+        contactName: "",
+        contactTitle: null,
+        email: "",
+        phone: null,
+        website: null,
+        addressLine1: null,
+        addressLine2: null,
+        city: null,
+        state: null,
+        postalCode: null,
+        country: null,
+        logoUrl: null,
+        registrationState: null,
+        accentColor: value,
+      });
+    }
+  };
+
   const handleChange = (
     field: keyof Quote,
     value: string | string[] | null,
@@ -179,6 +215,51 @@ const QuoteForm = ({
 
   return (
     <div className="space-y-6">
+      {/* Accent color */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-foreground text-lg">Quote Theme</h3>
+        <div className="flex flex-wrap items-center gap-2">
+          {ACCENT_PRESETS.map((preset) => {
+            const isActive =
+              (orgProfile?.accentColor ?? DEFAULT_ACCENT) === preset.value;
+
+            return (
+              <button
+                key={preset.value}
+                type="button"
+                onClick={() =>
+                  handleProfileChange("accentColor", preset.value)
+                }
+                className="flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
+                style={{
+                  backgroundColor: preset.value,
+                  borderColor: isActive ? "var(--foreground)" : "transparent",
+                }}
+                aria-label={preset.label}
+                title={preset.label}
+              >
+                {isActive && <Check size={14} className="text-white" />}
+              </button>
+            );
+          })}
+          <div className="flex items-center gap-1.5">
+            <input
+              type="color"
+              value={orgProfile?.accentColor ?? DEFAULT_ACCENT}
+              onChange={(e) =>
+                handleProfileChange("accentColor", e.target.value)
+              }
+              className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
+              aria-label="Custom accent color"
+              title="Custom color"
+            />
+            <span className="font-mono text-muted-foreground text-xs">
+              {orgProfile?.accentColor ?? DEFAULT_ACCENT}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Quote details */}
       <div className="space-y-4">
         <h3 className="font-medium text-foreground text-lg">Quote Details</h3>

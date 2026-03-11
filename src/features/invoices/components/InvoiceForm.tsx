@@ -170,7 +170,7 @@ const InvoiceForm = ({
         country: null,
         logoUrl: null,
         registrationState: null,
-        invoiceAccentColor: null,
+        accentColor: null,
       });
     }
   };
@@ -288,7 +288,7 @@ const InvoiceForm = ({
         <div className="flex flex-wrap items-center gap-2">
           {ACCENT_PRESETS.map((preset) => {
             const isActive =
-              (orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT) ===
+              (orgProfile?.accentColor ?? DEFAULT_ACCENT) ===
               preset.value;
 
             return (
@@ -296,7 +296,7 @@ const InvoiceForm = ({
                 key={preset.value}
                 type="button"
                 onClick={() =>
-                  handleProfileChange("invoiceAccentColor", preset.value)
+                  handleProfileChange("accentColor", preset.value)
                 }
                 className="flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
                 style={{
@@ -313,16 +313,16 @@ const InvoiceForm = ({
           <div className="flex items-center gap-1.5">
             <input
               type="color"
-              value={orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT}
+              value={orgProfile?.accentColor ?? DEFAULT_ACCENT}
               onChange={(e) =>
-                handleProfileChange("invoiceAccentColor", e.target.value)
+                handleProfileChange("accentColor", e.target.value)
               }
               className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
               aria-label="Custom accent color"
               title="Custom color"
             />
             <span className="font-mono text-muted-foreground text-xs">
-              {orgProfile?.invoiceAccentColor ?? DEFAULT_ACCENT}
+              {orgProfile?.accentColor ?? DEFAULT_ACCENT}
             </span>
           </div>
         </div>

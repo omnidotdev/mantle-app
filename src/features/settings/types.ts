@@ -15,7 +15,7 @@ type OrganizationProfile = {
   country: string | null;
   logoUrl: string | null;
   registrationState: string | null;
-  invoiceAccentColor: string | null;
+  accentColor: string | null;
   createdAt: string;
   updatedAt: string;
 };
