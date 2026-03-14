@@ -13,9 +13,8 @@ import { formatCurrency } from "@/features/invoices/types/invoice";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
-import AdditionalTermsEditor from "./AdditionalTermsEditor";
-
 import { QUOTE_STATUSES } from "../types/quote";
+import AdditionalTermsEditor from "./AdditionalTermsEditor";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 

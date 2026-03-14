@@ -9,9 +9,9 @@ const app = {
   name: "Mantle",
   /** App description (used in SEO meta tags) */
   description:
-    "Business operations, forged under pressure. Designed and maintained by Omni.",
+    "Unified business operations suite for Omni, providing a cohesive platform for managing business workflows and operations.",
   /** App tagline */
-  tagline: "🌋 Forged under pressure",
+  tagline: "Forged under pressure",
   /** Production URL */
   url: "https://mantle.omni.dev",
   /** Organization info */
