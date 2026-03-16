@@ -15,7 +15,7 @@ import { fetchSession } from "@/server/functions/auth";
 import { getTheme } from "@/server/functions/theme";
 import appStyles from "@/styles.css?url";
 
-import type { OrganizationClaim } from "@omnidotdev/providers";
+import type { OrganizationClaim } from "@omnidotdev/providers/auth";
 import type { QueryClient } from "@tanstack/react-query";
 import type { Session } from "better-auth/types";
 import type { ReactNode } from "react";

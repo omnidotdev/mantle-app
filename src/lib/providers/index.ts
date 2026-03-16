@@ -2,13 +2,13 @@
  * Shared provider instances.
  */
 
-import { createFlagProvider } from "@omnidotdev/providers";
+import { createFlagProvider } from "@omnidotdev/providers/flags";
 import { createServerFn } from "@tanstack/react-start";
 
 import { FLAGS_API_HOST, FLAGS_CLIENT_KEY } from "@/lib/config/env.config";
 import { FLAGS } from "@/lib/flags/defaults";
 
-import type { FlagContext } from "@omnidotdev/providers";
+import type { FlagContext } from "@omnidotdev/providers/flags";
 
 export const flags = createFlagProvider(
   FLAGS_API_HOST

@@ -1,12 +1,12 @@
-import { extractOrgClaims } from "@omnidotdev/providers";
+import { extractOrgClaims } from "@omnidotdev/providers/auth";
 import { setCookie } from "@tanstack/react-start/server";
 
 import auth from "@/lib/auth/auth";
 import { authCache, oidc } from "@/lib/auth/authCache";
 
-import type { OrganizationClaim } from "@omnidotdev/providers";
+import type { OrganizationClaim } from "@omnidotdev/providers/auth";
 
-export type { OrganizationClaim } from "@omnidotdev/providers";
+export type { OrganizationClaim } from "@omnidotdev/providers/auth";
 
 export async function getAuth(request: Request) {
   try {
