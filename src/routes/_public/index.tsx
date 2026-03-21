@@ -18,10 +18,19 @@ import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import appConfig from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
+import { signOutLocal } from "@/server/functions/auth";
 
 export const Route = createFileRoute("/_public/")({
-  beforeLoad: ({ context: { session } }) => {
-    if (session?.user) throw redirect({ to: "/dashboard" });
+  beforeLoad: async ({ context: { session } }) => {
+    // Redirect fully provisioned users to the authenticated area
+    if (session?.user?.identityProviderId) throw redirect({ to: "/dashboard" });
+
+    // Clear zombie sessions: user exists in IDP but identityProviderId is
+    // missing (auth enrichment failed or cache expired). Without this, the
+    // public layout shows "Sign Out" but the user can't reach /dashboard
+    if (session?.user) {
+      await signOutLocal();
+    }
   },
   component: HomePage,
 });

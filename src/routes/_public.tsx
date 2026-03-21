@@ -28,6 +28,11 @@ function PublicLayout() {
   const { session } = useRouteContext({ from: "__root__" });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Only treat the user as "signed in" if fully provisioned (has
+  // identityProviderId). A session without it is a zombie session that will
+  // be cleared on next navigation — don't show "Sign Out" for it
+  const isAuthenticated = !!session?.user?.identityProviderId;
+
   const handleSignIn = async () => {
     try {
       await signIn({ redirectUrl: BASE_URL, providerId: "omni" });
@@ -107,7 +112,7 @@ function PublicLayout() {
                 GitHub
               </a>
 
-              {session ? (
+              {isAuthenticated ? (
                 <Button variant="outline" onClick={signOut}>
                   Sign Out
                 </Button>
@@ -158,7 +163,7 @@ function PublicLayout() {
                 GitHub
               </a>
               <div className="pt-2">
-                {session ? (
+                {isAuthenticated ? (
                   <Button
                     variant="outline"
                     onClick={signOut}
