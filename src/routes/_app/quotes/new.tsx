@@ -1,5 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  Link,
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Loader2, Printer } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -102,6 +107,15 @@ const NewQuotePage = () => {
   const { organizationId } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const locationState = useLocation().state as
+    | {
+        duplicateFrom?: {
+          quote: Partial<Quote>;
+          lineItems: Partial<QuoteLineItem>[];
+        };
+      }
+    | undefined;
+  const duplicateFrom = locationState?.duplicateFrom;
 
   const [saving, setSaving] = useState(false);
   const [generatingNumber, setGeneratingNumber] = useState(false);
@@ -109,10 +123,20 @@ const NewQuotePage = () => {
 
   const [currentQuote, setCurrentQuote] = useState<Partial<Quote>>({
     ...defaultQuote,
+    ...(duplicateFrom?.quote ?? {}),
+    status: "draft",
+    convertedInvoiceId: null,
   });
   const [currentLineItems, setCurrentLineItems] = useState<
     Partial<QuoteLineItem>[]
-  >([{ ...defaultLineItem, id: crypto.randomUUID() }]);
+  >(
+    duplicateFrom?.lineItems?.length
+      ? duplicateFrom.lineItems.map((li) => ({
+          ...li,
+          id: crypto.randomUUID(),
+        }))
+      : [{ ...defaultLineItem, id: crypto.randomUUID() }],
+  );
 
   const generateNumber = useGenerateDocumentNumberMutation();
   const hasGenerated = useRef(false);
@@ -337,7 +361,9 @@ const NewQuotePage = () => {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 print:block">
         <div className="rounded-lg border border-border bg-card p-6 print:hidden">
-          <h2 className="mb-4 font-semibold text-lg">New Quote</h2>
+          <h2 className="mb-4 font-semibold text-lg">
+            {duplicateFrom ? "Duplicate Quote" : "New Quote"}
+          </h2>
           <QuoteForm
             quote={currentQuote}
             onQuoteChange={setCurrentQuote}

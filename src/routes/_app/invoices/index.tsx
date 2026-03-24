@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import {
+  Copy,
   Edit,
   Eye,
   FileText,
@@ -299,6 +300,39 @@ const InvoicesListPage = () => {
                         >
                           <Edit size={16} />
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate({
+                              to: "/invoices/new",
+                              state: {
+                                duplicateFrom: {
+                                  invoice: {
+                                    companyId: invoice.companyId,
+                                    contactId: invoice.contactId,
+                                    billTo: invoice.billTo,
+                                    notes: invoice.notes,
+                                    taxRate: invoice.taxRate,
+                                    currency: invoice.currency,
+                                  },
+                                  lineItems: invoice.invoiceLineItems.map(
+                                    (li) => ({
+                                      description: li.description,
+                                      quantity: li.quantity,
+                                      unitPrice: li.unitPrice,
+                                      amount: li.amount,
+                                      sortOrder: li.sortOrder,
+                                    }),
+                                  ),
+                                },
+                              },
+                            })
+                          }
+                          className="text-muted-foreground hover:text-foreground"
+                          aria-label="Duplicate invoice"
+                        >
+                          <Copy size={16} />
+                        </button>
                         <button
                           type="button"
                           onClick={() =>

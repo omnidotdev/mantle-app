@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import {
+  Copy,
   Edit,
   Eye,
   FileText,
@@ -83,8 +84,9 @@ const QuotesListPage = () => {
             projectType: node.projectType ?? null,
             timeRange: node.timeRange ?? null,
             additionalTerms: (node.additionalTerms as string[]) ?? null,
-            clientName: null,
-            clientEmail: null,
+            additionalItemsLabel: node.additionalItemsLabel ?? null,
+            clientName: node.clientName ?? null,
+            clientEmail: node.clientEmail ?? null,
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
             company: node.company ?? null,
@@ -97,6 +99,7 @@ const QuotesListPage = () => {
                   quoteId: li.quoteId,
                   productId: li.productId ?? null,
                   description: li.description,
+                  subtitle: li.subtitle ?? null,
                   quantity: li.quantity,
                   unitPrice: li.unitPrice,
                   amount: li.amount,
@@ -349,6 +352,61 @@ const QuotesListPage = () => {
                         >
                           <Edit size={16} />
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate({
+                              to: "/quotes/new",
+                              state: {
+                                duplicateFrom: {
+                                  quote: {
+                                    companyId: quote.companyId,
+                                    contactId: quote.contactId,
+                                    title: quote.title,
+                                    description: quote.description,
+                                    terms: quote.terms,
+                                    notes: quote.notes,
+                                    taxRate: quote.taxRate,
+                                    currency: quote.currency,
+                                    projectType: quote.projectType,
+                                    timeRange: quote.timeRange,
+                                    additionalTerms: quote.additionalTerms,
+                                    additionalItemsLabel:
+                                      quote.additionalItemsLabel,
+                                    clientName: quote.clientName,
+                                    clientEmail: quote.clientEmail,
+                                  },
+                                  lineItems: quote.quoteLineItems.map((li) => ({
+                                    description: li.description,
+                                    subtitle: li.subtitle,
+                                    quantity: li.quantity,
+                                    unitPrice: li.unitPrice,
+                                    amount: li.amount,
+                                    pricingType: li.pricingType,
+                                    estimatedHours: li.estimatedHours,
+                                    royaltyPercentage: li.royaltyPercentage,
+                                    hourlyRate: li.hourlyRate,
+                                    weeklyCapHours: li.weeklyCapHours,
+                                    monthlyCapHours: li.monthlyCapHours,
+                                    maxCapHours: li.maxCapHours,
+                                    minimumBillingMinutes:
+                                      li.minimumBillingMinutes,
+                                    royaltyTimeframe: li.royaltyTimeframe,
+                                    royaltyTimeframeUnit:
+                                      li.royaltyTimeframeUnit,
+                                    royaltyThreshold: li.royaltyThreshold,
+                                    royaltyBuyoutAmount: li.royaltyBuyoutAmount,
+                                    sortOrder: li.sortOrder,
+                                  })),
+                                },
+                              },
+                            })
+                          }
+                          className="text-muted-foreground hover:text-foreground"
+                          aria-label="Duplicate quote"
+                        >
+                          <Copy size={16} />
+                        </button>
                         <button
                           type="button"
                           onClick={() =>

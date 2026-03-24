@@ -1,5 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  Link,
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Loader2, Printer } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -40,6 +45,15 @@ const NewInvoicePage = () => {
   const { organizationId } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const locationState = useLocation().state as
+    | {
+        duplicateFrom?: {
+          invoice: Partial<Invoice>;
+          lineItems: Partial<InvoiceLineItem>[];
+        };
+      }
+    | undefined;
+  const duplicateFrom = locationState?.duplicateFrom;
 
   const [saving, setSaving] = useState(false);
   const [generatingNumber, setGeneratingNumber] = useState(false);
@@ -49,19 +63,28 @@ const NewInvoicePage = () => {
   const [currentInvoice, setCurrentInvoice] = useState<Partial<Invoice>>({
     ...defaultInvoice,
     issueDate: today,
+    ...(duplicateFrom?.invoice ?? {}),
+    status: "draft",
   });
   const [currentLineItems, setCurrentLineItems] = useState<
     Partial<InvoiceLineItem>[]
-  >([
-    {
-      id: crypto.randomUUID(),
-      description: "",
-      quantity: "1",
-      unitPrice: "0",
-      amount: "0",
-      sortOrder: 0,
-    },
-  ]);
+  >(
+    duplicateFrom?.lineItems?.length
+      ? duplicateFrom.lineItems.map((li) => ({
+          ...li,
+          id: crypto.randomUUID(),
+        }))
+      : [
+          {
+            id: crypto.randomUUID(),
+            description: "",
+            quantity: "1",
+            unitPrice: "0",
+            amount: "0",
+            sortOrder: 0,
+          },
+        ],
+  );
 
   const generateNumber = useGenerateDocumentNumberMutation();
   const hasGenerated = useRef(false);
@@ -224,7 +247,9 @@ const NewInvoicePage = () => {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 print:block">
         <div className="rounded-lg border border-border bg-card p-6 print:hidden">
-          <h2 className="mb-4 font-semibold text-lg">New Invoice</h2>
+          <h2 className="mb-4 font-semibold text-lg">
+            {duplicateFrom ? "Duplicate Invoice" : "New Invoice"}
+          </h2>
           <InvoiceForm
             invoice={currentInvoice}
             onInvoiceChange={setCurrentInvoice}
