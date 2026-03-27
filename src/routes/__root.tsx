@@ -1,3 +1,4 @@
+import { useSessionRefresh } from "@omnidotdev/providers/react";
 import {
   HeadContent,
   Outlet,
@@ -105,6 +106,9 @@ function MaintenancePage() {
 }
 
 function RootComponent() {
+  // Keep the OAuth access token fresh while the user is idle
+  useSessionRefresh(fetchSession);
+
   const { isMaintenanceMode, theme } = useRouteContext({ from: "__root__" });
 
   if (isMaintenanceMode) {
