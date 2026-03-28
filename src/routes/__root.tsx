@@ -1,4 +1,3 @@
-import { useSessionRefresh } from "@omnidotdev/providers/react";
 import {
   HeadContent,
   Outlet,
@@ -8,7 +7,9 @@ import {
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
+import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import app from "@/lib/config/app.config";
+import useSessionRefresh from "@/lib/hooks/useSessionRefresh";
 import { fetchMaintenanceMode } from "@/lib/providers";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
@@ -18,6 +19,7 @@ import appStyles from "@/styles.css?url";
 
 import type { OrganizationClaim } from "@omnidotdev/providers/auth";
 import type { QueryClient } from "@tanstack/react-query";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import type { Session } from "better-auth/types";
 import type { ReactNode } from "react";
 
@@ -89,6 +91,7 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
   component: RootComponent,
+  errorComponent: ErrorComponent,
 });
 
 function MaintenancePage() {
@@ -102,6 +105,14 @@ function MaintenancePage() {
         </p>
       </div>
     </div>
+  );
+}
+
+function ErrorComponent(props: ErrorComponentProps) {
+  return (
+    <RootDocument theme="dark">
+      <DefaultCatchBoundary {...props} />
+    </RootDocument>
   );
 }
 
