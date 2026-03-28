@@ -5,12 +5,9 @@ import {
 } from "@tanstack/react-router";
 import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { FaLinkedin as LinkedinIcon } from "react-icons/fa6";
 import { LuGithub as GithubIcon } from "react-icons/lu";
-import {
-  SiDiscord as DiscordIcon,
-  SiLinkedin as LinkedinIcon,
-  SiX as XIcon2,
-} from "react-icons/si";
+import { SiDiscord as DiscordIcon, SiX as XIcon2 } from "react-icons/si";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

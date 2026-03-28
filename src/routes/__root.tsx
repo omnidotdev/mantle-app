@@ -1,3 +1,4 @@
+import { useSessionRefresh } from "@omnidotdev/providers/react";
 import {
   HeadContent,
   Outlet,
@@ -9,7 +10,6 @@ import { createServerFn } from "@tanstack/react-start";
 
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import app from "@/lib/config/app.config";
-import useSessionRefresh from "@/lib/hooks/useSessionRefresh";
 import { fetchMaintenanceMode } from "@/lib/providers";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
