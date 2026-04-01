@@ -29,11 +29,13 @@ export const AUTH_INTERNAL_URL =
     ? process.env.AUTH_INTERNAL_URL || AUTH_BASE_URL
     : AUTH_BASE_URL;
 
-
 // Feature flags config
 export const FLAGS_API_HOST = env.FLAGS_API_HOST || env.VITE_FLAGS_API_HOST;
 export const FLAGS_CLIENT_KEY =
   env.FLAGS_CLIENT_KEY || env.VITE_FLAGS_CLIENT_KEY;
 
 // Startup warnings for optional integrations
-if (!FLAGS_API_HOST) console.warn("FLAGS_API_HOST not set, feature flags disabled");
+if (!FLAGS_API_HOST)
+  console.warn("FLAGS_API_HOST not set, feature flags disabled");
+if (FLAGS_API_HOST && !FLAGS_CLIENT_KEY)
+  console.warn("FLAGS_CLIENT_KEY not set, feature flags disabled");

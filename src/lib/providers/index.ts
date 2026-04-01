@@ -11,11 +11,11 @@ import { FLAGS } from "@/lib/flags/defaults";
 import type { FlagContext } from "@omnidotdev/providers/flags";
 
 export const flags = createFlagProvider(
-  FLAGS_API_HOST
+  FLAGS_API_HOST && FLAGS_CLIENT_KEY
     ? {
         provider: "unleash",
         url: FLAGS_API_HOST,
-        apiKey: FLAGS_CLIENT_KEY!,
+        apiKey: FLAGS_CLIENT_KEY,
         appName: "mantle",
       }
     : {},
