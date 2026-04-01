@@ -242,6 +242,18 @@ const QuotePreview = ({
             {autoSubDescription}
           </p>
         )}
+        {item.deliverables && item.deliverables.length > 0 && (
+          <details className="group mt-2">
+            <summary className="cursor-pointer text-muted-foreground text-xs hover:text-foreground">
+              Deliverables ({item.deliverables.length})
+            </summary>
+            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground text-xs">
+              {item.deliverables.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>
+          </details>
+        )}
       </div>
     );
   };

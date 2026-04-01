@@ -19,7 +19,119 @@ export type Scalars = {
   Cursor: { input: string; output: string; }
   Date: { input: Date; output: string; }
   Datetime: { input: Date; output: string; }
+  JSON: { input: unknown; output: unknown; }
   UUID: { input: string; output: string; }
+};
+
+export type ChannelConnection = Node & {
+  __typename?: 'ChannelConnection';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  credentials: Scalars['JSON']['output'];
+  externalShopId?: Maybe<Scalars['String']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  lastSyncedAt?: Maybe<Scalars['Datetime']['output']>;
+  organizationId: Scalars['String']['output'];
+  provider: Scalars['String']['output'];
+  rowId: Scalars['UUID']['output'];
+  scopes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  status: Scalars['String']['output'];
+  syncConfig: Scalars['JSON']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+/**
+ * A condition to be used against `ChannelConnection` object types. All fields are
+ * tested for equality and combined with a logical ‘and.’
+ */
+export type ChannelConnectionCondition = {
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `provider` field. */
+  provider?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `ChannelConnection` values. */
+export type ChannelConnectionConnection = {
+  __typename?: 'ChannelConnectionConnection';
+  /** A list of edges which contains the `ChannelConnection` and cursor to aid in pagination. */
+  edges: Array<Maybe<ChannelConnectionEdge>>;
+  /** A list of `ChannelConnection` objects. */
+  nodes: Array<Maybe<ChannelConnection>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `ChannelConnection` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `ChannelConnection` edge in the connection. */
+export type ChannelConnectionEdge = {
+  __typename?: 'ChannelConnectionEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `ChannelConnection` at the end of the edge. */
+  node?: Maybe<ChannelConnection>;
+};
+
+/** A filter to be used against `ChannelConnection` object types. All fields are combined with a logical ‘and.’ */
+export type ChannelConnectionFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ChannelConnectionFilter>>;
+  /** Negates the expression. */
+  not?: InputMaybe<ChannelConnectionFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ChannelConnectionFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `provider` field. */
+  provider?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `ChannelConnection` */
+export type ChannelConnectionInput = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  credentials?: InputMaybe<Scalars['JSON']['input']>;
+  externalShopId?: InputMaybe<Scalars['String']['input']>;
+  lastSyncedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  organizationId: Scalars['String']['input'];
+  provider: Scalars['String']['input'];
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  scopes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  syncConfig?: InputMaybe<Scalars['JSON']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+/** Methods to use when ordering `ChannelConnection`. */
+export enum ChannelConnectionOrderBy {
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  ProviderAsc = 'PROVIDER_ASC',
+  ProviderDesc = 'PROVIDER_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `ChannelConnection`. Fields that are set will be updated. */
+export type ChannelConnectionPatch = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  credentials?: InputMaybe<Scalars['JSON']['input']>;
+  externalShopId?: InputMaybe<Scalars['String']['input']>;
+  lastSyncedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  provider?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  scopes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  syncConfig?: InputMaybe<Scalars['JSON']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
 };
 
 export type Company = Node & {
@@ -327,6 +439,39 @@ export type CompanyToManyQuoteFilter = {
   some?: InputMaybe<QuoteFilter>;
 };
 
+/** All input for the create `ChannelConnection` mutation. */
+export type CreateChannelConnectionInput = {
+  /** The `ChannelConnection` to be created by this mutation. */
+  channelConnection: ChannelConnectionInput;
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The output of our create `ChannelConnection` mutation. */
+export type CreateChannelConnectionPayload = {
+  __typename?: 'CreateChannelConnectionPayload';
+  /** The `ChannelConnection` that was created by this mutation. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
+  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `ChannelConnection` mutation. */
+export type CreateChannelConnectionPayloadChannelConnectionEdgeArgs = {
+  orderBy?: Array<ChannelConnectionOrderBy>;
+};
+
 /** All input for the create `Company` mutation. */
 export type CreateCompanyInput = {
   /**
@@ -558,6 +703,39 @@ export type CreateOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
   orderBy?: Array<OrganizationSettingOrderBy>;
 };
 
+/** All input for the create `PersonExternalLink` mutation. */
+export type CreatePersonExternalLinkInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `PersonExternalLink` to be created by this mutation. */
+  personExternalLink: PersonExternalLinkInput;
+};
+
+/** The output of our create `PersonExternalLink` mutation. */
+export type CreatePersonExternalLinkPayload = {
+  __typename?: 'CreatePersonExternalLinkPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `PersonExternalLink` that was created by this mutation. */
+  personExternalLink?: Maybe<PersonExternalLink>;
+  /** An edge for our `PersonExternalLink`. May be used by Relay 1. */
+  personExternalLinkEdge?: Maybe<PersonExternalLinkEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `PersonExternalLink` mutation. */
+export type CreatePersonExternalLinkPayloadPersonExternalLinkEdgeArgs = {
+  orderBy?: Array<PersonExternalLinkOrderBy>;
+};
+
 /** All input for the create `Person` mutation. */
 export type CreatePersonInput = {
   /**
@@ -589,6 +767,39 @@ export type CreatePersonPayload = {
 /** The output of our create `Person` mutation. */
 export type CreatePersonPayloadPersonEdgeArgs = {
   orderBy?: Array<PersonOrderBy>;
+};
+
+/** All input for the create `ProductExternalLink` mutation. */
+export type CreateProductExternalLinkInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `ProductExternalLink` to be created by this mutation. */
+  productExternalLink: ProductExternalLinkInput;
+};
+
+/** The output of our create `ProductExternalLink` mutation. */
+export type CreateProductExternalLinkPayload = {
+  __typename?: 'CreateProductExternalLinkPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `ProductExternalLink` that was created by this mutation. */
+  productExternalLink?: Maybe<ProductExternalLink>;
+  /** An edge for our `ProductExternalLink`. May be used by Relay 1. */
+  productExternalLinkEdge?: Maybe<ProductExternalLinkEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `ProductExternalLink` mutation. */
+export type CreateProductExternalLinkPayloadProductExternalLinkEdgeArgs = {
+  orderBy?: Array<ProductExternalLinkOrderBy>;
 };
 
 /** All input for the create `Product` mutation. */
@@ -688,6 +899,83 @@ export type CreateQuotePayload = {
 /** The output of our create `Quote` mutation. */
 export type CreateQuotePayloadQuoteEdgeArgs = {
   orderBy?: Array<QuoteOrderBy>;
+};
+
+/** All input for the create `Supplier` mutation. */
+export type CreateSupplierInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `Supplier` to be created by this mutation. */
+  supplier: SupplierInput;
+};
+
+/** The output of our create `Supplier` mutation. */
+export type CreateSupplierPayload = {
+  __typename?: 'CreateSupplierPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** The `Supplier` that was created by this mutation. */
+  supplier?: Maybe<Supplier>;
+  /** An edge for our `Supplier`. May be used by Relay 1. */
+  supplierEdge?: Maybe<SupplierEdge>;
+};
+
+
+/** The output of our create `Supplier` mutation. */
+export type CreateSupplierPayloadSupplierEdgeArgs = {
+  orderBy?: Array<SupplierOrderBy>;
+};
+
+/** All input for the `deleteChannelConnectionById` mutation. */
+export type DeleteChannelConnectionByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `ChannelConnection` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteChannelConnection` mutation. */
+export type DeleteChannelConnectionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `ChannelConnection` mutation. */
+export type DeleteChannelConnectionPayload = {
+  __typename?: 'DeleteChannelConnectionPayload';
+  /** The `ChannelConnection` that was deleted by this mutation. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
+  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedChannelConnectionId?: Maybe<Scalars['ID']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `ChannelConnection` mutation. */
+export type DeleteChannelConnectionPayloadChannelConnectionEdgeArgs = {
+  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the `deleteCompanyById` mutation. */
@@ -1009,6 +1297,50 @@ export type DeletePersonByIdInput = {
   id: Scalars['ID']['input'];
 };
 
+/** All input for the `deletePersonExternalLinkById` mutation. */
+export type DeletePersonExternalLinkByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `PersonExternalLink` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deletePersonExternalLink` mutation. */
+export type DeletePersonExternalLinkInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `PersonExternalLink` mutation. */
+export type DeletePersonExternalLinkPayload = {
+  __typename?: 'DeletePersonExternalLinkPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedPersonExternalLinkId?: Maybe<Scalars['ID']['output']>;
+  /** The `PersonExternalLink` that was deleted by this mutation. */
+  personExternalLink?: Maybe<PersonExternalLink>;
+  /** An edge for our `PersonExternalLink`. May be used by Relay 1. */
+  personExternalLinkEdge?: Maybe<PersonExternalLinkEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `PersonExternalLink` mutation. */
+export type DeletePersonExternalLinkPayloadPersonExternalLinkEdgeArgs = {
+  orderBy?: Array<PersonExternalLinkOrderBy>;
+};
+
 /** All input for the `deletePerson` mutation. */
 export type DeletePersonInput = {
   /**
@@ -1051,6 +1383,50 @@ export type DeleteProductByIdInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   /** The globally unique `ID` which will identify a single `Product` to be deleted. */
   id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteProductExternalLinkById` mutation. */
+export type DeleteProductExternalLinkByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `ProductExternalLink` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteProductExternalLink` mutation. */
+export type DeleteProductExternalLinkInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `ProductExternalLink` mutation. */
+export type DeleteProductExternalLinkPayload = {
+  __typename?: 'DeleteProductExternalLinkPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedProductExternalLinkId?: Maybe<Scalars['ID']['output']>;
+  /** The `ProductExternalLink` that was deleted by this mutation. */
+  productExternalLink?: Maybe<ProductExternalLink>;
+  /** An edge for our `ProductExternalLink`. May be used by Relay 1. */
+  productExternalLinkEdge?: Maybe<ProductExternalLinkEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `ProductExternalLink` mutation. */
+export type DeleteProductExternalLinkPayloadProductExternalLinkEdgeArgs = {
+  orderBy?: Array<ProductExternalLinkOrderBy>;
 };
 
 /** All input for the `deleteProduct` mutation. */
@@ -1172,6 +1548,50 @@ export type DeleteQuotePayload = {
 /** The output of our delete `Quote` mutation. */
 export type DeleteQuotePayloadQuoteEdgeArgs = {
   orderBy?: Array<QuoteOrderBy>;
+};
+
+/** All input for the `deleteSupplierById` mutation. */
+export type DeleteSupplierByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `Supplier` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteSupplier` mutation. */
+export type DeleteSupplierInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `Supplier` mutation. */
+export type DeleteSupplierPayload = {
+  __typename?: 'DeleteSupplierPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedSupplierId?: Maybe<Scalars['ID']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** The `Supplier` that was deleted by this mutation. */
+  supplier?: Maybe<Supplier>;
+  /** An edge for our `Supplier`. May be used by Relay 1. */
+  supplierEdge?: Maybe<SupplierEdge>;
+};
+
+
+/** The output of our delete `Supplier` mutation. */
+export type DeleteSupplierPayloadSupplierEdgeArgs = {
+  orderBy?: Array<SupplierOrderBy>;
 };
 
 export type DocumentNumberingConfig = Node & {
@@ -1692,6 +2112,8 @@ export type InvoiceToManyInvoiceLineItemFilter = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Creates a single `ChannelConnection`. */
+  createChannelConnection?: Maybe<CreateChannelConnectionPayload>;
   /** Creates a single `Company`. */
   createCompany?: Maybe<CreateCompanyPayload>;
   /** Creates a single `CompanyMember`. */
@@ -1708,12 +2130,22 @@ export type Mutation = {
   createOrganizationSetting?: Maybe<CreateOrganizationSettingPayload>;
   /** Creates a single `Person`. */
   createPerson?: Maybe<CreatePersonPayload>;
+  /** Creates a single `PersonExternalLink`. */
+  createPersonExternalLink?: Maybe<CreatePersonExternalLinkPayload>;
   /** Creates a single `Product`. */
   createProduct?: Maybe<CreateProductPayload>;
+  /** Creates a single `ProductExternalLink`. */
+  createProductExternalLink?: Maybe<CreateProductExternalLinkPayload>;
   /** Creates a single `Quote`. */
   createQuote?: Maybe<CreateQuotePayload>;
   /** Creates a single `QuoteLineItem`. */
   createQuoteLineItem?: Maybe<CreateQuoteLineItemPayload>;
+  /** Creates a single `Supplier`. */
+  createSupplier?: Maybe<CreateSupplierPayload>;
+  /** Deletes a single `ChannelConnection` using a unique key. */
+  deleteChannelConnection?: Maybe<DeleteChannelConnectionPayload>;
+  /** Deletes a single `ChannelConnection` using its globally unique id. */
+  deleteChannelConnectionById?: Maybe<DeleteChannelConnectionPayload>;
   /** Deletes a single `Company` using a unique key. */
   deleteCompany?: Maybe<DeleteCompanyPayload>;
   /** Deletes a single `Company` using its globally unique id. */
@@ -1746,10 +2178,18 @@ export type Mutation = {
   deletePerson?: Maybe<DeletePersonPayload>;
   /** Deletes a single `Person` using its globally unique id. */
   deletePersonById?: Maybe<DeletePersonPayload>;
+  /** Deletes a single `PersonExternalLink` using a unique key. */
+  deletePersonExternalLink?: Maybe<DeletePersonExternalLinkPayload>;
+  /** Deletes a single `PersonExternalLink` using its globally unique id. */
+  deletePersonExternalLinkById?: Maybe<DeletePersonExternalLinkPayload>;
   /** Deletes a single `Product` using a unique key. */
   deleteProduct?: Maybe<DeleteProductPayload>;
   /** Deletes a single `Product` using its globally unique id. */
   deleteProductById?: Maybe<DeleteProductPayload>;
+  /** Deletes a single `ProductExternalLink` using a unique key. */
+  deleteProductExternalLink?: Maybe<DeleteProductExternalLinkPayload>;
+  /** Deletes a single `ProductExternalLink` using its globally unique id. */
+  deleteProductExternalLinkById?: Maybe<DeleteProductExternalLinkPayload>;
   /** Deletes a single `Quote` using a unique key. */
   deleteQuote?: Maybe<DeleteQuotePayload>;
   /** Deletes a single `Quote` using its globally unique id. */
@@ -1758,7 +2198,15 @@ export type Mutation = {
   deleteQuoteLineItem?: Maybe<DeleteQuoteLineItemPayload>;
   /** Deletes a single `QuoteLineItem` using its globally unique id. */
   deleteQuoteLineItemById?: Maybe<DeleteQuoteLineItemPayload>;
+  /** Deletes a single `Supplier` using a unique key. */
+  deleteSupplier?: Maybe<DeleteSupplierPayload>;
+  /** Deletes a single `Supplier` using its globally unique id. */
+  deleteSupplierById?: Maybe<DeleteSupplierPayload>;
   generateDocumentNumber?: Maybe<GenerateDocumentNumberPayload>;
+  /** Updates a single `ChannelConnection` using a unique key and a patch. */
+  updateChannelConnection?: Maybe<UpdateChannelConnectionPayload>;
+  /** Updates a single `ChannelConnection` using its globally unique id and a patch. */
+  updateChannelConnectionById?: Maybe<UpdateChannelConnectionPayload>;
   /** Updates a single `Company` using a unique key and a patch. */
   updateCompany?: Maybe<UpdateCompanyPayload>;
   /** Updates a single `Company` using its globally unique id and a patch. */
@@ -1791,10 +2239,18 @@ export type Mutation = {
   updatePerson?: Maybe<UpdatePersonPayload>;
   /** Updates a single `Person` using its globally unique id and a patch. */
   updatePersonById?: Maybe<UpdatePersonPayload>;
+  /** Updates a single `PersonExternalLink` using a unique key and a patch. */
+  updatePersonExternalLink?: Maybe<UpdatePersonExternalLinkPayload>;
+  /** Updates a single `PersonExternalLink` using its globally unique id and a patch. */
+  updatePersonExternalLinkById?: Maybe<UpdatePersonExternalLinkPayload>;
   /** Updates a single `Product` using a unique key and a patch. */
   updateProduct?: Maybe<UpdateProductPayload>;
   /** Updates a single `Product` using its globally unique id and a patch. */
   updateProductById?: Maybe<UpdateProductPayload>;
+  /** Updates a single `ProductExternalLink` using a unique key and a patch. */
+  updateProductExternalLink?: Maybe<UpdateProductExternalLinkPayload>;
+  /** Updates a single `ProductExternalLink` using its globally unique id and a patch. */
+  updateProductExternalLinkById?: Maybe<UpdateProductExternalLinkPayload>;
   /** Updates a single `Quote` using a unique key and a patch. */
   updateQuote?: Maybe<UpdateQuotePayload>;
   /** Updates a single `Quote` using its globally unique id and a patch. */
@@ -1803,6 +2259,16 @@ export type Mutation = {
   updateQuoteLineItem?: Maybe<UpdateQuoteLineItemPayload>;
   /** Updates a single `QuoteLineItem` using its globally unique id and a patch. */
   updateQuoteLineItemById?: Maybe<UpdateQuoteLineItemPayload>;
+  /** Updates a single `Supplier` using a unique key and a patch. */
+  updateSupplier?: Maybe<UpdateSupplierPayload>;
+  /** Updates a single `Supplier` using its globally unique id and a patch. */
+  updateSupplierById?: Maybe<UpdateSupplierPayload>;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateChannelConnectionArgs = {
+  input: CreateChannelConnectionInput;
 };
 
 
@@ -1855,8 +2321,20 @@ export type MutationCreatePersonArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreatePersonExternalLinkArgs = {
+  input: CreatePersonExternalLinkInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateProductExternalLinkArgs = {
+  input: CreateProductExternalLinkInput;
 };
 
 
@@ -1869,6 +2347,24 @@ export type MutationCreateQuoteArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateQuoteLineItemArgs = {
   input: CreateQuoteLineItemInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateSupplierArgs = {
+  input: CreateSupplierInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteChannelConnectionArgs = {
+  input: DeleteChannelConnectionInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteChannelConnectionByIdArgs = {
+  input: DeleteChannelConnectionByIdInput;
 };
 
 
@@ -1969,6 +2465,18 @@ export type MutationDeletePersonByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeletePersonExternalLinkArgs = {
+  input: DeletePersonExternalLinkInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeletePersonExternalLinkByIdArgs = {
+  input: DeletePersonExternalLinkByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteProductArgs = {
   input: DeleteProductInput;
 };
@@ -1977,6 +2485,18 @@ export type MutationDeleteProductArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteProductByIdArgs = {
   input: DeleteProductByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteProductExternalLinkArgs = {
+  input: DeleteProductExternalLinkInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteProductExternalLinkByIdArgs = {
+  input: DeleteProductExternalLinkByIdInput;
 };
 
 
@@ -2005,8 +2525,32 @@ export type MutationDeleteQuoteLineItemByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteSupplierArgs = {
+  input: DeleteSupplierInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteSupplierByIdArgs = {
+  input: DeleteSupplierByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationGenerateDocumentNumberArgs = {
   input: GenerateDocumentNumberInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateChannelConnectionArgs = {
+  input: UpdateChannelConnectionInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateChannelConnectionByIdArgs = {
+  input: UpdateChannelConnectionByIdInput;
 };
 
 
@@ -2107,6 +2651,18 @@ export type MutationUpdatePersonByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdatePersonExternalLinkArgs = {
+  input: UpdatePersonExternalLinkInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdatePersonExternalLinkByIdArgs = {
+  input: UpdatePersonExternalLinkByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateProductArgs = {
   input: UpdateProductInput;
 };
@@ -2115,6 +2671,18 @@ export type MutationUpdateProductArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateProductByIdArgs = {
   input: UpdateProductByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateProductExternalLinkArgs = {
+  input: UpdateProductExternalLinkInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateProductExternalLinkByIdArgs = {
+  input: UpdateProductExternalLinkByIdInput;
 };
 
 
@@ -2139,6 +2707,18 @@ export type MutationUpdateQuoteLineItemArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateQuoteLineItemByIdArgs = {
   input: UpdateQuoteLineItemByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateSupplierArgs = {
+  input: UpdateSupplierInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateSupplierByIdArgs = {
+  input: UpdateSupplierByIdInput;
 };
 
 /** An object with a globally unique `ID`. */
@@ -2253,6 +2833,7 @@ export type Person = Node & {
   /** Reads and enables pagination through a set of `CompanyMember`. */
   companyMembers: CompanyMemberConnection;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
+  emailConsent: Scalars['Boolean']['output'];
   emails?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   firstName: Scalars['String']['output'];
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
@@ -2261,6 +2842,8 @@ export type Person = Node & {
   lastName: Scalars['String']['output'];
   notes?: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['String']['output'];
+  /** Reads and enables pagination through a set of `PersonExternalLink`. */
+  personExternalLinks: PersonExternalLinkConnection;
   phone?: Maybe<Scalars['String']['output']>;
   rowId: Scalars['UUID']['output'];
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -2277,6 +2860,18 @@ export type PersonCompanyMembersArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<CompanyMemberOrderBy>>;
+};
+
+
+export type PersonPersonExternalLinksArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<PersonExternalLinkCondition>;
+  filter?: InputMaybe<PersonExternalLinkFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PersonExternalLinkOrderBy>>;
 };
 
 /** A condition to be used against `Person` object types. All fields are tested for equality and combined with a logical ‘and.’ */
@@ -2309,6 +2904,112 @@ export type PersonEdge = {
   node?: Maybe<Person>;
 };
 
+export type PersonExternalLink = Node & {
+  __typename?: 'PersonExternalLink';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  externalId: Scalars['String']['output'];
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  /** Reads a single `Person` that is related to this `PersonExternalLink`. */
+  person?: Maybe<Person>;
+  personId: Scalars['UUID']['output'];
+  provider: Scalars['String']['output'];
+  rowId: Scalars['UUID']['output'];
+};
+
+/**
+ * A condition to be used against `PersonExternalLink` object types. All fields are
+ * tested for equality and combined with a logical ‘and.’
+ */
+export type PersonExternalLinkCondition = {
+  /** Checks for equality with the object’s `externalId` field. */
+  externalId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `personId` field. */
+  personId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `provider` field. */
+  provider?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `PersonExternalLink` values. */
+export type PersonExternalLinkConnection = {
+  __typename?: 'PersonExternalLinkConnection';
+  /** A list of edges which contains the `PersonExternalLink` and cursor to aid in pagination. */
+  edges: Array<Maybe<PersonExternalLinkEdge>>;
+  /** A list of `PersonExternalLink` objects. */
+  nodes: Array<Maybe<PersonExternalLink>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `PersonExternalLink` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `PersonExternalLink` edge in the connection. */
+export type PersonExternalLinkEdge = {
+  __typename?: 'PersonExternalLinkEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `PersonExternalLink` at the end of the edge. */
+  node?: Maybe<PersonExternalLink>;
+};
+
+/** A filter to be used against `PersonExternalLink` object types. All fields are combined with a logical ‘and.’ */
+export type PersonExternalLinkFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<PersonExternalLinkFilter>>;
+  /** Filter by the object’s `externalId` field. */
+  externalId?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<PersonExternalLinkFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<PersonExternalLinkFilter>>;
+  /** Filter by the object’s `person` relation. */
+  person?: InputMaybe<PersonFilter>;
+  /** Filter by the object’s `personId` field. */
+  personId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `provider` field. */
+  provider?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `PersonExternalLink` */
+export type PersonExternalLinkInput = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  externalId: Scalars['String']['input'];
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  personId: Scalars['UUID']['input'];
+  provider: Scalars['String']['input'];
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** Methods to use when ordering `PersonExternalLink`. */
+export enum PersonExternalLinkOrderBy {
+  ExternalIdAsc = 'EXTERNAL_ID_ASC',
+  ExternalIdDesc = 'EXTERNAL_ID_DESC',
+  Natural = 'NATURAL',
+  PersonIdAsc = 'PERSON_ID_ASC',
+  PersonIdDesc = 'PERSON_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  ProviderAsc = 'PROVIDER_ASC',
+  ProviderDesc = 'PROVIDER_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `PersonExternalLink`. Fields that are set will be updated. */
+export type PersonExternalLinkPatch = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  externalId?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  personId?: InputMaybe<Scalars['UUID']['input']>;
+  provider?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
 /** A filter to be used against `Person` object types. All fields are combined with a logical ‘and.’ */
 export type PersonFilter = {
   /** Checks for all expressions in this list. */
@@ -2325,6 +3026,10 @@ export type PersonFilter = {
   or?: InputMaybe<Array<PersonFilter>>;
   /** Filter by the object’s `organizationId` field. */
   organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `personExternalLinks` relation. */
+  personExternalLinks?: InputMaybe<PersonToManyPersonExternalLinkFilter>;
+  /** Some related `personExternalLinks` exist. */
+  personExternalLinksExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `rowId` field. */
   rowId?: InputMaybe<UuidFilter>;
 };
@@ -2333,6 +3038,7 @@ export type PersonFilter = {
 export type PersonInput = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  emailConsent?: InputMaybe<Scalars['Boolean']['input']>;
   emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   firstName: Scalars['String']['input'];
   internal?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2360,6 +3066,7 @@ export enum PersonOrderBy {
 export type PersonPatch = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  emailConsent?: InputMaybe<Scalars['Boolean']['input']>;
   emails?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   internal?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2382,23 +3089,51 @@ export type PersonToManyCompanyMemberFilter = {
   some?: InputMaybe<CompanyMemberFilter>;
 };
 
+/** A filter to be used against many `PersonExternalLink` object types. All fields are combined with a logical ‘and.’ */
+export type PersonToManyPersonExternalLinkFilter = {
+  /** Every related `PersonExternalLink` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<PersonExternalLinkFilter>;
+  /** No related `PersonExternalLink` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<PersonExternalLinkFilter>;
+  /** Some related `PersonExternalLink` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<PersonExternalLinkFilter>;
+};
+
 export type Product = Node & {
   __typename?: 'Product';
+  category1?: Maybe<Scalars['String']['output']>;
+  category2?: Maybe<Scalars['String']['output']>;
+  channels?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  costPrice?: Maybe<Scalars['BigFloat']['output']>;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   currentQuantity?: Maybe<Scalars['Int']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  fulfillmentType?: Maybe<Scalars['String']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl2?: Maybe<Scalars['String']['output']>;
+  imageUrl3?: Maybe<Scalars['String']['output']>;
   /** Reads and enables pagination through a set of `InventoryAdjustment`. */
   inventoryAdjustments: InventoryAdjustmentConnection;
   isActive?: Maybe<Scalars['Boolean']['output']>;
+  isRestricted?: Maybe<Scalars['Boolean']['output']>;
   lowStockThreshold?: Maybe<Scalars['Int']['output']>;
   name: Scalars['String']['output'];
   organizationId: Scalars['String']['output'];
+  /** Reads and enables pagination through a set of `ProductExternalLink`. */
+  productExternalLinks: ProductExternalLinkConnection;
+  retailPrice?: Maybe<Scalars['BigFloat']['output']>;
   rowId: Scalars['UUID']['output'];
   sku?: Maybe<Scalars['String']['output']>;
+  /** Reads a single `Supplier` that is related to this `Product`. */
+  supplier?: Maybe<Supplier>;
+  supplierId?: Maybe<Scalars['UUID']['output']>;
+  supplierSku?: Maybe<Scalars['String']['output']>;
   unitPrice?: Maybe<Scalars['BigFloat']['output']>;
+  upc?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
+  weight?: Maybe<Scalars['BigFloat']['output']>;
 };
 
 
@@ -2411,6 +3146,18 @@ export type ProductInventoryAdjustmentsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<InventoryAdjustmentOrderBy>>;
+};
+
+
+export type ProductProductExternalLinksArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ProductExternalLinkCondition>;
+  filter?: InputMaybe<ProductExternalLinkFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ProductExternalLinkOrderBy>>;
 };
 
 /** A condition to be used against `Product` object types. All fields are tested for equality and combined with a logical ‘and.’ */
@@ -2445,6 +3192,115 @@ export type ProductEdge = {
   node?: Maybe<Product>;
 };
 
+export type ProductExternalLink = Node & {
+  __typename?: 'ProductExternalLink';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  externalId: Scalars['String']['output'];
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  /** Reads a single `Product` that is related to this `ProductExternalLink`. */
+  product?: Maybe<Product>;
+  productId: Scalars['UUID']['output'];
+  provider: Scalars['String']['output'];
+  rowId: Scalars['UUID']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+/**
+ * A condition to be used against `ProductExternalLink` object types. All fields
+ * are tested for equality and combined with a logical ‘and.’
+ */
+export type ProductExternalLinkCondition = {
+  /** Checks for equality with the object’s `externalId` field. */
+  externalId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `productId` field. */
+  productId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `provider` field. */
+  provider?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `ProductExternalLink` values. */
+export type ProductExternalLinkConnection = {
+  __typename?: 'ProductExternalLinkConnection';
+  /** A list of edges which contains the `ProductExternalLink` and cursor to aid in pagination. */
+  edges: Array<Maybe<ProductExternalLinkEdge>>;
+  /** A list of `ProductExternalLink` objects. */
+  nodes: Array<Maybe<ProductExternalLink>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `ProductExternalLink` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `ProductExternalLink` edge in the connection. */
+export type ProductExternalLinkEdge = {
+  __typename?: 'ProductExternalLinkEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `ProductExternalLink` at the end of the edge. */
+  node?: Maybe<ProductExternalLink>;
+};
+
+/** A filter to be used against `ProductExternalLink` object types. All fields are combined with a logical ‘and.’ */
+export type ProductExternalLinkFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ProductExternalLinkFilter>>;
+  /** Filter by the object’s `externalId` field. */
+  externalId?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<ProductExternalLinkFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ProductExternalLinkFilter>>;
+  /** Filter by the object’s `product` relation. */
+  product?: InputMaybe<ProductFilter>;
+  /** Filter by the object’s `productId` field. */
+  productId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `provider` field. */
+  provider?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `ProductExternalLink` */
+export type ProductExternalLinkInput = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  externalId: Scalars['String']['input'];
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  productId: Scalars['UUID']['input'];
+  provider: Scalars['String']['input'];
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+/** Methods to use when ordering `ProductExternalLink`. */
+export enum ProductExternalLinkOrderBy {
+  ExternalIdAsc = 'EXTERNAL_ID_ASC',
+  ExternalIdDesc = 'EXTERNAL_ID_DESC',
+  Natural = 'NATURAL',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  ProductIdAsc = 'PRODUCT_ID_ASC',
+  ProductIdDesc = 'PRODUCT_ID_DESC',
+  ProviderAsc = 'PROVIDER_ASC',
+  ProviderDesc = 'PROVIDER_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `ProductExternalLink`. Fields that are set will be updated. */
+export type ProductExternalLinkPatch = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  externalId?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  productId?: InputMaybe<Scalars['UUID']['input']>;
+  provider?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
 /** A filter to be used against `Product` object types. All fields are combined with a logical ‘and.’ */
 export type ProductFilter = {
   /** Checks for all expressions in this list. */
@@ -2459,25 +3315,47 @@ export type ProductFilter = {
   or?: InputMaybe<Array<ProductFilter>>;
   /** Filter by the object’s `organizationId` field. */
   organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `productExternalLinks` relation. */
+  productExternalLinks?: InputMaybe<ProductToManyProductExternalLinkFilter>;
+  /** Some related `productExternalLinks` exist. */
+  productExternalLinksExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `rowId` field. */
   rowId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `sku` field. */
   sku?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `supplier` relation. */
+  supplier?: InputMaybe<SupplierFilter>;
+  /** A related `supplier` exists. */
+  supplierExists?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** An input for mutations affecting `Product` */
 export type ProductInput = {
+  category1?: InputMaybe<Scalars['String']['input']>;
+  category2?: InputMaybe<Scalars['String']['input']>;
+  channels?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  costPrice?: InputMaybe<Scalars['BigFloat']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   currentQuantity?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fulfillmentType?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
+  imageUrl2?: InputMaybe<Scalars['String']['input']>;
+  imageUrl3?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isRestricted?: InputMaybe<Scalars['Boolean']['input']>;
   lowStockThreshold?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
   organizationId: Scalars['String']['input'];
+  retailPrice?: InputMaybe<Scalars['BigFloat']['input']>;
   rowId?: InputMaybe<Scalars['UUID']['input']>;
   sku?: InputMaybe<Scalars['String']['input']>;
+  supplierId?: InputMaybe<Scalars['UUID']['input']>;
+  supplierSku?: InputMaybe<Scalars['String']['input']>;
   unitPrice?: InputMaybe<Scalars['BigFloat']['input']>;
+  upc?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  weight?: InputMaybe<Scalars['BigFloat']['input']>;
 };
 
 /** Methods to use when ordering `Product`. */
@@ -2495,17 +3373,31 @@ export enum ProductOrderBy {
 
 /** Represents an update to a `Product`. Fields that are set will be updated. */
 export type ProductPatch = {
+  category1?: InputMaybe<Scalars['String']['input']>;
+  category2?: InputMaybe<Scalars['String']['input']>;
+  channels?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  costPrice?: InputMaybe<Scalars['BigFloat']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   currentQuantity?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fulfillmentType?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
+  imageUrl2?: InputMaybe<Scalars['String']['input']>;
+  imageUrl3?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isRestricted?: InputMaybe<Scalars['Boolean']['input']>;
   lowStockThreshold?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   organizationId?: InputMaybe<Scalars['String']['input']>;
+  retailPrice?: InputMaybe<Scalars['BigFloat']['input']>;
   rowId?: InputMaybe<Scalars['UUID']['input']>;
   sku?: InputMaybe<Scalars['String']['input']>;
+  supplierId?: InputMaybe<Scalars['UUID']['input']>;
+  supplierSku?: InputMaybe<Scalars['String']['input']>;
   unitPrice?: InputMaybe<Scalars['BigFloat']['input']>;
+  upc?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  weight?: InputMaybe<Scalars['BigFloat']['input']>;
 };
 
 /** A filter to be used against many `InventoryAdjustment` object types. All fields are combined with a logical ‘and.’ */
@@ -2518,9 +3410,25 @@ export type ProductToManyInventoryAdjustmentFilter = {
   some?: InputMaybe<InventoryAdjustmentFilter>;
 };
 
+/** A filter to be used against many `ProductExternalLink` object types. All fields are combined with a logical ‘and.’ */
+export type ProductToManyProductExternalLinkFilter = {
+  /** Every related `ProductExternalLink` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<ProductExternalLinkFilter>;
+  /** No related `ProductExternalLink` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<ProductExternalLinkFilter>;
+  /** Some related `ProductExternalLink` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<ProductExternalLinkFilter>;
+};
+
 /** The root query type which gives access points into the data universe. */
 export type Query = Node & {
   __typename?: 'Query';
+  /** Get a single `ChannelConnection`. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** Reads a single `ChannelConnection` using its globally unique `ID`. */
+  channelConnectionById?: Maybe<ChannelConnection>;
+  /** Reads and enables pagination through a set of `ChannelConnection`. */
+  channelConnections?: Maybe<ChannelConnectionConnection>;
   /** Reads and enables pagination through a set of `Company`. */
   companies?: Maybe<CompanyConnection>;
   /** Get a single `Company`. */
@@ -2573,10 +3481,22 @@ export type Query = Node & {
   person?: Maybe<Person>;
   /** Reads a single `Person` using its globally unique `ID`. */
   personById?: Maybe<Person>;
+  /** Get a single `PersonExternalLink`. */
+  personExternalLink?: Maybe<PersonExternalLink>;
+  /** Reads a single `PersonExternalLink` using its globally unique `ID`. */
+  personExternalLinkById?: Maybe<PersonExternalLink>;
+  /** Reads and enables pagination through a set of `PersonExternalLink`. */
+  personExternalLinks?: Maybe<PersonExternalLinkConnection>;
   /** Get a single `Product`. */
   product?: Maybe<Product>;
   /** Reads a single `Product` using its globally unique `ID`. */
   productById?: Maybe<Product>;
+  /** Get a single `ProductExternalLink`. */
+  productExternalLink?: Maybe<ProductExternalLink>;
+  /** Reads a single `ProductExternalLink` using its globally unique `ID`. */
+  productExternalLinkById?: Maybe<ProductExternalLink>;
+  /** Reads and enables pagination through a set of `ProductExternalLink`. */
+  productExternalLinks?: Maybe<ProductExternalLinkConnection>;
   /** Reads and enables pagination through a set of `Product`. */
   products?: Maybe<ProductConnection>;
   /**
@@ -2596,6 +3516,37 @@ export type Query = Node & {
   quoteLineItems?: Maybe<QuoteLineItemConnection>;
   /** Reads and enables pagination through a set of `Quote`. */
   quotes?: Maybe<QuoteConnection>;
+  /** Get a single `Supplier`. */
+  supplier?: Maybe<Supplier>;
+  /** Reads a single `Supplier` using its globally unique `ID`. */
+  supplierById?: Maybe<Supplier>;
+  /** Reads and enables pagination through a set of `Supplier`. */
+  suppliers?: Maybe<SupplierConnection>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryChannelConnectionArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryChannelConnectionByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryChannelConnectionsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ChannelConnectionCondition>;
+  filter?: InputMaybe<ChannelConnectionFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ChannelConnectionOrderBy>>;
 };
 
 
@@ -2806,6 +3757,31 @@ export type QueryPersonByIdArgs = {
 
 
 /** The root query type which gives access points into the data universe. */
+export type QueryPersonExternalLinkArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryPersonExternalLinkByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryPersonExternalLinksArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<PersonExternalLinkCondition>;
+  filter?: InputMaybe<PersonExternalLinkFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PersonExternalLinkOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
 export type QueryProductArgs = {
   rowId: Scalars['UUID']['input'];
 };
@@ -2814,6 +3790,31 @@ export type QueryProductArgs = {
 /** The root query type which gives access points into the data universe. */
 export type QueryProductByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryProductExternalLinkArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryProductExternalLinkByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryProductExternalLinksArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ProductExternalLinkCondition>;
+  filter?: InputMaybe<ProductExternalLinkFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ProductExternalLinkOrderBy>>;
 };
 
 
@@ -2877,6 +3878,31 @@ export type QueryQuotesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<QuoteOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QuerySupplierArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QuerySupplierByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QuerySuppliersArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<SupplierCondition>;
+  filter?: InputMaybe<SupplierFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SupplierOrderBy>>;
 };
 
 export type Quote = Node & {
@@ -3033,7 +4059,9 @@ export type QuoteInput = {
 
 export type QuoteLineItem = Node & {
   __typename?: 'QuoteLineItem';
+  acceptanceCriteria?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   amount: Scalars['BigFloat']['output'];
+  deliverables?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   description: Scalars['String']['output'];
   estimatedHours?: Maybe<Scalars['BigFloat']['output']>;
   hourlyRate?: Maybe<Scalars['BigFloat']['output']>;
@@ -3117,7 +4145,9 @@ export type QuoteLineItemFilter = {
 
 /** An input for mutations affecting `QuoteLineItem` */
 export type QuoteLineItemInput = {
+  acceptanceCriteria?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   amount: Scalars['BigFloat']['input'];
+  deliverables?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description: Scalars['String']['input'];
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
@@ -3153,7 +4183,9 @@ export enum QuoteLineItemOrderBy {
 
 /** Represents an update to a `QuoteLineItem`. Fields that are set will be updated. */
 export type QuoteLineItemPatch = {
+  acceptanceCriteria?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   amount?: InputMaybe<Scalars['BigFloat']['input']>;
+  deliverables?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description?: InputMaybe<Scalars['String']['input']>;
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
@@ -3350,6 +4382,117 @@ export type StringListFilter = {
   overlaps?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export type Supplier = Node & {
+  __typename?: 'Supplier';
+  code?: Maybe<Scalars['String']['output']>;
+  contactEmail?: Maybe<Scalars['String']['output']>;
+  contactPhone?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  name: Scalars['String']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  rowId: Scalars['UUID']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+  website?: Maybe<Scalars['String']['output']>;
+};
+
+/**
+ * A condition to be used against `Supplier` object types. All fields are tested
+ * for equality and combined with a logical ‘and.’
+ */
+export type SupplierCondition = {
+  /** Checks for equality with the object’s `code` field. */
+  code?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `Supplier` values. */
+export type SupplierConnection = {
+  __typename?: 'SupplierConnection';
+  /** A list of edges which contains the `Supplier` and cursor to aid in pagination. */
+  edges: Array<Maybe<SupplierEdge>>;
+  /** A list of `Supplier` objects. */
+  nodes: Array<Maybe<Supplier>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `Supplier` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `Supplier` edge in the connection. */
+export type SupplierEdge = {
+  __typename?: 'SupplierEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `Supplier` at the end of the edge. */
+  node?: Maybe<Supplier>;
+};
+
+/** A filter to be used against `Supplier` object types. All fields are combined with a logical ‘and.’ */
+export type SupplierFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<SupplierFilter>>;
+  /** Filter by the object’s `code` field. */
+  code?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<SupplierFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<SupplierFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `Supplier` */
+export type SupplierInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  contactEmail?: InputMaybe<Scalars['String']['input']>;
+  contactPhone?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  website?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Methods to use when ordering `Supplier`. */
+export enum SupplierOrderBy {
+  CodeAsc = 'CODE_ASC',
+  CodeDesc = 'CODE_DESC',
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `Supplier`. Fields that are set will be updated. */
+export type SupplierPatch = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  contactEmail?: InputMaybe<Scalars['String']['input']>;
+  contactPhone?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  website?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** A filter to be used against UUID fields. All fields are combined with a logical ‘and.’ */
 export type UuidFilter = {
   /** Not equal to the specified value, treating null like an ordinary value. */
@@ -3374,6 +4517,53 @@ export type UuidFilter = {
   notEqualTo?: InputMaybe<Scalars['UUID']['input']>;
   /** Not included in the specified list. */
   notIn?: InputMaybe<Array<Scalars['UUID']['input']>>;
+};
+
+/** All input for the `updateChannelConnectionById` mutation. */
+export type UpdateChannelConnectionByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `ChannelConnection` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `ChannelConnection` being updated. */
+  patch: ChannelConnectionPatch;
+};
+
+/** All input for the `updateChannelConnection` mutation. */
+export type UpdateChannelConnectionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `ChannelConnection` being updated. */
+  patch: ChannelConnectionPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `ChannelConnection` mutation. */
+export type UpdateChannelConnectionPayload = {
+  __typename?: 'UpdateChannelConnectionPayload';
+  /** The `ChannelConnection` that was updated by this mutation. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
+  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `ChannelConnection` mutation. */
+export type UpdateChannelConnectionPayloadChannelConnectionEdgeArgs = {
+  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the `updateCompanyById` mutation. */
@@ -3718,6 +4908,53 @@ export type UpdatePersonByIdInput = {
   patch: PersonPatch;
 };
 
+/** All input for the `updatePersonExternalLinkById` mutation. */
+export type UpdatePersonExternalLinkByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `PersonExternalLink` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `PersonExternalLink` being updated. */
+  patch: PersonExternalLinkPatch;
+};
+
+/** All input for the `updatePersonExternalLink` mutation. */
+export type UpdatePersonExternalLinkInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `PersonExternalLink` being updated. */
+  patch: PersonExternalLinkPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `PersonExternalLink` mutation. */
+export type UpdatePersonExternalLinkPayload = {
+  __typename?: 'UpdatePersonExternalLinkPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `PersonExternalLink` that was updated by this mutation. */
+  personExternalLink?: Maybe<PersonExternalLink>;
+  /** An edge for our `PersonExternalLink`. May be used by Relay 1. */
+  personExternalLinkEdge?: Maybe<PersonExternalLinkEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `PersonExternalLink` mutation. */
+export type UpdatePersonExternalLinkPayloadPersonExternalLinkEdgeArgs = {
+  orderBy?: Array<PersonExternalLinkOrderBy>;
+};
+
 /** All input for the `updatePerson` mutation. */
 export type UpdatePersonInput = {
   /**
@@ -3763,6 +5000,53 @@ export type UpdateProductByIdInput = {
   id: Scalars['ID']['input'];
   /** An object where the defined keys will be set on the `Product` being updated. */
   patch: ProductPatch;
+};
+
+/** All input for the `updateProductExternalLinkById` mutation. */
+export type UpdateProductExternalLinkByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `ProductExternalLink` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `ProductExternalLink` being updated. */
+  patch: ProductExternalLinkPatch;
+};
+
+/** All input for the `updateProductExternalLink` mutation. */
+export type UpdateProductExternalLinkInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `ProductExternalLink` being updated. */
+  patch: ProductExternalLinkPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `ProductExternalLink` mutation. */
+export type UpdateProductExternalLinkPayload = {
+  __typename?: 'UpdateProductExternalLinkPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `ProductExternalLink` that was updated by this mutation. */
+  productExternalLink?: Maybe<ProductExternalLink>;
+  /** An edge for our `ProductExternalLink`. May be used by Relay 1. */
+  productExternalLinkEdge?: Maybe<ProductExternalLinkEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `ProductExternalLink` mutation. */
+export type UpdateProductExternalLinkPayloadProductExternalLinkEdgeArgs = {
+  orderBy?: Array<ProductExternalLinkOrderBy>;
 };
 
 /** All input for the `updateProduct` mutation. */
@@ -3891,6 +5175,53 @@ export type UpdateQuotePayload = {
 /** The output of our update `Quote` mutation. */
 export type UpdateQuotePayloadQuoteEdgeArgs = {
   orderBy?: Array<QuoteOrderBy>;
+};
+
+/** All input for the `updateSupplierById` mutation. */
+export type UpdateSupplierByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `Supplier` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `Supplier` being updated. */
+  patch: SupplierPatch;
+};
+
+/** All input for the `updateSupplier` mutation. */
+export type UpdateSupplierInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `Supplier` being updated. */
+  patch: SupplierPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `Supplier` mutation. */
+export type UpdateSupplierPayload = {
+  __typename?: 'UpdateSupplierPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** The `Supplier` that was updated by this mutation. */
+  supplier?: Maybe<Supplier>;
+  /** An edge for our `Supplier`. May be used by Relay 1. */
+  supplierEdge?: Maybe<SupplierEdge>;
+};
+
+
+/** The output of our update `Supplier` mutation. */
+export type UpdateSupplierPayloadSupplierEdgeArgs = {
+  orderBy?: Array<SupplierOrderBy>;
 };
 
 export type AllCompaniesQueryVariables = Exact<{
@@ -4101,7 +5432,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, clientName?: string | null, clientEmail?: string | null, additionalItemsLabel?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, subtitle?: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, minimumBillingMinutes?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, clientName?: string | null, clientEmail?: string | null, additionalItemsLabel?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, subtitle?: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, minimumBillingMinutes?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null, deliverables?: Array<string | null> | null, acceptanceCriteria?: Array<string | null> | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -4193,13 +5524,13 @@ export const useSuspenseAllCompaniesQuery = <
     
     return useSuspenseQuery<AllCompaniesQuery, TError, TData>(
       {
-    queryKey: ['AllCompaniesSuspense', variables],
+    queryKey: ['AllCompanies', variables],
     queryFn: graphqlFetch<AllCompaniesQuery, AllCompaniesQueryVariables>(AllCompaniesDocument, variables),
     ...options
   }
     )};
 
-useSuspenseAllCompaniesQuery.getKey = (variables: AllCompaniesQueryVariables) => ['AllCompaniesSuspense', variables];
+useSuspenseAllCompaniesQuery.getKey = (variables: AllCompaniesQueryVariables) => ['AllCompanies', variables];
 
 export const useInfiniteAllCompaniesQuery = <
       TData = InfiniteData<AllCompaniesQuery>,
@@ -4234,14 +5565,14 @@ export const useSuspenseInfiniteAllCompaniesQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['AllCompanies.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['AllCompanies.infinite', variables],
       queryFn: (metaData) => graphqlFetch<AllCompaniesQuery, AllCompaniesQueryVariables>(AllCompaniesDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteAllCompaniesQuery.getKey = (variables: AllCompaniesQueryVariables) => ['AllCompanies.infiniteSuspense', variables];
+useSuspenseInfiniteAllCompaniesQuery.getKey = (variables: AllCompaniesQueryVariables) => ['AllCompanies.infinite', variables];
 
 
 useAllCompaniesQuery.fetcher = (variables: AllCompaniesQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllCompaniesQuery, AllCompaniesQueryVariables>(AllCompaniesDocument, variables, options);
@@ -4378,13 +5709,13 @@ export const useSuspenseCompanyMembersByCompanyQuery = <
     
     return useSuspenseQuery<CompanyMembersByCompanyQuery, TError, TData>(
       {
-    queryKey: ['CompanyMembersByCompanySuspense', variables],
+    queryKey: ['CompanyMembersByCompany', variables],
     queryFn: graphqlFetch<CompanyMembersByCompanyQuery, CompanyMembersByCompanyQueryVariables>(CompanyMembersByCompanyDocument, variables),
     ...options
   }
     )};
 
-useSuspenseCompanyMembersByCompanyQuery.getKey = (variables: CompanyMembersByCompanyQueryVariables) => ['CompanyMembersByCompanySuspense', variables];
+useSuspenseCompanyMembersByCompanyQuery.getKey = (variables: CompanyMembersByCompanyQueryVariables) => ['CompanyMembersByCompany', variables];
 
 export const useInfiniteCompanyMembersByCompanyQuery = <
       TData = InfiniteData<CompanyMembersByCompanyQuery>,
@@ -4419,14 +5750,14 @@ export const useSuspenseInfiniteCompanyMembersByCompanyQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['CompanyMembersByCompany.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['CompanyMembersByCompany.infinite', variables],
       queryFn: (metaData) => graphqlFetch<CompanyMembersByCompanyQuery, CompanyMembersByCompanyQueryVariables>(CompanyMembersByCompanyDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteCompanyMembersByCompanyQuery.getKey = (variables: CompanyMembersByCompanyQueryVariables) => ['CompanyMembersByCompany.infiniteSuspense', variables];
+useSuspenseInfiniteCompanyMembersByCompanyQuery.getKey = (variables: CompanyMembersByCompanyQueryVariables) => ['CompanyMembersByCompany.infinite', variables];
 
 
 useCompanyMembersByCompanyQuery.fetcher = (variables: CompanyMembersByCompanyQueryVariables, options?: RequestInit['headers']) => graphqlFetch<CompanyMembersByCompanyQuery, CompanyMembersByCompanyQueryVariables>(CompanyMembersByCompanyDocument, variables, options);
@@ -4478,13 +5809,13 @@ export const useSuspenseCompanyMembersByPersonQuery = <
     
     return useSuspenseQuery<CompanyMembersByPersonQuery, TError, TData>(
       {
-    queryKey: ['CompanyMembersByPersonSuspense', variables],
+    queryKey: ['CompanyMembersByPerson', variables],
     queryFn: graphqlFetch<CompanyMembersByPersonQuery, CompanyMembersByPersonQueryVariables>(CompanyMembersByPersonDocument, variables),
     ...options
   }
     )};
 
-useSuspenseCompanyMembersByPersonQuery.getKey = (variables: CompanyMembersByPersonQueryVariables) => ['CompanyMembersByPersonSuspense', variables];
+useSuspenseCompanyMembersByPersonQuery.getKey = (variables: CompanyMembersByPersonQueryVariables) => ['CompanyMembersByPerson', variables];
 
 export const useInfiniteCompanyMembersByPersonQuery = <
       TData = InfiniteData<CompanyMembersByPersonQuery>,
@@ -4519,14 +5850,14 @@ export const useSuspenseInfiniteCompanyMembersByPersonQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['CompanyMembersByPerson.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['CompanyMembersByPerson.infinite', variables],
       queryFn: (metaData) => graphqlFetch<CompanyMembersByPersonQuery, CompanyMembersByPersonQueryVariables>(CompanyMembersByPersonDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteCompanyMembersByPersonQuery.getKey = (variables: CompanyMembersByPersonQueryVariables) => ['CompanyMembersByPerson.infiniteSuspense', variables];
+useSuspenseInfiniteCompanyMembersByPersonQuery.getKey = (variables: CompanyMembersByPersonQueryVariables) => ['CompanyMembersByPerson.infinite', variables];
 
 
 useCompanyMembersByPersonQuery.fetcher = (variables: CompanyMembersByPersonQueryVariables, options?: RequestInit['headers']) => graphqlFetch<CompanyMembersByPersonQuery, CompanyMembersByPersonQueryVariables>(CompanyMembersByPersonDocument, variables, options);
@@ -4667,13 +5998,13 @@ export const useSuspenseDocumentNumberingConfigsQuery = <
     
     return useSuspenseQuery<DocumentNumberingConfigsQuery, TError, TData>(
       {
-    queryKey: ['DocumentNumberingConfigsSuspense', variables],
+    queryKey: ['DocumentNumberingConfigs', variables],
     queryFn: graphqlFetch<DocumentNumberingConfigsQuery, DocumentNumberingConfigsQueryVariables>(DocumentNumberingConfigsDocument, variables),
     ...options
   }
     )};
 
-useSuspenseDocumentNumberingConfigsQuery.getKey = (variables: DocumentNumberingConfigsQueryVariables) => ['DocumentNumberingConfigsSuspense', variables];
+useSuspenseDocumentNumberingConfigsQuery.getKey = (variables: DocumentNumberingConfigsQueryVariables) => ['DocumentNumberingConfigs', variables];
 
 export const useInfiniteDocumentNumberingConfigsQuery = <
       TData = InfiniteData<DocumentNumberingConfigsQuery>,
@@ -4708,14 +6039,14 @@ export const useSuspenseInfiniteDocumentNumberingConfigsQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['DocumentNumberingConfigs.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['DocumentNumberingConfigs.infinite', variables],
       queryFn: (metaData) => graphqlFetch<DocumentNumberingConfigsQuery, DocumentNumberingConfigsQueryVariables>(DocumentNumberingConfigsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteDocumentNumberingConfigsQuery.getKey = (variables: DocumentNumberingConfigsQueryVariables) => ['DocumentNumberingConfigs.infiniteSuspense', variables];
+useSuspenseInfiniteDocumentNumberingConfigsQuery.getKey = (variables: DocumentNumberingConfigsQueryVariables) => ['DocumentNumberingConfigs.infinite', variables];
 
 
 useDocumentNumberingConfigsQuery.fetcher = (variables: DocumentNumberingConfigsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<DocumentNumberingConfigsQuery, DocumentNumberingConfigsQueryVariables>(DocumentNumberingConfigsDocument, variables, options);
@@ -4894,13 +6225,13 @@ export const useSuspenseAllInvoicesQuery = <
     
     return useSuspenseQuery<AllInvoicesQuery, TError, TData>(
       {
-    queryKey: ['AllInvoicesSuspense', variables],
+    queryKey: ['AllInvoices', variables],
     queryFn: graphqlFetch<AllInvoicesQuery, AllInvoicesQueryVariables>(AllInvoicesDocument, variables),
     ...options
   }
     )};
 
-useSuspenseAllInvoicesQuery.getKey = (variables: AllInvoicesQueryVariables) => ['AllInvoicesSuspense', variables];
+useSuspenseAllInvoicesQuery.getKey = (variables: AllInvoicesQueryVariables) => ['AllInvoices', variables];
 
 export const useInfiniteAllInvoicesQuery = <
       TData = InfiniteData<AllInvoicesQuery>,
@@ -4935,14 +6266,14 @@ export const useSuspenseInfiniteAllInvoicesQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['AllInvoices.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['AllInvoices.infinite', variables],
       queryFn: (metaData) => graphqlFetch<AllInvoicesQuery, AllInvoicesQueryVariables>(AllInvoicesDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteAllInvoicesQuery.getKey = (variables: AllInvoicesQueryVariables) => ['AllInvoices.infiniteSuspense', variables];
+useSuspenseInfiniteAllInvoicesQuery.getKey = (variables: AllInvoicesQueryVariables) => ['AllInvoices.infinite', variables];
 
 
 useAllInvoicesQuery.fetcher = (variables: AllInvoicesQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllInvoicesQuery, AllInvoicesQueryVariables>(AllInvoicesDocument, variables, options);
@@ -5134,13 +6465,13 @@ export const useSuspenseAllPeopleQuery = <
     
     return useSuspenseQuery<AllPeopleQuery, TError, TData>(
       {
-    queryKey: ['AllPeopleSuspense', variables],
+    queryKey: ['AllPeople', variables],
     queryFn: graphqlFetch<AllPeopleQuery, AllPeopleQueryVariables>(AllPeopleDocument, variables),
     ...options
   }
     )};
 
-useSuspenseAllPeopleQuery.getKey = (variables: AllPeopleQueryVariables) => ['AllPeopleSuspense', variables];
+useSuspenseAllPeopleQuery.getKey = (variables: AllPeopleQueryVariables) => ['AllPeople', variables];
 
 export const useInfiniteAllPeopleQuery = <
       TData = InfiniteData<AllPeopleQuery>,
@@ -5175,14 +6506,14 @@ export const useSuspenseInfiniteAllPeopleQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['AllPeople.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['AllPeople.infinite', variables],
       queryFn: (metaData) => graphqlFetch<AllPeopleQuery, AllPeopleQueryVariables>(AllPeopleDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteAllPeopleQuery.getKey = (variables: AllPeopleQueryVariables) => ['AllPeople.infiniteSuspense', variables];
+useSuspenseInfiniteAllPeopleQuery.getKey = (variables: AllPeopleQueryVariables) => ['AllPeople.infinite', variables];
 
 
 useAllPeopleQuery.fetcher = (variables: AllPeopleQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllPeopleQuery, AllPeopleQueryVariables>(AllPeopleDocument, variables, options);
@@ -5321,13 +6652,13 @@ export const useSuspenseAllProductsQuery = <
     
     return useSuspenseQuery<AllProductsQuery, TError, TData>(
       {
-    queryKey: ['AllProductsSuspense', variables],
+    queryKey: ['AllProducts', variables],
     queryFn: graphqlFetch<AllProductsQuery, AllProductsQueryVariables>(AllProductsDocument, variables),
     ...options
   }
     )};
 
-useSuspenseAllProductsQuery.getKey = (variables: AllProductsQueryVariables) => ['AllProductsSuspense', variables];
+useSuspenseAllProductsQuery.getKey = (variables: AllProductsQueryVariables) => ['AllProducts', variables];
 
 export const useInfiniteAllProductsQuery = <
       TData = InfiniteData<AllProductsQuery>,
@@ -5362,14 +6693,14 @@ export const useSuspenseInfiniteAllProductsQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['AllProducts.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['AllProducts.infinite', variables],
       queryFn: (metaData) => graphqlFetch<AllProductsQuery, AllProductsQueryVariables>(AllProductsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteAllProductsQuery.getKey = (variables: AllProductsQueryVariables) => ['AllProducts.infiniteSuspense', variables];
+useSuspenseInfiniteAllProductsQuery.getKey = (variables: AllProductsQueryVariables) => ['AllProducts.infinite', variables];
 
 
 useAllProductsQuery.fetcher = (variables: AllProductsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllProductsQuery, AllProductsQueryVariables>(AllProductsDocument, variables, options);
@@ -5501,13 +6832,13 @@ export const useSuspenseInventoryAdjustmentsQuery = <
     
     return useSuspenseQuery<InventoryAdjustmentsQuery, TError, TData>(
       {
-    queryKey: ['InventoryAdjustmentsSuspense', variables],
+    queryKey: ['InventoryAdjustments', variables],
     queryFn: graphqlFetch<InventoryAdjustmentsQuery, InventoryAdjustmentsQueryVariables>(InventoryAdjustmentsDocument, variables),
     ...options
   }
     )};
 
-useSuspenseInventoryAdjustmentsQuery.getKey = (variables: InventoryAdjustmentsQueryVariables) => ['InventoryAdjustmentsSuspense', variables];
+useSuspenseInventoryAdjustmentsQuery.getKey = (variables: InventoryAdjustmentsQueryVariables) => ['InventoryAdjustments', variables];
 
 export const useInfiniteInventoryAdjustmentsQuery = <
       TData = InfiniteData<InventoryAdjustmentsQuery>,
@@ -5542,14 +6873,14 @@ export const useSuspenseInfiniteInventoryAdjustmentsQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['InventoryAdjustments.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['InventoryAdjustments.infinite', variables],
       queryFn: (metaData) => graphqlFetch<InventoryAdjustmentsQuery, InventoryAdjustmentsQueryVariables>(InventoryAdjustmentsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteInventoryAdjustmentsQuery.getKey = (variables: InventoryAdjustmentsQueryVariables) => ['InventoryAdjustments.infiniteSuspense', variables];
+useSuspenseInfiniteInventoryAdjustmentsQuery.getKey = (variables: InventoryAdjustmentsQueryVariables) => ['InventoryAdjustments.infinite', variables];
 
 
 useInventoryAdjustmentsQuery.fetcher = (variables: InventoryAdjustmentsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<InventoryAdjustmentsQuery, InventoryAdjustmentsQueryVariables>(InventoryAdjustmentsDocument, variables, options);
@@ -5644,6 +6975,8 @@ export const AllQuotesDocument = `
           royaltyThreshold
           royaltyBuyoutAmount
           sortOrder
+          deliverables
+          acceptanceCriteria
         }
       }
     }
@@ -5679,13 +7012,13 @@ export const useSuspenseAllQuotesQuery = <
     
     return useSuspenseQuery<AllQuotesQuery, TError, TData>(
       {
-    queryKey: ['AllQuotesSuspense', variables],
+    queryKey: ['AllQuotes', variables],
     queryFn: graphqlFetch<AllQuotesQuery, AllQuotesQueryVariables>(AllQuotesDocument, variables),
     ...options
   }
     )};
 
-useSuspenseAllQuotesQuery.getKey = (variables: AllQuotesQueryVariables) => ['AllQuotesSuspense', variables];
+useSuspenseAllQuotesQuery.getKey = (variables: AllQuotesQueryVariables) => ['AllQuotes', variables];
 
 export const useInfiniteAllQuotesQuery = <
       TData = InfiniteData<AllQuotesQuery>,
@@ -5720,14 +7053,14 @@ export const useSuspenseInfiniteAllQuotesQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['AllQuotes.infiniteSuspense', variables],
+      queryKey: optionsQueryKey ?? ['AllQuotes.infinite', variables],
       queryFn: (metaData) => graphqlFetch<AllQuotesQuery, AllQuotesQueryVariables>(AllQuotesDocument, {...variables, ...(metaData.pageParam ?? {})})(),
       ...restOptions
     }
   })()
     )};
 
-useSuspenseInfiniteAllQuotesQuery.getKey = (variables: AllQuotesQueryVariables) => ['AllQuotes.infiniteSuspense', variables];
+useSuspenseInfiniteAllQuotesQuery.getKey = (variables: AllQuotesQueryVariables) => ['AllQuotes.infinite', variables];
 
 
 useAllQuotesQuery.fetcher = (variables: AllQuotesQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllQuotesQuery, AllQuotesQueryVariables>(AllQuotesDocument, variables, options);

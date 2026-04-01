@@ -42,7 +42,39 @@ export interface QuoteLineItem {
   royaltyTimeframeUnit: "months" | "years" | "perpetual" | null;
   royaltyThreshold: string | null;
   royaltyBuyoutAmount: string | null;
+  // Scope of work
+  deliverables: string[] | null;
+  acceptanceCriteria: string[] | null;
 }
+
+// TODO: AI-assisted SoW generation from line item descriptions
+// TODO: SoW templates reusable across quotes
+// TODO: Per-deliverable milestones/dates
+// TODO: Standalone SoW export separate from full contract
+export const SOW_DEFAULTS: Record<
+  PricingType,
+  { deliverables: string[]; acceptanceCriteria: string[] }
+> = {
+  fixed: {
+    deliverables: ["Delivery of described work", "Source code and assets"],
+    acceptanceCriteria: ["Client review and sign-off"],
+  },
+  hourly: {
+    deliverables: ["Tracked hours for described work"],
+    acceptanceCriteria: [
+      "Hours tracked and reported weekly",
+      "Work reviewed in regular check-ins",
+    ],
+  },
+  royalty: {
+    deliverables: ["Ongoing revenue share per agreement"],
+    acceptanceCriteria: ["Royalty reports provided monthly"],
+  },
+  complimentary: {
+    deliverables: ["Included at no charge"],
+    acceptanceCriteria: ["Delivered alongside primary work"],
+  },
+};
 
 export const DEFAULT_QUOTE_TERMS = [
   "Validity: This quote is valid for 30 days from the date of issue.",

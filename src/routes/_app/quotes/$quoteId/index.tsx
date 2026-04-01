@@ -136,6 +136,12 @@ const QuotePreviewPage = () => {
                   royaltyThreshold: li.royaltyThreshold ?? null,
                   royaltyBuyoutAmount: li.royaltyBuyoutAmount ?? null,
                   sortOrder: li.sortOrder ?? 0,
+                  deliverables:
+                    ((li as Record<string, unknown>)
+                      .deliverables as string[]) ?? null,
+                  acceptanceCriteria:
+                    ((li as Record<string, unknown>)
+                      .acceptanceCriteria as string[]) ?? null,
                 },
               ];
             }),

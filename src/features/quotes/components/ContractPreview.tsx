@@ -81,6 +81,7 @@ const ContractPreview = ({
           projectName={quote.title || "Untitled Project"}
           projectType={quote.projectType ?? null}
           description={quote.description ?? null}
+          lineItems={lineItems}
         />
 
         <hr className="border-border" />

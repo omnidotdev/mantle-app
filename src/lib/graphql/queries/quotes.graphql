@@ -58,6 +58,8 @@ query AllQuotes($organizationId: String!) {
           royaltyThreshold
           royaltyBuyoutAmount
           sortOrder
+          deliverables
+          acceptanceCriteria
         }
       }
     }

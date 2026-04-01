@@ -13,8 +13,9 @@ import { formatCurrency } from "@/features/invoices/types/invoice";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
-import { QUOTE_STATUSES } from "../types/quote";
+import { QUOTE_STATUSES, SOW_DEFAULTS } from "../types/quote";
 import AdditionalTermsEditor from "./AdditionalTermsEditor";
+import BulletListEditor from "./BulletListEditor";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -84,7 +85,7 @@ const QuoteForm = ({
   const handleLineItemChange = (
     index: number,
     field: keyof QuoteLineItem,
-    value: string | number | null,
+    value: string | number | string[] | null,
   ) => {
     const updated = lineItems.map((item, i) => {
       if (i !== index) return item;
@@ -122,6 +123,13 @@ const QuoteForm = ({
           updatedItem.quantity = "1";
           updatedItem.unitPrice = "0";
           updatedItem.amount = "0";
+        }
+
+        // Populate SoW defaults for the new pricing type
+        const sowDefaults = SOW_DEFAULTS[value as keyof typeof SOW_DEFAULTS];
+        if (sowDefaults) {
+          updatedItem.deliverables = sowDefaults.deliverables;
+          updatedItem.acceptanceCriteria = sowDefaults.acceptanceCriteria;
         }
       }
 
@@ -200,6 +208,8 @@ const QuoteForm = ({
         royaltyThreshold: null,
         royaltyBuyoutAmount: null,
         sortOrder: lineItems.length,
+        deliverables: SOW_DEFAULTS.fixed.deliverables,
+        acceptanceCriteria: SOW_DEFAULTS.fixed.acceptanceCriteria,
       },
     ]);
   };
@@ -827,6 +837,46 @@ const QuoteForm = ({
                   </div>
                 </div>
               )}
+
+              {/* Scope of work */}
+              <details className="group">
+                <summary className="cursor-pointer text-muted-foreground text-sm hover:text-foreground">
+                  Scope of Work (
+                  {(item.deliverables?.length ?? 0) +
+                    (item.acceptanceCriteria?.length ?? 0)}{" "}
+                  items)
+                </summary>
+                <div className="mt-3 space-y-3">
+                  <div className="space-y-1.5">
+                    <Label>Deliverables</Label>
+                    <BulletListEditor
+                      items={item.deliverables ?? []}
+                      onChange={(items) =>
+                        handleLineItemChange(
+                          index,
+                          "deliverables" as keyof QuoteLineItem,
+                          items.length > 0 ? items : null,
+                        )
+                      }
+                      placeholder="Add a deliverable"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Acceptance Criteria</Label>
+                    <BulletListEditor
+                      items={item.acceptanceCriteria ?? []}
+                      onChange={(items) =>
+                        handleLineItemChange(
+                          index,
+                          "acceptanceCriteria" as keyof QuoteLineItem,
+                          items.length > 0 ? items : null,
+                        )
+                      }
+                      placeholder="Add acceptance criterion"
+                    />
+                  </div>
+                </div>
+              </details>
             </div>
           )}
         />

@@ -38,6 +38,8 @@ const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   royaltyThreshold: null,
   royaltyBuyoutAmount: null,
   sortOrder: 0,
+  deliverables: ["Delivery of described work", "Source code and assets"],
+  acceptanceCriteria: ["Client review and sign-off"],
 };
 
 const PreviewToggle = ({
@@ -172,6 +174,12 @@ const EditQuotePage = () => {
                   royaltyThreshold: li.royaltyThreshold ?? null,
                   royaltyBuyoutAmount: li.royaltyBuyoutAmount ?? null,
                   sortOrder: li.sortOrder ?? 0,
+                  deliverables:
+                    ((li as Record<string, unknown>)
+                      .deliverables as string[]) ?? null,
+                  acceptanceCriteria:
+                    ((li as Record<string, unknown>)
+                      .acceptanceCriteria as string[]) ?? null,
                 },
               ];
             }),
@@ -265,6 +273,8 @@ const EditQuotePage = () => {
               royaltyThreshold: item.royaltyThreshold ?? null,
               royaltyBuyoutAmount: item.royaltyBuyoutAmount ?? null,
               sortOrder: index,
+              deliverables: item.deliverables ?? null,
+              acceptanceCriteria: item.acceptanceCriteria ?? null,
             },
           },
         }),
