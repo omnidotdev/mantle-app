@@ -8,10 +8,12 @@ import {
   AUTH_BASE_URL,
   AUTH_CLIENT_ID,
   AUTH_CLIENT_SECRET,
+  AUTH_INTERNAL_URL,
   BASE_URL,
 } from "@/lib/config/env.config";
 
 import type { OrganizationClaim } from "@omnidotdev/providers/auth";
+import { createOmniOAuthConfig } from "@omnidotdev/providers/auth";
 
 const { AUTH_SECRET } = process.env;
 
@@ -79,6 +81,7 @@ plugins.push(
  * Auth server client.
  */
 const auth = betterAuth({
+  database: process.env.DATABASE_URL!,
   baseURL: BASE_URL,
   basePath: "/api/auth",
   secret: AUTH_SECRET,
