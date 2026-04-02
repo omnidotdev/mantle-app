@@ -81,7 +81,6 @@ plugins.push(
  * Auth server client.
  */
 const auth = betterAuth({
-  database: process.env.DATABASE_URL!,
   baseURL: BASE_URL,
   basePath: "/api/auth",
   secret: AUTH_SECRET,
