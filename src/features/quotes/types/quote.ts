@@ -14,6 +14,7 @@ export const PRICING_TYPES = [
   "hourly",
   "royalty",
   "complimentary",
+  "included",
 ] as const;
 
 export type PricingType = (typeof PRICING_TYPES)[number];
@@ -73,6 +74,10 @@ export const SOW_DEFAULTS: Record<
   complimentary: {
     deliverables: ["Included at no charge"],
     acceptanceCriteria: ["Delivered alongside primary work"],
+  },
+  included: {
+    deliverables: ["Included in retainer"],
+    acceptanceCriteria: ["Delivered as part of retainer scope"],
   },
 };
 

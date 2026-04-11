@@ -119,7 +119,7 @@ const QuoteForm = ({
           updatedItem.royaltyPercentage = "5";
           updatedItem.royaltyTimeframe = "12";
           updatedItem.royaltyTimeframeUnit = "months";
-        } else if (value === "complimentary") {
+        } else if (value === "complimentary" || value === "included") {
           updatedItem.quantity = "1";
           updatedItem.unitPrice = "0";
           updatedItem.amount = "0";
@@ -613,6 +613,7 @@ const QuoteForm = ({
                     <option value="hourly">Hourly</option>
                     <option value="royalty">Royalty</option>
                     <option value="complimentary">Complimentary</option>
+                    <option value="included">Included</option>
                   </select>
                 </div>
               </div>

@@ -267,4 +267,12 @@ button {
     height: 100%;
     width: 100%;
   }
+
+  details summary {
+    display: none !important;
+  }
+
+  details:not([open]) > *:not(summary) {
+    display: block !important;
+  }
 }

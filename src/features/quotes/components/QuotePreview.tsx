@@ -21,6 +21,7 @@ const pricingLabels: Record<string, string> = {
   hourly: "Hourly",
   royalty: "Royalty",
   complimentary: "Complimentary",
+  included: "Included",
 };
 
 const pluralizeUnit = (value: string | null, unit: string | null): string => {
@@ -137,11 +138,14 @@ const QuotePreview = ({
     const isHourly = item.pricingType === "hourly";
     const isRoyalty = item.pricingType === "royalty";
     const isComplimentary = item.pricingType === "complimentary";
+    const isIncluded = item.pricingType === "included";
 
     // Determine the displayed price
     let priceDisplay: string;
     if (isComplimentary) {
       priceDisplay = "FREE";
+    } else if (isIncluded) {
+      priceDisplay = "";
     } else if (isHourly && item.hourlyRate) {
       priceDisplay = `${formatCurrency(item.hourlyRate, currency)}/hr`;
     } else if (isRoyalty && item.royaltyPercentage) {
@@ -199,18 +203,21 @@ const QuotePreview = ({
       autoSubDescription = parts.join(" \u2022 ");
     }
 
-    // Badge style varies for complimentary items
-    const badgeStyle = isComplimentary
-      ? undefined
-      : {
-          borderColor: accent.light,
-          backgroundColor: accent.light,
-          color: accent.gradientFrom,
-        };
+    // Badge style varies for complimentary/included items
+    const badgeStyle =
+      isComplimentary || isIncluded
+        ? undefined
+        : {
+            borderColor: accent.light,
+            backgroundColor: accent.light,
+            color: accent.gradientFrom,
+          };
 
     const badgeClass = isComplimentary
       ? "inline-block rounded-full border border-emerald-300 bg-emerald-50 px-3 py-0.5 font-medium text-emerald-700 text-xs"
-      : "inline-block rounded-full border px-3 py-0.5 font-medium text-xs";
+      : isIncluded
+        ? "inline-block rounded-full border border-border bg-muted px-3 py-0.5 font-medium text-muted-foreground text-xs"
+        : "inline-block rounded-full border px-3 py-0.5 font-medium text-xs";
 
     return (
       <div
@@ -227,9 +234,11 @@ const QuotePreview = ({
             <span className={badgeClass} style={badgeStyle}>
               {pricingLabels[item.pricingType || "fixed"]}
             </span>
-            <span className="font-semibold text-foreground text-xl">
-              {priceDisplay}
-            </span>
+            {priceDisplay && (
+              <span className="font-semibold text-foreground text-xl">
+                {priceDisplay}
+              </span>
+            )}
           </div>
         </div>
         {item.subtitle && (

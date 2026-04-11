@@ -4,6 +4,8 @@ import { GraphQLClient, gql } from "graphql-request";
 import { API_GRAPHQL_URL } from "@/lib/config/env.config";
 import { fetchSession } from "@/server/functions/auth";
 
+const SERVICE_KEY = process.env.SERVICE_KEY;
+
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import type { Variables } from "graphql-request";
 
@@ -43,6 +45,7 @@ export const graphqlFetch =
       variables: variables as Variables,
       requestHeaders: {
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        ...(SERVICE_KEY ? { "x-service-key": SERVICE_KEY } : {}),
         ...restOptions,
       },
     });

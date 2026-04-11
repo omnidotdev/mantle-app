@@ -11,6 +11,7 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
   const fixedItems = lineItems.filter((li) => li.pricingType === "fixed");
   const hourlyItems = lineItems.filter((li) => li.pricingType === "hourly");
   const royaltyItems = lineItems.filter((li) => li.pricingType === "royalty");
+  const includedItems = lineItems.filter((li) => li.pricingType === "included");
   const complimentaryItems = lineItems.filter(
     (li) => li.pricingType === "complimentary",
   );
@@ -124,6 +125,20 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
                     Buyout option:{" "}
                     {formatCurrency(item.royaltyBuyoutAmount, currency)}
                   </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {includedItems.length > 0 && (
+          <div className="mt-3">
+            <h4 className="mb-1 font-medium">Included in Retainer</h4>
+            {includedItems.map((item) => (
+              <div key={item.id} className="mb-2 rounded bg-muted p-2">
+                <p className="font-medium">{item.description}</p>
+                {item.subtitle && (
+                  <p className="text-sm italic">{item.subtitle}</p>
                 )}
               </div>
             ))}
