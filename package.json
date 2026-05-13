@@ -47,7 +47,7 @@
     "ts-pattern": "^5.9.0",
     "unleash-client": "^6.9.6",
     "usehooks-ts": "^3.1.1",
-    "zod": "4.3.5",
+    "zod": "4.4.3",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
