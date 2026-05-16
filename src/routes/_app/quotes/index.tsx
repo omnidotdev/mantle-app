@@ -15,6 +15,7 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { DataTable } from "@/components/ui/data-table";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import { quoteListSearchSchema } from "@/features/quotes/searchParams";
 import { QUOTE_STATUSES } from "@/features/quotes/types/quote";
@@ -23,7 +24,9 @@ import {
   useAllQuotesQuery,
   useDeleteQuoteMutation,
 } from "@/generated/graphql";
+import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 
 const statusColors: Record<string, string> = {
@@ -37,9 +40,12 @@ const statusColors: Record<string, string> = {
   converted: "bg-secondary-100 text-secondary-700",
 };
 
+const DEFAULT_SORTING: SortingState = [{ id: "validUntil", desc: true }];
+
 const QuotesListPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { search: searchTerm, status: statusFilter } = Route.useSearch();
+  const search = Route.useSearch();
+  const { search: searchTerm, status: statusFilter } = search;
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
@@ -47,6 +53,12 @@ const QuotesListPage = () => {
     open: boolean;
     id: string;
   }>({ open: false, id: "" });
+
+  const [sorting, setSorting] = useUrlSort({
+    search,
+    defaultSorting: DEFAULT_SORTING,
+    navigate,
+  });
 
   const { data, isLoading } = useAllQuotesQuery(
     { organizationId: organizationId ?? "" },
@@ -194,6 +206,151 @@ const QuotesListPage = () => {
     onSuccess: invalidateQuotes,
   });
 
+  const columns = useMemo<ColumnDef<(typeof quotes)[number]>[]>(
+    () => [
+      {
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const quote = row.original;
+          return (
+            <div className="flex gap-2">
+              <Link
+                to="/quotes/$quoteId"
+                params={{ quoteId: quote.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Preview quote"
+              >
+                <Eye size={16} />
+              </Link>
+              <Link
+                to="/quotes/$quoteId/edit"
+                params={{ quoteId: quote.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Edit quote"
+              >
+                <Edit size={16} />
+              </Link>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate({
+                    to: "/quotes/new",
+                    state: {
+                      duplicateFrom: {
+                        quote: {
+                          companyId: quote.companyId,
+                          contactId: quote.contactId,
+                          title: quote.title,
+                          description: quote.description,
+                          terms: quote.terms,
+                          notes: quote.notes,
+                          taxRate: quote.taxRate,
+                          currency: quote.currency,
+                          projectType: quote.projectType,
+                          timeRange: quote.timeRange,
+                          additionalTerms: quote.additionalTerms,
+                          additionalItemsLabel: quote.additionalItemsLabel,
+                          clientName: quote.clientName,
+                          clientEmail: quote.clientEmail,
+                        },
+                        lineItems: quote.quoteLineItems.map((li) => ({
+                          description: li.description,
+                          subtitle: li.subtitle,
+                          quantity: li.quantity,
+                          unitPrice: li.unitPrice,
+                          amount: li.amount,
+                          pricingType: li.pricingType,
+                          estimatedHours: li.estimatedHours,
+                          royaltyPercentage: li.royaltyPercentage,
+                          hourlyRate: li.hourlyRate,
+                          weeklyCapHours: li.weeklyCapHours,
+                          monthlyCapHours: li.monthlyCapHours,
+                          maxCapHours: li.maxCapHours,
+                          minimumBillingMinutes: li.minimumBillingMinutes,
+                          royaltyTimeframe: li.royaltyTimeframe,
+                          royaltyTimeframeUnit: li.royaltyTimeframeUnit,
+                          royaltyThreshold: li.royaltyThreshold,
+                          royaltyBuyoutAmount: li.royaltyBuyoutAmount,
+                          sortOrder: li.sortOrder,
+                        })),
+                      },
+                    },
+                  })
+                }
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Duplicate quote"
+              >
+                <Copy size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm({ open: true, id: quote.id })}
+                className="text-destructive hover:text-destructive/80"
+                aria-label="Delete quote"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        id: "quoteNumber",
+        accessorKey: "quoteNumber",
+        header: "Quote #",
+        cell: ({ getValue }) => (
+          <span className="font-mono">{getValue<string>()}</span>
+        ),
+      },
+      {
+        id: "title",
+        accessorKey: "title",
+        header: "Title",
+      },
+      {
+        id: "company",
+        accessorFn: (row) => resolveCompanyName(row.companyId) ?? "",
+        header: "Company",
+        cell: ({ row }) => resolveCompanyName(row.original.companyId) || "—",
+      },
+      {
+        id: "status",
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const status = getValue<string>();
+          return (
+            <span
+              className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[status] || statusColors.draft}`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
+      {
+        id: "total",
+        accessorFn: (row) => Number.parseFloat(row.total) || 0,
+        header: "Total",
+        meta: { align: "right" },
+        cell: ({ row }) => (
+          <span className="font-medium">
+            {formatCurrency(row.original.total, row.original.currency)}
+          </span>
+        ),
+      },
+      {
+        id: "validUntil",
+        accessorKey: "validUntil",
+        header: "Valid Until",
+        cell: ({ getValue }) => getValue<string>() || "—",
+      },
+    ],
+    [navigate, resolveCompanyName],
+  );
+
   if (!organizationId) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -287,163 +444,36 @@ const QuotesListPage = () => {
             </select>
           </div>
 
-          {filteredQuotes.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">
-                No quotes match your filters
-              </p>
-              <button
-                type="button"
-                onClick={() =>
-                  navigate({
-                    search: { search: "", status: "all" },
-                  })
-                }
-                className="mt-2 text-primary-600 text-sm hover:text-primary-700"
-              >
-                Clear filters
-              </button>
-            </div>
-          ) : (
-            <table className="w-full min-w-[800px]">
-              <thead className="bg-muted">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Actions
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Quote #
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Title
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Company
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-                    Total
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Valid Until
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredQuotes.map((quote) => (
-                  <tr key={quote.id} className="border-border border-t">
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <Link
-                          to="/quotes/$quoteId"
-                          params={{ quoteId: quote.id }}
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="Preview quote"
-                        >
-                          <Eye size={16} />
-                        </Link>
-                        <Link
-                          to="/quotes/$quoteId/edit"
-                          params={{ quoteId: quote.id }}
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="Edit quote"
-                        >
-                          <Edit size={16} />
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate({
-                              to: "/quotes/new",
-                              state: {
-                                duplicateFrom: {
-                                  quote: {
-                                    companyId: quote.companyId,
-                                    contactId: quote.contactId,
-                                    title: quote.title,
-                                    description: quote.description,
-                                    terms: quote.terms,
-                                    notes: quote.notes,
-                                    taxRate: quote.taxRate,
-                                    currency: quote.currency,
-                                    projectType: quote.projectType,
-                                    timeRange: quote.timeRange,
-                                    additionalTerms: quote.additionalTerms,
-                                    additionalItemsLabel:
-                                      quote.additionalItemsLabel,
-                                    clientName: quote.clientName,
-                                    clientEmail: quote.clientEmail,
-                                  },
-                                  lineItems: quote.quoteLineItems.map((li) => ({
-                                    description: li.description,
-                                    subtitle: li.subtitle,
-                                    quantity: li.quantity,
-                                    unitPrice: li.unitPrice,
-                                    amount: li.amount,
-                                    pricingType: li.pricingType,
-                                    estimatedHours: li.estimatedHours,
-                                    royaltyPercentage: li.royaltyPercentage,
-                                    hourlyRate: li.hourlyRate,
-                                    weeklyCapHours: li.weeklyCapHours,
-                                    monthlyCapHours: li.monthlyCapHours,
-                                    maxCapHours: li.maxCapHours,
-                                    minimumBillingMinutes:
-                                      li.minimumBillingMinutes,
-                                    royaltyTimeframe: li.royaltyTimeframe,
-                                    royaltyTimeframeUnit:
-                                      li.royaltyTimeframeUnit,
-                                    royaltyThreshold: li.royaltyThreshold,
-                                    royaltyBuyoutAmount: li.royaltyBuyoutAmount,
-                                    sortOrder: li.sortOrder,
-                                  })),
-                                },
-                              },
-                            })
-                          }
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="Duplicate quote"
-                        >
-                          <Copy size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDeleteConfirm({ open: true, id: quote.id })
-                          }
-                          className="text-destructive hover:text-destructive/80"
-                          aria-label="Delete quote"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-sm">
-                      {quote.quoteNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm">{quote.title}</td>
-                    <td className="px-4 py-3 text-foreground text-sm">
-                      {resolveCompanyName(quote.companyId) || "\u2014"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[quote.status] || statusColors.draft}`}
-                      >
-                        {quote.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-sm">
-                      {formatCurrency(quote.total, quote.currency)}
-                    </td>
-                    <td className="px-4 py-3 text-foreground text-sm">
-                      {quote.validUntil || "\u2014"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <DataTable
+            data={filteredQuotes}
+            columns={columns}
+            sorting={sorting}
+            onSortingChange={setSorting}
+            minWidth="800px"
+            emptyState={
+              <div className="py-12 text-center">
+                <p className="text-muted-foreground">
+                  No quotes match your filters
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate({
+                      search: {
+                        search: "",
+                        status: "all",
+                        sortBy: undefined,
+                        sortDir: undefined,
+                      },
+                    })
+                  }
+                  className="mt-2 text-primary-600 text-sm hover:text-primary-700"
+                >
+                  Clear filters
+                </button>
+              </div>
+            }
+          />
         </div>
       )}
 
