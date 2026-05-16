@@ -14,6 +14,7 @@ import {
 import { useMemo, useState } from "react";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { DataTable } from "@/components/ui/data-table";
 import { invoiceListSearchSchema } from "@/features/invoices/searchParams";
 import {
   INVOICE_STATUSES,
@@ -24,7 +25,9 @@ import {
   useAllInvoicesQuery,
   useDeleteInvoiceMutation,
 } from "@/generated/graphql";
+import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import type { Invoice } from "@/features/invoices/types/invoice";
 
 const statusColors: Record<string, string> = {
@@ -36,16 +39,26 @@ const statusColors: Record<string, string> = {
   void: "bg-muted text-muted-foreground",
 };
 
+const DEFAULT_SORTING: SortingState = [{ id: "issueDate", desc: true }];
+
 const InvoicesListPage = () => {
   const { organizationId } = Route.useRouteContext();
-  const { search: searchTerm, status: statusFilter } = Route.useSearch();
+  const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
+
+  const { search: searchTerm, status: statusFilter } = search;
 
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
   }>({ open: false, id: "" });
+
+  const [sorting, setSorting] = useUrlSort({
+    search,
+    defaultSorting: DEFAULT_SORTING,
+    navigate,
+  });
 
   const { data, isLoading } = useAllInvoicesQuery(
     { organizationId: organizationId ?? "" },
@@ -84,7 +97,6 @@ const InvoicesListPage = () => {
             invoiceLineItems: (node.invoiceLineItems.nodes ?? []).flatMap(
               (li) => {
                 if (!li) return [];
-
                 return [
                   {
                     id: li.rowId,
@@ -141,6 +153,137 @@ const InvoicesListPage = () => {
   const deleteMutation = useDeleteInvoiceMutation({
     onSuccess: invalidateInvoices,
   });
+
+  const columns = useMemo<ColumnDef<(typeof invoices)[number]>[]>(
+    () => [
+      {
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const invoice = row.original;
+          return (
+            <div className="flex gap-2">
+              <Link
+                to="/invoices/$invoiceId"
+                params={{ invoiceId: invoice.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Preview invoice"
+              >
+                <Eye size={16} />
+              </Link>
+              <Link
+                to="/invoices/$invoiceId/edit"
+                params={{ invoiceId: invoice.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Edit invoice"
+              >
+                <Edit size={16} />
+              </Link>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate({
+                    to: "/invoices/new",
+                    state: {
+                      duplicateFrom: {
+                        invoice: {
+                          companyId: invoice.companyId,
+                          contactId: invoice.contactId,
+                          billTo: invoice.billTo,
+                          notes: invoice.notes,
+                          taxRate: invoice.taxRate,
+                          currency: invoice.currency,
+                        },
+                        lineItems: invoice.invoiceLineItems.map((li) => ({
+                          description: li.description,
+                          quantity: li.quantity,
+                          unitPrice: li.unitPrice,
+                          amount: li.amount,
+                          sortOrder: li.sortOrder,
+                        })),
+                      },
+                    },
+                  })
+                }
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Duplicate invoice"
+              >
+                <Copy size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm({ open: true, id: invoice.id })}
+                className="text-destructive hover:text-destructive/80"
+                aria-label="Delete invoice"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        id: "invoiceNumber",
+        accessorKey: "invoiceNumber",
+        header: "Invoice #",
+        cell: ({ getValue }) => (
+          <span className="font-mono">{getValue<string>()}</span>
+        ),
+      },
+      {
+        id: "company",
+        accessorFn: (row) => row.company?.name ?? "",
+        header: "Company",
+        cell: ({ row }) => row.original.company?.name ?? "—",
+      },
+      {
+        id: "issueDate",
+        accessorKey: "issueDate",
+        header: "Issue Date",
+        cell: ({ getValue }) => {
+          const v = getValue<string | null>();
+          return v ? formatDate(v) : "—";
+        },
+      },
+      {
+        id: "dueDate",
+        accessorKey: "dueDate",
+        header: "Due Date",
+        cell: ({ getValue }) => {
+          const v = getValue<string | null>();
+          return v ? formatDate(v) : "—";
+        },
+      },
+      {
+        id: "total",
+        accessorFn: (row) => Number.parseFloat(row.total) || 0,
+        header: "Total",
+        meta: { align: "right" },
+        cell: ({ row }) => (
+          <span className="font-medium">
+            {formatCurrency(row.original.total, row.original.currency)}
+          </span>
+        ),
+      },
+      {
+        id: "status",
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const status = getValue<string>();
+          return (
+            <span
+              className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[status] || statusColors.draft}`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
+    ],
+    [navigate],
+  );
 
   if (!organizationId) {
     return (
@@ -235,147 +378,36 @@ const InvoicesListPage = () => {
             </select>
           </div>
 
-          {filteredInvoices.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">
-                No invoices match your filters
-              </p>
-              <button
-                type="button"
-                onClick={() =>
-                  navigate({
-                    search: { search: "", status: "all" },
-                  })
-                }
-                className="mt-2 text-primary-600 text-sm hover:text-primary-700"
-              >
-                Clear filters
-              </button>
-            </div>
-          ) : (
-            <table className="w-full min-w-[800px]">
-              <thead className="bg-muted">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Actions
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Invoice #
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Company
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Issue Date
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Due Date
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-foreground text-sm">
-                    Total
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="border-border border-t">
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <Link
-                          to="/invoices/$invoiceId"
-                          params={{ invoiceId: invoice.id }}
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="Preview invoice"
-                        >
-                          <Eye size={16} />
-                        </Link>
-                        <Link
-                          to="/invoices/$invoiceId/edit"
-                          params={{ invoiceId: invoice.id }}
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="Edit invoice"
-                        >
-                          <Edit size={16} />
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate({
-                              to: "/invoices/new",
-                              state: {
-                                duplicateFrom: {
-                                  invoice: {
-                                    companyId: invoice.companyId,
-                                    contactId: invoice.contactId,
-                                    billTo: invoice.billTo,
-                                    notes: invoice.notes,
-                                    taxRate: invoice.taxRate,
-                                    currency: invoice.currency,
-                                  },
-                                  lineItems: invoice.invoiceLineItems.map(
-                                    (li) => ({
-                                      description: li.description,
-                                      quantity: li.quantity,
-                                      unitPrice: li.unitPrice,
-                                      amount: li.amount,
-                                      sortOrder: li.sortOrder,
-                                    }),
-                                  ),
-                                },
-                              },
-                            })
-                          }
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="Duplicate invoice"
-                        >
-                          <Copy size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDeleteConfirm({ open: true, id: invoice.id })
-                          }
-                          className="text-destructive hover:text-destructive/80"
-                          aria-label="Delete invoice"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-sm">
-                      {invoice.invoiceNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {invoice.company?.name ?? "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-foreground text-sm">
-                      {invoice.issueDate
-                        ? formatDate(invoice.issueDate)
-                        : "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-foreground text-sm">
-                      {invoice.dueDate ? formatDate(invoice.dueDate) : "\u2014"}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-sm">
-                      {formatCurrency(invoice.total, invoice.currency)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-block rounded-full px-2 py-1 text-xs ${
-                          statusColors[invoice.status] || statusColors.draft
-                        }`}
-                      >
-                        {invoice.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <DataTable
+            data={filteredInvoices}
+            columns={columns}
+            sorting={sorting}
+            onSortingChange={setSorting}
+            minWidth="800px"
+            emptyState={
+              <div className="py-12 text-center">
+                <p className="text-muted-foreground">
+                  No invoices match your filters
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate({
+                      search: {
+                        search: "",
+                        status: "all",
+                        sortBy: undefined,
+                        sortDir: undefined,
+                      },
+                    })
+                  }
+                  className="mt-2 text-primary-600 text-sm hover:text-primary-700"
+                >
+                  Clear filters
+                </button>
+              </div>
+            }
+          />
         </div>
       )}
 
