@@ -31,6 +31,13 @@ describe("sortingFromSearch", () => {
     ]);
     expect(result).toEqual([{ id: "issueDate", desc: true }]);
   });
+
+  it("falls back to default when only sortDir is set", () => {
+    const result = sortingFromSearch({ sortBy: undefined, sortDir: "asc" }, [
+      { id: "issueDate", desc: true },
+    ]);
+    expect(result).toEqual([{ id: "issueDate", desc: true }]);
+  });
 });
 
 describe("searchFromSorting", () => {
@@ -53,5 +60,21 @@ describe("searchFromSorting", () => {
   it("returns undefined params for empty sorting", () => {
     const result = searchFromSorting([], [{ id: "issueDate", desc: true }]);
     expect(result).toEqual({ sortBy: undefined, sortDir: undefined });
+  });
+
+  it("returns explicit desc params for non-default column", () => {
+    const result = searchFromSorting(
+      [{ id: "total", desc: true }],
+      [{ id: "issueDate", desc: true }],
+    );
+    expect(result).toEqual({ sortBy: "total", sortDir: "desc" });
+  });
+
+  it("returns explicit params when only direction differs from default", () => {
+    const result = searchFromSorting(
+      [{ id: "issueDate", desc: false }],
+      [{ id: "issueDate", desc: true }],
+    );
+    expect(result).toEqual({ sortBy: "issueDate", sortDir: "asc" });
   });
 });
