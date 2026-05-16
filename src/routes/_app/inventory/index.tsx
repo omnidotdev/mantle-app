@@ -1,27 +1,42 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { Edit, Eye, Loader2, Package, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { DataTable } from "@/components/ui/data-table";
+import { inventoryListSearchSchema } from "@/features/inventory/searchParams";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import {
   useAllProductsQuery,
   useDeleteProductMutation,
 } from "@/generated/graphql";
+import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import type { Product } from "@/features/inventory/types/product";
+
+const DEFAULT_SORTING: SortingState = [{ id: "name", desc: false }];
 
 const InventoryPage = () => {
   const { organizationId } = Route.useRouteContext();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
   }>({ open: false, id: "" });
+
+  const [sorting, setSorting] = useUrlSort({
+    search,
+    defaultSorting: DEFAULT_SORTING,
+    navigate,
+  });
 
   const { data: productsData, isLoading } = useAllProductsQuery(
     { organizationId: organizationId ?? "" },
@@ -104,6 +119,8 @@ const InventoryPage = () => {
 
       <ProductsTable
         products={products}
+        sorting={sorting}
+        onSortingChange={setSorting}
         onDelete={(id) => setDeleteConfirm({ open: true, id })}
       />
 
@@ -132,119 +149,140 @@ const InventoryPage = () => {
 
 const ProductsTable = ({
   products,
+  sorting,
+  onSortingChange,
   onDelete,
 }: {
   products: Product[];
+  sorting: SortingState;
+  onSortingChange: ReturnType<typeof useUrlSort>[1];
   onDelete: (id: string) => void;
 }) => {
-  if (products.length === 0) {
-    return (
-      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
-        <Package size={32} className="mx-auto mb-2 text-muted-foreground" />
-        <p className="mb-4 text-muted-foreground">No products yet</p>
-        <Link
-          to="/inventory/new"
-          className="text-primary-600 hover:text-primary-700"
-        >
-          Add your first product
-        </Link>
-      </div>
-    );
-  }
+  const columns = useMemo<ColumnDef<Product>[]>(
+    () => [
+      {
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const product = row.original;
+          return (
+            <div className="flex gap-2">
+              <Link
+                to="/inventory/$productId"
+                params={{ productId: product.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="View product details"
+              >
+                <Eye size={16} />
+              </Link>
+              <Link
+                to="/inventory/$productId/edit"
+                params={{ productId: product.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Edit product"
+              >
+                <Edit size={16} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => onDelete(product.id)}
+                className="text-destructive hover:text-destructive/80"
+                aria-label="Delete product"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        id: "name",
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue<string>()}</span>
+        ),
+      },
+      {
+        id: "sku",
+        accessorKey: "sku",
+        header: "SKU",
+        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+      },
+      {
+        id: "unitPrice",
+        accessorFn: (row) =>
+          row.unitPrice ? Number.parseFloat(row.unitPrice) : 0,
+        header: "Unit Price",
+        cell: ({ row }) =>
+          row.original.unitPrice ? formatCurrency(row.original.unitPrice) : "—",
+      },
+      {
+        id: "currentQuantity",
+        accessorKey: "currentQuantity",
+        header: "Quantity",
+        cell: ({ row }) => {
+          const product = row.original;
+          const lowStock =
+            product.lowStockThreshold != null &&
+            product.currentQuantity <= product.lowStockThreshold;
+          return (
+            <span
+              className={
+                lowStock
+                  ? "font-medium text-destructive"
+                  : "font-medium text-emerald-600 dark:text-emerald-400"
+              }
+            >
+              {product.currentQuantity}
+            </span>
+          );
+        },
+      },
+      {
+        id: "isActive",
+        accessorKey: "isActive",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const isActive = getValue<boolean>();
+          return (
+            <Badge variant={isActive ? "solid" : "outline"} className="text-xs">
+              {isActive ? "Active" : "Inactive"}
+            </Badge>
+          );
+        },
+      },
+    ],
+    [onDelete],
+  );
 
   return (
     <div className="overflow-x-auto rounded-lg border border-border bg-card">
-      <table className="w-full min-w-[700px]">
-        <thead className="bg-muted">
-          <tr>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Actions
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Name
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              SKU
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Unit Price
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Quantity
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id} className="border-border border-t">
-              <td className="px-4 py-3">
-                <div className="flex gap-2">
-                  <Link
-                    to="/inventory/$productId"
-                    params={{ productId: product.id }}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="View product details"
-                  >
-                    <Eye size={16} />
-                  </Link>
-                  <Link
-                    to="/inventory/$productId/edit"
-                    params={{ productId: product.id }}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="Edit product"
-                  >
-                    <Edit size={16} />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(product.id)}
-                    className="text-destructive hover:text-destructive/80"
-                    aria-label="Delete product"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </td>
-              <td className="px-4 py-3 font-medium text-sm">{product.name}</td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {product.sku ?? "\u2014"}
-              </td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {product.unitPrice
-                  ? formatCurrency(product.unitPrice)
-                  : "\u2014"}
-              </td>
-              <td className="px-4 py-3 text-sm">
-                <span
-                  className={
-                    product.lowStockThreshold != null &&
-                    product.currentQuantity <= product.lowStockThreshold
-                      ? "font-medium text-destructive"
-                      : "font-medium text-emerald-600 dark:text-emerald-400"
-                  }
-                >
-                  {product.currentQuantity}
-                </span>
-              </td>
-              <td className="px-4 py-3">
-                <Badge
-                  variant={product.isActive ? "solid" : "outline"}
-                  className="text-xs"
-                >
-                  {product.isActive ? "Active" : "Inactive"}
-                </Badge>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        data={products}
+        columns={columns}
+        sorting={sorting}
+        onSortingChange={onSortingChange}
+        minWidth="700px"
+        emptyState={
+          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+            <Package size={32} className="mx-auto mb-2 text-muted-foreground" />
+            <p className="mb-4 text-muted-foreground">No products yet</p>
+            <Link
+              to="/inventory/new"
+              className="text-primary-600 hover:text-primary-700"
+            >
+              Add your first product
+            </Link>
+          </div>
+        }
+      />
     </div>
   );
 };
 
 export const Route = createFileRoute("/_app/inventory/")({
   component: InventoryPage,
+  validateSearch: zodValidator(inventoryListSearchSchema),
 });
