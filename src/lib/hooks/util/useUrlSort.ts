@@ -3,8 +3,8 @@ import { useCallback } from "react";
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
 
 type SortSearch = {
-  sortBy: string | undefined;
-  sortDir: "asc" | "desc" | undefined;
+  sortBy?: string | undefined;
+  sortDir?: "asc" | "desc" | undefined;
 };
 
 const sortingFromSearch = (
