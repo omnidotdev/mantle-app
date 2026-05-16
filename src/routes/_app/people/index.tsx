@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { DataTable } from "@/components/ui/data-table";
 import {
   TabsContent,
   TabsList,
@@ -33,17 +34,21 @@ import {
   useDeleteCompanyMutation,
   useDeletePersonMutation,
 } from "@/generated/graphql";
+import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import type { ActiveTab } from "@/features/people/store/peopleStore";
 import type { Company, Person } from "@/features/people/types";
 
+const COMPANIES_DEFAULT_SORTING: SortingState = [{ id: "name", desc: false }];
+const CONTACTS_DEFAULT_SORTING: SortingState = [
+  { id: "lastName", desc: false },
+];
+
 const PeoplePage = () => {
   const { organizationId } = Route.useRouteContext();
-  const {
-    tab: activeTab,
-    search: searchTerm,
-    type: typeFilter,
-  } = Route.useSearch();
+  const search = Route.useSearch();
+  const { tab: activeTab, search: searchTerm, type: typeFilter } = search;
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
@@ -170,7 +175,7 @@ const PeoplePage = () => {
           <p className="mt-1 text-muted-foreground text-sm">
             {companies.length}{" "}
             {companies.length === 1 ? "company" : "companies"}
-            {" \u00b7 "}
+            {" · "}
             {people.length} {people.length === 1 ? "contact" : "contacts"}
           </p>
         </div>
@@ -203,7 +208,12 @@ const PeoplePage = () => {
         value={activeTab}
         onValueChange={(details) =>
           navigate({
-            search: (prev) => ({ ...prev, tab: details.value as ActiveTab }),
+            search: (prev) => ({
+              ...prev,
+              tab: details.value as ActiveTab,
+              sortBy: undefined,
+              sortDir: undefined,
+            }),
           })
         }
       >
@@ -223,29 +233,37 @@ const PeoplePage = () => {
         </TabsList>
 
         <TabsContent value="companies">
-          <CompaniesTable
-            companies={companies}
-            onDelete={(id) =>
-              setDeleteConfirm({ open: true, id, type: "company" })
-            }
-          />
+          {activeTab === "companies" && (
+            <CompaniesTable
+              companies={companies}
+              search={search}
+              navigate={navigate}
+              onDelete={(id) =>
+                setDeleteConfirm({ open: true, id, type: "company" })
+              }
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="contacts">
-          <ContactsTable
-            people={people}
-            searchTerm={searchTerm}
-            typeFilter={typeFilter}
-            onSearchChange={(value) =>
-              navigate({ search: (prev) => ({ ...prev, search: value }) })
-            }
-            onTypeFilterChange={(value) =>
-              navigate({ search: (prev) => ({ ...prev, type: value }) })
-            }
-            onDelete={(id) =>
-              setDeleteConfirm({ open: true, id, type: "contact" })
-            }
-          />
+          {activeTab === "contacts" && (
+            <ContactsTable
+              people={people}
+              search={search}
+              navigate={navigate}
+              searchTerm={searchTerm}
+              typeFilter={typeFilter}
+              onSearchChange={(value) =>
+                navigate({ search: (prev) => ({ ...prev, search: value }) })
+              }
+              onTypeFilterChange={(value) =>
+                navigate({ search: (prev) => ({ ...prev, type: value }) })
+              }
+              onDelete={(id) =>
+                setDeleteConfirm({ open: true, id, type: "contact" })
+              }
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="network">
@@ -299,98 +317,123 @@ const PeoplePage = () => {
   );
 };
 
+type PeopleSearch = ReturnType<typeof Route.useSearch>;
+type PeopleNavigate = ReturnType<typeof Route.useNavigate>;
+
 const CompaniesTable = ({
   companies,
+  search,
+  navigate: routeNavigate,
   onDelete,
 }: {
   companies: Company[];
+  search: PeopleSearch;
+  navigate: PeopleNavigate;
   onDelete: (id: string) => void;
 }) => {
   const navigate = useNavigate();
 
-  if (companies.length === 0) {
-    return (
-      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
-        <Building2 size={32} className="mx-auto mb-2 text-muted-foreground" />
-        <p className="mb-4 text-muted-foreground">No companies yet</p>
-        <Link
-          to="/people/companies/new"
-          className="text-primary-600 hover:text-primary-700"
-        >
-          Add your first company
-        </Link>
-      </div>
-    );
-  }
+  const [sorting, setSorting] = useUrlSort({
+    search,
+    defaultSorting: COMPANIES_DEFAULT_SORTING,
+    navigate: routeNavigate,
+  });
+
+  const columns = useMemo<ColumnDef<Company>[]>(
+    () => [
+      {
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const company = row.original;
+          return (
+            <div
+              className="flex gap-2"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+              role="presentation"
+            >
+              <Link
+                to="/people/companies/$companyId/edit"
+                params={{ companyId: company.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Edit company"
+              >
+                <Edit size={16} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => onDelete(company.id)}
+                className="text-destructive hover:text-destructive/90"
+                aria-label="Delete company"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        id: "name",
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue<string>()}</span>
+        ),
+      },
+      {
+        id: "industry",
+        accessorKey: "industry",
+        header: "Industry",
+        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+      },
+      {
+        id: "email",
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+      },
+      {
+        id: "phone",
+        accessorKey: "phone",
+        header: "Phone",
+        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+      },
+    ],
+    [onDelete],
+  );
 
   return (
     <div className="overflow-x-auto rounded-lg border border-border bg-card">
-      <table className="w-full min-w-[600px]">
-        <thead className="bg-muted">
-          <tr>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Actions
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Name
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Industry
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Email
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-              Phone
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map((company) => (
-            <tr
-              key={company.id}
-              className="cursor-pointer border-border border-t hover:bg-muted"
-              onClick={() =>
-                navigate({
-                  to: "/people/companies/$companyId/edit",
-                  params: { companyId: company.id },
-                })
-              }
+      <DataTable
+        data={companies}
+        columns={columns}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        minWidth="600px"
+        onRowClick={(company) =>
+          navigate({
+            to: "/people/companies/$companyId/edit",
+            params: { companyId: company.id },
+          })
+        }
+        emptyState={
+          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
+            <Building2
+              size={32}
+              className="mx-auto mb-2 text-muted-foreground"
+            />
+            <p className="mb-4 text-muted-foreground">No companies yet</p>
+            <Link
+              to="/people/companies/new"
+              className="text-primary-600 hover:text-primary-700"
             >
-              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                <div className="flex gap-2">
-                  <Link
-                    to="/people/companies/$companyId/edit"
-                    params={{ companyId: company.id }}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="Edit company"
-                  >
-                    <Edit size={16} />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(company.id)}
-                    className="text-destructive hover:text-destructive/90"
-                    aria-label="Delete company"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </td>
-              <td className="px-4 py-3 font-medium text-sm">{company.name}</td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {company.industry ?? "\u2014"}
-              </td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {company.email ?? "\u2014"}
-              </td>
-              <td className="px-4 py-3 text-foreground text-sm">
-                {company.phone ?? "\u2014"}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              Add your first company
+            </Link>
+          </div>
+        }
+      />
     </div>
   );
 };
@@ -461,6 +504,8 @@ const TYPE_BUTTONS: { value: ContactTypeFilter; label: string }[] = [
 
 const ContactsTable = ({
   people,
+  search,
+  navigate: routeNavigate,
   searchTerm,
   typeFilter,
   onSearchChange,
@@ -468,13 +513,21 @@ const ContactsTable = ({
   onDelete,
 }: {
   people: Person[];
+  search: PeopleSearch;
+  navigate: PeopleNavigate;
   searchTerm: string;
   typeFilter: string;
   onSearchChange: (value: string) => void;
-  onTypeFilterChange: (value: string) => void;
+  onTypeFilterChange: (value: ContactTypeFilter) => void;
   onDelete: (id: string) => void;
 }) => {
   const navigate = useNavigate();
+
+  const [sorting, setSorting] = useUrlSort({
+    search,
+    defaultSorting: CONTACTS_DEFAULT_SORTING,
+    navigate: routeNavigate,
+  });
 
   const filteredPeople = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -494,6 +547,117 @@ const ContactsTable = ({
       return matchesSearch && matchesType;
     });
   }, [people, searchTerm, typeFilter]);
+
+  const columns = useMemo<ColumnDef<Person>[]>(
+    () => [
+      {
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const person = row.original;
+          return (
+            <div
+              className="flex gap-2"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+              role="presentation"
+            >
+              {person.emails.length > 0 && (
+                <EmailActionButton
+                  emails={person.emails}
+                  name={`${person.firstName} ${person.lastName}`}
+                />
+              )}
+              <Link
+                to="/people/contacts/$contactId/edit"
+                params={{ contactId: person.id }}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Edit contact"
+              >
+                <Edit size={16} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => onDelete(person.id)}
+                className="text-destructive hover:text-destructive/90"
+                aria-label="Delete contact"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        id: "lastName",
+        accessorFn: (row) => `${row.lastName} ${row.firstName}`,
+        header: "Name",
+        cell: ({ row }) => (
+          <span className="font-medium">
+            {row.original.firstName} {row.original.lastName}
+          </span>
+        ),
+      },
+      {
+        id: "email",
+        accessorFn: (row) => row.emails[0] ?? "",
+        header: "Email",
+        cell: ({ row }) => {
+          const emails = row.original.emails;
+          if (emails.length === 0) return "—";
+          if (emails.length === 1) return emails[0];
+          return (
+            <span title={emails.join(", ")}>
+              {emails[0]}{" "}
+              <span className="text-muted-foreground">
+                +{emails.length - 1}
+              </span>
+            </span>
+          );
+        },
+      },
+      {
+        id: "phone",
+        accessorKey: "phone",
+        header: "Phone",
+        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+      },
+      {
+        id: "internal",
+        accessorKey: "internal",
+        header: "Type",
+        cell: ({ getValue }) => {
+          const internal = getValue<boolean>();
+          return (
+            <Badge variant={internal ? "solid" : "outline"} className="text-xs">
+              {internal ? "Internal" : "External"}
+            </Badge>
+          );
+        },
+      },
+      {
+        id: "tags",
+        accessorFn: (row) => row.tags?.join(", ") ?? "",
+        header: "Tags",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            {row.original.tags?.length ? (
+              row.original.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground text-sm">{"—"}</span>
+            )}
+          </div>
+        ),
+      },
+    ],
+    [onDelete],
+  );
 
   if (people.length === 0) {
     return (
@@ -545,138 +709,36 @@ const ContactsTable = ({
         </div>
       </div>
 
-      {filteredPeople.length === 0 ? (
-        <div className="py-12 text-center">
-          <p className="text-muted-foreground">
-            No contacts match your filters
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              onSearchChange("");
-              onTypeFilterChange("all");
-            }}
-            className="mt-2 text-primary-600 text-sm hover:text-primary-700"
-          >
-            Clear filters
-          </button>
-        </div>
-      ) : (
-        <table className="w-full min-w-[700px]">
-          <thead className="bg-muted">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                Actions
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                Email
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                Phone
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                Type
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-foreground text-sm">
-                Tags
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPeople.map((person) => (
-              <tr
-                key={person.id}
-                className="cursor-pointer border-border border-t hover:bg-muted"
-                onClick={() =>
-                  navigate({
-                    to: "/people/contacts/$contactId/edit",
-                    params: { contactId: person.id },
-                  })
-                }
-              >
-                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex gap-2">
-                    {person.emails.length > 0 && (
-                      <EmailActionButton
-                        emails={person.emails}
-                        name={`${person.firstName} ${person.lastName}`}
-                      />
-                    )}
-                    <Link
-                      to="/people/contacts/$contactId/edit"
-                      params={{ contactId: person.id }}
-                      className="text-muted-foreground hover:text-foreground"
-                      aria-label="Edit contact"
-                    >
-                      <Edit size={16} />
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => onDelete(person.id)}
-                      className="text-destructive hover:text-destructive/90"
-                      aria-label="Delete contact"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </td>
-                <td className="px-4 py-3 font-medium text-sm">
-                  {person.firstName} {person.lastName}
-                </td>
-                <td className="px-4 py-3 text-foreground text-sm">
-                  {person.emails.length > 0 ? (
-                    person.emails.length === 1 ? (
-                      person.emails[0]
-                    ) : (
-                      <span title={person.emails.join(", ")}>
-                        {person.emails[0]}{" "}
-                        <span className="text-muted-foreground">
-                          +{person.emails.length - 1}
-                        </span>
-                      </span>
-                    )
-                  ) : (
-                    "\u2014"
-                  )}
-                </td>
-                <td className="px-4 py-3 text-foreground text-sm">
-                  {person.phone ?? "\u2014"}
-                </td>
-                <td className="px-4 py-3">
-                  <Badge
-                    variant={person.internal ? "solid" : "outline"}
-                    className="text-xs"
-                  >
-                    {person.internal ? "Internal" : "External"}
-                  </Badge>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-wrap gap-1">
-                    {person.tags?.length ? (
-                      person.tags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {tag}
-                        </Badge>
-                      ))
-                    ) : (
-                      <span className="text-muted-foreground text-sm">
-                        {"\u2014"}
-                      </span>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <DataTable
+        data={filteredPeople}
+        columns={columns}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        minWidth="700px"
+        onRowClick={(person) =>
+          navigate({
+            to: "/people/contacts/$contactId/edit",
+            params: { contactId: person.id },
+          })
+        }
+        emptyState={
+          <div className="py-12 text-center">
+            <p className="text-muted-foreground">
+              No contacts match your filters
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                onSearchChange("");
+                onTypeFilterChange("all");
+              }}
+              className="mt-2 text-primary-600 text-sm hover:text-primary-700"
+            >
+              Clear filters
+            </button>
+          </div>
+        }
+      />
     </div>
   );
 };

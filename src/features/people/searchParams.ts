@@ -8,6 +8,10 @@ const peopleListSearchSchema = z.object({
   ).default("companies"),
   search: fallback(z.string(), "").default(""),
   type: fallback(z.enum(["all", "internal", "external"]), "all").default("all"),
+  sortBy: fallback(z.string().optional(), undefined).default(undefined),
+  sortDir: fallback(z.enum(["asc", "desc"]).optional(), undefined).default(
+    undefined,
+  ),
 });
 
 export { peopleListSearchSchema };
