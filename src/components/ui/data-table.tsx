@@ -20,7 +20,9 @@ type DataTableProps<TData> = {
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
   minWidth?: string;
+  /** Rendered in place of the entire table (including headers) when data is empty */
   emptyState?: ReactNode;
+  /** Called when a row is clicked; interactive children must call e.stopPropagation() to avoid double-fire */
   onRowClick?: (row: TData) => void;
 };
 
@@ -66,6 +68,15 @@ const DataTable = <TData,>({
               return (
                 <th
                   key={header.id}
+                  aria-sort={
+                    sortDir === "asc"
+                      ? "ascending"
+                      : sortDir === "desc"
+                        ? "descending"
+                        : canSort
+                          ? "none"
+                          : undefined
+                  }
                   className={`px-4 py-3 font-medium text-foreground text-sm ${align === "right" ? "text-right" : "text-left"}`}
                 >
                   {canSort ? (
