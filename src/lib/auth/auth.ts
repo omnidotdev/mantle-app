@@ -8,12 +8,8 @@ import {
   AUTH_BASE_URL,
   AUTH_CLIENT_ID,
   AUTH_CLIENT_SECRET,
-  AUTH_INTERNAL_URL,
   BASE_URL,
 } from "@/lib/config/env.config";
-
-import type { OrganizationClaim } from "@omnidotdev/providers/auth";
-import { createOmniOAuthConfig } from "@omnidotdev/providers/auth";
 
 const { AUTH_SECRET } = process.env;
 
@@ -49,16 +45,14 @@ if (oauthConfigs.length > 0) {
 
 plugins.push(
   customSession(async ({ user, session }) => {
-    // Try to get cached auth data (identityProviderId, organizations)
+    // Try to get cached auth data (identityProviderId)
     let identityProviderId: string | null = null;
-    let organizations: OrganizationClaim[] = [];
 
     const cachedValue = getCookie(authCache.cookieName);
     if (cachedValue) {
       const cached = await authCache.decrypt(cachedValue);
       if (cached) {
         identityProviderId = cached.identityProviderId;
-        organizations = cached.organizations;
       }
     }
 
@@ -68,7 +62,6 @@ plugins.push(
       user: {
         ...user,
         identityProviderId,
-        organizations,
       },
       session,
     };
