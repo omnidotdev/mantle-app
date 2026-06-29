@@ -1,7 +1,7 @@
+import { Badge } from "@omnidotdev/thornberry/badge";
 import { X } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { COMMON_TAGS } from "@/features/people/types";
 

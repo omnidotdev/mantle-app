@@ -1,7 +1,7 @@
+import { Badge } from "@omnidotdev/thornberry/badge";
 import { useRouteContext, useRouter } from "@tanstack/react-router";
 import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import {
   MenuContent,
   MenuItem,

@@ -1,3 +1,4 @@
+import { Badge } from "@omnidotdev/thornberry/badge";
 import {
   Outlet,
   createFileRoute,
@@ -9,7 +10,6 @@ import { FaLinkedin as LinkedinIcon } from "react-icons/fa6";
 import { LuGithub as GithubIcon } from "react-icons/lu";
 import { SiDiscord as DiscordIcon, SiX as XIcon2 } from "react-icons/si";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import signOut from "@/lib/auth/signOut";

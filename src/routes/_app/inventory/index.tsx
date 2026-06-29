@@ -1,3 +1,4 @@
+import { Badge } from "@omnidotdev/thornberry/badge";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
@@ -5,7 +6,6 @@ import { Edit, Eye, Loader2, Package, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { inventoryListSearchSchema } from "@/features/inventory/searchParams";

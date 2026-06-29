@@ -1,3 +1,9 @@
+import {
+  TabsContent,
+  TabsList,
+  TabsRoot,
+  TabsTrigger,
+} from "@omnidotdev/thornberry/tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { Download, Upload } from "lucide-react";
 import Papa from "papaparse";
@@ -9,12 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  TabsContent,
-  TabsList,
-  TabsRoot,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import {
   useAllCompaniesQuery,
   useAllPeopleQuery,

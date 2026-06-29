@@ -1,10 +1,10 @@
+import { Badge } from "@omnidotdev/thornberry/badge";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Loader2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AdjustmentLog from "@/features/inventory/components/AdjustmentLog";
