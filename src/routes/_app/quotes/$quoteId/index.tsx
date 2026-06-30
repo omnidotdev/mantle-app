@@ -50,7 +50,7 @@ const PreviewToggle = ({
 const QuotePreviewPage = () => {
   const { organizationId } = Route.useRouteContext();
   const { quoteId } = Route.useParams();
-  const { preview_type: previewType } = Route.useSearch();
+  const { previewType } = Route.useSearch();
   const navigate = Route.useNavigate();
 
   const { data, isLoading } = useAllQuotesQuery(
@@ -248,7 +248,7 @@ const QuotePreviewPage = () => {
       <div className="print-hide">
         <PreviewToggle
           value={previewType}
-          onChange={(v) => navigate({ search: { preview_type: v } })}
+          onChange={(v) => navigate({ search: { previewType: v } })}
         />
       </div>
 

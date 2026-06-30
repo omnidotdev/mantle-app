@@ -3,16 +3,16 @@ import { useCallback } from "react";
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
 
 type SortSearch = {
-  sort_by?: string | undefined;
-  sort_dir?: "asc" | "desc" | undefined;
+  sortBy?: string | undefined;
+  sortDir?: "asc" | "desc" | undefined;
 };
 
 const sortingFromSearch = (
   search: SortSearch,
   defaultSorting: SortingState,
 ): SortingState => {
-  if (!search.sort_by || !search.sort_dir) return defaultSorting;
-  return [{ id: search.sort_by, desc: search.sort_dir === "desc" }];
+  if (!search.sortBy || !search.sortDir) return defaultSorting;
+  return [{ id: search.sortBy, desc: search.sortDir === "desc" }];
 };
 
 const searchFromSorting = (
@@ -22,13 +22,13 @@ const searchFromSorting = (
   const next = sorting[0];
   const fallback = defaultSorting[0];
 
-  if (!next) return { sort_by: undefined, sort_dir: undefined };
+  if (!next) return { sortBy: undefined, sortDir: undefined };
 
   if (fallback && next.id === fallback.id && next.desc === fallback.desc) {
-    return { sort_by: undefined, sort_dir: undefined };
+    return { sortBy: undefined, sortDir: undefined };
   }
 
-  return { sort_by: next.id, sort_dir: next.desc ? "desc" : "asc" };
+  return { sortBy: next.id, sortDir: next.desc ? "desc" : "asc" };
 };
 
 type UseUrlSortArgs = {

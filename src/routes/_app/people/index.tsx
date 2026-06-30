@@ -211,8 +211,8 @@ const PeoplePage = () => {
             search: (prev) => ({
               ...prev,
               tab: details.value as ActiveTab,
-              sort_by: undefined,
-              sort_dir: undefined,
+              sortBy: undefined,
+              sortDir: undefined,
             }),
           })
         }

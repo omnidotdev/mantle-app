@@ -462,8 +462,8 @@ const QuotesListPage = () => {
                       search: {
                         search: "",
                         status: "all",
-                        sort_by: undefined,
-                        sort_dir: undefined,
+                        sortBy: undefined,
+                        sortDir: undefined,
                       },
                     })
                   }
