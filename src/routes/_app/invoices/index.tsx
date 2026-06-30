@@ -396,8 +396,8 @@ const InvoicesListPage = () => {
                       search: {
                         search: "",
                         status: "all",
-                        sortBy: undefined,
-                        sortDir: undefined,
+                        sort_by: undefined,
+                        sort_dir: undefined,
                       },
                     })
                   }

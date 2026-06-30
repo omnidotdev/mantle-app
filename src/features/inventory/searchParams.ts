@@ -2,8 +2,8 @@ import { fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
 const inventoryListSearchSchema = z.object({
-  sortBy: fallback(z.string().optional(), undefined).default(undefined),
-  sortDir: fallback(z.enum(["asc", "desc"]).optional(), undefined).default(
+  sort_by: fallback(z.string().optional(), undefined).default(undefined),
+  sort_dir: fallback(z.enum(["asc", "desc"]).optional(), undefined).default(
     undefined,
   ),
 });
