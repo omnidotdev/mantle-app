@@ -225,8 +225,6 @@ const NewQuotePage = () => {
               royaltyThreshold: item.royaltyThreshold ?? null,
               royaltyBuyoutAmount: item.royaltyBuyoutAmount ?? null,
               sortOrder: index,
-              deliverables: item.deliverables ?? null,
-              acceptanceCriteria: item.acceptanceCriteria ?? null,
             },
           },
         }),

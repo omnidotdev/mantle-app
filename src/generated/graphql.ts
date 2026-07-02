@@ -1,13 +1,13 @@
 // @ts-nocheck
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 import { useQuery, useSuspenseQuery, useInfiniteQuery, useSuspenseInfiniteQuery, useMutation, UseQueryOptions, UseSuspenseQueryOptions, UseInfiniteQueryOptions, InfiniteData, UseSuspenseInfiniteQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 import { graphqlFetch } from '@/lib/graphql/graphqlFetch';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -15,123 +15,24 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A floating point number that requires more precision than IEEE 754 binary 64 */
   BigFloat: { input: string; output: string; }
+  /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
+  /** A calendar date in YYYY-MM-DD format. */
   Date: { input: Date; output: string; }
+  /**
+   * A point in time as described by the [ISO
+   * 8601](https://en.wikipedia.org/wiki/ISO_8601) and, if it has a timezone, [RFC
+   * 3339](https://datatracker.ietf.org/doc/html/rfc3339) standards. Input values
+   * that do not conform to both ISO 8601 and RFC 3339 may be coerced, which may lead
+   * to unexpected results.
+   */
   Datetime: { input: Date; output: string; }
+  /** Represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: unknown; output: unknown; }
+  /** A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
   UUID: { input: string; output: string; }
-};
-
-export type ChannelConnection = Node & {
-  __typename?: 'ChannelConnection';
-  createdAt?: Maybe<Scalars['Datetime']['output']>;
-  credentials: Scalars['JSON']['output'];
-  externalShopId?: Maybe<Scalars['String']['output']>;
-  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
-  id: Scalars['ID']['output'];
-  lastSyncedAt?: Maybe<Scalars['Datetime']['output']>;
-  organizationId: Scalars['String']['output'];
-  provider: Scalars['String']['output'];
-  rowId: Scalars['UUID']['output'];
-  scopes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  status: Scalars['String']['output'];
-  syncConfig: Scalars['JSON']['output'];
-  updatedAt?: Maybe<Scalars['Datetime']['output']>;
-};
-
-/**
- * A condition to be used against `ChannelConnection` object types. All fields are
- * tested for equality and combined with a logical ‘and.’
- */
-export type ChannelConnectionCondition = {
-  /** Checks for equality with the object’s `organizationId` field. */
-  organizationId?: InputMaybe<Scalars['String']['input']>;
-  /** Checks for equality with the object’s `provider` field. */
-  provider?: InputMaybe<Scalars['String']['input']>;
-  /** Checks for equality with the object’s `rowId` field. */
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
-/** A connection to a list of `ChannelConnection` values. */
-export type ChannelConnectionConnection = {
-  __typename?: 'ChannelConnectionConnection';
-  /** A list of edges which contains the `ChannelConnection` and cursor to aid in pagination. */
-  edges: Array<Maybe<ChannelConnectionEdge>>;
-  /** A list of `ChannelConnection` objects. */
-  nodes: Array<Maybe<ChannelConnection>>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-  /** The count of *all* `ChannelConnection` you could get from the connection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** A `ChannelConnection` edge in the connection. */
-export type ChannelConnectionEdge = {
-  __typename?: 'ChannelConnectionEdge';
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars['Cursor']['output']>;
-  /** The `ChannelConnection` at the end of the edge. */
-  node?: Maybe<ChannelConnection>;
-};
-
-/** A filter to be used against `ChannelConnection` object types. All fields are combined with a logical ‘and.’ */
-export type ChannelConnectionFilter = {
-  /** Checks for all expressions in this list. */
-  and?: InputMaybe<Array<ChannelConnectionFilter>>;
-  /** Negates the expression. */
-  not?: InputMaybe<ChannelConnectionFilter>;
-  /** Checks for any expressions in this list. */
-  or?: InputMaybe<Array<ChannelConnectionFilter>>;
-  /** Filter by the object’s `organizationId` field. */
-  organizationId?: InputMaybe<StringFilter>;
-  /** Filter by the object’s `provider` field. */
-  provider?: InputMaybe<StringFilter>;
-  /** Filter by the object’s `rowId` field. */
-  rowId?: InputMaybe<UuidFilter>;
-};
-
-/** An input for mutations affecting `ChannelConnection` */
-export type ChannelConnectionInput = {
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  credentials?: InputMaybe<Scalars['JSON']['input']>;
-  externalShopId?: InputMaybe<Scalars['String']['input']>;
-  lastSyncedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  organizationId: Scalars['String']['input'];
-  provider: Scalars['String']['input'];
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  scopes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  status?: InputMaybe<Scalars['String']['input']>;
-  syncConfig?: InputMaybe<Scalars['JSON']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
-};
-
-/** Methods to use when ordering `ChannelConnection`. */
-export enum ChannelConnectionOrderBy {
-  Natural = 'NATURAL',
-  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
-  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
-  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
-  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
-  ProviderAsc = 'PROVIDER_ASC',
-  ProviderDesc = 'PROVIDER_DESC',
-  RowIdAsc = 'ROW_ID_ASC',
-  RowIdDesc = 'ROW_ID_DESC'
-}
-
-/** Represents an update to a `ChannelConnection`. Fields that are set will be updated. */
-export type ChannelConnectionPatch = {
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  credentials?: InputMaybe<Scalars['JSON']['input']>;
-  externalShopId?: InputMaybe<Scalars['String']['input']>;
-  lastSyncedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  organizationId?: InputMaybe<Scalars['String']['input']>;
-  provider?: InputMaybe<Scalars['String']['input']>;
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  scopes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  status?: InputMaybe<Scalars['String']['input']>;
-  syncConfig?: InputMaybe<Scalars['JSON']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
 };
 
 export type Company = Node & {
@@ -437,39 +338,6 @@ export type CompanyToManyQuoteFilter = {
   none?: InputMaybe<QuoteFilter>;
   /** Some related `Quote` matches the filter criteria. All fields are combined with a logical ‘and.’ */
   some?: InputMaybe<QuoteFilter>;
-};
-
-/** All input for the create `ChannelConnection` mutation. */
-export type CreateChannelConnectionInput = {
-  /** The `ChannelConnection` to be created by this mutation. */
-  channelConnection: ChannelConnectionInput;
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** The output of our create `ChannelConnection` mutation. */
-export type CreateChannelConnectionPayload = {
-  __typename?: 'CreateChannelConnectionPayload';
-  /** The `ChannelConnection` that was created by this mutation. */
-  channelConnection?: Maybe<ChannelConnection>;
-  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
-  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our create `ChannelConnection` mutation. */
-export type CreateChannelConnectionPayloadChannelConnectionEdgeArgs = {
-  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the create `Company` mutation. */
@@ -932,50 +800,6 @@ export type CreateSupplierPayload = {
 /** The output of our create `Supplier` mutation. */
 export type CreateSupplierPayloadSupplierEdgeArgs = {
   orderBy?: Array<SupplierOrderBy>;
-};
-
-/** All input for the `deleteChannelConnectionById` mutation. */
-export type DeleteChannelConnectionByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `ChannelConnection` to be deleted. */
-  id: Scalars['ID']['input'];
-};
-
-/** All input for the `deleteChannelConnection` mutation. */
-export type DeleteChannelConnectionInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our delete `ChannelConnection` mutation. */
-export type DeleteChannelConnectionPayload = {
-  __typename?: 'DeleteChannelConnectionPayload';
-  /** The `ChannelConnection` that was deleted by this mutation. */
-  channelConnection?: Maybe<ChannelConnection>;
-  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
-  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  deletedChannelConnectionId?: Maybe<Scalars['ID']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our delete `ChannelConnection` mutation. */
-export type DeleteChannelConnectionPayloadChannelConnectionEdgeArgs = {
-  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the `deleteCompanyById` mutation. */
@@ -2112,8 +1936,6 @@ export type InvoiceToManyInvoiceLineItemFilter = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: 'Mutation';
-  /** Creates a single `ChannelConnection`. */
-  createChannelConnection?: Maybe<CreateChannelConnectionPayload>;
   /** Creates a single `Company`. */
   createCompany?: Maybe<CreateCompanyPayload>;
   /** Creates a single `CompanyMember`. */
@@ -2142,10 +1964,6 @@ export type Mutation = {
   createQuoteLineItem?: Maybe<CreateQuoteLineItemPayload>;
   /** Creates a single `Supplier`. */
   createSupplier?: Maybe<CreateSupplierPayload>;
-  /** Deletes a single `ChannelConnection` using a unique key. */
-  deleteChannelConnection?: Maybe<DeleteChannelConnectionPayload>;
-  /** Deletes a single `ChannelConnection` using its globally unique id. */
-  deleteChannelConnectionById?: Maybe<DeleteChannelConnectionPayload>;
   /** Deletes a single `Company` using a unique key. */
   deleteCompany?: Maybe<DeleteCompanyPayload>;
   /** Deletes a single `Company` using its globally unique id. */
@@ -2203,10 +2021,6 @@ export type Mutation = {
   /** Deletes a single `Supplier` using its globally unique id. */
   deleteSupplierById?: Maybe<DeleteSupplierPayload>;
   generateDocumentNumber?: Maybe<GenerateDocumentNumberPayload>;
-  /** Updates a single `ChannelConnection` using a unique key and a patch. */
-  updateChannelConnection?: Maybe<UpdateChannelConnectionPayload>;
-  /** Updates a single `ChannelConnection` using its globally unique id and a patch. */
-  updateChannelConnectionById?: Maybe<UpdateChannelConnectionPayload>;
   /** Updates a single `Company` using a unique key and a patch. */
   updateCompany?: Maybe<UpdateCompanyPayload>;
   /** Updates a single `Company` using its globally unique id and a patch. */
@@ -2263,12 +2077,6 @@ export type Mutation = {
   updateSupplier?: Maybe<UpdateSupplierPayload>;
   /** Updates a single `Supplier` using its globally unique id and a patch. */
   updateSupplierById?: Maybe<UpdateSupplierPayload>;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationCreateChannelConnectionArgs = {
-  input: CreateChannelConnectionInput;
 };
 
 
@@ -2353,18 +2161,6 @@ export type MutationCreateQuoteLineItemArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateSupplierArgs = {
   input: CreateSupplierInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteChannelConnectionArgs = {
-  input: DeleteChannelConnectionInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteChannelConnectionByIdArgs = {
-  input: DeleteChannelConnectionByIdInput;
 };
 
 
@@ -2539,18 +2335,6 @@ export type MutationDeleteSupplierByIdArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationGenerateDocumentNumberArgs = {
   input: GenerateDocumentNumberInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateChannelConnectionArgs = {
-  input: UpdateChannelConnectionInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateChannelConnectionByIdArgs = {
-  input: UpdateChannelConnectionByIdInput;
 };
 
 
@@ -3423,12 +3207,6 @@ export type ProductToManyProductExternalLinkFilter = {
 /** The root query type which gives access points into the data universe. */
 export type Query = Node & {
   __typename?: 'Query';
-  /** Get a single `ChannelConnection`. */
-  channelConnection?: Maybe<ChannelConnection>;
-  /** Reads a single `ChannelConnection` using its globally unique `ID`. */
-  channelConnectionById?: Maybe<ChannelConnection>;
-  /** Reads and enables pagination through a set of `ChannelConnection`. */
-  channelConnections?: Maybe<ChannelConnectionConnection>;
   /** Reads and enables pagination through a set of `Company`. */
   companies?: Maybe<CompanyConnection>;
   /** Get a single `Company`. */
@@ -3522,31 +3300,6 @@ export type Query = Node & {
   supplierById?: Maybe<Supplier>;
   /** Reads and enables pagination through a set of `Supplier`. */
   suppliers?: Maybe<SupplierConnection>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryChannelConnectionArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryChannelConnectionByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryChannelConnectionsArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<ChannelConnectionCondition>;
-  filter?: InputMaybe<ChannelConnectionFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<ChannelConnectionOrderBy>>;
 };
 
 
@@ -4059,9 +3812,7 @@ export type QuoteInput = {
 
 export type QuoteLineItem = Node & {
   __typename?: 'QuoteLineItem';
-  acceptanceCriteria?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   amount: Scalars['BigFloat']['output'];
-  deliverables?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   description: Scalars['String']['output'];
   estimatedHours?: Maybe<Scalars['BigFloat']['output']>;
   hourlyRate?: Maybe<Scalars['BigFloat']['output']>;
@@ -4145,9 +3896,7 @@ export type QuoteLineItemFilter = {
 
 /** An input for mutations affecting `QuoteLineItem` */
 export type QuoteLineItemInput = {
-  acceptanceCriteria?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   amount: Scalars['BigFloat']['input'];
-  deliverables?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description: Scalars['String']['input'];
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
@@ -4183,9 +3932,7 @@ export enum QuoteLineItemOrderBy {
 
 /** Represents an update to a `QuoteLineItem`. Fields that are set will be updated. */
 export type QuoteLineItemPatch = {
-  acceptanceCriteria?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   amount?: InputMaybe<Scalars['BigFloat']['input']>;
-  deliverables?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description?: InputMaybe<Scalars['String']['input']>;
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
@@ -4517,53 +4264,6 @@ export type UuidFilter = {
   notEqualTo?: InputMaybe<Scalars['UUID']['input']>;
   /** Not included in the specified list. */
   notIn?: InputMaybe<Array<Scalars['UUID']['input']>>;
-};
-
-/** All input for the `updateChannelConnectionById` mutation. */
-export type UpdateChannelConnectionByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `ChannelConnection` to be updated. */
-  id: Scalars['ID']['input'];
-  /** An object where the defined keys will be set on the `ChannelConnection` being updated. */
-  patch: ChannelConnectionPatch;
-};
-
-/** All input for the `updateChannelConnection` mutation. */
-export type UpdateChannelConnectionInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** An object where the defined keys will be set on the `ChannelConnection` being updated. */
-  patch: ChannelConnectionPatch;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our update `ChannelConnection` mutation. */
-export type UpdateChannelConnectionPayload = {
-  __typename?: 'UpdateChannelConnectionPayload';
-  /** The `ChannelConnection` that was updated by this mutation. */
-  channelConnection?: Maybe<ChannelConnection>;
-  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
-  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our update `ChannelConnection` mutation. */
-export type UpdateChannelConnectionPayloadChannelConnectionEdgeArgs = {
-  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the `updateCompanyById` mutation. */
@@ -5224,254 +4924,891 @@ export type UpdateSupplierPayloadSupplierEdgeArgs = {
   orderBy?: Array<SupplierOrderBy>;
 };
 
+/** An input for mutations affecting `Company` */
+export type CompanyInput = {
+  addressLine1?: string | null | undefined;
+  addressLine2?: string | null | undefined;
+  city?: string | null | undefined;
+  country?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  email?: string | null | undefined;
+  industry?: string | null | undefined;
+  name: string;
+  notes?: string | null | undefined;
+  organizationId: string;
+  phone?: string | null | undefined;
+  postalCode?: string | null | undefined;
+  rowId?: string | null | undefined;
+  state?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  website?: string | null | undefined;
+};
+
+/** An input for mutations affecting `CompanyMember` */
+export type CompanyMemberInput = {
+  companyId: string;
+  createdAt?: Date | null | undefined;
+  isPrimary?: boolean | null | undefined;
+  personId: string;
+  rowId?: string | null | undefined;
+  title?: string | null | undefined;
+};
+
+/** Represents an update to a `CompanyMember`. Fields that are set will be updated. */
+export type CompanyMemberPatch = {
+  companyId?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  isPrimary?: boolean | null | undefined;
+  personId?: string | null | undefined;
+  rowId?: string | null | undefined;
+  title?: string | null | undefined;
+};
+
+/** Represents an update to a `Company`. Fields that are set will be updated. */
+export type CompanyPatch = {
+  addressLine1?: string | null | undefined;
+  addressLine2?: string | null | undefined;
+  city?: string | null | undefined;
+  country?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  email?: string | null | undefined;
+  industry?: string | null | undefined;
+  name?: string | null | undefined;
+  notes?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  phone?: string | null | undefined;
+  postalCode?: string | null | undefined;
+  rowId?: string | null | undefined;
+  state?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  website?: string | null | undefined;
+};
+
+/** All input for the create `Company` mutation. */
+export type CreateCompanyInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `Company` to be created by this mutation. */
+  company: CompanyInput;
+};
+
+/** All input for the create `CompanyMember` mutation. */
+export type CreateCompanyMemberInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `CompanyMember` to be created by this mutation. */
+  companyMember: CompanyMemberInput;
+};
+
+/** All input for the create `DocumentNumberingConfig` mutation. */
+export type CreateDocumentNumberingConfigInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `DocumentNumberingConfig` to be created by this mutation. */
+  documentNumberingConfig: DocumentNumberingConfigInput;
+};
+
+/** All input for the create `InventoryAdjustment` mutation. */
+export type CreateInventoryAdjustmentInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `InventoryAdjustment` to be created by this mutation. */
+  inventoryAdjustment: InventoryAdjustmentInput;
+};
+
+/** All input for the create `Invoice` mutation. */
+export type CreateInvoiceInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `Invoice` to be created by this mutation. */
+  invoice: InvoiceInput;
+};
+
+/** All input for the create `InvoiceLineItem` mutation. */
+export type CreateInvoiceLineItemInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `InvoiceLineItem` to be created by this mutation. */
+  invoiceLineItem: InvoiceLineItemInput;
+};
+
+/** All input for the create `Person` mutation. */
+export type CreatePersonInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `Person` to be created by this mutation. */
+  person: PersonInput;
+};
+
+/** All input for the create `Product` mutation. */
+export type CreateProductInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `Product` to be created by this mutation. */
+  product: ProductInput;
+};
+
+/** All input for the create `Quote` mutation. */
+export type CreateQuoteInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `Quote` to be created by this mutation. */
+  quote: QuoteInput;
+};
+
+/** All input for the create `QuoteLineItem` mutation. */
+export type CreateQuoteLineItemInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `QuoteLineItem` to be created by this mutation. */
+  quoteLineItem: QuoteLineItemInput;
+};
+
+/** All input for the `deleteCompany` mutation. */
+export type DeleteCompanyInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteCompanyMember` mutation. */
+export type DeleteCompanyMemberInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteInvoice` mutation. */
+export type DeleteInvoiceInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteInvoiceLineItem` mutation. */
+export type DeleteInvoiceLineItemInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deletePerson` mutation. */
+export type DeletePersonInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteProduct` mutation. */
+export type DeleteProductInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteQuote` mutation. */
+export type DeleteQuoteInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteQuoteLineItem` mutation. */
+export type DeleteQuoteLineItemInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** An input for mutations affecting `DocumentNumberingConfig` */
+export type DocumentNumberingConfigInput = {
+  createdAt?: Date | null | undefined;
+  dateFormat?: string | null | undefined;
+  documentType: string;
+  globalPrefix?: string | null | undefined;
+  idStrategy?: string | null | undefined;
+  nextSequentialNumber?: number | null | undefined;
+  organizationId: string;
+  prefix?: string | null | undefined;
+  randomLength?: number | null | undefined;
+  rowId?: string | null | undefined;
+  separator?: string | null | undefined;
+  sequentialPadding?: number | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
+/** Represents an update to a `DocumentNumberingConfig`. Fields that are set will be updated. */
+export type DocumentNumberingConfigPatch = {
+  createdAt?: Date | null | undefined;
+  dateFormat?: string | null | undefined;
+  documentType?: string | null | undefined;
+  globalPrefix?: string | null | undefined;
+  idStrategy?: string | null | undefined;
+  nextSequentialNumber?: number | null | undefined;
+  organizationId?: string | null | undefined;
+  prefix?: string | null | undefined;
+  randomLength?: number | null | undefined;
+  rowId?: string | null | undefined;
+  separator?: string | null | undefined;
+  sequentialPadding?: number | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
+export type GenerateDocumentNumberInput = {
+  documentType: string;
+  idStrategy?: string | null | undefined;
+  organizationId: string;
+};
+
+/** An input for mutations affecting `InventoryAdjustment` */
+export type InventoryAdjustmentInput = {
+  createdAt?: Date | null | undefined;
+  productId: string;
+  quantityChange: number;
+  reason: string;
+  referenceId?: string | null | undefined;
+  rowId?: string | null | undefined;
+};
+
+/** An input for mutations affecting `Invoice` */
+export type InvoiceInput = {
+  billTo?: string | null | undefined;
+  companyId?: string | null | undefined;
+  contactId?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  currency?: string | null | undefined;
+  dueDate?: Date | null | undefined;
+  invoiceNumber: string;
+  issueDate: Date;
+  notes?: string | null | undefined;
+  organizationId: string;
+  paidAt?: Date | null | undefined;
+  paymentLinkUrl?: string | null | undefined;
+  paymentReference?: string | null | undefined;
+  rowId?: string | null | undefined;
+  status?: string | null | undefined;
+  subtotal?: string | null | undefined;
+  taxAmount?: string | null | undefined;
+  taxRate?: string | null | undefined;
+  total?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
+/** An input for mutations affecting `InvoiceLineItem` */
+export type InvoiceLineItemInput = {
+  amount: string;
+  description: string;
+  invoiceId: string;
+  productId?: string | null | undefined;
+  quantity: string;
+  rowId?: string | null | undefined;
+  sortOrder?: number | null | undefined;
+  unitPrice: string;
+};
+
+/** Represents an update to a `Invoice`. Fields that are set will be updated. */
+export type InvoicePatch = {
+  billTo?: string | null | undefined;
+  companyId?: string | null | undefined;
+  contactId?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  currency?: string | null | undefined;
+  dueDate?: Date | null | undefined;
+  invoiceNumber?: string | null | undefined;
+  issueDate?: Date | null | undefined;
+  notes?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  paidAt?: Date | null | undefined;
+  paymentLinkUrl?: string | null | undefined;
+  paymentReference?: string | null | undefined;
+  rowId?: string | null | undefined;
+  status?: string | null | undefined;
+  subtotal?: string | null | undefined;
+  taxAmount?: string | null | undefined;
+  taxRate?: string | null | undefined;
+  total?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
+/** An input for mutations affecting `Person` */
+export type PersonInput = {
+  avatarUrl?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  emailConsent?: boolean | null | undefined;
+  emails?: Array<string | null | undefined> | null | undefined;
+  firstName: string;
+  internal?: boolean | null | undefined;
+  lastName: string;
+  notes?: string | null | undefined;
+  organizationId: string;
+  phone?: string | null | undefined;
+  rowId?: string | null | undefined;
+  tags?: Array<string | null | undefined> | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
+/** Represents an update to a `Person`. Fields that are set will be updated. */
+export type PersonPatch = {
+  avatarUrl?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  emailConsent?: boolean | null | undefined;
+  emails?: Array<string | null | undefined> | null | undefined;
+  firstName?: string | null | undefined;
+  internal?: boolean | null | undefined;
+  lastName?: string | null | undefined;
+  notes?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  phone?: string | null | undefined;
+  rowId?: string | null | undefined;
+  tags?: Array<string | null | undefined> | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
+/** An input for mutations affecting `Product` */
+export type ProductInput = {
+  category1?: string | null | undefined;
+  category2?: string | null | undefined;
+  channels?: Array<string | null | undefined> | null | undefined;
+  costPrice?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  currentQuantity?: number | null | undefined;
+  description?: string | null | undefined;
+  fulfillmentType?: string | null | undefined;
+  imageUrl?: string | null | undefined;
+  imageUrl2?: string | null | undefined;
+  imageUrl3?: string | null | undefined;
+  isActive?: boolean | null | undefined;
+  isRestricted?: boolean | null | undefined;
+  lowStockThreshold?: number | null | undefined;
+  name: string;
+  organizationId: string;
+  retailPrice?: string | null | undefined;
+  rowId?: string | null | undefined;
+  sku?: string | null | undefined;
+  supplierId?: string | null | undefined;
+  supplierSku?: string | null | undefined;
+  unitPrice?: string | null | undefined;
+  upc?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  weight?: string | null | undefined;
+};
+
+/** Represents an update to a `Product`. Fields that are set will be updated. */
+export type ProductPatch = {
+  category1?: string | null | undefined;
+  category2?: string | null | undefined;
+  channels?: Array<string | null | undefined> | null | undefined;
+  costPrice?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  currentQuantity?: number | null | undefined;
+  description?: string | null | undefined;
+  fulfillmentType?: string | null | undefined;
+  imageUrl?: string | null | undefined;
+  imageUrl2?: string | null | undefined;
+  imageUrl3?: string | null | undefined;
+  isActive?: boolean | null | undefined;
+  isRestricted?: boolean | null | undefined;
+  lowStockThreshold?: number | null | undefined;
+  name?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  retailPrice?: string | null | undefined;
+  rowId?: string | null | undefined;
+  sku?: string | null | undefined;
+  supplierId?: string | null | undefined;
+  supplierSku?: string | null | undefined;
+  unitPrice?: string | null | undefined;
+  upc?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  weight?: string | null | undefined;
+};
+
+/** An input for mutations affecting `Quote` */
+export type QuoteInput = {
+  additionalItemsLabel?: string | null | undefined;
+  additionalTerms?: Array<string | null | undefined> | null | undefined;
+  clientEmail?: string | null | undefined;
+  clientName?: string | null | undefined;
+  companyId?: string | null | undefined;
+  contactId?: string | null | undefined;
+  convertedInvoiceId?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  currency?: string | null | undefined;
+  description?: string | null | undefined;
+  notes?: string | null | undefined;
+  organizationId: string;
+  projectType?: string | null | undefined;
+  quoteNumber: string;
+  rowId?: string | null | undefined;
+  status?: string | null | undefined;
+  subtotal?: string | null | undefined;
+  taxAmount?: string | null | undefined;
+  taxRate?: string | null | undefined;
+  terms?: string | null | undefined;
+  timeRange?: string | null | undefined;
+  title: string;
+  total?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  validUntil: Date;
+};
+
+/** An input for mutations affecting `QuoteLineItem` */
+export type QuoteLineItemInput = {
+  amount: string;
+  description: string;
+  estimatedHours?: string | null | undefined;
+  hourlyRate?: string | null | undefined;
+  maxCapHours?: number | null | undefined;
+  minimumBillingMinutes?: number | null | undefined;
+  monthlyCapHours?: number | null | undefined;
+  pricingType?: string | null | undefined;
+  productId?: string | null | undefined;
+  quantity: string;
+  quoteId: string;
+  rowId?: string | null | undefined;
+  royaltyBuyoutAmount?: string | null | undefined;
+  royaltyPercentage?: string | null | undefined;
+  royaltyThreshold?: string | null | undefined;
+  royaltyTimeframe?: number | null | undefined;
+  royaltyTimeframeUnit?: string | null | undefined;
+  sortOrder?: number | null | undefined;
+  subtitle?: string | null | undefined;
+  unitPrice: string;
+  weeklyCapHours?: number | null | undefined;
+};
+
+/** Represents an update to a `Quote`. Fields that are set will be updated. */
+export type QuotePatch = {
+  additionalItemsLabel?: string | null | undefined;
+  additionalTerms?: Array<string | null | undefined> | null | undefined;
+  clientEmail?: string | null | undefined;
+  clientName?: string | null | undefined;
+  companyId?: string | null | undefined;
+  contactId?: string | null | undefined;
+  convertedInvoiceId?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  currency?: string | null | undefined;
+  description?: string | null | undefined;
+  notes?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  projectType?: string | null | undefined;
+  quoteNumber?: string | null | undefined;
+  rowId?: string | null | undefined;
+  status?: string | null | undefined;
+  subtotal?: string | null | undefined;
+  taxAmount?: string | null | undefined;
+  taxRate?: string | null | undefined;
+  terms?: string | null | undefined;
+  timeRange?: string | null | undefined;
+  title?: string | null | undefined;
+  total?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  validUntil?: Date | null | undefined;
+};
+
+/** All input for the `updateCompany` mutation. */
+export type UpdateCompanyInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `Company` being updated. */
+  patch: CompanyPatch;
+  rowId: string;
+};
+
+/** All input for the `updateCompanyMember` mutation. */
+export type UpdateCompanyMemberInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `CompanyMember` being updated. */
+  patch: CompanyMemberPatch;
+  rowId: string;
+};
+
+/** All input for the `updateDocumentNumberingConfig` mutation. */
+export type UpdateDocumentNumberingConfigInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `DocumentNumberingConfig` being updated. */
+  patch: DocumentNumberingConfigPatch;
+  rowId: string;
+};
+
+/** All input for the `updateInvoice` mutation. */
+export type UpdateInvoiceInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `Invoice` being updated. */
+  patch: InvoicePatch;
+  rowId: string;
+};
+
+/** All input for the `updatePerson` mutation. */
+export type UpdatePersonInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `Person` being updated. */
+  patch: PersonPatch;
+  rowId: string;
+};
+
+/** All input for the `updateProduct` mutation. */
+export type UpdateProductInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `Product` being updated. */
+  patch: ProductPatch;
+  rowId: string;
+};
+
+/** All input for the `updateQuote` mutation. */
+export type UpdateQuoteInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `Quote` being updated. */
+  patch: QuotePatch;
+  rowId: string;
+};
+
 export type AllCompaniesQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: string;
 }>;
 
 
-export type AllCompaniesQuery = { __typename?: 'Query', companies?: { __typename?: 'CompanyConnection', nodes: Array<{ __typename?: 'Company', rowId: string, organizationId: string, name: string, website?: string | null, industry?: string | null, phone?: string | null, email?: string | null, addressLine1?: string | null, addressLine2?: string | null, city?: string | null, state?: string | null, postalCode?: string | null, country?: string | null, notes?: string | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
+export type AllCompaniesQuery = { companies: { nodes: Array<{ rowId: string, organizationId: string, name: string, website: string | null, industry: string | null, phone: string | null, email: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, notes: string | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
 
 export type CreateCompanyMutationVariables = Exact<{
   input: CreateCompanyInput;
 }>;
 
 
-export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany?: { __typename?: 'CreateCompanyPayload', company?: { __typename?: 'Company', rowId: string, name: string } | null } | null };
+export type CreateCompanyMutation = { createCompany: { company: { rowId: string, name: string } | null } | null };
 
 export type UpdateCompanyMutationVariables = Exact<{
   input: UpdateCompanyInput;
 }>;
 
 
-export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany?: { __typename?: 'UpdateCompanyPayload', company?: { __typename?: 'Company', rowId: string, name: string } | null } | null };
+export type UpdateCompanyMutation = { updateCompany: { company: { rowId: string, name: string } | null } | null };
 
 export type DeleteCompanyMutationVariables = Exact<{
   input: DeleteCompanyInput;
 }>;
 
 
-export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany?: { __typename?: 'DeleteCompanyPayload', deletedCompanyId?: string | null } | null };
+export type DeleteCompanyMutation = { deleteCompany: { deletedCompanyId: string | null } | null };
 
 export type CompanyMembersByCompanyQueryVariables = Exact<{
-  companyId: Scalars['UUID']['input'];
+  companyId: string;
 }>;
 
 
-export type CompanyMembersByCompanyQuery = { __typename?: 'Query', companyMembers?: { __typename?: 'CompanyMemberConnection', nodes: Array<{ __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null, createdAt?: string | null, person?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null } | null> } | null };
+export type CompanyMembersByCompanyQuery = { companyMembers: { nodes: Array<{ rowId: string, companyId: string, personId: string, title: string | null, isPrimary: boolean | null, createdAt: string | null, person: { rowId: string, firstName: string, lastName: string } | null } | null> } | null };
 
 export type CompanyMembersByPersonQueryVariables = Exact<{
-  personId: Scalars['UUID']['input'];
+  personId: string;
 }>;
 
 
-export type CompanyMembersByPersonQuery = { __typename?: 'Query', companyMembers?: { __typename?: 'CompanyMemberConnection', nodes: Array<{ __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null, createdAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null } | null> } | null };
+export type CompanyMembersByPersonQuery = { companyMembers: { nodes: Array<{ rowId: string, companyId: string, personId: string, title: string | null, isPrimary: boolean | null, createdAt: string | null, company: { rowId: string, name: string } | null } | null> } | null };
 
 export type CreateCompanyMemberMutationVariables = Exact<{
   input: CreateCompanyMemberInput;
 }>;
 
 
-export type CreateCompanyMemberMutation = { __typename?: 'Mutation', createCompanyMember?: { __typename?: 'CreateCompanyMemberPayload', companyMember?: { __typename?: 'CompanyMember', rowId: string, companyId: string, personId: string, title?: string | null, isPrimary?: boolean | null } | null } | null };
+export type CreateCompanyMemberMutation = { createCompanyMember: { companyMember: { rowId: string, companyId: string, personId: string, title: string | null, isPrimary: boolean | null } | null } | null };
 
 export type UpdateCompanyMemberMutationVariables = Exact<{
   input: UpdateCompanyMemberInput;
 }>;
 
 
-export type UpdateCompanyMemberMutation = { __typename?: 'Mutation', updateCompanyMember?: { __typename?: 'UpdateCompanyMemberPayload', companyMember?: { __typename?: 'CompanyMember', rowId: string, title?: string | null, isPrimary?: boolean | null } | null } | null };
+export type UpdateCompanyMemberMutation = { updateCompanyMember: { companyMember: { rowId: string, title: string | null, isPrimary: boolean | null } | null } | null };
 
 export type DeleteCompanyMemberMutationVariables = Exact<{
   input: DeleteCompanyMemberInput;
 }>;
 
 
-export type DeleteCompanyMemberMutation = { __typename?: 'Mutation', deleteCompanyMember?: { __typename?: 'DeleteCompanyMemberPayload', deletedCompanyMemberId?: string | null } | null };
+export type DeleteCompanyMemberMutation = { deleteCompanyMember: { deletedCompanyMemberId: string | null } | null };
 
 export type DocumentNumberingConfigsQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: string;
 }>;
 
 
-export type DocumentNumberingConfigsQuery = { __typename?: 'Query', documentNumberingConfigs?: { __typename?: 'DocumentNumberingConfigConnection', nodes: Array<{ __typename?: 'DocumentNumberingConfig', rowId: string, organizationId: string, documentType: string, globalPrefix?: string | null, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
+export type DocumentNumberingConfigsQuery = { documentNumberingConfigs: { nodes: Array<{ rowId: string, organizationId: string, documentType: string, globalPrefix: string | null, prefix: string, separator: string, dateFormat: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
 
 export type CreateDocumentNumberingConfigMutationVariables = Exact<{
   input: CreateDocumentNumberingConfigInput;
 }>;
 
 
-export type CreateDocumentNumberingConfigMutation = { __typename?: 'Mutation', createDocumentNumberingConfig?: { __typename?: 'CreateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, globalPrefix?: string | null, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+export type CreateDocumentNumberingConfigMutation = { createDocumentNumberingConfig: { documentNumberingConfig: { rowId: string, globalPrefix: string | null, prefix: string, separator: string, dateFormat: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
 
 export type UpdateDocumentNumberingConfigMutationVariables = Exact<{
   input: UpdateDocumentNumberingConfigInput;
 }>;
 
 
-export type UpdateDocumentNumberingConfigMutation = { __typename?: 'Mutation', updateDocumentNumberingConfig?: { __typename?: 'UpdateDocumentNumberingConfigPayload', documentNumberingConfig?: { __typename?: 'DocumentNumberingConfig', rowId: string, globalPrefix?: string | null, prefix: string, separator: string, dateFormat?: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+export type UpdateDocumentNumberingConfigMutation = { updateDocumentNumberingConfig: { documentNumberingConfig: { rowId: string, globalPrefix: string | null, prefix: string, separator: string, dateFormat: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
 
 export type GenerateDocumentNumberMutationVariables = Exact<{
   input: GenerateDocumentNumberInput;
 }>;
 
 
-export type GenerateDocumentNumberMutation = { __typename?: 'Mutation', generateDocumentNumber?: { __typename?: 'GenerateDocumentNumberPayload', documentNumber: string } | null };
+export type GenerateDocumentNumberMutation = { generateDocumentNumber: { documentNumber: string } | null };
 
 export type AllInvoicesQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: string;
 }>;
 
 
-export type AllInvoicesQuery = { __typename?: 'Query', invoices?: { __typename?: 'InvoiceConnection', nodes: Array<{ __typename?: 'Invoice', rowId: string, organizationId: string, invoiceNumber: string, companyId?: string | null, contactId?: string | null, billTo?: string | null, status: string, issueDate: string, dueDate?: string | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, paidAt?: string | null, paymentReference?: string | null, paymentLinkUrl?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { __typename?: 'InvoiceLineItemConnection', nodes: Array<{ __typename?: 'InvoiceLineItem', rowId: string, invoiceId: string, productId?: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder?: number | null } | null> } } | null> } | null };
+export type AllInvoicesQuery = { invoices: { nodes: Array<{ rowId: string, organizationId: string, invoiceNumber: string, companyId: string | null, contactId: string | null, billTo: string | null, status: string, issueDate: string, dueDate: string | null, notes: string | null, subtotal: string | null, taxRate: string | null, taxAmount: string | null, total: string | null, currency: string | null, paidAt: string | null, paymentReference: string | null, paymentLinkUrl: string | null, createdAt: string | null, updatedAt: string | null, company: { rowId: string, name: string } | null, contact: { rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { nodes: Array<{ rowId: string, invoiceId: string, productId: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder: number | null } | null> } } | null> } | null };
 
 export type CreateInvoiceMutationVariables = Exact<{
   input: CreateInvoiceInput;
 }>;
 
 
-export type CreateInvoiceMutation = { __typename?: 'Mutation', createInvoice?: { __typename?: 'CreateInvoicePayload', invoice?: { __typename?: 'Invoice', rowId: string, invoiceNumber: string } | null } | null };
+export type CreateInvoiceMutation = { createInvoice: { invoice: { rowId: string, invoiceNumber: string } | null } | null };
 
 export type UpdateInvoiceMutationVariables = Exact<{
   input: UpdateInvoiceInput;
 }>;
 
 
-export type UpdateInvoiceMutation = { __typename?: 'Mutation', updateInvoice?: { __typename?: 'UpdateInvoicePayload', invoice?: { __typename?: 'Invoice', rowId: string, invoiceNumber: string } | null } | null };
+export type UpdateInvoiceMutation = { updateInvoice: { invoice: { rowId: string, invoiceNumber: string } | null } | null };
 
 export type DeleteInvoiceMutationVariables = Exact<{
   input: DeleteInvoiceInput;
 }>;
 
 
-export type DeleteInvoiceMutation = { __typename?: 'Mutation', deleteInvoice?: { __typename?: 'DeleteInvoicePayload', deletedInvoiceId?: string | null } | null };
+export type DeleteInvoiceMutation = { deleteInvoice: { deletedInvoiceId: string | null } | null };
 
 export type CreateInvoiceLineItemMutationVariables = Exact<{
   input: CreateInvoiceLineItemInput;
 }>;
 
 
-export type CreateInvoiceLineItemMutation = { __typename?: 'Mutation', createInvoiceLineItem?: { __typename?: 'CreateInvoiceLineItemPayload', invoiceLineItem?: { __typename?: 'InvoiceLineItem', rowId: string } | null } | null };
+export type CreateInvoiceLineItemMutation = { createInvoiceLineItem: { invoiceLineItem: { rowId: string } | null } | null };
 
 export type DeleteInvoiceLineItemMutationVariables = Exact<{
   input: DeleteInvoiceLineItemInput;
 }>;
 
 
-export type DeleteInvoiceLineItemMutation = { __typename?: 'Mutation', deleteInvoiceLineItem?: { __typename?: 'DeleteInvoiceLineItemPayload', deletedInvoiceLineItemId?: string | null } | null };
+export type DeleteInvoiceLineItemMutation = { deleteInvoiceLineItem: { deletedInvoiceLineItemId: string | null } | null };
 
 export type AllPeopleQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: string;
 }>;
 
 
-export type AllPeopleQuery = { __typename?: 'Query', people?: { __typename?: 'PersonConnection', nodes: Array<{ __typename?: 'Person', rowId: string, organizationId: string, firstName: string, lastName: string, emails?: Array<string | null> | null, phone?: string | null, internal: boolean, avatarUrl?: string | null, tags?: Array<string | null> | null, notes?: string | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
+export type AllPeopleQuery = { people: { nodes: Array<{ rowId: string, organizationId: string, firstName: string, lastName: string, emails: Array<string | null> | null, phone: string | null, internal: boolean, avatarUrl: string | null, tags: Array<string | null> | null, notes: string | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
 
 export type CreatePersonMutationVariables = Exact<{
   input: CreatePersonInput;
 }>;
 
 
-export type CreatePersonMutation = { __typename?: 'Mutation', createPerson?: { __typename?: 'CreatePersonPayload', person?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null } | null };
+export type CreatePersonMutation = { createPerson: { person: { rowId: string, firstName: string, lastName: string } | null } | null };
 
 export type UpdatePersonMutationVariables = Exact<{
   input: UpdatePersonInput;
 }>;
 
 
-export type UpdatePersonMutation = { __typename?: 'Mutation', updatePerson?: { __typename?: 'UpdatePersonPayload', person?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null } | null };
+export type UpdatePersonMutation = { updatePerson: { person: { rowId: string, firstName: string, lastName: string } | null } | null };
 
 export type DeletePersonMutationVariables = Exact<{
   input: DeletePersonInput;
 }>;
 
 
-export type DeletePersonMutation = { __typename?: 'Mutation', deletePerson?: { __typename?: 'DeletePersonPayload', deletedPersonId?: string | null } | null };
+export type DeletePersonMutation = { deletePerson: { deletedPersonId: string | null } | null };
 
 export type AllProductsQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: string;
 }>;
 
 
-export type AllProductsQuery = { __typename?: 'Query', products?: { __typename?: 'ProductConnection', nodes: Array<{ __typename?: 'Product', rowId: string, organizationId: string, name: string, description?: string | null, sku?: string | null, unitPrice?: string | null, currentQuantity?: number | null, lowStockThreshold?: number | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null } | null> } | null };
+export type AllProductsQuery = { products: { nodes: Array<{ rowId: string, organizationId: string, name: string, description: string | null, sku: string | null, unitPrice: string | null, currentQuantity: number | null, lowStockThreshold: number | null, isActive: boolean | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
 }>;
 
 
-export type CreateProductMutation = { __typename?: 'Mutation', createProduct?: { __typename?: 'CreateProductPayload', product?: { __typename?: 'Product', rowId: string, name: string } | null } | null };
+export type CreateProductMutation = { createProduct: { product: { rowId: string, name: string } | null } | null };
 
 export type UpdateProductMutationVariables = Exact<{
   input: UpdateProductInput;
 }>;
 
 
-export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'UpdateProductPayload', product?: { __typename?: 'Product', rowId: string, name: string } | null } | null };
+export type UpdateProductMutation = { updateProduct: { product: { rowId: string, name: string } | null } | null };
 
 export type DeleteProductMutationVariables = Exact<{
   input: DeleteProductInput;
 }>;
 
 
-export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct?: { __typename?: 'DeleteProductPayload', deletedProductId?: string | null } | null };
+export type DeleteProductMutation = { deleteProduct: { deletedProductId: string | null } | null };
 
 export type InventoryAdjustmentsQueryVariables = Exact<{
-  productId: Scalars['UUID']['input'];
+  productId: string;
 }>;
 
 
-export type InventoryAdjustmentsQuery = { __typename?: 'Query', inventoryAdjustments?: { __typename?: 'InventoryAdjustmentConnection', nodes: Array<{ __typename?: 'InventoryAdjustment', rowId: string, productId: string, quantityChange: number, reason: string, referenceId?: string | null, createdAt?: string | null } | null> } | null };
+export type InventoryAdjustmentsQuery = { inventoryAdjustments: { nodes: Array<{ rowId: string, productId: string, quantityChange: number, reason: string, referenceId: string | null, createdAt: string | null } | null> } | null };
 
 export type CreateInventoryAdjustmentMutationVariables = Exact<{
   input: CreateInventoryAdjustmentInput;
 }>;
 
 
-export type CreateInventoryAdjustmentMutation = { __typename?: 'Mutation', createInventoryAdjustment?: { __typename?: 'CreateInventoryAdjustmentPayload', inventoryAdjustment?: { __typename?: 'InventoryAdjustment', rowId: string, quantityChange: number } | null } | null };
+export type CreateInventoryAdjustmentMutation = { createInventoryAdjustment: { inventoryAdjustment: { rowId: string, quantityChange: number } | null } | null };
 
 export type AllQuotesQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: string;
 }>;
 
 
-export type AllQuotesQuery = { __typename?: 'Query', quotes?: { __typename?: 'QuoteConnection', nodes: Array<{ __typename?: 'Quote', rowId: string, organizationId: string, quoteNumber: string, companyId?: string | null, contactId?: string | null, clientName?: string | null, clientEmail?: string | null, additionalItemsLabel?: string | null, title: string, description?: string | null, status: string, validUntil: string, projectType?: string | null, timeRange?: string | null, terms?: string | null, additionalTerms?: Array<string | null> | null, notes?: string | null, subtotal?: string | null, taxRate?: string | null, taxAmount?: string | null, total?: string | null, currency?: string | null, convertedInvoiceId?: string | null, createdAt?: string | null, updatedAt?: string | null, company?: { __typename?: 'Company', rowId: string, name: string } | null, contact?: { __typename?: 'Person', rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { __typename?: 'QuoteLineItemConnection', nodes: Array<{ __typename?: 'QuoteLineItem', rowId: string, quoteId: string, productId?: string | null, description: string, subtitle?: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours?: string | null, hourlyRate?: string | null, weeklyCapHours?: number | null, monthlyCapHours?: number | null, maxCapHours?: number | null, minimumBillingMinutes?: number | null, royaltyPercentage?: string | null, royaltyTimeframe?: number | null, royaltyTimeframeUnit?: string | null, royaltyThreshold?: string | null, royaltyBuyoutAmount?: string | null, sortOrder?: number | null, deliverables?: Array<string | null> | null, acceptanceCriteria?: Array<string | null> | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { quotes: { nodes: Array<{ rowId: string, organizationId: string, quoteNumber: string, companyId: string | null, contactId: string | null, clientName: string | null, clientEmail: string | null, additionalItemsLabel: string | null, title: string, description: string | null, status: string, validUntil: string, projectType: string | null, timeRange: string | null, terms: string | null, additionalTerms: Array<string | null> | null, notes: string | null, subtotal: string | null, taxRate: string | null, taxAmount: string | null, total: string | null, currency: string | null, convertedInvoiceId: string | null, createdAt: string | null, updatedAt: string | null, company: { rowId: string, name: string } | null, contact: { rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { nodes: Array<{ rowId: string, quoteId: string, productId: string | null, description: string, subtitle: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours: string | null, hourlyRate: string | null, weeklyCapHours: number | null, monthlyCapHours: number | null, maxCapHours: number | null, minimumBillingMinutes: number | null, royaltyPercentage: string | null, royaltyTimeframe: number | null, royaltyTimeframeUnit: string | null, royaltyThreshold: string | null, royaltyBuyoutAmount: string | null, sortOrder: number | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
 }>;
 
 
-export type CreateQuoteMutation = { __typename?: 'Mutation', createQuote?: { __typename?: 'CreateQuotePayload', quote?: { __typename?: 'Quote', rowId: string, quoteNumber: string } | null } | null };
+export type CreateQuoteMutation = { createQuote: { quote: { rowId: string, quoteNumber: string } | null } | null };
 
 export type UpdateQuoteMutationVariables = Exact<{
   input: UpdateQuoteInput;
 }>;
 
 
-export type UpdateQuoteMutation = { __typename?: 'Mutation', updateQuote?: { __typename?: 'UpdateQuotePayload', quote?: { __typename?: 'Quote', rowId: string, quoteNumber: string } | null } | null };
+export type UpdateQuoteMutation = { updateQuote: { quote: { rowId: string, quoteNumber: string } | null } | null };
 
 export type DeleteQuoteMutationVariables = Exact<{
   input: DeleteQuoteInput;
 }>;
 
 
-export type DeleteQuoteMutation = { __typename?: 'Mutation', deleteQuote?: { __typename?: 'DeleteQuotePayload', deletedQuoteId?: string | null } | null };
+export type DeleteQuoteMutation = { deleteQuote: { deletedQuoteId: string | null } | null };
 
 export type CreateQuoteLineItemMutationVariables = Exact<{
   input: CreateQuoteLineItemInput;
 }>;
 
 
-export type CreateQuoteLineItemMutation = { __typename?: 'Mutation', createQuoteLineItem?: { __typename?: 'CreateQuoteLineItemPayload', quoteLineItem?: { __typename?: 'QuoteLineItem', rowId: string } | null } | null };
+export type CreateQuoteLineItemMutation = { createQuoteLineItem: { quoteLineItem: { rowId: string } | null } | null };
 
 export type DeleteQuoteLineItemMutationVariables = Exact<{
   input: DeleteQuoteLineItemInput;
 }>;
 
 
-export type DeleteQuoteLineItemMutation = { __typename?: 'Mutation', deleteQuoteLineItem?: { __typename?: 'DeleteQuoteLineItemPayload', deletedQuoteLineItemId?: string | null } | null };
+export type DeleteQuoteLineItemMutation = { deleteQuoteLineItem: { deletedQuoteLineItemId: string | null } | null };
 
 
+export class TypedDocumentString<TResult, TVariables>
+  extends String
+  implements DocumentTypeDecoration<TResult, TVariables>
+{
+  __apiType?: NonNullable<DocumentTypeDecoration<TResult, TVariables>['__apiType']>;
+  private value: string;
+  public __meta__?: Record<string, any> | undefined;
 
-export const AllCompaniesDocument = `
+  constructor(value: string, __meta__?: Record<string, any> | undefined) {
+    super(value);
+    this.value = value;
+    this.__meta__ = __meta__;
+  }
+
+  override toString(): string & DocumentTypeDecoration<TResult, TVariables> {
+    return this.value;
+  }
+}
+
+export const AllCompaniesDocument = new TypedDocumentString(`
     query AllCompanies($organizationId: String!) {
   companies(condition: {organizationId: $organizationId}) {
     nodes {
@@ -5494,7 +5831,7 @@ export const AllCompaniesDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useAllCompaniesQuery = <
       TData = AllCompaniesQuery,
@@ -5577,7 +5914,7 @@ useSuspenseInfiniteAllCompaniesQuery.getKey = (variables: AllCompaniesQueryVaria
 
 useAllCompaniesQuery.fetcher = (variables: AllCompaniesQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllCompaniesQuery, AllCompaniesQueryVariables>(AllCompaniesDocument, variables, options);
 
-export const CreateCompanyDocument = `
+export const CreateCompanyDocument = new TypedDocumentString(`
     mutation CreateCompany($input: CreateCompanyInput!) {
   createCompany(input: $input) {
     company {
@@ -5586,7 +5923,7 @@ export const CreateCompanyDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateCompanyMutation = <
       TError = unknown,
@@ -5606,7 +5943,7 @@ useCreateCompanyMutation.getKey = () => ['CreateCompany'];
 
 useCreateCompanyMutation.fetcher = (variables: CreateCompanyMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateCompanyMutation, CreateCompanyMutationVariables>(CreateCompanyDocument, variables, options);
 
-export const UpdateCompanyDocument = `
+export const UpdateCompanyDocument = new TypedDocumentString(`
     mutation UpdateCompany($input: UpdateCompanyInput!) {
   updateCompany(input: $input) {
     company {
@@ -5615,7 +5952,7 @@ export const UpdateCompanyDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdateCompanyMutation = <
       TError = unknown,
@@ -5635,13 +5972,13 @@ useUpdateCompanyMutation.getKey = () => ['UpdateCompany'];
 
 useUpdateCompanyMutation.fetcher = (variables: UpdateCompanyMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateCompanyMutation, UpdateCompanyMutationVariables>(UpdateCompanyDocument, variables, options);
 
-export const DeleteCompanyDocument = `
+export const DeleteCompanyDocument = new TypedDocumentString(`
     mutation DeleteCompany($input: DeleteCompanyInput!) {
   deleteCompany(input: $input) {
     deletedCompanyId
   }
 }
-    `;
+    `);
 
 export const useDeleteCompanyMutation = <
       TError = unknown,
@@ -5661,7 +5998,7 @@ useDeleteCompanyMutation.getKey = () => ['DeleteCompany'];
 
 useDeleteCompanyMutation.fetcher = (variables: DeleteCompanyMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteCompanyMutation, DeleteCompanyMutationVariables>(DeleteCompanyDocument, variables, options);
 
-export const CompanyMembersByCompanyDocument = `
+export const CompanyMembersByCompanyDocument = new TypedDocumentString(`
     query CompanyMembersByCompany($companyId: UUID!) {
   companyMembers(condition: {companyId: $companyId}) {
     nodes {
@@ -5679,7 +6016,7 @@ export const CompanyMembersByCompanyDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCompanyMembersByCompanyQuery = <
       TData = CompanyMembersByCompanyQuery,
@@ -5762,7 +6099,7 @@ useSuspenseInfiniteCompanyMembersByCompanyQuery.getKey = (variables: CompanyMemb
 
 useCompanyMembersByCompanyQuery.fetcher = (variables: CompanyMembersByCompanyQueryVariables, options?: RequestInit['headers']) => graphqlFetch<CompanyMembersByCompanyQuery, CompanyMembersByCompanyQueryVariables>(CompanyMembersByCompanyDocument, variables, options);
 
-export const CompanyMembersByPersonDocument = `
+export const CompanyMembersByPersonDocument = new TypedDocumentString(`
     query CompanyMembersByPerson($personId: UUID!) {
   companyMembers(condition: {personId: $personId}) {
     nodes {
@@ -5779,7 +6116,7 @@ export const CompanyMembersByPersonDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCompanyMembersByPersonQuery = <
       TData = CompanyMembersByPersonQuery,
@@ -5862,7 +6199,7 @@ useSuspenseInfiniteCompanyMembersByPersonQuery.getKey = (variables: CompanyMembe
 
 useCompanyMembersByPersonQuery.fetcher = (variables: CompanyMembersByPersonQueryVariables, options?: RequestInit['headers']) => graphqlFetch<CompanyMembersByPersonQuery, CompanyMembersByPersonQueryVariables>(CompanyMembersByPersonDocument, variables, options);
 
-export const CreateCompanyMemberDocument = `
+export const CreateCompanyMemberDocument = new TypedDocumentString(`
     mutation CreateCompanyMember($input: CreateCompanyMemberInput!) {
   createCompanyMember(input: $input) {
     companyMember {
@@ -5874,7 +6211,7 @@ export const CreateCompanyMemberDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateCompanyMemberMutation = <
       TError = unknown,
@@ -5894,7 +6231,7 @@ useCreateCompanyMemberMutation.getKey = () => ['CreateCompanyMember'];
 
 useCreateCompanyMemberMutation.fetcher = (variables: CreateCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateCompanyMemberMutation, CreateCompanyMemberMutationVariables>(CreateCompanyMemberDocument, variables, options);
 
-export const UpdateCompanyMemberDocument = `
+export const UpdateCompanyMemberDocument = new TypedDocumentString(`
     mutation UpdateCompanyMember($input: UpdateCompanyMemberInput!) {
   updateCompanyMember(input: $input) {
     companyMember {
@@ -5904,7 +6241,7 @@ export const UpdateCompanyMemberDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdateCompanyMemberMutation = <
       TError = unknown,
@@ -5924,13 +6261,13 @@ useUpdateCompanyMemberMutation.getKey = () => ['UpdateCompanyMember'];
 
 useUpdateCompanyMemberMutation.fetcher = (variables: UpdateCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateCompanyMemberMutation, UpdateCompanyMemberMutationVariables>(UpdateCompanyMemberDocument, variables, options);
 
-export const DeleteCompanyMemberDocument = `
+export const DeleteCompanyMemberDocument = new TypedDocumentString(`
     mutation DeleteCompanyMember($input: DeleteCompanyMemberInput!) {
   deleteCompanyMember(input: $input) {
     deletedCompanyMemberId
   }
 }
-    `;
+    `);
 
 export const useDeleteCompanyMemberMutation = <
       TError = unknown,
@@ -5950,7 +6287,7 @@ useDeleteCompanyMemberMutation.getKey = () => ['DeleteCompanyMember'];
 
 useDeleteCompanyMemberMutation.fetcher = (variables: DeleteCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteCompanyMemberMutation, DeleteCompanyMemberMutationVariables>(DeleteCompanyMemberDocument, variables, options);
 
-export const DocumentNumberingConfigsDocument = `
+export const DocumentNumberingConfigsDocument = new TypedDocumentString(`
     query DocumentNumberingConfigs($organizationId: String!) {
   documentNumberingConfigs(condition: {organizationId: $organizationId}) {
     nodes {
@@ -5968,7 +6305,7 @@ export const DocumentNumberingConfigsDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useDocumentNumberingConfigsQuery = <
       TData = DocumentNumberingConfigsQuery,
@@ -6051,7 +6388,7 @@ useSuspenseInfiniteDocumentNumberingConfigsQuery.getKey = (variables: DocumentNu
 
 useDocumentNumberingConfigsQuery.fetcher = (variables: DocumentNumberingConfigsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<DocumentNumberingConfigsQuery, DocumentNumberingConfigsQueryVariables>(DocumentNumberingConfigsDocument, variables, options);
 
-export const CreateDocumentNumberingConfigDocument = `
+export const CreateDocumentNumberingConfigDocument = new TypedDocumentString(`
     mutation CreateDocumentNumberingConfig($input: CreateDocumentNumberingConfigInput!) {
   createDocumentNumberingConfig(input: $input) {
     documentNumberingConfig {
@@ -6066,7 +6403,7 @@ export const CreateDocumentNumberingConfigDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateDocumentNumberingConfigMutation = <
       TError = unknown,
@@ -6086,7 +6423,7 @@ useCreateDocumentNumberingConfigMutation.getKey = () => ['CreateDocumentNumberin
 
 useCreateDocumentNumberingConfigMutation.fetcher = (variables: CreateDocumentNumberingConfigMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateDocumentNumberingConfigMutation, CreateDocumentNumberingConfigMutationVariables>(CreateDocumentNumberingConfigDocument, variables, options);
 
-export const UpdateDocumentNumberingConfigDocument = `
+export const UpdateDocumentNumberingConfigDocument = new TypedDocumentString(`
     mutation UpdateDocumentNumberingConfig($input: UpdateDocumentNumberingConfigInput!) {
   updateDocumentNumberingConfig(input: $input) {
     documentNumberingConfig {
@@ -6101,7 +6438,7 @@ export const UpdateDocumentNumberingConfigDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdateDocumentNumberingConfigMutation = <
       TError = unknown,
@@ -6121,13 +6458,13 @@ useUpdateDocumentNumberingConfigMutation.getKey = () => ['UpdateDocumentNumberin
 
 useUpdateDocumentNumberingConfigMutation.fetcher = (variables: UpdateDocumentNumberingConfigMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateDocumentNumberingConfigMutation, UpdateDocumentNumberingConfigMutationVariables>(UpdateDocumentNumberingConfigDocument, variables, options);
 
-export const GenerateDocumentNumberDocument = `
+export const GenerateDocumentNumberDocument = new TypedDocumentString(`
     mutation GenerateDocumentNumber($input: GenerateDocumentNumberInput!) {
   generateDocumentNumber(input: $input) {
     documentNumber
   }
 }
-    `;
+    `);
 
 export const useGenerateDocumentNumberMutation = <
       TError = unknown,
@@ -6147,7 +6484,7 @@ useGenerateDocumentNumberMutation.getKey = () => ['GenerateDocumentNumber'];
 
 useGenerateDocumentNumberMutation.fetcher = (variables: GenerateDocumentNumberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<GenerateDocumentNumberMutation, GenerateDocumentNumberMutationVariables>(GenerateDocumentNumberDocument, variables, options);
 
-export const AllInvoicesDocument = `
+export const AllInvoicesDocument = new TypedDocumentString(`
     query AllInvoices($organizationId: String!) {
   invoices(condition: {organizationId: $organizationId}) {
     nodes {
@@ -6195,7 +6532,7 @@ export const AllInvoicesDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useAllInvoicesQuery = <
       TData = AllInvoicesQuery,
@@ -6278,7 +6615,7 @@ useSuspenseInfiniteAllInvoicesQuery.getKey = (variables: AllInvoicesQueryVariabl
 
 useAllInvoicesQuery.fetcher = (variables: AllInvoicesQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllInvoicesQuery, AllInvoicesQueryVariables>(AllInvoicesDocument, variables, options);
 
-export const CreateInvoiceDocument = `
+export const CreateInvoiceDocument = new TypedDocumentString(`
     mutation CreateInvoice($input: CreateInvoiceInput!) {
   createInvoice(input: $input) {
     invoice {
@@ -6287,7 +6624,7 @@ export const CreateInvoiceDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateInvoiceMutation = <
       TError = unknown,
@@ -6307,7 +6644,7 @@ useCreateInvoiceMutation.getKey = () => ['CreateInvoice'];
 
 useCreateInvoiceMutation.fetcher = (variables: CreateInvoiceMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateInvoiceMutation, CreateInvoiceMutationVariables>(CreateInvoiceDocument, variables, options);
 
-export const UpdateInvoiceDocument = `
+export const UpdateInvoiceDocument = new TypedDocumentString(`
     mutation UpdateInvoice($input: UpdateInvoiceInput!) {
   updateInvoice(input: $input) {
     invoice {
@@ -6316,7 +6653,7 @@ export const UpdateInvoiceDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdateInvoiceMutation = <
       TError = unknown,
@@ -6336,13 +6673,13 @@ useUpdateInvoiceMutation.getKey = () => ['UpdateInvoice'];
 
 useUpdateInvoiceMutation.fetcher = (variables: UpdateInvoiceMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateInvoiceMutation, UpdateInvoiceMutationVariables>(UpdateInvoiceDocument, variables, options);
 
-export const DeleteInvoiceDocument = `
+export const DeleteInvoiceDocument = new TypedDocumentString(`
     mutation DeleteInvoice($input: DeleteInvoiceInput!) {
   deleteInvoice(input: $input) {
     deletedInvoiceId
   }
 }
-    `;
+    `);
 
 export const useDeleteInvoiceMutation = <
       TError = unknown,
@@ -6362,7 +6699,7 @@ useDeleteInvoiceMutation.getKey = () => ['DeleteInvoice'];
 
 useDeleteInvoiceMutation.fetcher = (variables: DeleteInvoiceMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteInvoiceMutation, DeleteInvoiceMutationVariables>(DeleteInvoiceDocument, variables, options);
 
-export const CreateInvoiceLineItemDocument = `
+export const CreateInvoiceLineItemDocument = new TypedDocumentString(`
     mutation CreateInvoiceLineItem($input: CreateInvoiceLineItemInput!) {
   createInvoiceLineItem(input: $input) {
     invoiceLineItem {
@@ -6370,7 +6707,7 @@ export const CreateInvoiceLineItemDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateInvoiceLineItemMutation = <
       TError = unknown,
@@ -6390,13 +6727,13 @@ useCreateInvoiceLineItemMutation.getKey = () => ['CreateInvoiceLineItem'];
 
 useCreateInvoiceLineItemMutation.fetcher = (variables: CreateInvoiceLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateInvoiceLineItemMutation, CreateInvoiceLineItemMutationVariables>(CreateInvoiceLineItemDocument, variables, options);
 
-export const DeleteInvoiceLineItemDocument = `
+export const DeleteInvoiceLineItemDocument = new TypedDocumentString(`
     mutation DeleteInvoiceLineItem($input: DeleteInvoiceLineItemInput!) {
   deleteInvoiceLineItem(input: $input) {
     deletedInvoiceLineItemId
   }
 }
-    `;
+    `);
 
 export const useDeleteInvoiceLineItemMutation = <
       TError = unknown,
@@ -6416,7 +6753,7 @@ useDeleteInvoiceLineItemMutation.getKey = () => ['DeleteInvoiceLineItem'];
 
 useDeleteInvoiceLineItemMutation.fetcher = (variables: DeleteInvoiceLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteInvoiceLineItemMutation, DeleteInvoiceLineItemMutationVariables>(DeleteInvoiceLineItemDocument, variables, options);
 
-export const AllPeopleDocument = `
+export const AllPeopleDocument = new TypedDocumentString(`
     query AllPeople($organizationId: String!) {
   people(condition: {organizationId: $organizationId}) {
     nodes {
@@ -6435,7 +6772,7 @@ export const AllPeopleDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useAllPeopleQuery = <
       TData = AllPeopleQuery,
@@ -6518,7 +6855,7 @@ useSuspenseInfiniteAllPeopleQuery.getKey = (variables: AllPeopleQueryVariables) 
 
 useAllPeopleQuery.fetcher = (variables: AllPeopleQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllPeopleQuery, AllPeopleQueryVariables>(AllPeopleDocument, variables, options);
 
-export const CreatePersonDocument = `
+export const CreatePersonDocument = new TypedDocumentString(`
     mutation CreatePerson($input: CreatePersonInput!) {
   createPerson(input: $input) {
     person {
@@ -6528,7 +6865,7 @@ export const CreatePersonDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreatePersonMutation = <
       TError = unknown,
@@ -6548,7 +6885,7 @@ useCreatePersonMutation.getKey = () => ['CreatePerson'];
 
 useCreatePersonMutation.fetcher = (variables: CreatePersonMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreatePersonMutation, CreatePersonMutationVariables>(CreatePersonDocument, variables, options);
 
-export const UpdatePersonDocument = `
+export const UpdatePersonDocument = new TypedDocumentString(`
     mutation UpdatePerson($input: UpdatePersonInput!) {
   updatePerson(input: $input) {
     person {
@@ -6558,7 +6895,7 @@ export const UpdatePersonDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdatePersonMutation = <
       TError = unknown,
@@ -6578,13 +6915,13 @@ useUpdatePersonMutation.getKey = () => ['UpdatePerson'];
 
 useUpdatePersonMutation.fetcher = (variables: UpdatePersonMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdatePersonMutation, UpdatePersonMutationVariables>(UpdatePersonDocument, variables, options);
 
-export const DeletePersonDocument = `
+export const DeletePersonDocument = new TypedDocumentString(`
     mutation DeletePerson($input: DeletePersonInput!) {
   deletePerson(input: $input) {
     deletedPersonId
   }
 }
-    `;
+    `);
 
 export const useDeletePersonMutation = <
       TError = unknown,
@@ -6604,7 +6941,7 @@ useDeletePersonMutation.getKey = () => ['DeletePerson'];
 
 useDeletePersonMutation.fetcher = (variables: DeletePersonMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeletePersonMutation, DeletePersonMutationVariables>(DeletePersonDocument, variables, options);
 
-export const AllProductsDocument = `
+export const AllProductsDocument = new TypedDocumentString(`
     query AllProducts($organizationId: String!) {
   products(condition: {organizationId: $organizationId}) {
     nodes {
@@ -6622,7 +6959,7 @@ export const AllProductsDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useAllProductsQuery = <
       TData = AllProductsQuery,
@@ -6705,7 +7042,7 @@ useSuspenseInfiniteAllProductsQuery.getKey = (variables: AllProductsQueryVariabl
 
 useAllProductsQuery.fetcher = (variables: AllProductsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllProductsQuery, AllProductsQueryVariables>(AllProductsDocument, variables, options);
 
-export const CreateProductDocument = `
+export const CreateProductDocument = new TypedDocumentString(`
     mutation CreateProduct($input: CreateProductInput!) {
   createProduct(input: $input) {
     product {
@@ -6714,7 +7051,7 @@ export const CreateProductDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateProductMutation = <
       TError = unknown,
@@ -6734,7 +7071,7 @@ useCreateProductMutation.getKey = () => ['CreateProduct'];
 
 useCreateProductMutation.fetcher = (variables: CreateProductMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateProductMutation, CreateProductMutationVariables>(CreateProductDocument, variables, options);
 
-export const UpdateProductDocument = `
+export const UpdateProductDocument = new TypedDocumentString(`
     mutation UpdateProduct($input: UpdateProductInput!) {
   updateProduct(input: $input) {
     product {
@@ -6743,7 +7080,7 @@ export const UpdateProductDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdateProductMutation = <
       TError = unknown,
@@ -6763,13 +7100,13 @@ useUpdateProductMutation.getKey = () => ['UpdateProduct'];
 
 useUpdateProductMutation.fetcher = (variables: UpdateProductMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateProductMutation, UpdateProductMutationVariables>(UpdateProductDocument, variables, options);
 
-export const DeleteProductDocument = `
+export const DeleteProductDocument = new TypedDocumentString(`
     mutation DeleteProduct($input: DeleteProductInput!) {
   deleteProduct(input: $input) {
     deletedProductId
   }
 }
-    `;
+    `);
 
 export const useDeleteProductMutation = <
       TError = unknown,
@@ -6789,7 +7126,7 @@ useDeleteProductMutation.getKey = () => ['DeleteProduct'];
 
 useDeleteProductMutation.fetcher = (variables: DeleteProductMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteProductMutation, DeleteProductMutationVariables>(DeleteProductDocument, variables, options);
 
-export const InventoryAdjustmentsDocument = `
+export const InventoryAdjustmentsDocument = new TypedDocumentString(`
     query InventoryAdjustments($productId: UUID!) {
   inventoryAdjustments(condition: {productId: $productId}) {
     nodes {
@@ -6802,7 +7139,7 @@ export const InventoryAdjustmentsDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useInventoryAdjustmentsQuery = <
       TData = InventoryAdjustmentsQuery,
@@ -6885,7 +7222,7 @@ useSuspenseInfiniteInventoryAdjustmentsQuery.getKey = (variables: InventoryAdjus
 
 useInventoryAdjustmentsQuery.fetcher = (variables: InventoryAdjustmentsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<InventoryAdjustmentsQuery, InventoryAdjustmentsQueryVariables>(InventoryAdjustmentsDocument, variables, options);
 
-export const CreateInventoryAdjustmentDocument = `
+export const CreateInventoryAdjustmentDocument = new TypedDocumentString(`
     mutation CreateInventoryAdjustment($input: CreateInventoryAdjustmentInput!) {
   createInventoryAdjustment(input: $input) {
     inventoryAdjustment {
@@ -6894,7 +7231,7 @@ export const CreateInventoryAdjustmentDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateInventoryAdjustmentMutation = <
       TError = unknown,
@@ -6914,7 +7251,7 @@ useCreateInventoryAdjustmentMutation.getKey = () => ['CreateInventoryAdjustment'
 
 useCreateInventoryAdjustmentMutation.fetcher = (variables: CreateInventoryAdjustmentMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateInventoryAdjustmentMutation, CreateInventoryAdjustmentMutationVariables>(CreateInventoryAdjustmentDocument, variables, options);
 
-export const AllQuotesDocument = `
+export const AllQuotesDocument = new TypedDocumentString(`
     query AllQuotes($organizationId: String!) {
   quotes(condition: {organizationId: $organizationId}) {
     nodes {
@@ -6975,14 +7312,12 @@ export const AllQuotesDocument = `
           royaltyThreshold
           royaltyBuyoutAmount
           sortOrder
-          deliverables
-          acceptanceCriteria
         }
       }
     }
   }
 }
-    `;
+    `);
 
 export const useAllQuotesQuery = <
       TData = AllQuotesQuery,
@@ -7065,7 +7400,7 @@ useSuspenseInfiniteAllQuotesQuery.getKey = (variables: AllQuotesQueryVariables) 
 
 useAllQuotesQuery.fetcher = (variables: AllQuotesQueryVariables, options?: RequestInit['headers']) => graphqlFetch<AllQuotesQuery, AllQuotesQueryVariables>(AllQuotesDocument, variables, options);
 
-export const CreateQuoteDocument = `
+export const CreateQuoteDocument = new TypedDocumentString(`
     mutation CreateQuote($input: CreateQuoteInput!) {
   createQuote(input: $input) {
     quote {
@@ -7074,7 +7409,7 @@ export const CreateQuoteDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateQuoteMutation = <
       TError = unknown,
@@ -7094,7 +7429,7 @@ useCreateQuoteMutation.getKey = () => ['CreateQuote'];
 
 useCreateQuoteMutation.fetcher = (variables: CreateQuoteMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateQuoteMutation, CreateQuoteMutationVariables>(CreateQuoteDocument, variables, options);
 
-export const UpdateQuoteDocument = `
+export const UpdateQuoteDocument = new TypedDocumentString(`
     mutation UpdateQuote($input: UpdateQuoteInput!) {
   updateQuote(input: $input) {
     quote {
@@ -7103,7 +7438,7 @@ export const UpdateQuoteDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useUpdateQuoteMutation = <
       TError = unknown,
@@ -7123,13 +7458,13 @@ useUpdateQuoteMutation.getKey = () => ['UpdateQuote'];
 
 useUpdateQuoteMutation.fetcher = (variables: UpdateQuoteMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateQuoteMutation, UpdateQuoteMutationVariables>(UpdateQuoteDocument, variables, options);
 
-export const DeleteQuoteDocument = `
+export const DeleteQuoteDocument = new TypedDocumentString(`
     mutation DeleteQuote($input: DeleteQuoteInput!) {
   deleteQuote(input: $input) {
     deletedQuoteId
   }
 }
-    `;
+    `);
 
 export const useDeleteQuoteMutation = <
       TError = unknown,
@@ -7149,7 +7484,7 @@ useDeleteQuoteMutation.getKey = () => ['DeleteQuote'];
 
 useDeleteQuoteMutation.fetcher = (variables: DeleteQuoteMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteQuoteMutation, DeleteQuoteMutationVariables>(DeleteQuoteDocument, variables, options);
 
-export const CreateQuoteLineItemDocument = `
+export const CreateQuoteLineItemDocument = new TypedDocumentString(`
     mutation CreateQuoteLineItem($input: CreateQuoteLineItemInput!) {
   createQuoteLineItem(input: $input) {
     quoteLineItem {
@@ -7157,7 +7492,7 @@ export const CreateQuoteLineItemDocument = `
     }
   }
 }
-    `;
+    `);
 
 export const useCreateQuoteLineItemMutation = <
       TError = unknown,
@@ -7177,13 +7512,13 @@ useCreateQuoteLineItemMutation.getKey = () => ['CreateQuoteLineItem'];
 
 useCreateQuoteLineItemMutation.fetcher = (variables: CreateQuoteLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateQuoteLineItemMutation, CreateQuoteLineItemMutationVariables>(CreateQuoteLineItemDocument, variables, options);
 
-export const DeleteQuoteLineItemDocument = `
+export const DeleteQuoteLineItemDocument = new TypedDocumentString(`
     mutation DeleteQuoteLineItem($input: DeleteQuoteLineItemInput!) {
   deleteQuoteLineItem(input: $input) {
     deletedQuoteLineItemId
   }
 }
-    `;
+    `);
 
 export const useDeleteQuoteLineItemMutation = <
       TError = unknown,
