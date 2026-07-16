@@ -1,7 +1,4 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
-import { useRouteContext, useRouter } from "@tanstack/react-router";
-import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
-
 import {
   MenuContent,
   MenuItem,
@@ -9,7 +6,10 @@ import {
   MenuRoot,
   MenuSeparator,
   MenuTrigger,
-} from "@/components/ui/menu";
+} from "@omnidotdev/thornberry/menu";
+import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
+
 import {
   SidebarHeader,
   SidebarMenuButton,
