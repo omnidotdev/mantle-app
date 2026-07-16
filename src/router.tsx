@@ -27,7 +27,6 @@ const getRouter = () => {
     context: {
       queryClient,
       session: null,
-      isMaintenanceMode: false,
       theme: "dark",
     },
   });

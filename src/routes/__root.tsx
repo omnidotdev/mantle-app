@@ -10,7 +10,6 @@ import { createServerFn } from "@tanstack/react-start";
 
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import app from "@/lib/config/app.config";
-import { fetchMaintenanceMode } from "@/lib/providers";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { fetchSession } from "@/server/functions/auth";
@@ -38,39 +37,23 @@ interface ExtendedSession extends Omit<Session, "user"> {
   organizations?: OrganizationClaim[];
 }
 
-const fetchSessionAndMaintenanceMode = createServerFn({
+const fetchSessionAndTheme = createServerFn({
   method: "GET",
 }).handler(async () => {
-  // Fetch session first to get user email for maintenance mode bypass evaluation
-  const { session } = await fetchSession();
+  const [{ session }, theme] = await Promise.all([fetchSession(), getTheme()]);
 
-  // Pass user context to Unleash for @omni.dev admin bypass
-  const context = session?.user?.email
-    ? { userId: session.user.id, properties: { email: session.user.email } }
-    : undefined;
-
-  const [{ isMaintenanceMode }, theme] = await Promise.all([
-    fetchMaintenanceMode({ data: context }),
-    getTheme(),
-  ]);
-
-  return { session, isMaintenanceMode, theme };
+  return { session, theme };
 });
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   session: ExtendedSession | null;
-  isMaintenanceMode: boolean;
   theme: string;
 }>()({
   beforeLoad: async () => {
-    const { session, isMaintenanceMode, theme } =
-      await fetchSessionAndMaintenanceMode();
+    const { session, theme } = await fetchSessionAndTheme();
 
-    // Skip auth when maintenance page is shown
-    if (isMaintenanceMode) return { session: null, isMaintenanceMode, theme };
-
-    return { session, isMaintenanceMode, theme };
+    return { session, theme };
   },
   head: () => ({
     meta: [
@@ -113,20 +96,6 @@ export const Route = createRootRouteWithContext<{
   errorComponent: ErrorComponent,
 });
 
-function MaintenancePage() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-base-950 to-base-900 p-8 text-base-100">
-      <div className="text-center">
-        <div className="mb-6 text-9xl">🌋</div>
-        <h1 className="mb-4 font-bold text-4xl">Beneath the Surface</h1>
-        <p className="max-w-md text-base-400 text-lg">
-          We're shifting some layers. Mantle will resurface shortly.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function ErrorComponent(props: ErrorComponentProps) {
   return (
     <RootDocument theme="dark">
@@ -139,15 +108,7 @@ function RootComponent() {
   // Keep the OAuth access token fresh while the user is idle
   useSessionRefresh(fetchSession);
 
-  const { isMaintenanceMode, theme } = useRouteContext({ from: "__root__" });
-
-  if (isMaintenanceMode) {
-    return (
-      <RootDocument theme={theme}>
-        <MaintenancePage />
-      </RootDocument>
-    );
-  }
+  const { theme } = useRouteContext({ from: "__root__" });
 
   return (
     <RootDocument theme={theme}>
