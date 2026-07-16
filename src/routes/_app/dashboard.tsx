@@ -114,6 +114,9 @@ const DashboardPage = () => {
   const isLoadingPeople = companiesLoading || peopleLoading;
   const isLoadingFinancials = invoicesLoading;
 
+  const totalInvoicedLabel = formatCurrency(totalInvoiced.toFixed(2));
+  const paidTotalLabel = formatCurrency(paidTotal.toFixed(2));
+
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -127,12 +130,12 @@ const DashboardPage = () => {
 
       {/* Stat cards */}
       <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-emerald-100 p-1.5">
+            <div className="shrink-0 rounded-md bg-emerald-100 p-1.5">
               <DollarSign className="h-4 w-4 text-emerald-700" />
             </div>
-            <span className="text-muted-foreground text-xs">
+            <span className="truncate text-muted-foreground text-xs">
               Total Invoiced
             </span>
           </div>
@@ -142,18 +145,21 @@ const DashboardPage = () => {
               aria-label="Loading"
             />
           ) : (
-            <p className="font-bold text-lg">
-              {formatCurrency(totalInvoiced.toFixed(2))}
+            <p
+              className="truncate font-bold text-base md:text-lg"
+              title={totalInvoicedLabel}
+            >
+              {totalInvoicedLabel}
             </p>
           )}
         </div>
 
-        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-emerald-100 p-1.5">
+            <div className="shrink-0 rounded-md bg-emerald-100 p-1.5">
               <TrendingUp className="h-4 w-4 text-emerald-700" />
             </div>
-            <span className="text-muted-foreground text-xs">Paid</span>
+            <span className="truncate text-muted-foreground text-xs">Paid</span>
           </div>
           {isLoadingFinancials ? (
             <Loader2
@@ -161,18 +167,23 @@ const DashboardPage = () => {
               aria-label="Loading"
             />
           ) : (
-            <p className="font-bold text-lg">
-              {formatCurrency(paidTotal.toFixed(2))}
+            <p
+              className="truncate font-bold text-base md:text-lg"
+              title={paidTotalLabel}
+            >
+              {paidTotalLabel}
             </p>
           )}
         </div>
 
-        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-primary-200 p-1.5">
+            <div className="shrink-0 rounded-md bg-primary-200 p-1.5">
               <FileText className="h-4 w-4 text-primary-800" />
             </div>
-            <span className="text-muted-foreground text-xs">Pending</span>
+            <span className="truncate text-muted-foreground text-xs">
+              Pending
+            </span>
           </div>
           {isLoadingFinancials ? (
             <Loader2
@@ -180,16 +191,20 @@ const DashboardPage = () => {
               aria-label="Loading"
             />
           ) : (
-            <p className="font-bold text-lg">{pendingCount}</p>
+            <p className="truncate font-bold text-base md:text-lg">
+              {pendingCount}
+            </p>
           )}
         </div>
 
-        <div className="volcanic-glow rounded-lg border border-border bg-card p-4">
+        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <div className="rounded-md bg-primary-100 p-1.5">
+            <div className="shrink-0 rounded-md bg-primary-100 p-1.5">
               <Users className="h-4 w-4 text-primary-700" />
             </div>
-            <span className="text-muted-foreground text-xs">People</span>
+            <span className="truncate text-muted-foreground text-xs">
+              People
+            </span>
           </div>
           {isLoadingPeople ? (
             <Loader2
@@ -198,10 +213,10 @@ const DashboardPage = () => {
             />
           ) : (
             <>
-              <p className="font-bold text-lg">
+              <p className="truncate font-bold text-base md:text-lg">
                 {companiesCount + peopleCount}
               </p>
-              <p className="text-muted-foreground text-xs">
+              <p className="truncate text-muted-foreground text-xs">
                 {companiesCount} companies, {peopleCount} contacts
               </p>
             </>
