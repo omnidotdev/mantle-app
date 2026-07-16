@@ -256,7 +256,10 @@ const InvoicePreview = ({
             <div className="mt-6 flex justify-end">
               <div
                 className="w-1/3 rounded p-3"
-                style={{ backgroundColor: accent.light }}
+                style={{
+                  backgroundColor: accent.light,
+                  color: accent.gradientFrom,
+                }}
               >
                 {hasTax && (
                   <>
