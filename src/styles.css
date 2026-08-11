@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@omnidotdev/thornberry/base.css";
 @source "../node_modules/@omnidotdev/thornberry/build";
 
 /* dark theme is screen-only; print always renders the light palette (invoices/quotes are printed as documents) */

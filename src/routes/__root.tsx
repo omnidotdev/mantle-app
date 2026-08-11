@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
+import CommandPalette from "@/components/CommandPalette";
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import app from "@/lib/config/app.config";
 import createMetaTags from "@/lib/util/createMetaTags";
@@ -113,6 +114,7 @@ function RootComponent() {
   return (
     <RootDocument theme={theme}>
       <ThemeProvider theme={theme}>
+        <CommandPalette />
         <Outlet />
       </ThemeProvider>
     </RootDocument>
