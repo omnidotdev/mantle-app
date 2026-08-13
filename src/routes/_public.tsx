@@ -1,3 +1,9 @@
+import {
+  SiDiscord as DiscordIcon,
+  SiGithub as GithubIcon,
+  SiX as XSocialIcon,
+} from "@icons-pack/react-simple-icons";
+import { AppFooter } from "@omnidotdev/thornberry/app-footer";
 import { Badge } from "@omnidotdev/thornberry/badge";
 import {
   Outlet,
@@ -6,9 +12,7 @@ import {
 } from "@tanstack/react-router";
 import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
-import { FaLinkedin as LinkedinIcon } from "react-icons/fa6";
-import { LuGithub as GithubIcon } from "react-icons/lu";
-import { SiDiscord as DiscordIcon, SiX as XIcon2 } from "react-icons/si";
+import { FaLinkedin as LinkedInIcon } from "react-icons/fa6";
 
 import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
@@ -185,78 +189,52 @@ function PublicLayout() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-border border-t bg-muted/50 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <span className="text-xl opacity-60">🌋</span>
-              <span className="text-muted-foreground text-sm">
-                Built with 🪨 by{" "}
-                <a
-                  href={appConfig.organization.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-foreground transition-colors hover:text-primary"
-                >
-                  {appConfig.organization.name}
-                </a>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-6">
-              <a
-                href={appConfig.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="text-base-400 transition-colors hover:text-primary"
-              >
-                <GithubIcon size={20} />
-              </a>
-              <a
-                href={appConfig.organization.discord}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Discord"
-                className="text-base-400 transition-colors hover:text-primary"
-              >
-                <DiscordIcon size={20} />
-              </a>
-              <a
-                href={appConfig.organization.x}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X"
-                className="text-base-400 transition-colors hover:text-primary"
-              >
-                <XIcon2 size={20} />
-              </a>
-              <a
-                href={appConfig.organization.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="text-base-400 transition-colors hover:text-primary"
-              >
-                <LinkedinIcon size={20} />
-              </a>
-            </div>
-
-            <p className="text-muted-foreground text-sm">
-              &copy; {new Date().getFullYear()}{" "}
-              <a
-                href={appConfig.organization.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground"
-              >
-                {appConfig.organization.name}
-              </a>
-              . All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <AppFooter
+        className="relative z-10 border-border border-t bg-muted/50 py-8 backdrop-blur-sm"
+        appSymbol={appConfig.icon}
+        docsUrl={appConfig.links.docs}
+        orgUrl={appConfig.organization.url}
+        socials={
+          <>
+            <a
+              href={appConfig.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="rounded p-1.5 transition-colors hover:text-foreground"
+            >
+              <GithubIcon className="size-5" />
+            </a>
+            <a
+              href={appConfig.organization.discord}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Discord"
+              className="rounded p-1.5 transition-colors hover:text-foreground"
+            >
+              <DiscordIcon className="size-5" />
+            </a>
+            <a
+              href={appConfig.organization.x}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X"
+              className="rounded p-1.5 transition-colors hover:text-foreground"
+            >
+              <XSocialIcon className="size-5" />
+            </a>
+            <a
+              href={appConfig.organization.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="rounded p-1.5 transition-colors hover:text-foreground"
+            >
+              <LinkedInIcon className="size-5" />
+            </a>
+          </>
+        }
+      />
     </div>
   );
 }

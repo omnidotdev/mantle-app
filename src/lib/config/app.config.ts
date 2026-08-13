@@ -7,6 +7,8 @@
 const app = {
   /** App name - change this to rename the product */
   name: "Mantle",
+  /** Product symbol (mirrors the Omni product catalog SSOT) */
+  icon: "🌋",
   /** App description (used in SEO meta tags) */
   description:
     "Unified business operations suite for Omni, providing a cohesive platform for managing business workflows and operations.",
@@ -17,6 +19,7 @@ const app = {
   /** Organization info */
   organization: {
     name: "Omni",
+    url: "https://omni.dev",
     website: "https://omni.dev",
     discord: "https://discord.gg/omnidotdev",
     x: "https://x.com/omnidotdev",
