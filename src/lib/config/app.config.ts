@@ -28,7 +28,7 @@ const app = {
   },
   /** External links */
   links: {
-    docs: "https://docs.omni.dev/core/mantle",
+    docs: "https://docs.omni.dev/products/mantle",
     github: "https://github.com/omnidotdev/mantle-stack",
     feedback: "https://backfeed.omni.dev/workspaces/omni/projects/mantle",
   },
