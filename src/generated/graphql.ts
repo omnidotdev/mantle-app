@@ -35,6 +35,117 @@ export type Scalars = {
   UUID: { input: string; output: string; }
 };
 
+export type ChannelConnection = Node & {
+  __typename?: 'ChannelConnection';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  credentials: Scalars['JSON']['output'];
+  externalShopId?: Maybe<Scalars['String']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  lastSyncedAt?: Maybe<Scalars['Datetime']['output']>;
+  organizationId: Scalars['String']['output'];
+  provider: Scalars['String']['output'];
+  rowId: Scalars['UUID']['output'];
+  scopes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  status: Scalars['String']['output'];
+  syncConfig: Scalars['JSON']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+/**
+ * A condition to be used against `ChannelConnection` object types. All fields are
+ * tested for equality and combined with a logical ‘and.’
+ */
+export type ChannelConnectionCondition = {
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `provider` field. */
+  provider?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `ChannelConnection` values. */
+export type ChannelConnectionConnection = {
+  __typename?: 'ChannelConnectionConnection';
+  /** A list of edges which contains the `ChannelConnection` and cursor to aid in pagination. */
+  edges: Array<Maybe<ChannelConnectionEdge>>;
+  /** A list of `ChannelConnection` objects. */
+  nodes: Array<Maybe<ChannelConnection>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `ChannelConnection` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `ChannelConnection` edge in the connection. */
+export type ChannelConnectionEdge = {
+  __typename?: 'ChannelConnectionEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `ChannelConnection` at the end of the edge. */
+  node?: Maybe<ChannelConnection>;
+};
+
+/** A filter to be used against `ChannelConnection` object types. All fields are combined with a logical ‘and.’ */
+export type ChannelConnectionFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ChannelConnectionFilter>>;
+  /** Negates the expression. */
+  not?: InputMaybe<ChannelConnectionFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ChannelConnectionFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `provider` field. */
+  provider?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `ChannelConnection` */
+export type ChannelConnectionInput = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  credentials?: InputMaybe<Scalars['JSON']['input']>;
+  externalShopId?: InputMaybe<Scalars['String']['input']>;
+  lastSyncedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  organizationId: Scalars['String']['input'];
+  provider: Scalars['String']['input'];
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  scopes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  syncConfig?: InputMaybe<Scalars['JSON']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
+/** Methods to use when ordering `ChannelConnection`. */
+export enum ChannelConnectionOrderBy {
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  ProviderAsc = 'PROVIDER_ASC',
+  ProviderDesc = 'PROVIDER_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `ChannelConnection`. Fields that are set will be updated. */
+export type ChannelConnectionPatch = {
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  credentials?: InputMaybe<Scalars['JSON']['input']>;
+  externalShopId?: InputMaybe<Scalars['String']['input']>;
+  lastSyncedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  provider?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  scopes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  syncConfig?: InputMaybe<Scalars['JSON']['input']>;
+  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+};
+
 export type Company = Node & {
   __typename?: 'Company';
   addressLine1?: Maybe<Scalars['String']['output']>;
@@ -338,6 +449,39 @@ export type CompanyToManyQuoteFilter = {
   none?: InputMaybe<QuoteFilter>;
   /** Some related `Quote` matches the filter criteria. All fields are combined with a logical ‘and.’ */
   some?: InputMaybe<QuoteFilter>;
+};
+
+/** All input for the create `ChannelConnection` mutation. */
+export type CreateChannelConnectionInput = {
+  /** The `ChannelConnection` to be created by this mutation. */
+  channelConnection: ChannelConnectionInput;
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The output of our create `ChannelConnection` mutation. */
+export type CreateChannelConnectionPayload = {
+  __typename?: 'CreateChannelConnectionPayload';
+  /** The `ChannelConnection` that was created by this mutation. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
+  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `ChannelConnection` mutation. */
+export type CreateChannelConnectionPayloadChannelConnectionEdgeArgs = {
+  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the create `Company` mutation. */
@@ -800,6 +944,50 @@ export type CreateSupplierPayload = {
 /** The output of our create `Supplier` mutation. */
 export type CreateSupplierPayloadSupplierEdgeArgs = {
   orderBy?: Array<SupplierOrderBy>;
+};
+
+/** All input for the `deleteChannelConnectionById` mutation. */
+export type DeleteChannelConnectionByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `ChannelConnection` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteChannelConnection` mutation. */
+export type DeleteChannelConnectionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `ChannelConnection` mutation. */
+export type DeleteChannelConnectionPayload = {
+  __typename?: 'DeleteChannelConnectionPayload';
+  /** The `ChannelConnection` that was deleted by this mutation. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
+  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedChannelConnectionId?: Maybe<Scalars['ID']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `ChannelConnection` mutation. */
+export type DeleteChannelConnectionPayloadChannelConnectionEdgeArgs = {
+  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the `deleteCompanyById` mutation. */
@@ -1546,6 +1734,32 @@ export type GenerateDocumentNumberPayload = {
   documentNumber: Scalars['String']['output'];
 };
 
+/** A filter to be used against Int fields. All fields are combined with a logical ‘and.’ */
+export type IntFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Scalars['Int']['input']>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Scalars['Int']['input']>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Scalars['Int']['input']>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Scalars['Int']['input']>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Scalars['Int']['input']>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Scalars['Int']['input']>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Scalars['Int']['input']>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Scalars['Int']['input']>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
 export type InventoryAdjustment = Node & {
   __typename?: 'InventoryAdjustment';
   createdAt?: Maybe<Scalars['Datetime']['output']>;
@@ -1752,6 +1966,13 @@ export type InvoiceFilter = {
   status?: InputMaybe<StringFilter>;
 };
 
+export type InvoiceHtmlPayload = {
+  __typename?: 'InvoiceHtmlPayload';
+  filename: Scalars['String']['output'];
+  html: Scalars['String']['output'];
+  invoiceNumber: Scalars['String']['output'];
+};
+
 /** An input for mutations affecting `Invoice` */
 export type InvoiceInput = {
   billTo?: InputMaybe<Scalars['String']['input']>;
@@ -1936,6 +2157,8 @@ export type InvoiceToManyInvoiceLineItemFilter = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Creates a single `ChannelConnection`. */
+  createChannelConnection?: Maybe<CreateChannelConnectionPayload>;
   /** Creates a single `Company`. */
   createCompany?: Maybe<CreateCompanyPayload>;
   /** Creates a single `CompanyMember`. */
@@ -1964,6 +2187,10 @@ export type Mutation = {
   createQuoteLineItem?: Maybe<CreateQuoteLineItemPayload>;
   /** Creates a single `Supplier`. */
   createSupplier?: Maybe<CreateSupplierPayload>;
+  /** Deletes a single `ChannelConnection` using a unique key. */
+  deleteChannelConnection?: Maybe<DeleteChannelConnectionPayload>;
+  /** Deletes a single `ChannelConnection` using its globally unique id. */
+  deleteChannelConnectionById?: Maybe<DeleteChannelConnectionPayload>;
   /** Deletes a single `Company` using a unique key. */
   deleteCompany?: Maybe<DeleteCompanyPayload>;
   /** Deletes a single `Company` using its globally unique id. */
@@ -2021,6 +2248,10 @@ export type Mutation = {
   /** Deletes a single `Supplier` using its globally unique id. */
   deleteSupplierById?: Maybe<DeleteSupplierPayload>;
   generateDocumentNumber?: Maybe<GenerateDocumentNumberPayload>;
+  /** Updates a single `ChannelConnection` using a unique key and a patch. */
+  updateChannelConnection?: Maybe<UpdateChannelConnectionPayload>;
+  /** Updates a single `ChannelConnection` using its globally unique id and a patch. */
+  updateChannelConnectionById?: Maybe<UpdateChannelConnectionPayload>;
   /** Updates a single `Company` using a unique key and a patch. */
   updateCompany?: Maybe<UpdateCompanyPayload>;
   /** Updates a single `Company` using its globally unique id and a patch. */
@@ -2077,6 +2308,12 @@ export type Mutation = {
   updateSupplier?: Maybe<UpdateSupplierPayload>;
   /** Updates a single `Supplier` using its globally unique id and a patch. */
   updateSupplierById?: Maybe<UpdateSupplierPayload>;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateChannelConnectionArgs = {
+  input: CreateChannelConnectionInput;
 };
 
 
@@ -2161,6 +2398,18 @@ export type MutationCreateQuoteLineItemArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateSupplierArgs = {
   input: CreateSupplierInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteChannelConnectionArgs = {
+  input: DeleteChannelConnectionInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteChannelConnectionByIdArgs = {
+  input: DeleteChannelConnectionByIdInput;
 };
 
 
@@ -2335,6 +2584,18 @@ export type MutationDeleteSupplierByIdArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationGenerateDocumentNumberArgs = {
   input: GenerateDocumentNumberInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateChannelConnectionArgs = {
+  input: UpdateChannelConnectionInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateChannelConnectionByIdArgs = {
+  input: UpdateChannelConnectionByIdInput;
 };
 
 
@@ -3207,6 +3468,12 @@ export type ProductToManyProductExternalLinkFilter = {
 /** The root query type which gives access points into the data universe. */
 export type Query = Node & {
   __typename?: 'Query';
+  /** Get a single `ChannelConnection`. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** Reads a single `ChannelConnection` using its globally unique `ID`. */
+  channelConnectionById?: Maybe<ChannelConnection>;
+  /** Reads and enables pagination through a set of `ChannelConnection`. */
+  channelConnections?: Maybe<ChannelConnectionConnection>;
   /** Reads and enables pagination through a set of `Company`. */
   companies?: Maybe<CompanyConnection>;
   /** Get a single `Company`. */
@@ -3237,6 +3504,12 @@ export type Query = Node & {
   invoice?: Maybe<Invoice>;
   /** Reads a single `Invoice` using its globally unique `ID`. */
   invoiceById?: Maybe<Invoice>;
+  /**
+   * Render an invoice as a self-contained HTML document suitable for
+   * print-to-PDF or embedding in an iframe. The caller must have
+   * access to the invoice's organization.
+   */
+  invoiceHtml?: Maybe<InvoiceHtmlPayload>;
   /** Get a single `InvoiceLineItem`. */
   invoiceLineItem?: Maybe<InvoiceLineItem>;
   /** Reads a single `InvoiceLineItem` using its globally unique `ID`. */
@@ -3300,6 +3573,31 @@ export type Query = Node & {
   supplierById?: Maybe<Supplier>;
   /** Reads and enables pagination through a set of `Supplier`. */
   suppliers?: Maybe<SupplierConnection>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryChannelConnectionArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryChannelConnectionByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryChannelConnectionsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ChannelConnectionCondition>;
+  filter?: InputMaybe<ChannelConnectionFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ChannelConnectionOrderBy>>;
 };
 
 
@@ -3412,6 +3710,12 @@ export type QueryInvoiceArgs = {
 /** The root query type which gives access points into the data universe. */
 export type QueryInvoiceByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryInvoiceHtmlArgs = {
+  invoiceId: Scalars['UUID']['input'];
 };
 
 
@@ -3812,7 +4116,9 @@ export type QuoteInput = {
 
 export type QuoteLineItem = Node & {
   __typename?: 'QuoteLineItem';
+  acceptanceCriteria?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   amount: Scalars['BigFloat']['output'];
+  deliverables?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   description: Scalars['String']['output'];
   estimatedHours?: Maybe<Scalars['BigFloat']['output']>;
   hourlyRate?: Maybe<Scalars['BigFloat']['output']>;
@@ -3850,6 +4156,8 @@ export type QuoteLineItemCondition = {
   quoteId?: InputMaybe<Scalars['UUID']['input']>;
   /** Checks for equality with the object’s `rowId` field. */
   rowId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `sortOrder` field. */
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** A connection to a list of `QuoteLineItem` values. */
@@ -3892,11 +4200,15 @@ export type QuoteLineItemFilter = {
   quoteId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `rowId` field. */
   rowId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `sortOrder` field. */
+  sortOrder?: InputMaybe<IntFilter>;
 };
 
 /** An input for mutations affecting `QuoteLineItem` */
 export type QuoteLineItemInput = {
+  acceptanceCriteria?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   amount: Scalars['BigFloat']['input'];
+  deliverables?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description: Scalars['String']['input'];
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
@@ -3927,12 +4239,16 @@ export enum QuoteLineItemOrderBy {
   QuoteIdAsc = 'QUOTE_ID_ASC',
   QuoteIdDesc = 'QUOTE_ID_DESC',
   RowIdAsc = 'ROW_ID_ASC',
-  RowIdDesc = 'ROW_ID_DESC'
+  RowIdDesc = 'ROW_ID_DESC',
+  SortOrderAsc = 'SORT_ORDER_ASC',
+  SortOrderDesc = 'SORT_ORDER_DESC'
 }
 
 /** Represents an update to a `QuoteLineItem`. Fields that are set will be updated. */
 export type QuoteLineItemPatch = {
+  acceptanceCriteria?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   amount?: InputMaybe<Scalars['BigFloat']['input']>;
+  deliverables?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description?: InputMaybe<Scalars['String']['input']>;
   estimatedHours?: InputMaybe<Scalars['BigFloat']['input']>;
   hourlyRate?: InputMaybe<Scalars['BigFloat']['input']>;
@@ -4264,6 +4580,53 @@ export type UuidFilter = {
   notEqualTo?: InputMaybe<Scalars['UUID']['input']>;
   /** Not included in the specified list. */
   notIn?: InputMaybe<Array<Scalars['UUID']['input']>>;
+};
+
+/** All input for the `updateChannelConnectionById` mutation. */
+export type UpdateChannelConnectionByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `ChannelConnection` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `ChannelConnection` being updated. */
+  patch: ChannelConnectionPatch;
+};
+
+/** All input for the `updateChannelConnection` mutation. */
+export type UpdateChannelConnectionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `ChannelConnection` being updated. */
+  patch: ChannelConnectionPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `ChannelConnection` mutation. */
+export type UpdateChannelConnectionPayload = {
+  __typename?: 'UpdateChannelConnectionPayload';
+  /** The `ChannelConnection` that was updated by this mutation. */
+  channelConnection?: Maybe<ChannelConnection>;
+  /** An edge for our `ChannelConnection`. May be used by Relay 1. */
+  channelConnectionEdge?: Maybe<ChannelConnectionEdge>;
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `ChannelConnection` mutation. */
+export type UpdateChannelConnectionPayloadChannelConnectionEdgeArgs = {
+  orderBy?: Array<ChannelConnectionOrderBy>;
 };
 
 /** All input for the `updateCompanyById` mutation. */
@@ -5407,7 +5770,9 @@ export type QuoteInput = {
 
 /** An input for mutations affecting `QuoteLineItem` */
 export type QuoteLineItemInput = {
+  acceptanceCriteria?: Array<string | null | undefined> | null | undefined;
   amount: string;
+  deliverables?: Array<string | null | undefined> | null | undefined;
   description: string;
   estimatedHours?: string | null | undefined;
   hourlyRate?: string | null | undefined;
@@ -5751,7 +6116,7 @@ export type AllQuotesQueryVariables = Exact<{
 }>;
 
 
-export type AllQuotesQuery = { quotes: { nodes: Array<{ rowId: string, organizationId: string, quoteNumber: string, companyId: string | null, contactId: string | null, clientName: string | null, clientEmail: string | null, additionalItemsLabel: string | null, title: string, description: string | null, status: string, validUntil: string, projectType: string | null, timeRange: string | null, terms: string | null, additionalTerms: Array<string | null> | null, notes: string | null, subtotal: string | null, taxRate: string | null, taxAmount: string | null, total: string | null, currency: string | null, convertedInvoiceId: string | null, createdAt: string | null, updatedAt: string | null, company: { rowId: string, name: string } | null, contact: { rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { nodes: Array<{ rowId: string, quoteId: string, productId: string | null, description: string, subtitle: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours: string | null, hourlyRate: string | null, weeklyCapHours: number | null, monthlyCapHours: number | null, maxCapHours: number | null, minimumBillingMinutes: number | null, royaltyPercentage: string | null, royaltyTimeframe: number | null, royaltyTimeframeUnit: string | null, royaltyThreshold: string | null, royaltyBuyoutAmount: string | null, sortOrder: number | null } | null> } } | null> } | null };
+export type AllQuotesQuery = { quotes: { nodes: Array<{ rowId: string, organizationId: string, quoteNumber: string, companyId: string | null, contactId: string | null, clientName: string | null, clientEmail: string | null, additionalItemsLabel: string | null, title: string, description: string | null, status: string, validUntil: string, projectType: string | null, timeRange: string | null, terms: string | null, additionalTerms: Array<string | null> | null, notes: string | null, subtotal: string | null, taxRate: string | null, taxAmount: string | null, total: string | null, currency: string | null, convertedInvoiceId: string | null, createdAt: string | null, updatedAt: string | null, company: { rowId: string, name: string } | null, contact: { rowId: string, firstName: string, lastName: string } | null, quoteLineItems: { nodes: Array<{ rowId: string, quoteId: string, productId: string | null, description: string, subtitle: string | null, quantity: string, unitPrice: string, amount: string, pricingType: string, estimatedHours: string | null, hourlyRate: string | null, weeklyCapHours: number | null, monthlyCapHours: number | null, maxCapHours: number | null, minimumBillingMinutes: number | null, royaltyPercentage: string | null, royaltyTimeframe: number | null, royaltyTimeframeUnit: string | null, royaltyThreshold: string | null, royaltyBuyoutAmount: string | null, sortOrder: number | null, deliverables: Array<string | null> | null, acceptanceCriteria: Array<string | null> | null } | null> } } | null> } | null };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: CreateQuoteInput;
@@ -7289,7 +7654,7 @@ export const AllQuotesDocument = new TypedDocumentString(`
         firstName
         lastName
       }
-      quoteLineItems {
+      quoteLineItems(orderBy: [SORT_ORDER_ASC]) {
         nodes {
           rowId
           quoteId
@@ -7312,6 +7677,8 @@ export const AllQuotesDocument = new TypedDocumentString(`
           royaltyThreshold
           royaltyBuyoutAmount
           sortOrder
+          deliverables
+          acceptanceCriteria
         }
       }
     }
