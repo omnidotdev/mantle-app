@@ -64,7 +64,11 @@ const ContractPreview = ({
 
   return (
     <div className="rounded-lg border border-border bg-card shadow-sm print:min-h-screen print:border-0 print:shadow-none">
-      <ContractHeader contractId={quote.quoteNumber || "CT-0001"} date={date} />
+      <ContractHeader
+        orgProfile={orgProfile}
+        contractId={quote.quoteNumber || "CT-0001"}
+        date={date}
+      />
 
       <div className="space-y-6 p-6">
         <ContractParties

@@ -5,8 +5,10 @@ import {
   getAccentVariants,
 } from "@/features/invoices/types/accentColor";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
+import { applyTermTokens } from "../types/quote";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -57,6 +59,7 @@ const QuotePreview = ({
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
+  const logo = resolveDocumentLogo(orgProfile);
 
   const accent = useMemo(
     () => getAccentVariants(orgProfile?.accentColor ?? DEFAULT_ACCENT),
@@ -277,16 +280,15 @@ const QuotePreview = ({
         }}
       >
         <div className="flex items-center gap-4">
-          <img
-            src="/omni-logo.svg"
-            alt="Omni Logo"
-            className="h-10 w-10 object-contain"
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              className="h-full w-full object-contain"
+            />
+          </div>
           <h1 className="font-bold text-white text-xl leading-tight">
-            Quote for Professional Software
-            <br />
-            Development Services
+            {quote.title || "Quote"}
           </h1>
         </div>
         <div className="text-right text-sm">
@@ -471,9 +473,10 @@ const QuotePreview = ({
             {quote.terms && (
               <ul className="mb-4 list-disc space-y-2 pl-5 text-foreground">
                 {quote.terms.split("\n").map((rawLine) => {
-                  const line = rawLine
-                    .replace("{timeRange}", quote.timeRange || "TBD")
-                    .trim();
+                  const line = applyTermTokens(rawLine, {
+                    companyName: orgProfile?.companyName,
+                    timeRange: quote.timeRange,
+                  }).trim();
                   if (!line) return null;
                   return (
                     <li key={line}>
@@ -493,18 +496,24 @@ const QuotePreview = ({
 
             {quote.additionalTerms && quote.additionalTerms.length > 0 && (
               <ul className="list-disc space-y-2 pl-5 text-foreground">
-                {quote.additionalTerms.map((term) => (
-                  <li key={term}>
-                    {term.includes(":") ? (
-                      <>
-                        <strong>{term.split(":")[0]}:</strong>
-                        {term.slice(term.indexOf(":") + 1)}
-                      </>
-                    ) : (
-                      term
-                    )}
-                  </li>
-                ))}
+                {quote.additionalTerms.map((rawTerm) => {
+                  const term = applyTermTokens(rawTerm, {
+                    companyName: orgProfile?.companyName,
+                    timeRange: quote.timeRange,
+                  });
+                  return (
+                    <li key={term}>
+                      {term.includes(":") ? (
+                        <>
+                          <strong>{term.split(":")[0]}:</strong>
+                          {term.slice(term.indexOf(":") + 1)}
+                        </>
+                      ) : (
+                        term
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
 
@@ -535,12 +544,12 @@ const QuotePreview = ({
           </p>
           <div className="flex items-center justify-center gap-2">
             <img
-              src="/omni-logo.svg"
-              alt="Omni Logo"
+              src={logo.src}
+              alt={logo.alt}
               className="h-6 w-6 object-contain"
             />
             <span className="font-bold text-foreground">
-              {orgProfile?.companyName || "Omni LLC"}
+              {orgProfile?.companyName || "Your Company"}
             </span>
           </div>
         </div>
