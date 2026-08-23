@@ -6,6 +6,13 @@ const DEFAULT_LOGO_SRC = "/omni-logo.svg";
 interface DocumentLogo {
   src: string;
   alt: string;
+  /**
+   * Whether the logo is a custom one from the profile (vs the bundled default).
+   * The default is a white-knockout asset drawn tinted directly on the gradient
+   * banner; a custom logo is drawn full color on a white chip so any brand color
+   * stays visible
+   */
+  isCustom: boolean;
 }
 
 /**
@@ -21,6 +28,7 @@ const resolveDocumentLogo = (
   return {
     src: logoUrl || DEFAULT_LOGO_SRC,
     alt: companyName ? `${companyName} logo` : "Company logo",
+    isCustom: !!logoUrl,
   };
 };
 

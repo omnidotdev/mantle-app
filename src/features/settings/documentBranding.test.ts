@@ -35,6 +35,7 @@ describe("resolveDocumentLogo", () => {
     expect(resolveDocumentLogo(undefined)).toEqual({
       src: DEFAULT_LOGO_SRC,
       alt: "Company logo",
+      isCustom: false,
     });
   });
 
@@ -46,6 +47,7 @@ describe("resolveDocumentLogo", () => {
     ).toEqual({
       src: "https://acme.test/logo.svg",
       alt: "Acme logo",
+      isCustom: true,
     });
   });
 
@@ -59,6 +61,7 @@ describe("resolveDocumentLogo", () => {
     expect(resolveDocumentLogo(profile({ companyName: "Omni LLC" }))).toEqual({
       src: DEFAULT_LOGO_SRC,
       alt: "Omni LLC logo",
+      isCustom: false,
     });
   });
 });
