@@ -314,9 +314,19 @@ const EditQuotePage = () => {
           },
         },
       });
-      const existingIds = (
-        quotes.find((q) => q.id === quoteId)?.quoteLineItems ?? []
-      ).map((item) => item.id);
+      // Read the current line items straight from the server (not the possibly
+      // stale React Query cache) so a concurrent or not-yet-refetched edit can
+      // never leave old rows behind as duplicates
+      const fresh = await useAllQuotesQuery.fetcher({
+        organizationId: organizationId ?? "",
+      })();
+      const existingIds = (fresh.quotes?.nodes ?? []).flatMap((node) =>
+        node?.rowId === quoteId
+          ? (node.quoteLineItems?.nodes ?? []).flatMap((li) =>
+              li?.rowId ? [li.rowId] : [],
+            )
+          : [],
+      );
       // Create the replacement items first, and only remove the previous ones
       // once that fully succeeds, so a failed save can never drop line items
       await createLineItems(quoteId);
