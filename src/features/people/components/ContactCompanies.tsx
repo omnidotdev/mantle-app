@@ -129,7 +129,7 @@ const ContactCompanies = ({
                     handleUpdateTitle(membership.rowId, e.target.value);
                   }
                 }}
-                className="h-8 max-w-[200px] text-sm"
+                className="h-9 max-w-[200px] text-sm"
               />
               <button
                 type="button"
@@ -177,7 +177,7 @@ const ContactCompanies = ({
           placeholder="Title"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
-          className="h-8 max-w-[200px] text-sm"
+          className="h-9 max-w-[200px] text-sm"
         />
         <button
           type="button"
