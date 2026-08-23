@@ -8,6 +8,10 @@ import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
 import {
+  buildQuoteLineItemInput,
+  sortLineItemsByOrder,
+} from "@/features/quotes/lib/lineItems";
+import {
   useAllQuotesQuery,
   useCreateQuoteLineItemMutation,
   useDeleteQuoteLineItemMutation,
@@ -199,7 +203,7 @@ const EditQuotePage = () => {
       setCurrentQuote(quote);
       setCurrentLineItems(
         quote.quoteLineItems.length > 0
-          ? quote.quoteLineItems
+          ? sortLineItemsByOrder(quote.quoteLineItems)
           : [{ ...defaultLineItem, id: crypto.randomUUID() }],
       );
       setInitialized(true);
@@ -236,59 +240,44 @@ const EditQuotePage = () => {
     }
   };
 
-  const saveLineItems = async (id: string) => {
+  const createLineItems = async (id: string): Promise<string[]> => {
     const validItems = currentLineItems.filter((item) =>
       item.description?.trim(),
     );
 
-    await Promise.all(
+    const settled = await Promise.allSettled(
       validItems.map((item, index) =>
         createLineItemMutation.mutateAsync({
-          input: {
-            quoteLineItem: {
-              quoteId: id,
-              description: item.description ?? "",
-              subtitle: item.subtitle ?? null,
-              quantity: item.quantity ?? "1",
-              unitPrice: item.unitPrice ?? "0",
-              amount: item.amount ?? "0",
-              pricingType: item.pricingType ?? "fixed",
-              estimatedHours: item.estimatedHours ?? null,
-              royaltyPercentage: item.royaltyPercentage ?? null,
-              hourlyRate: item.hourlyRate ?? null,
-              weeklyCapHours: item.weeklyCapHours
-                ? Number(item.weeklyCapHours)
-                : null,
-              monthlyCapHours: item.monthlyCapHours
-                ? Number(item.monthlyCapHours)
-                : null,
-              maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
-              minimumBillingMinutes: item.minimumBillingMinutes
-                ? Number(item.minimumBillingMinutes)
-                : null,
-              royaltyTimeframe: item.royaltyTimeframe
-                ? Number(item.royaltyTimeframe)
-                : null,
-              royaltyTimeframeUnit: item.royaltyTimeframeUnit ?? null,
-              royaltyThreshold: item.royaltyThreshold ?? null,
-              royaltyBuyoutAmount: item.royaltyBuyoutAmount ?? null,
-              sortOrder: index,
-            },
-          },
+          input: { quoteLineItem: buildQuoteLineItemInput(item, index, id) },
         }),
       ),
     );
+
+    const createdIds = settled.flatMap((result) =>
+      result.status === "fulfilled" &&
+      result.value.createQuoteLineItem?.quoteLineItem?.rowId
+        ? [result.value.createQuoteLineItem.quoteLineItem.rowId]
+        : [],
+    );
+
+    const failure = settled.find((result) => result.status === "rejected");
+    if (failure) {
+      // Roll back the items we just created so a partial failure leaves no orphans
+      await Promise.allSettled(
+        createdIds.map((rowId) =>
+          deleteLineItemMutation.mutateAsync({ input: { rowId } }),
+        ),
+      );
+      throw (failure as PromiseRejectedResult).reason;
+    }
+
+    return createdIds;
   };
 
-  const deleteExistingLineItems = async () => {
-    const existing = quotes.find((q) => q.id === quoteId);
-    if (!existing?.quoteLineItems.length) return;
-
+  const deleteLineItems = async (rowIds: string[]) => {
     await Promise.all(
-      existing.quoteLineItems.map((item) =>
-        deleteLineItemMutation.mutateAsync({
-          input: { rowId: item.id },
-        }),
+      rowIds.map((rowId) =>
+        deleteLineItemMutation.mutateAsync({ input: { rowId } }),
       ),
     );
   };
@@ -325,8 +314,13 @@ const EditQuotePage = () => {
           },
         },
       });
-      await deleteExistingLineItems();
-      await saveLineItems(quoteId);
+      const existingIds = (
+        quotes.find((q) => q.id === quoteId)?.quoteLineItems ?? []
+      ).map((item) => item.id);
+      // Create the replacement items first, and only remove the previous ones
+      // once that fully succeeds, so a failed save can never drop line items
+      await createLineItems(quoteId);
+      await deleteLineItems(existingIds);
 
       invalidateQuotes();
       toast.success("Quote saved");
