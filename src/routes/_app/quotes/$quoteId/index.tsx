@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
+import { sortLineItemsByOrder } from "@/features/quotes/lib/lineItems";
 import { quotePreviewSearchSchema } from "@/features/quotes/searchParams";
 import { useAllQuotesQuery } from "@/generated/graphql";
 
@@ -194,11 +195,12 @@ const QuotePreviewPage = () => {
   }
 
   const renderPreview = () => {
+    const orderedLineItems = sortLineItemsByOrder(quote.quoteLineItems);
     if (previewType === "contract") {
       return (
         <ContractPreview
           quote={quote}
-          lineItems={quote.quoteLineItems}
+          lineItems={orderedLineItems}
           organizationId={organizationId}
         />
       );
@@ -206,7 +208,7 @@ const QuotePreviewPage = () => {
     return (
       <QuotePreview
         quote={quote}
-        lineItems={quote.quoteLineItems}
+        lineItems={orderedLineItems}
         organizationId={organizationId}
       />
     );

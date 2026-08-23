@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuoteForm from "@/features/quotes/components/QuoteForm";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
+import { buildQuoteLineItemInput } from "@/features/quotes/lib/lineItems";
 import { DEFAULT_QUOTE_TERMS } from "@/features/quotes/types/quote";
 import {
   useCreateQuoteLineItemMutation,
@@ -197,35 +198,7 @@ const NewQuotePage = () => {
       validItems.map((item, index) =>
         createLineItemMutation.mutateAsync({
           input: {
-            quoteLineItem: {
-              quoteId,
-              description: item.description ?? "",
-              subtitle: item.subtitle ?? null,
-              quantity: item.quantity ?? "1",
-              unitPrice: item.unitPrice ?? "0",
-              amount: item.amount ?? "0",
-              pricingType: item.pricingType ?? "fixed",
-              estimatedHours: item.estimatedHours ?? null,
-              royaltyPercentage: item.royaltyPercentage ?? null,
-              hourlyRate: item.hourlyRate ?? null,
-              weeklyCapHours: item.weeklyCapHours
-                ? Number(item.weeklyCapHours)
-                : null,
-              monthlyCapHours: item.monthlyCapHours
-                ? Number(item.monthlyCapHours)
-                : null,
-              maxCapHours: item.maxCapHours ? Number(item.maxCapHours) : null,
-              minimumBillingMinutes: item.minimumBillingMinutes
-                ? Number(item.minimumBillingMinutes)
-                : null,
-              royaltyTimeframe: item.royaltyTimeframe
-                ? Number(item.royaltyTimeframe)
-                : null,
-              royaltyTimeframeUnit: item.royaltyTimeframeUnit ?? null,
-              royaltyThreshold: item.royaltyThreshold ?? null,
-              royaltyBuyoutAmount: item.royaltyBuyoutAmount ?? null,
-              sortOrder: index,
-            },
+            quoteLineItem: buildQuoteLineItemInput(item, index, quoteId),
           },
         }),
       ),
