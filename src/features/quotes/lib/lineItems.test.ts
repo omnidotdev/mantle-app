@@ -36,6 +36,20 @@ describe("buildQuoteLineItemInput", () => {
     expect(input.monthlyCapHours).toBeNull();
   });
 
+  it("passes through deliverables and acceptance criteria", () => {
+    const input = buildQuoteLineItemInput(
+      {
+        description: "Work",
+        deliverables: ["Source code", "Docs"],
+        acceptanceCriteria: ["Sign-off"],
+      },
+      0,
+      "quote-1",
+    );
+    expect(input.deliverables).toEqual(["Source code", "Docs"]);
+    expect(input.acceptanceCriteria).toEqual(["Sign-off"]);
+  });
+
   it("stamps sortOrder from the index and the quote id", () => {
     const input = buildQuoteLineItemInput(
       { description: "Work" },

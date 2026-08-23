@@ -35,7 +35,7 @@ query AllQuotes($organizationId: String!) {
         firstName
         lastName
       }
-      quoteLineItems {
+      quoteLineItems(orderBy: [SORT_ORDER_ASC]) {
         nodes {
           rowId
           quoteId
@@ -58,6 +58,8 @@ query AllQuotes($organizationId: String!) {
           royaltyThreshold
           royaltyBuyoutAmount
           sortOrder
+          deliverables
+          acceptanceCriteria
         }
       }
     }

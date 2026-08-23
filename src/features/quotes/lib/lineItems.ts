@@ -51,6 +51,8 @@ const buildQuoteLineItemInput = (
   royaltyTimeframeUnit: item.royaltyTimeframeUnit ?? null,
   royaltyThreshold: optionalNumeric(item.royaltyThreshold),
   royaltyBuyoutAmount: optionalNumeric(item.royaltyBuyoutAmount),
+  deliverables: item.deliverables ?? null,
+  acceptanceCriteria: item.acceptanceCriteria ?? null,
   sortOrder: index,
 });
 
