@@ -85,11 +85,20 @@ export const DEFAULT_QUOTE_TERMS = [
   "Validity: This quote is valid for 30 days from the date of issue.",
   "Payment Terms: $0 upfront, per-item invoices sent as they are completed. Invoices may bundle completed items. Invoices to be paid by the client within 30 days of the invoice date. Late payments will incur a 5% late fee per month, and all work will be paused until outstanding invoices are settled. All prices are in USD and exclude any applicable taxes.",
   "Timeline: Estimated delivery within {timeRange} from project kickoff.",
-  "External Provider Costs: The client is expected to pay for external platform costs, such as web hosting and domain name registration. Omni LLC will assist in the setup of these platforms.",
+  "External Provider Costs: The client is expected to pay for external platform costs, such as web hosting and domain name registration. {companyName} will assist in the setup of these platforms.",
   "Maintenance: Includes bug fixes and security patches for 30 days post-launch. New features, enhancements, or integrations require a separate quote and agreement. A separate maintenance contract can be established for further bug fix and patch needs.",
   "Monthly Hour Caps: For hourly rate services with monthly caps, the available hours reset on the first day of each calendar month. Unused hours from the previous month do not roll over.",
   "Scope: The items outlined in this quote are strictly defined. Any additional work beyond these can be quoted separately and appended to a separate working contract.",
 ].join("\n");
+
+/** Substitute template tokens in quote term text (e.g. {companyName}, {timeRange}) */
+export const applyTermTokens = (
+  text: string,
+  tokens: { companyName?: string | null; timeRange?: string | null },
+): string =>
+  text
+    .replaceAll("{companyName}", tokens.companyName?.trim() || "We")
+    .replaceAll("{timeRange}", tokens.timeRange?.trim() || "TBD");
 
 export interface Quote {
   id: string;

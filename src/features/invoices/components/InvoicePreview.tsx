@@ -7,6 +7,7 @@ import {
   getAccentVariants,
 } from "@/features/invoices/types/accentColor";
 import { formatCurrency, formatDate } from "@/features/invoices/types/invoice";
+import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 
@@ -32,6 +33,7 @@ const InvoicePreview = ({
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
     : undefined;
+  const logo = resolveDocumentLogo(orgProfile);
 
   const accent = useMemo(
     () => getAccentVariants(orgProfile?.accentColor ?? DEFAULT_ACCENT),
@@ -96,12 +98,13 @@ const InvoicePreview = ({
         >
           <div className="mb-2 flex justify-between">
             <div className="flex items-start gap-3">
-              <img
-                src="/omni-logo.svg"
-                alt="Omni Logo"
-                className="h-12 w-12 object-contain"
-                style={{ filter: "brightness(0) invert(1)" }}
-              />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <div>
                 <h3 className="font-bold text-white text-xl">
                   {orgProfile?.companyName || "Your Company"}
