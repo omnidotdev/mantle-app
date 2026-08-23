@@ -7,6 +7,7 @@ import {
   getAccentVariants,
 } from "@/features/invoices/types/accentColor";
 import { formatCurrency, formatDate } from "@/features/invoices/types/invoice";
+import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLogo";
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
@@ -98,13 +99,7 @@ const InvoicePreview = ({
         >
           <div className="mb-2 flex justify-between">
             <div className="flex items-start gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  className="h-full w-full object-contain"
-                />
-              </div>
+              <DocumentBannerLogo logo={logo} />
               <div>
                 <h3 className="font-bold text-white text-xl">
                   {orgProfile?.companyName || "Your Company"}

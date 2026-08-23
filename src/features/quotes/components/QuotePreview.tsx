@@ -5,6 +5,7 @@ import {
   getAccentVariants,
 } from "@/features/invoices/types/accentColor";
 import { formatCurrency } from "@/features/invoices/types/invoice";
+import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLogo";
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
@@ -280,15 +281,11 @@ const QuotePreview = ({
         }}
       >
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="h-full w-full object-contain"
-            />
-          </div>
+          <DocumentBannerLogo logo={logo} size="h-10 w-10" />
           <h1 className="font-bold text-white text-xl leading-tight">
-            {quote.title || "Quote"}
+            Quote for Professional Software
+            <br />
+            Development Services
           </h1>
         </div>
         <div className="text-right text-sm">
