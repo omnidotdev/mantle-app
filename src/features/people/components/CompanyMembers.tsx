@@ -12,6 +12,8 @@ import {
 } from "@/generated/graphql";
 import ContactPicker from "./ContactPicker";
 
+import type { CompanyMembersByCompanyQuery } from "@/generated/graphql";
+
 interface CompanyMembersProps {
   companyId: string;
   organizationId: string;
@@ -80,12 +82,34 @@ const CompanyMembers = ({ companyId, organizationId }: CompanyMembersProps) => {
     rowId: string,
     currentValue: boolean | null,
   ) => {
+    const key = useCompanyMembersByCompanyQuery.getKey({ companyId });
+    const previous =
+      queryClient.getQueryData<CompanyMembersByCompanyQuery>(key);
+
+    // Optimistically flip the star so the UI updates instantly
+    queryClient.setQueryData<CompanyMembersByCompanyQuery>(key, (old) =>
+      old?.companyMembers
+        ? {
+            ...old,
+            companyMembers: {
+              ...old.companyMembers,
+              nodes: old.companyMembers.nodes.map((node) =>
+                node?.rowId === rowId
+                  ? { ...node, isPrimary: !currentValue }
+                  : node,
+              ),
+            },
+          }
+        : old,
+    );
+
     try {
       await updateMutation.mutateAsync({
         input: { rowId, patch: { isPrimary: !currentValue } },
       });
       invalidate();
     } catch (err) {
+      queryClient.setQueryData(key, previous);
       toast.error(
         err instanceof Error ? err.message : "Failed to update member",
       );
