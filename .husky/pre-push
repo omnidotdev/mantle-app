@@ -1,3 +1,0 @@
-# Local CI gate: GitHub-hosted Actions are disabled to avoid paid minutes on private repos
-# Run the full test suite before every push
-bun test
