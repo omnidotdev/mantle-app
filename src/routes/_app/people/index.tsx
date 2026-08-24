@@ -25,6 +25,7 @@ import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";
 import { peopleListSearchSchema } from "@/features/people/searchParams";
@@ -398,7 +399,9 @@ const CompaniesTable = ({
         id: "phone",
         accessorKey: "phone",
         header: "Phone",
-        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+        cell: ({ getValue }) => (
+          <PhoneDisplay value={getValue<string | null>()} />
+        ),
       },
     ],
     [onDelete],
@@ -621,7 +624,9 @@ const ContactsTable = ({
         id: "phone",
         accessorKey: "phone",
         header: "Phone",
-        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+        cell: ({ getValue }) => (
+          <PhoneDisplay value={getValue<string | null>()} />
+        ),
       },
       {
         id: "internal",

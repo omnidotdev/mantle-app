@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import EmailList from "./EmailList";
@@ -64,11 +65,10 @@ const ContactForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="contact-phone">Phone</Label>
-            <Input
+            <PhoneInput
               id="contact-phone"
-              type="tel"
-              value={person.phone ?? ""}
-              onChange={(e) => handleChange("phone", e.target.value || null)}
+              value={person.phone ?? null}
+              onChange={(phone) => handleChange("phone", phone)}
               placeholder="(555) 555-5555"
             />
           </div>

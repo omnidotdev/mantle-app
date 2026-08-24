@@ -4,6 +4,7 @@ import PopulateButton from "@/components/core/PopulateButton";
 import SortableList from "@/components/core/SortableList";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   ACCENT_PRESETS,
@@ -14,6 +15,7 @@ import {
   formatCurrency,
 } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { resolveRegion } from "@/lib/phone";
 
 import type {
   Invoice,
@@ -220,13 +222,11 @@ const InvoiceForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="from-phone">Phone</Label>
-            <Input
+            <PhoneInput
               id="from-phone"
-              type="tel"
-              value={orgProfile?.phone ?? ""}
-              onChange={(e) =>
-                handleProfileChange("phone", e.target.value || null)
-              }
+              value={orgProfile?.phone ?? null}
+              onChange={(phone) => handleProfileChange("phone", phone)}
+              region={resolveRegion(orgProfile?.country)}
               placeholder="(555) 123-4567"
             />
           </div>
