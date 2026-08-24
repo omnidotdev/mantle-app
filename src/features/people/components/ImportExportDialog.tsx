@@ -21,6 +21,7 @@ import {
   useCreateCompanyMutation,
   useCreatePersonMutation,
 } from "@/generated/graphql";
+import { resolveRegion, toE164 } from "@/lib/phone";
 
 import type { Company, Person } from "@/features/people/types";
 
@@ -106,7 +107,7 @@ const ImportExportDialog = ({
             name: record.name,
             website: record.website ?? null,
             industry: record.industry ?? null,
-            phone: record.phone ?? null,
+            phone: toE164(record.phone, resolveRegion(record.country)),
             email: record.email ?? null,
             addressLine1: record.addressLine1 ?? null,
             addressLine2: record.addressLine2 ?? null,
@@ -135,7 +136,7 @@ const ImportExportDialog = ({
             firstName: record.firstName,
             lastName: record.lastName,
             emails: record.emails ?? [],
-            phone: record.phone ?? null,
+            phone: toE164(record.phone),
             avatarUrl: record.avatarUrl ?? null,
             tags: record.tags ?? null,
             internal: record.internal ?? false,

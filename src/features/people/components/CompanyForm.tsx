@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
+import { resolveRegion } from "@/lib/phone";
 
 import type { Company } from "@/features/people/types";
 
@@ -65,11 +67,11 @@ const CompanyForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="company-phone">Phone</Label>
-            <Input
+            <PhoneInput
               id="company-phone"
-              type="tel"
-              value={company.phone ?? ""}
-              onChange={(e) => handleChange("phone", e.target.value || null)}
+              value={company.phone ?? null}
+              onChange={(phone) => handleChange("phone", phone)}
+              region={resolveRegion(company.country)}
               placeholder="(555) 555-5555"
             />
           </div>

@@ -3,8 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { resolveRegion } from "@/lib/phone";
 
 import type { OrganizationProfile } from "@/features/settings/types";
 
@@ -206,11 +208,11 @@ const SettingsPage = () => {
 
             <div className="space-y-1.5">
               <Label htmlFor="org-phone">Phone</Label>
-              <Input
+              <PhoneInput
                 id="org-phone"
-                type="tel"
-                value={form.phone ?? ""}
-                onChange={(e) => handleChange("phone", e.target.value || null)}
+                value={form.phone ?? null}
+                onChange={(phone) => handleChange("phone", phone)}
+                region={resolveRegion(form.country)}
                 placeholder="(555) 555-5555"
               />
             </div>
