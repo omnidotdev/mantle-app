@@ -10,6 +10,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 import CommandPalette from "@/components/CommandPalette";
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
+import NotFound from "@/components/NotFound";
 import app from "@/lib/config/app.config";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
@@ -95,6 +96,10 @@ export const Route = createRootRouteWithContext<{
   }),
   component: RootComponent,
   errorComponent: ErrorComponent,
+  // Render 404s in-shell: a thrown `notFound()` renders here inside RootDocument
+  // (globals + layout), not as a bare unstyled page. Pairs with the router's
+  // `defaultNotFoundComponent` for unmatched routes.
+  notFoundComponent: () => <NotFound />,
 });
 
 function ErrorComponent(props: ErrorComponentProps) {
