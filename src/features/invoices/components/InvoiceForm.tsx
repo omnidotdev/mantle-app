@@ -11,11 +11,10 @@ import {
   DEFAULT_ACCENT,
 } from "@/features/invoices/types/accentColor";
 import {
-  INVOICE_STATUSES,
+  MANUAL_INVOICE_STATUSES,
   formatCurrency,
-  normalizePaidFields,
-  paidDateInputValue,
-  toPaidAtTimestamp,
+  invoiceBalance,
+  isPaidInFull,
 } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { resolveRegion } from "@/lib/phone";
@@ -23,6 +22,7 @@ import { resolveRegion } from "@/lib/phone";
 import type {
   Invoice,
   InvoiceLineItem,
+  Payment,
 } from "@/features/invoices/types/invoice";
 
 interface InvoiceFormProps {
@@ -30,6 +30,8 @@ interface InvoiceFormProps {
   onInvoiceChange: (invoice: Partial<Invoice>) => void;
   lineItems: Partial<InvoiceLineItem>[];
   onLineItemsChange: (items: Partial<InvoiceLineItem>[]) => void;
+  payments: Partial<Payment>[];
+  onPaymentsChange: (payments: Partial<Payment>[]) => void;
   onSave: () => void;
   organizationId?: string;
 }
@@ -39,6 +41,8 @@ const InvoiceForm = ({
   onInvoiceChange,
   lineItems,
   onLineItemsChange,
+  payments,
+  onPaymentsChange,
   onSave,
   organizationId,
 }: InvoiceFormProps) => {
@@ -46,17 +50,40 @@ const InvoiceForm = ({
     onInvoiceChange({ ...invoice, [field]: value });
   };
 
-  // Switching to "paid" reveals the payment fields and seeds today's date;
-  // switching away clears them so a non-paid invoice never carries stale
-  // payment tracking. The invariant lives in normalizePaidFields (tested)
-  const handleStatusChange = (status: string) => {
-    const paid = normalizePaidFields({
-      status: status as Invoice["status"],
-      paidAt: invoice.paidAt ?? null,
-      paymentReference: invoice.paymentReference ?? null,
-    });
-    onInvoiceChange({ ...invoice, ...paid });
+  const handlePaymentChange = (
+    index: number,
+    field: keyof Payment,
+    value: string | null,
+  ) => {
+    onPaymentsChange(
+      payments.map((payment, i) =>
+        i === index ? { ...payment, [field]: value } : payment,
+      ),
+    );
   };
+
+  const handleAddPayment = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    onPaymentsChange([
+      ...payments,
+      {
+        id: crypto.randomUUID(),
+        amount: "0",
+        paidAt: today,
+        reference: null,
+        method: null,
+      },
+    ]);
+  };
+
+  const handleRemovePayment = (index: number) => {
+    onPaymentsChange(payments.filter((_, i) => i !== index));
+  };
+
+  const recordedPayments = payments.map((payment) => ({
+    amount: payment.amount ?? "0",
+    paidAt: payment.paidAt ?? "",
+  }));
 
   const generateInvoiceId = () => {
     const now = new Date();
@@ -371,54 +398,29 @@ const InvoiceForm = ({
             <Label htmlFor="invoice-status">Status</Label>
             <select
               id="invoice-status"
-              value={invoice.status ?? "draft"}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={
+                invoice.status === "paid" ? "paid" : (invoice.status ?? "draft")
+              }
+              onChange={(e) => handleChange("status", e.target.value)}
+              disabled={invoice.status === "paid"}
+              className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {INVOICE_STATUSES.map((status) => (
+              {MANUAL_INVOICE_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </option>
               ))}
+              {invoice.status === "paid" && <option value="paid">Paid</option>}
             </select>
+            {invoice.status === "paid" && (
+              <p className="text-muted-foreground text-xs">
+                Set automatically once payments cover the total. Remove a
+                payment to change it.
+              </p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Payment (only when marked paid) */}
-      {invoice.status === "paid" && (
-        <div className="space-y-4">
-          <h3 className="font-medium text-foreground text-lg">Payment</h3>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="invoice-paid-date">Paid Date</Label>
-              <Input
-                id="invoice-paid-date"
-                type="date"
-                value={paidDateInputValue(invoice.paidAt ?? null)}
-                onChange={(e) =>
-                  handleChange("paidAt", toPaidAtTimestamp(e.target.value))
-                }
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="invoice-payment-reference">
-                Payment Reference
-              </Label>
-              <Input
-                id="invoice-payment-reference"
-                value={invoice.paymentReference ?? ""}
-                onChange={(e) =>
-                  handleChange("paymentReference", e.target.value || null)
-                }
-                placeholder="Check #, transfer ID, etc."
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Bill To */}
       <div className="space-y-4">
@@ -636,6 +638,111 @@ const InvoiceForm = ({
             />
           </div>
         </div>
+      </div>
+
+      {/* Payments */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-foreground text-lg">Payments</h3>
+          <span className="text-muted-foreground text-sm">
+            {isPaidInFull(invoice.total ?? "0", recordedPayments)
+              ? "Paid in full"
+              : `Balance ${formatCurrency(
+                  String(
+                    invoiceBalance(invoice.total ?? "0", recordedPayments),
+                  ),
+                  invoice.currency,
+                )}`}
+          </span>
+        </div>
+
+        {payments.map((payment, index) => (
+          <div
+            key={payment.id}
+            className="space-y-3 rounded-lg border border-border p-4"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-foreground text-sm">
+                Payment {index + 1}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleRemovePayment(index)}
+                className="text-destructive hover:text-destructive/80"
+                aria-label="Remove payment"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor={`payment-date-${payment.id}`}>Date</Label>
+                <Input
+                  id={`payment-date-${payment.id}`}
+                  type="date"
+                  value={payment.paidAt ?? ""}
+                  onChange={(e) =>
+                    handlePaymentChange(index, "paidAt", e.target.value)
+                  }
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor={`payment-amount-${payment.id}`}>Amount</Label>
+                <Input
+                  id={`payment-amount-${payment.id}`}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={payment.amount ?? ""}
+                  onChange={(e) =>
+                    handlePaymentChange(index, "amount", e.target.value)
+                  }
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor={`payment-reference-${payment.id}`}>
+                  Reference
+                </Label>
+                <Input
+                  id={`payment-reference-${payment.id}`}
+                  value={payment.reference ?? ""}
+                  onChange={(e) =>
+                    handlePaymentChange(
+                      index,
+                      "reference",
+                      e.target.value || null,
+                    )
+                  }
+                  placeholder="Check #, transfer ID, etc."
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor={`payment-method-${payment.id}`}>Method</Label>
+                <Input
+                  id={`payment-method-${payment.id}`}
+                  value={payment.method ?? ""}
+                  onChange={(e) =>
+                    handlePaymentChange(index, "method", e.target.value || null)
+                  }
+                  placeholder="Check, wire, card, cash"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={handleAddPayment}
+          className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
+        >
+          <Plus size={18} />
+          <span>Add Payment</span>
+        </button>
       </div>
 
       {/* Notes */}

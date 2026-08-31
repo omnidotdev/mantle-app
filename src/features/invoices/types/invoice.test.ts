@@ -1,11 +1,13 @@
 import { describe, expect, it } from "bun:test";
 
 import {
+  derivePaidFields,
   formatCurrency,
   formatDate,
-  formatPaidDate,
-  normalizePaidFields,
-  paidDateInputValue,
+  invoiceBalance,
+  isPaidInFull,
+  paidInFullDate,
+  sumPayments,
   toPaidAtTimestamp,
 } from "./invoice";
 
@@ -59,20 +61,6 @@ describe("formatCurrency", () => {
   });
 });
 
-describe("paidDateInputValue", () => {
-  it("should extract the calendar date from a paid-at timestamp", () => {
-    expect(paidDateInputValue("2026-08-31T00:00:00.000Z")).toBe("2026-08-31");
-  });
-
-  it("should extract the date even when the timestamp carries a time", () => {
-    expect(paidDateInputValue("2026-08-31T14:23:11.123Z")).toBe("2026-08-31");
-  });
-
-  it("should return an empty string when paidAt is null", () => {
-    expect(paidDateInputValue(null)).toBe("");
-  });
-});
-
 describe("toPaidAtTimestamp", () => {
   it("should convert a calendar date to a midnight-UTC timestamp", () => {
     expect(toPaidAtTimestamp("2026-08-31")).toBe("2026-08-31T00:00:00.000Z");
@@ -81,84 +69,97 @@ describe("toPaidAtTimestamp", () => {
   it("should return null for an empty date string", () => {
     expect(toPaidAtTimestamp("")).toBeNull();
   });
+});
 
-  it("should round-trip with paidDateInputValue", () => {
-    const ts = toPaidAtTimestamp("2026-01-01");
-    expect(paidDateInputValue(ts)).toBe("2026-01-01");
+const twoPayments = [
+  { amount: "4500", paidAt: "2026-08-05" },
+  { amount: "4500", paidAt: "2026-08-20" },
+];
+
+describe("sumPayments", () => {
+  it("should total the payment amounts", () => {
+    expect(sumPayments(twoPayments)).toBe(9000);
+  });
+
+  it("should return 0 for no payments", () => {
+    expect(sumPayments([])).toBe(0);
+  });
+
+  it("should ignore non-numeric amounts", () => {
+    expect(sumPayments([{ amount: "" }, { amount: "50" }])).toBe(50);
   });
 });
 
-describe("formatPaidDate", () => {
-  it("should format a paid-at timestamp as a human-readable date", () => {
-    expect(formatPaidDate("2026-08-31T00:00:00.000Z")).toBe("August 31, 2026");
+describe("invoiceBalance", () => {
+  it("should be zero when payments cover the total", () => {
+    expect(invoiceBalance("9000", twoPayments)).toBe(0);
   });
 
-  it("should return an empty string when paidAt is null", () => {
-    expect(formatPaidDate(null)).toBe("");
+  it("should be the outstanding amount when partially paid", () => {
+    expect(invoiceBalance("9000", [twoPayments[0]])).toBe(4500);
+  });
+
+  it("should equal the total when there are no payments", () => {
+    expect(invoiceBalance("9000", [])).toBe(9000);
   });
 });
 
-describe("normalizePaidFields", () => {
-  it("should default paidAt to today when status becomes paid and no date is set", () => {
-    const result = normalizePaidFields(
-      { status: "paid", paidAt: null, paymentReference: null },
-      () => "2026-08-31T00:00:00.000Z",
-    );
-    expect(result.paidAt).toBe("2026-08-31T00:00:00.000Z");
+describe("isPaidInFull", () => {
+  it("should be true when payments meet the total", () => {
+    expect(isPaidInFull("9000", twoPayments)).toBe(true);
   });
 
-  it("should default paidAt to a clean date-only midnight timestamp", () => {
-    const result = normalizePaidFields({
+  it("should be false when only partially paid", () => {
+    expect(isPaidInFull("9000", [twoPayments[0]])).toBe(false);
+  });
+
+  it("should be false with no payments", () => {
+    expect(isPaidInFull("9000", [])).toBe(false);
+  });
+
+  it("should be false for a zero-total invoice", () => {
+    expect(isPaidInFull("0", [])).toBe(false);
+  });
+
+  it("should handle fractional cents without float drift", () => {
+    const thirds = [
+      { amount: "33.34" },
+      { amount: "33.33" },
+      { amount: "33.33" },
+    ];
+    expect(isPaidInFull("100.00", thirds)).toBe(true);
+  });
+});
+
+describe("paidInFullDate", () => {
+  it("should return the latest payment date once fully paid", () => {
+    expect(paidInFullDate("9000", twoPayments)).toBe("2026-08-20");
+  });
+
+  it("should return null when not yet fully paid", () => {
+    expect(paidInFullDate("9000", [twoPayments[0]])).toBeNull();
+  });
+});
+
+describe("derivePaidFields", () => {
+  it("should mark paid with the settlement date when fully paid", () => {
+    expect(derivePaidFields("9000", "sent", twoPayments)).toEqual({
       status: "paid",
+      paidAt: "2026-08-20T00:00:00.000Z",
+    });
+  });
+
+  it("should leave status and clear paidAt when partially paid", () => {
+    expect(derivePaidFields("9000", "sent", [twoPayments[0]])).toEqual({
+      status: "sent",
       paidAt: null,
-      paymentReference: null,
     });
-    expect(result.paidAt).toMatch(/^\d{4}-\d{2}-\d{2}T00:00:00\.000Z$/);
   });
 
-  it("should clear paid fields for a draft invoice", () => {
-    const result = normalizePaidFields({
-      status: "draft",
-      paidAt: "2026-01-15T00:00:00.000Z",
-      paymentReference: "CHK-1042",
+  it("should downgrade a stale paid status when payments no longer cover the total", () => {
+    expect(derivePaidFields("9000", "paid", [twoPayments[0]])).toEqual({
+      status: "sent",
+      paidAt: null,
     });
-    expect(result.paidAt).toBeNull();
-    expect(result.paymentReference).toBeNull();
-  });
-
-  it("should preserve an explicitly chosen paidAt when status is paid", () => {
-    const result = normalizePaidFields(
-      {
-        status: "paid",
-        paidAt: "2026-01-15T00:00:00.000Z",
-        paymentReference: "CHK-1042",
-      },
-      () => "2026-08-31T00:00:00.000Z",
-    );
-    expect(result.paidAt).toBe("2026-01-15T00:00:00.000Z");
-    expect(result.paymentReference).toBe("CHK-1042");
-  });
-
-  it("should clear paidAt and paymentReference when status is not paid", () => {
-    const result = normalizePaidFields(
-      {
-        status: "sent",
-        paidAt: "2026-01-15T00:00:00.000Z",
-        paymentReference: "CHK-1042",
-      },
-      () => "2026-08-31T00:00:00.000Z",
-    );
-    expect(result.paidAt).toBeNull();
-    expect(result.paymentReference).toBeNull();
-  });
-
-  it("should not mutate the input object", () => {
-    const input = {
-      status: "void" as const,
-      paidAt: "2026-01-15T00:00:00.000Z",
-      paymentReference: "CHK-1042",
-    };
-    normalizePaidFields(input, () => "2026-08-31T00:00:00.000Z");
-    expect(input.paidAt).toBe("2026-01-15T00:00:00.000Z");
   });
 });

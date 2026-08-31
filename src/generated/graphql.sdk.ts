@@ -715,6 +715,39 @@ export type CreateOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
   orderBy?: Array<OrganizationSettingOrderBy>;
 };
 
+/** All input for the create `Payment` mutation. */
+export type CreatePaymentInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `Payment` to be created by this mutation. */
+  payment: PaymentInput;
+};
+
+/** The output of our create `Payment` mutation. */
+export type CreatePaymentPayload = {
+  __typename?: 'CreatePaymentPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `Payment` that was created by this mutation. */
+  payment?: Maybe<Payment>;
+  /** An edge for our `Payment`. May be used by Relay 1. */
+  paymentEdge?: Maybe<PaymentEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `Payment` mutation. */
+export type CreatePaymentPayloadPaymentEdgeArgs = {
+  orderBy?: Array<PaymentOrderBy>;
+};
+
 /** All input for the create `PersonExternalLink` mutation. */
 export type CreatePersonExternalLinkInput = {
   /**
@@ -1298,6 +1331,50 @@ export type DeleteOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
   orderBy?: Array<OrganizationSettingOrderBy>;
 };
 
+/** All input for the `deletePaymentById` mutation. */
+export type DeletePaymentByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `Payment` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deletePayment` mutation. */
+export type DeletePaymentInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `Payment` mutation. */
+export type DeletePaymentPayload = {
+  __typename?: 'DeletePaymentPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  deletedPaymentId?: Maybe<Scalars['ID']['output']>;
+  /** The `Payment` that was deleted by this mutation. */
+  payment?: Maybe<Payment>;
+  /** An edge for our `Payment`. May be used by Relay 1. */
+  paymentEdge?: Maybe<PaymentEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `Payment` mutation. */
+export type DeletePaymentPayloadPaymentEdgeArgs = {
+  orderBy?: Array<PaymentOrderBy>;
+};
+
 /** All input for the `deletePersonById` mutation. */
 export type DeletePersonByIdInput = {
   /**
@@ -1877,6 +1954,8 @@ export type Invoice = Node & {
   paidAt?: Maybe<Scalars['Datetime']['output']>;
   paymentLinkUrl?: Maybe<Scalars['String']['output']>;
   paymentReference?: Maybe<Scalars['String']['output']>;
+  /** Reads and enables pagination through a set of `Payment`. */
+  payments: PaymentConnection;
   rowId: Scalars['UUID']['output'];
   status: Scalars['String']['output'];
   subtotal?: Maybe<Scalars['BigFloat']['output']>;
@@ -1896,6 +1975,18 @@ export type InvoiceInvoiceLineItemsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<InvoiceLineItemOrderBy>>;
+};
+
+
+export type InvoicePaymentsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<PaymentCondition>;
+  filter?: InputMaybe<PaymentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PaymentOrderBy>>;
 };
 
 /** A condition to be used against `Invoice` object types. All fields are tested for equality and combined with a logical ‘and.’ */
@@ -1960,6 +2051,10 @@ export type InvoiceFilter = {
   or?: InputMaybe<Array<InvoiceFilter>>;
   /** Filter by the object’s `organizationId` field. */
   organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `payments` relation. */
+  payments?: InputMaybe<InvoiceToManyPaymentFilter>;
+  /** Some related `payments` exist. */
+  paymentsExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `rowId` field. */
   rowId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `status` field. */
@@ -2154,6 +2249,16 @@ export type InvoiceToManyInvoiceLineItemFilter = {
   some?: InputMaybe<InvoiceLineItemFilter>;
 };
 
+/** A filter to be used against many `Payment` object types. All fields are combined with a logical ‘and.’ */
+export type InvoiceToManyPaymentFilter = {
+  /** Every related `Payment` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<PaymentFilter>;
+  /** No related `Payment` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<PaymentFilter>;
+  /** Some related `Payment` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<PaymentFilter>;
+};
+
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: 'Mutation';
@@ -2173,6 +2278,8 @@ export type Mutation = {
   createInvoiceLineItem?: Maybe<CreateInvoiceLineItemPayload>;
   /** Creates a single `OrganizationSetting`. */
   createOrganizationSetting?: Maybe<CreateOrganizationSettingPayload>;
+  /** Creates a single `Payment`. */
+  createPayment?: Maybe<CreatePaymentPayload>;
   /** Creates a single `Person`. */
   createPerson?: Maybe<CreatePersonPayload>;
   /** Creates a single `PersonExternalLink`. */
@@ -2219,6 +2326,10 @@ export type Mutation = {
   deleteOrganizationSetting?: Maybe<DeleteOrganizationSettingPayload>;
   /** Deletes a single `OrganizationSetting` using its globally unique id. */
   deleteOrganizationSettingById?: Maybe<DeleteOrganizationSettingPayload>;
+  /** Deletes a single `Payment` using a unique key. */
+  deletePayment?: Maybe<DeletePaymentPayload>;
+  /** Deletes a single `Payment` using its globally unique id. */
+  deletePaymentById?: Maybe<DeletePaymentPayload>;
   /** Deletes a single `Person` using a unique key. */
   deletePerson?: Maybe<DeletePersonPayload>;
   /** Deletes a single `Person` using its globally unique id. */
@@ -2280,6 +2391,10 @@ export type Mutation = {
   updateOrganizationSetting?: Maybe<UpdateOrganizationSettingPayload>;
   /** Updates a single `OrganizationSetting` using its globally unique id and a patch. */
   updateOrganizationSettingById?: Maybe<UpdateOrganizationSettingPayload>;
+  /** Updates a single `Payment` using a unique key and a patch. */
+  updatePayment?: Maybe<UpdatePaymentPayload>;
+  /** Updates a single `Payment` using its globally unique id and a patch. */
+  updatePaymentById?: Maybe<UpdatePaymentPayload>;
   /** Updates a single `Person` using a unique key and a patch. */
   updatePerson?: Maybe<UpdatePersonPayload>;
   /** Updates a single `Person` using its globally unique id and a patch. */
@@ -2356,6 +2471,12 @@ export type MutationCreateInvoiceLineItemArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateOrganizationSettingArgs = {
   input: CreateOrganizationSettingInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreatePaymentArgs = {
+  input: CreatePaymentInput;
 };
 
 
@@ -2494,6 +2615,18 @@ export type MutationDeleteOrganizationSettingArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteOrganizationSettingByIdArgs = {
   input: DeleteOrganizationSettingByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeletePaymentArgs = {
+  input: DeletePaymentInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeletePaymentByIdArgs = {
+  input: DeletePaymentByIdInput;
 };
 
 
@@ -2684,6 +2817,18 @@ export type MutationUpdateOrganizationSettingByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdatePaymentArgs = {
+  input: UpdatePaymentInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdatePaymentByIdArgs = {
+  input: UpdatePaymentByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdatePersonArgs = {
   input: UpdatePersonInput;
 };
@@ -2870,6 +3015,97 @@ export type PageInfo = {
   hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['Cursor']['output']>;
+};
+
+export type Payment = Node & {
+  __typename?: 'Payment';
+  amount: Scalars['BigFloat']['output'];
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  /** Reads a single `Invoice` that is related to this `Payment`. */
+  invoice?: Maybe<Invoice>;
+  invoiceId: Scalars['UUID']['output'];
+  method?: Maybe<Scalars['String']['output']>;
+  paidAt: Scalars['Date']['output'];
+  reference?: Maybe<Scalars['String']['output']>;
+  rowId: Scalars['UUID']['output'];
+};
+
+/** A condition to be used against `Payment` object types. All fields are tested for equality and combined with a logical ‘and.’ */
+export type PaymentCondition = {
+  /** Checks for equality with the object’s `invoiceId` field. */
+  invoiceId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `Payment` values. */
+export type PaymentConnection = {
+  __typename?: 'PaymentConnection';
+  /** A list of edges which contains the `Payment` and cursor to aid in pagination. */
+  edges: Array<Maybe<PaymentEdge>>;
+  /** A list of `Payment` objects. */
+  nodes: Array<Maybe<Payment>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `Payment` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `Payment` edge in the connection. */
+export type PaymentEdge = {
+  __typename?: 'PaymentEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `Payment` at the end of the edge. */
+  node?: Maybe<Payment>;
+};
+
+/** A filter to be used against `Payment` object types. All fields are combined with a logical ‘and.’ */
+export type PaymentFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<PaymentFilter>>;
+  /** Filter by the object’s `invoice` relation. */
+  invoice?: InputMaybe<InvoiceFilter>;
+  /** Filter by the object’s `invoiceId` field. */
+  invoiceId?: InputMaybe<UuidFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<PaymentFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<PaymentFilter>>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `Payment` */
+export type PaymentInput = {
+  amount: Scalars['BigFloat']['input'];
+  invoiceId: Scalars['UUID']['input'];
+  method?: InputMaybe<Scalars['String']['input']>;
+  paidAt: Scalars['Date']['input'];
+  reference?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** Methods to use when ordering `Payment`. */
+export enum PaymentOrderBy {
+  InvoiceIdAsc = 'INVOICE_ID_ASC',
+  InvoiceIdDesc = 'INVOICE_ID_DESC',
+  Natural = 'NATURAL',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `Payment`. Fields that are set will be updated. */
+export type PaymentPatch = {
+  amount?: InputMaybe<Scalars['BigFloat']['input']>;
+  invoiceId?: InputMaybe<Scalars['UUID']['input']>;
+  method?: InputMaybe<Scalars['String']['input']>;
+  paidAt?: InputMaybe<Scalars['Date']['input']>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
 };
 
 export type Person = Node & {
@@ -3518,6 +3754,9 @@ export type Query = Node & {
   invoiceLineItems?: Maybe<InvoiceLineItemConnection>;
   /** Reads and enables pagination through a set of `Invoice`. */
   invoices?: Maybe<InvoiceConnection>;
+  mantleCallingCode?: Maybe<Scalars['String']['output']>;
+  mantleNormalizePhone?: Maybe<Scalars['String']['output']>;
+  mantleRegionFromCountry?: Maybe<Scalars['String']['output']>;
   /** Fetches an object given its globally unique `ID`. */
   node?: Maybe<Node>;
   /** Get a single `OrganizationSetting`. */
@@ -3526,6 +3765,12 @@ export type Query = Node & {
   organizationSettingById?: Maybe<OrganizationSetting>;
   /** Reads and enables pagination through a set of `OrganizationSetting`. */
   organizationSettings?: Maybe<OrganizationSettingConnection>;
+  /** Get a single `Payment`. */
+  payment?: Maybe<Payment>;
+  /** Reads a single `Payment` using its globally unique `ID`. */
+  paymentById?: Maybe<Payment>;
+  /** Reads and enables pagination through a set of `Payment`. */
+  payments?: Maybe<PaymentConnection>;
   /** Reads and enables pagination through a set of `Person`. */
   people?: Maybe<PersonConnection>;
   /** Get a single `Person`. */
@@ -3758,6 +4003,25 @@ export type QueryInvoicesArgs = {
 
 
 /** The root query type which gives access points into the data universe. */
+export type QueryMantleCallingCodeArgs = {
+  region?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryMantleNormalizePhoneArgs = {
+  defaultRegion?: InputMaybe<Scalars['String']['input']>;
+  raw?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryMantleRegionFromCountryArgs = {
+  country?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
 export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3785,6 +4049,31 @@ export type QueryOrganizationSettingsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<OrganizationSettingOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryPaymentArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryPaymentByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryPaymentsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<PaymentCondition>;
+  filter?: InputMaybe<PaymentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PaymentOrderBy>>;
 };
 
 
@@ -4958,6 +5247,53 @@ export type UpdateOrganizationSettingPayloadOrganizationSettingEdgeArgs = {
   orderBy?: Array<OrganizationSettingOrderBy>;
 };
 
+/** All input for the `updatePaymentById` mutation. */
+export type UpdatePaymentByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `Payment` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `Payment` being updated. */
+  patch: PaymentPatch;
+};
+
+/** All input for the `updatePayment` mutation. */
+export type UpdatePaymentInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `Payment` being updated. */
+  patch: PaymentPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `Payment` mutation. */
+export type UpdatePaymentPayload = {
+  __typename?: 'UpdatePaymentPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `Payment` that was updated by this mutation. */
+  payment?: Maybe<Payment>;
+  /** An edge for our `Payment`. May be used by Relay 1. */
+  paymentEdge?: Maybe<PaymentEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `Payment` mutation. */
+export type UpdatePaymentPayloadPaymentEdgeArgs = {
+  orderBy?: Array<PaymentOrderBy>;
+};
+
 /** All input for the `updatePersonById` mutation. */
 export type UpdatePersonByIdInput = {
   /**
@@ -5413,6 +5749,17 @@ export type CreateInvoiceLineItemInput = {
   invoiceLineItem: InvoiceLineItemInput;
 };
 
+/** All input for the create `Payment` mutation. */
+export type CreatePaymentInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `Payment` to be created by this mutation. */
+  payment: PaymentInput;
+};
+
 /** All input for the create `Person` mutation. */
 export type CreatePersonInput = {
   /**
@@ -5489,6 +5836,16 @@ export type DeleteInvoiceInput = {
 
 /** All input for the `deleteInvoiceLineItem` mutation. */
 export type DeleteInvoiceLineItemInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deletePayment` mutation. */
+export type DeletePaymentInput = {
   /**
    * An arbitrary string value with no semantic meaning. Will be included in the
    * payload verbatim. May be used to track mutations by the client.
@@ -5645,6 +6002,16 @@ export type InvoicePatch = {
   taxRate?: string | null | undefined;
   total?: string | null | undefined;
   updatedAt?: Date | null | undefined;
+};
+
+/** An input for mutations affecting `Payment` */
+export type PaymentInput = {
+  amount: string;
+  invoiceId: string;
+  method?: string | null | undefined;
+  paidAt: Date;
+  reference?: string | null | undefined;
+  rowId?: string | null | undefined;
 };
 
 /** An input for mutations affecting `Person` */
@@ -6004,7 +6371,7 @@ export type AllInvoicesQueryVariables = Exact<{
 }>;
 
 
-export type AllInvoicesQuery = { invoices: { nodes: Array<{ rowId: string, organizationId: string, invoiceNumber: string, companyId: string | null, contactId: string | null, billTo: string | null, status: string, issueDate: string, dueDate: string | null, notes: string | null, subtotal: string | null, taxRate: string | null, taxAmount: string | null, total: string | null, currency: string | null, paidAt: string | null, paymentReference: string | null, paymentLinkUrl: string | null, createdAt: string | null, updatedAt: string | null, company: { rowId: string, name: string } | null, contact: { rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { nodes: Array<{ rowId: string, invoiceId: string, productId: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder: number | null } | null> } } | null> } | null };
+export type AllInvoicesQuery = { invoices: { nodes: Array<{ rowId: string, organizationId: string, invoiceNumber: string, companyId: string | null, contactId: string | null, billTo: string | null, status: string, issueDate: string, dueDate: string | null, notes: string | null, subtotal: string | null, taxRate: string | null, taxAmount: string | null, total: string | null, currency: string | null, paidAt: string | null, paymentReference: string | null, paymentLinkUrl: string | null, createdAt: string | null, updatedAt: string | null, company: { rowId: string, name: string } | null, contact: { rowId: string, firstName: string, lastName: string } | null, invoiceLineItems: { nodes: Array<{ rowId: string, invoiceId: string, productId: string | null, description: string, quantity: string, unitPrice: string, amount: string, sortOrder: number | null } | null> }, payments: { nodes: Array<{ rowId: string, invoiceId: string, amount: string, paidAt: string, reference: string | null, method: string | null } | null> } } | null> } | null };
 
 export type CreateInvoiceMutationVariables = Exact<{
   input: CreateInvoiceInput;
@@ -6040,6 +6407,20 @@ export type DeleteInvoiceLineItemMutationVariables = Exact<{
 
 
 export type DeleteInvoiceLineItemMutation = { deleteInvoiceLineItem: { deletedInvoiceLineItemId: string | null } | null };
+
+export type CreatePaymentMutationVariables = Exact<{
+  input: CreatePaymentInput;
+}>;
+
+
+export type CreatePaymentMutation = { createPayment: { payment: { rowId: string } | null } | null };
+
+export type DeletePaymentMutationVariables = Exact<{
+  input: DeletePaymentInput;
+}>;
+
+
+export type DeletePaymentMutation = { deletePayment: { deletedPaymentId: string | null } | null };
 
 export type AllPeopleQueryVariables = Exact<{
   organizationId: string;
@@ -6376,6 +6757,16 @@ export const AllInvoicesDocument = gql`
           sortOrder
         }
       }
+      payments {
+        nodes {
+          rowId
+          invoiceId
+          amount
+          paidAt
+          reference
+          method
+        }
+      }
     }
   }
 }
@@ -6420,6 +6811,22 @@ export const DeleteInvoiceLineItemDocument = gql`
     mutation DeleteInvoiceLineItem($input: DeleteInvoiceLineItemInput!) {
   deleteInvoiceLineItem(input: $input) {
     deletedInvoiceLineItemId
+  }
+}
+    `;
+export const CreatePaymentDocument = gql`
+    mutation CreatePayment($input: CreatePaymentInput!) {
+  createPayment(input: $input) {
+    payment {
+      rowId
+    }
+  }
+}
+    `;
+export const DeletePaymentDocument = gql`
+    mutation DeletePayment($input: DeletePaymentInput!) {
+  deletePayment(input: $input) {
+    deletedPaymentId
   }
 }
     `;
@@ -6718,6 +7125,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteInvoiceLineItem(variables: DeleteInvoiceLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteInvoiceLineItemMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteInvoiceLineItemMutation>({ document: DeleteInvoiceLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteInvoiceLineItem', 'mutation', variables);
+    },
+    CreatePayment(variables: CreatePaymentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreatePaymentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreatePaymentMutation>({ document: CreatePaymentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreatePayment', 'mutation', variables);
+    },
+    DeletePayment(variables: DeletePaymentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeletePaymentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeletePaymentMutation>({ document: DeletePaymentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeletePayment', 'mutation', variables);
     },
     AllPeople(variables: AllPeopleQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<AllPeopleQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<AllPeopleQuery>({ document: AllPeopleDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'AllPeople', 'query', variables);

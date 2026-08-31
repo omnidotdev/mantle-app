@@ -9,7 +9,10 @@ import {
 import {
   formatCurrency,
   formatDate,
-  formatPaidDate,
+  invoiceBalance,
+  isPaidInFull,
+  paidInFullDate,
+  sumPayments,
 } from "@/features/invoices/types/invoice";
 import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLogo";
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
@@ -19,17 +22,20 @@ import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import type {
   Invoice,
   InvoiceLineItem,
+  Payment,
 } from "@/features/invoices/types/invoice";
 
 interface InvoicePreviewProps {
   invoice: Partial<Invoice>;
   lineItems: Partial<InvoiceLineItem>[];
+  payments: Partial<Payment>[];
   organizationId?: string;
 }
 
 const InvoicePreview = ({
   invoice,
   lineItems,
+  payments,
   organizationId,
 }: InvoicePreviewProps) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -78,6 +84,17 @@ const InvoicePreview = ({
   const total = subtotal + taxAmount;
   const currency = invoice.currency || "USD";
   const hasTax = taxRate > 0;
+
+  const recordedPayments = payments.map((payment) => ({
+    amount: payment.amount ?? "0",
+    paidAt: payment.paidAt ?? "",
+    reference: payment.reference ?? null,
+  }));
+  const hasPayments = recordedPayments.length > 0;
+  const amountPaid = sumPayments(recordedPayments);
+  const balance = invoiceBalance(String(total), recordedPayments);
+  const paidInFull = isPaidInFull(String(total), recordedPayments);
+  const settledDate = paidInFullDate(String(total), recordedPayments);
 
   return (
     <div className="space-y-2">
@@ -131,7 +148,7 @@ const InvoicePreview = ({
             </div>
             <div className="text-right">
               <h1 className="font-bold text-4xl text-white">INVOICE</h1>
-              {invoice.status === "paid" && (
+              {paidInFull && (
                 <span className="mt-2 inline-block rounded-md bg-white px-3 py-1 font-bold text-green-700 text-sm uppercase tracking-wide">
                   Paid
                 </span>
@@ -148,6 +165,7 @@ const InvoicePreview = ({
               {invoice.billTo ? (
                 <div className="text-foreground">
                   {invoice.billTo.split("\n").map((line, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: static address lines, never reordered
                     <p key={`bill-${i}`}>{line}</p>
                   ))}
                 </div>
@@ -211,21 +229,11 @@ const InvoicePreview = ({
                   </span>
                 </div>
               )}
-              {invoice.status === "paid" && invoice.paidAt && (
+              {paidInFull && settledDate && (
                 <div className="mb-1 flex justify-between">
                   <span className="font-bold text-foreground">Paid Date:</span>
                   <span className="text-foreground">
-                    {formatPaidDate(invoice.paidAt)}
-                  </span>
-                </div>
-              )}
-              {invoice.status === "paid" && invoice.paymentReference && (
-                <div className="mb-1 flex justify-between">
-                  <span className="font-bold text-foreground">
-                    Payment Ref:
-                  </span>
-                  <span className="text-foreground">
-                    {invoice.paymentReference}
+                    {formatDate(settledDate)}
                   </span>
                 </div>
               )}
@@ -302,9 +310,49 @@ const InvoicePreview = ({
                   <span>TOTAL</span>
                   <span>{formatCurrency(String(total), currency)}</span>
                 </div>
+                {hasPayments && (
+                  <>
+                    <div className="mt-1 flex justify-between text-sm">
+                      <span>Amount Paid</span>
+                      <span>
+                        {formatCurrency(String(amountPaid), currency)}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex justify-between font-bold">
+                      <span>{paidInFull ? "Balance" : "Balance Due"}</span>
+                      <span>{formatCurrency(String(balance), currency)}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Payment schedule */}
+          {hasPayments && (
+            <div className="mb-8">
+              <h4 className="mb-2 font-bold text-foreground">Payments:</h4>
+              <table className="w-full">
+                <tbody>
+                  {payments.map((payment) => (
+                    <tr key={payment.id}>
+                      <td className="border-border border-b px-4 py-2 text-foreground text-sm">
+                        {payment.paidAt ? formatDate(payment.paidAt) : ""}
+                      </td>
+                      <td className="border-border border-b px-4 py-2 text-muted-foreground text-sm">
+                        {[payment.method, payment.reference]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </td>
+                      <td className="border-border border-b px-4 py-2 text-right text-foreground text-sm">
+                        {formatCurrency(payment.amount || "0", currency)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Notes */}
           {invoice.notes && (
@@ -312,6 +360,7 @@ const InvoicePreview = ({
               <h4 className="mb-2 font-bold text-foreground">Notes:</h4>
               <div className="text-foreground">
                 {invoice.notes.split("\n").map((line, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static note lines, never reordered
                   <p key={`note-${i}`}>{line}</p>
                 ))}
               </div>
