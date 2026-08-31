@@ -17,6 +17,7 @@ import {
   isPaidInFull,
 } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
 import { resolveRegion } from "@/lib/phone";
 
 import type {
@@ -85,20 +86,19 @@ const InvoiceForm = ({
     paidAt: payment.paidAt ?? "",
   }));
 
-  const generateInvoiceId = () => {
-    const now = new Date();
-    const date = [
-      now.getFullYear(),
-      String(now.getMonth() + 1).padStart(2, "0"),
-      String(now.getDate()).padStart(2, "0"),
-    ].join("");
-    const time = [
-      String(now.getHours()).padStart(2, "0"),
-      String(now.getMinutes()).padStart(2, "0"),
-      String(now.getSeconds()).padStart(2, "0"),
-    ].join("");
+  const generateNumberMutation = useGenerateDocumentNumberMutation();
 
-    handleChange("invoiceNumber", `IGDI-${date}-${time}`);
+  // Pull the next number from the org's document-numbering config (same source
+  // as the eager auto-fill on new invoices), e.g. INV-0001, rather than a
+  // client-side timestamp
+  const generateInvoiceNumber = async () => {
+    if (!organizationId) return;
+
+    const result = await generateNumberMutation.mutateAsync({
+      input: { organizationId, documentType: "invoice" },
+    });
+    const number = result.generateDocumentNumber?.documentNumber;
+    if (number) handleChange("invoiceNumber", number);
   };
 
   const handleLineItemChange = (
@@ -380,12 +380,13 @@ const InvoiceForm = ({
                 id="invoice-number"
                 value={invoice.invoiceNumber ?? ""}
                 onChange={(e) => handleChange("invoiceNumber", e.target.value)}
-                placeholder="INV-20260203-115447"
+                placeholder="INV-0001"
               />
               <button
                 type="button"
-                onClick={generateInvoiceId}
-                className="flex shrink-0 items-center gap-1 rounded-md border border-input px-3 text-muted-foreground text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground"
+                onClick={generateInvoiceNumber}
+                disabled={!organizationId || generateNumberMutation.isPending}
+                className="flex shrink-0 items-center gap-1 rounded-md border border-input px-3 text-muted-foreground text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Generate invoice number"
               >
                 <RefreshCw size={14} />
@@ -435,7 +436,7 @@ const InvoiceForm = ({
               contactName,
               contactEmail,
             }) => {
-              const lines = [companyName, contactName, contactEmail].filter(
+              const lines = [contactName, companyName, contactEmail].filter(
                 Boolean,
               );
               onInvoiceChange({
