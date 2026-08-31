@@ -52,6 +52,19 @@ describe("formatPreview", () => {
     expect(result).toMatch(/^[A-F0-9]{8}$/);
   });
 
+  it("should format timestamp with prefix", () => {
+    expect(
+      formatPreview({
+        prefix: "INV",
+        separator: "-",
+        dateFormat: null,
+        idStrategy: "timestamp",
+        sequentialPadding: 4,
+        randomLength: 8,
+      }),
+    ).toBe("INV-20260203-115447");
+  });
+
   it("should format with slash separator", () => {
     const result = formatPreview({
       prefix: "QT",
