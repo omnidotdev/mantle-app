@@ -148,6 +148,7 @@ const InvoicePreview = ({
               {invoice.billTo ? (
                 <div className="text-foreground">
                   {invoice.billTo.split("\n").map((line, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: static address lines, never reordered
                     <p key={`bill-${i}`}>{line}</p>
                   ))}
                 </div>
@@ -312,6 +313,7 @@ const InvoicePreview = ({
               <h4 className="mb-2 font-bold text-foreground">Notes:</h4>
               <div className="text-foreground">
                 {invoice.notes.split("\n").map((line, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static note lines, never reordered
                   <p key={`note-${i}`}>{line}</p>
                 ))}
               </div>
