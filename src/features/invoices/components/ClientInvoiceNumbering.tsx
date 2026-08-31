@@ -18,10 +18,17 @@ interface ClientInvoiceNumberingProps {
   companyId: string;
 }
 
+const STRATEGIES = ["sequential", "random", "timestamp"] as const;
+type Strategy = (typeof STRATEGIES)[number];
+
+const coerceStrategy = (value?: string | null): Strategy =>
+  STRATEGIES.includes(value as Strategy) ? (value as Strategy) : "sequential";
+
 /**
  * Per-client invoice-number override. When off, the client uses the
  * workspace-wide numbering; when on, invoices for this client draw from their
- * own prefix and sequence
+ * own prefix and format. A new override inherits the workspace format (so a
+ * timestamp workspace stays timestamp) and only the prefix and strategy differ
  */
 const ClientInvoiceNumbering = ({
   organizationId,
@@ -31,22 +38,38 @@ const ClientInvoiceNumbering = ({
 
   const { data } = useDocumentNumberingConfigsQuery({ organizationId });
 
-  const existing = data?.documentNumberingConfigs?.nodes?.find(
+  const configs = data?.documentNumberingConfigs?.nodes;
+  const existing = configs?.find(
     (node) => node?.documentType === "invoice" && node?.companyId === companyId,
   );
+  const workspaceDefault = configs?.find(
+    (node) => node?.documentType === "invoice" && !node?.companyId,
+  );
+
+  // Format fields inherited from the workspace default (only prefix and
+  // strategy are overridable per client)
+  const base = {
+    globalPrefix: workspaceDefault?.globalPrefix ?? "",
+    separator: workspaceDefault?.separator ?? "-",
+    dateFormat: workspaceDefault?.dateFormat ?? null,
+    sequentialPadding: workspaceDefault?.sequentialPadding ?? 4,
+    randomLength: workspaceDefault?.randomLength ?? 8,
+  };
 
   const [enabled, setEnabled] = useState(false);
   const [prefix, setPrefix] = useState("");
+  const [idStrategy, setIdStrategy] = useState<Strategy>("sequential");
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (initialized) return;
+    if (initialized || !data) return;
     if (existing) {
       setEnabled(true);
       setPrefix(existing.prefix);
+      setIdStrategy(coerceStrategy(existing.idStrategy));
     }
     setInitialized(true);
-  }, [existing, initialized]);
+  }, [data, existing, initialized]);
 
   const createMutation = useCreateDocumentNumberingConfigMutation();
   const updateMutation = useUpdateDocumentNumberingConfigMutation();
@@ -63,10 +86,11 @@ const ClientInvoiceNumbering = ({
     deleteMutation.isPending;
 
   const handleSave = async () => {
+    const fields = { prefix, idStrategy, ...base };
     try {
       if (existing?.rowId) {
         await updateMutation.mutateAsync({
-          input: { rowId: existing.rowId, patch: { prefix } },
+          input: { rowId: existing.rowId, patch: fields },
         });
       } else {
         await createMutation.mutateAsync({
@@ -75,7 +99,7 @@ const ClientInvoiceNumbering = ({
               organizationId,
               companyId,
               documentType: "invoice",
-              prefix,
+              ...fields,
             },
           },
         });
@@ -92,13 +116,16 @@ const ClientInvoiceNumbering = ({
   const handleToggle = async (next: boolean) => {
     setEnabled(next);
 
+    // A new override starts from the workspace format/strategy
+    if (next && !existing) {
+      setIdStrategy(coerceStrategy(workspaceDefault?.idStrategy));
+    }
+
     // Turning it off removes the override so the client reverts to the
     // workspace default
     if (!next && existing?.rowId) {
       try {
-        await deleteMutation.mutateAsync({
-          input: { rowId: existing.rowId },
-        });
+        await deleteMutation.mutateAsync({ input: { rowId: existing.rowId } });
         setPrefix("");
         await invalidate();
         toast.success("Reverted to workspace numbering");
@@ -110,15 +137,7 @@ const ClientInvoiceNumbering = ({
     }
   };
 
-  const preview = formatPreview({
-    globalPrefix: "",
-    prefix,
-    separator: "-",
-    dateFormat: null,
-    idStrategy: "sequential",
-    sequentialPadding: 4,
-    randomLength: 8,
-  });
+  const preview = formatPreview({ ...base, prefix, idStrategy });
 
   return (
     <div className="mt-6 space-y-4 rounded-lg border border-border bg-card p-6">
@@ -128,7 +147,8 @@ const ClientInvoiceNumbering = ({
         </h3>
         <p className="text-muted-foreground text-sm">
           By default this client uses your workspace invoice numbering. Turn on
-          a custom prefix to give this client its own invoice sequence.
+          a custom prefix and format to give this client its own invoice
+          sequence.
         </p>
       </div>
 
@@ -157,6 +177,27 @@ const ClientInvoiceNumbering = ({
             </div>
 
             <div className="space-y-1.5">
+              <Label>Format</Label>
+              <div className="inline-flex rounded-lg border border-border bg-muted p-1">
+                {STRATEGIES.map((strategy) => (
+                  <button
+                    key={strategy}
+                    type="button"
+                    onClick={() => setIdStrategy(strategy)}
+                    aria-pressed={idStrategy === strategy}
+                    className={`rounded-md px-3 py-1.5 font-medium text-sm capitalize transition-colors ${
+                      idStrategy === strategy
+                        ? "bg-card text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {strategy}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5 sm:col-span-2">
               <Label>Preview</Label>
               <div className="rounded-md border border-border bg-muted/50 px-4 py-2">
                 <code className="font-mono text-sm">{preview}</code>
