@@ -1,4 +1,4 @@
-import { Check, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Check, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import SortableList from "@/components/core/SortableList";
@@ -13,6 +13,9 @@ import {
 import {
   INVOICE_STATUSES,
   formatCurrency,
+  normalizePaidFields,
+  paidDateInputValue,
+  toPaidAtTimestamp,
 } from "@/features/invoices/types/invoice";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { resolveRegion } from "@/lib/phone";
@@ -41,6 +44,18 @@ const InvoiceForm = ({
 }: InvoiceFormProps) => {
   const handleChange = (field: keyof Invoice, value: string | null) => {
     onInvoiceChange({ ...invoice, [field]: value });
+  };
+
+  // Switching to "paid" reveals the payment fields and seeds today's date;
+  // switching away clears them so a non-paid invoice never carries stale
+  // payment tracking. The invariant lives in normalizePaidFields (tested)
+  const handleStatusChange = (status: string) => {
+    const paid = normalizePaidFields({
+      status: status as Invoice["status"],
+      paidAt: invoice.paidAt ?? null,
+      paymentReference: invoice.paymentReference ?? null,
+    });
+    onInvoiceChange({ ...invoice, ...paid });
   };
 
   const generateInvoiceId = () => {
@@ -346,7 +361,7 @@ const InvoiceForm = ({
                 className="flex shrink-0 items-center gap-1 rounded-md border border-input px-3 text-muted-foreground text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground"
                 aria-label="Generate invoice number"
               >
-                <Sparkles size={14} />
+                <RefreshCw size={14} />
                 Generate
               </button>
             </div>
@@ -357,7 +372,7 @@ const InvoiceForm = ({
             <select
               id="invoice-status"
               value={invoice.status ?? "draft"}
-              onChange={(e) => handleChange("status", e.target.value)}
+              onChange={(e) => handleStatusChange(e.target.value)}
               className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               {INVOICE_STATUSES.map((status) => (
@@ -369,6 +384,41 @@ const InvoiceForm = ({
           </div>
         </div>
       </div>
+
+      {/* Payment (only when marked paid) */}
+      {invoice.status === "paid" && (
+        <div className="space-y-4">
+          <h3 className="font-medium text-foreground text-lg">Payment</h3>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="invoice-paid-date">Paid Date</Label>
+              <Input
+                id="invoice-paid-date"
+                type="date"
+                value={paidDateInputValue(invoice.paidAt ?? null)}
+                onChange={(e) =>
+                  handleChange("paidAt", toPaidAtTimestamp(e.target.value))
+                }
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="invoice-payment-reference">
+                Payment Reference
+              </Label>
+              <Input
+                id="invoice-payment-reference"
+                value={invoice.paymentReference ?? ""}
+                onChange={(e) =>
+                  handleChange("paymentReference", e.target.value || null)
+                }
+                placeholder="Check #, transfer ID, etc."
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bill To */}
       <div className="space-y-4">

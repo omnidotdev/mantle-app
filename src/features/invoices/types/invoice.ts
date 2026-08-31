@@ -66,3 +66,34 @@ export const formatCurrency = (amount: string, currency = "USD"): string => {
     currency,
   }).format(Number.isNaN(num) ? 0 : num);
 };
+
+/** Calendar date ("YYYY-MM-DD") for a date input, derived from a paidAt timestamp */
+export const paidDateInputValue = (paidAt: string | null): string =>
+  paidAt ? paidAt.slice(0, 10) : "";
+
+/** Convert a calendar date ("YYYY-MM-DD") into a midnight-UTC paidAt timestamp */
+export const toPaidAtTimestamp = (date: string): string | null =>
+  date ? `${date}T00:00:00.000Z` : null;
+
+/** Format a paidAt timestamp as "Month Day, Year" (e.g. "August 31, 2026") */
+export const formatPaidDate = (paidAt: string | null): string =>
+  paidAt ? formatDate(paidAt.slice(0, 10)) : "";
+
+/**
+ * Enforce the paid-tracking invariant against an invoice's status: a paid
+ * invoice must carry a paidAt (defaulting to now when unset), and any invoice
+ * that is not paid must not carry paid-tracking fields
+ */
+export const normalizePaidFields = <
+  T extends Pick<Invoice, "status" | "paidAt" | "paymentReference">,
+>(
+  invoice: T,
+  now: () => string = () =>
+    `${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`,
+): T => {
+  if (invoice.status === "paid") {
+    return { ...invoice, paidAt: invoice.paidAt ?? now() };
+  }
+
+  return { ...invoice, paidAt: null, paymentReference: null };
+};

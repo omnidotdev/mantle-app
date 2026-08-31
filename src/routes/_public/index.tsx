@@ -6,8 +6,8 @@ import {
   CheckCircle2Icon,
   ClipboardListIcon,
   FileTextIcon,
+  LogInIcon,
   RocketIcon,
-  SparklesIcon,
   UsersIcon,
   ZapIcon,
 } from "lucide-react";
@@ -63,7 +63,7 @@ const steps = [
     number: "01",
     title: "Sign In",
     description: "Authenticate with your Omni account to get started instantly",
-    icon: <SparklesIcon size={24} />,
+    icon: <LogInIcon size={24} />,
   },
   {
     number: "02",
