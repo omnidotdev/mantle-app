@@ -9,6 +9,7 @@ import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLog
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
+import { formatProjectType } from "../lib/projectType";
 import { applyTermTokens } from "../types/quote";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
@@ -354,8 +355,8 @@ const QuotePreview = ({
                     <p className="mb-1 text-muted-foreground text-sm">
                       Project Type
                     </p>
-                    <p className="font-medium text-foreground text-lg capitalize">
-                      {quote.projectType}
+                    <p className="font-medium text-foreground text-lg">
+                      {formatProjectType(quote.projectType)}
                     </p>
                   </div>
                 )}
