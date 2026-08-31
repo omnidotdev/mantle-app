@@ -6,17 +6,20 @@ import { toast } from "sonner";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
-import { normalizePaidFields } from "@/features/invoices/types/invoice";
+import { derivePaidFields } from "@/features/invoices/types/invoice";
 import {
   useAllInvoicesQuery,
   useCreateInvoiceLineItemMutation,
+  useCreatePaymentMutation,
   useDeleteInvoiceLineItemMutation,
+  useDeletePaymentMutation,
   useUpdateInvoiceMutation,
 } from "@/generated/graphql";
 
 import type {
   Invoice,
   InvoiceLineItem,
+  Payment,
 } from "@/features/invoices/types/invoice";
 
 const EditInvoicePage = () => {
@@ -29,6 +32,9 @@ const EditInvoicePage = () => {
   const [currentLineItems, setCurrentLineItems] = useState<
     Partial<InvoiceLineItem>[]
   >([]);
+  const [currentPayments, setCurrentPayments] = useState<Partial<Payment>[]>(
+    [],
+  );
   const [initialized, setInitialized] = useState(false);
 
   const { data, isLoading } = useAllInvoicesQuery(
@@ -83,6 +89,20 @@ const EditInvoicePage = () => {
                 ];
               },
             ),
+            payments: (node.payments.nodes ?? []).flatMap((p) => {
+              if (!p) return [];
+
+              return [
+                {
+                  id: p.rowId,
+                  invoiceId: p.invoiceId,
+                  amount: p.amount,
+                  paidAt: p.paidAt,
+                  reference: p.reference ?? null,
+                  method: p.method ?? null,
+                },
+              ];
+            }),
           },
         ];
       }),
@@ -111,6 +131,7 @@ const EditInvoicePage = () => {
               },
             ],
       );
+      setCurrentPayments(invoice.payments);
       setInitialized(true);
     }
   }, [invoice, initialized]);
@@ -126,6 +147,8 @@ const EditInvoicePage = () => {
   const updateMutation = useUpdateInvoiceMutation();
   const createLineItemMutation = useCreateInvoiceLineItemMutation();
   const deleteLineItemMutation = useDeleteInvoiceLineItemMutation();
+  const createPaymentMutation = useCreatePaymentMutation();
+  const deletePaymentMutation = useDeletePaymentMutation();
 
   const saveLineItems = async (id: string) => {
     const validItems = currentLineItems.filter((item) =>
@@ -163,14 +186,53 @@ const EditInvoicePage = () => {
     );
   };
 
+  const savePayments = async (id: string) => {
+    const validPayments = currentPayments.filter(
+      (payment) =>
+        Number.parseFloat(payment.amount ?? "0") > 0 && payment.paidAt,
+    );
+
+    await Promise.all(
+      validPayments.map((payment) =>
+        createPaymentMutation.mutateAsync({
+          input: {
+            payment: {
+              invoiceId: id,
+              amount: payment.amount ?? "0",
+              paidAt: payment.paidAt ? new Date(payment.paidAt) : new Date(),
+              reference: payment.reference ?? null,
+              method: payment.method ?? null,
+            },
+          },
+        }),
+      ),
+    );
+  };
+
+  const deleteExistingPayments = async () => {
+    const existing = invoices.find((inv) => inv.id === invoiceId);
+    if (!existing?.payments.length) return;
+
+    await Promise.all(
+      existing.payments.map((payment) =>
+        deletePaymentMutation.mutateAsync({
+          input: { rowId: payment.id },
+        }),
+      ),
+    );
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      const paid = normalizePaidFields({
-        status: currentInvoice.status ?? "draft",
-        paidAt: currentInvoice.paidAt ?? null,
-        paymentReference: currentInvoice.paymentReference ?? null,
-      });
+      const paid = derivePaidFields(
+        currentInvoice.total ?? "0",
+        currentInvoice.status ?? "draft",
+        currentPayments.map((payment) => ({
+          amount: payment.amount ?? "0",
+          paidAt: payment.paidAt ?? "",
+        })),
+      );
 
       await updateMutation.mutateAsync({
         input: {
@@ -194,12 +256,13 @@ const EditInvoicePage = () => {
             total: currentInvoice.total,
             currency: currentInvoice.currency,
             paidAt: paid.paidAt ? new Date(paid.paidAt) : null,
-            paymentReference: paid.paymentReference,
           },
         },
       });
       await deleteExistingLineItems();
       await saveLineItems(invoiceId);
+      await deleteExistingPayments();
+      await savePayments(invoiceId);
 
       invalidateInvoices();
       toast.success("Invoice saved");
@@ -291,6 +354,8 @@ const EditInvoicePage = () => {
             onInvoiceChange={setCurrentInvoice}
             lineItems={currentLineItems}
             onLineItemsChange={setCurrentLineItems}
+            payments={currentPayments}
+            onPaymentsChange={setCurrentPayments}
             onSave={handleSave}
             organizationId={organizationId}
           />
@@ -301,6 +366,7 @@ const EditInvoicePage = () => {
           <InvoicePreview
             invoice={currentInvoice}
             lineItems={currentLineItems}
+            payments={currentPayments}
             organizationId={organizationId}
           />
         </div>

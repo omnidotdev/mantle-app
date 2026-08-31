@@ -9,6 +9,14 @@ export const INVOICE_STATUSES = [
 
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
+/**
+ * Statuses a user may set by hand. "paid" is owned by payments (an invoice is
+ * paid when its payments cover the total), so it is not selectable manually
+ */
+export const MANUAL_INVOICE_STATUSES = INVOICE_STATUSES.filter(
+  (status) => status !== "paid",
+);
+
 export interface InvoiceLineItem {
   id: string;
   invoiceId: string;
@@ -18,6 +26,17 @@ export interface InvoiceLineItem {
   unitPrice: string;
   amount: string;
   sortOrder: number;
+}
+
+export interface Payment {
+  id: string;
+  invoiceId: string;
+  /** Numeric string, e.g. "4500.00" */
+  amount: string;
+  /** Calendar date the payment landed ("YYYY-MM-DD") */
+  paidAt: string;
+  reference: string | null;
+  method: string | null;
 }
 
 export interface Invoice {
@@ -42,6 +61,7 @@ export interface Invoice {
   createdAt: string;
   updatedAt: string;
   invoiceLineItems?: InvoiceLineItem[];
+  payments?: Payment[];
 }
 
 /** Format an ISO date string as "Month Day, Year" (e.g. "February 3, 2026") */
@@ -67,33 +87,70 @@ export const formatCurrency = (amount: string, currency = "USD"): string => {
   }).format(Number.isNaN(num) ? 0 : num);
 };
 
-/** Calendar date ("YYYY-MM-DD") for a date input, derived from a paidAt timestamp */
-export const paidDateInputValue = (paidAt: string | null): string =>
-  paidAt ? paidAt.slice(0, 10) : "";
-
 /** Convert a calendar date ("YYYY-MM-DD") into a midnight-UTC paidAt timestamp */
 export const toPaidAtTimestamp = (date: string): string | null =>
   date ? `${date}T00:00:00.000Z` : null;
 
-/** Format a paidAt timestamp as "Month Day, Year" (e.g. "August 31, 2026") */
-export const formatPaidDate = (paidAt: string | null): string =>
-  paidAt ? formatDate(paidAt.slice(0, 10)) : "";
+/** Round a dollar amount to whole cents to avoid floating-point drift */
+const toCents = (amount: number): number => Math.round(amount * 100);
+
+/** Total of the given payment amounts, in dollars */
+export const sumPayments = (payments: Pick<Payment, "amount">[]): number =>
+  payments.reduce(
+    (total, payment) => total + (Number.parseFloat(payment.amount) || 0),
+    0,
+  );
+
+/** Outstanding balance: invoice total minus everything paid so far */
+export const invoiceBalance = (
+  total: string,
+  payments: Pick<Payment, "amount">[],
+): number => (Number.parseFloat(total) || 0) - sumPayments(payments);
+
+/** Whether payments cover the invoice total (needs a positive total) */
+export const isPaidInFull = (
+  total: string,
+  payments: Pick<Payment, "amount">[],
+): boolean => {
+  const totalCents = toCents(Number.parseFloat(total) || 0);
+
+  return totalCents > 0 && toCents(sumPayments(payments)) >= totalCents;
+};
 
 /**
- * Enforce the paid-tracking invariant against an invoice's status: a paid
- * invoice must carry a paidAt (defaulting to now when unset), and any invoice
- * that is not paid must not carry paid-tracking fields
+ * The date an invoice became fully settled (its latest payment date), or null
+ * while a balance remains
  */
-export const normalizePaidFields = <
-  T extends Pick<Invoice, "status" | "paidAt" | "paymentReference">,
->(
-  invoice: T,
-  now: () => string = () =>
-    `${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`,
-): T => {
-  if (invoice.status === "paid") {
-    return { ...invoice, paidAt: invoice.paidAt ?? now() };
+export const paidInFullDate = (
+  total: string,
+  payments: Pick<Payment, "amount" | "paidAt">[],
+): string | null => {
+  if (!isPaidInFull(total, payments)) return null;
+
+  return payments.reduce<string | null>(
+    (latest, payment) =>
+      !latest || payment.paidAt > latest ? payment.paidAt : latest,
+    null,
+  );
+};
+
+/**
+ * Derive an invoice's payment-owned fields from its payments: "paid" (with the
+ * settlement date) once payments cover the total, otherwise the caller's status
+ * with paidAt cleared. A stale "paid" is downgraded to "sent" when a balance
+ * remains, since payments are the source of truth for being paid
+ */
+export const derivePaidFields = (
+  total: string,
+  status: InvoiceStatus,
+  payments: Pick<Payment, "amount" | "paidAt">[],
+): { status: InvoiceStatus; paidAt: string | null } => {
+  if (isPaidInFull(total, payments)) {
+    return {
+      status: "paid",
+      paidAt: toPaidAtTimestamp(paidInFullDate(total, payments) ?? ""),
+    };
   }
 
-  return { ...invoice, paidAt: null, paymentReference: null };
+  return { status: status === "paid" ? "sent" : status, paidAt: null };
 };

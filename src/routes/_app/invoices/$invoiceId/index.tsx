@@ -63,6 +63,20 @@ const InvoicePreviewPage = () => {
                 ];
               },
             ),
+            payments: (node.payments.nodes ?? []).flatMap((p) => {
+              if (!p) return [];
+
+              return [
+                {
+                  id: p.rowId,
+                  invoiceId: p.invoiceId,
+                  amount: p.amount,
+                  paidAt: p.paidAt,
+                  reference: p.reference ?? null,
+                  method: p.method ?? null,
+                },
+              ];
+            }),
           },
         ];
       }),
@@ -147,6 +161,7 @@ const InvoicePreviewPage = () => {
         <InvoicePreview
           invoice={invoice}
           lineItems={invoice.invoiceLineItems}
+          payments={invoice.payments}
           organizationId={organizationId}
         />
       </div>

@@ -42,6 +42,16 @@ query AllInvoices($organizationId: String!) {
           sortOrder
         }
       }
+      payments {
+        nodes {
+          rowId
+          invoiceId
+          amount
+          paidAt
+          reference
+          method
+        }
+      }
     }
   }
 }
@@ -81,5 +91,19 @@ mutation CreateInvoiceLineItem($input: CreateInvoiceLineItemInput!) {
 mutation DeleteInvoiceLineItem($input: DeleteInvoiceLineItemInput!) {
   deleteInvoiceLineItem(input: $input) {
     deletedInvoiceLineItemId
+  }
+}
+
+mutation CreatePayment($input: CreatePaymentInput!) {
+  createPayment(input: $input) {
+    payment {
+      rowId
+    }
+  }
+}
+
+mutation DeletePayment($input: DeletePaymentInput!) {
+  deletePayment(input: $input) {
+    deletedPaymentId
   }
 }

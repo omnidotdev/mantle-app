@@ -11,16 +11,18 @@ import { toast } from "sonner";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
-import { normalizePaidFields } from "@/features/invoices/types/invoice";
+import { derivePaidFields } from "@/features/invoices/types/invoice";
 import {
   useCreateInvoiceLineItemMutation,
   useCreateInvoiceMutation,
+  useCreatePaymentMutation,
   useGenerateDocumentNumberMutation,
 } from "@/generated/graphql";
 
 import type {
   Invoice,
   InvoiceLineItem,
+  Payment,
 } from "@/features/invoices/types/invoice";
 
 const defaultInvoice: Partial<Invoice> = {
@@ -87,6 +89,10 @@ const NewInvoicePage = () => {
         ],
   );
 
+  const [currentPayments, setCurrentPayments] = useState<Partial<Payment>[]>(
+    [],
+  );
+
   const generateNumber = useGenerateDocumentNumberMutation();
   const hasGenerated = useRef(false);
 
@@ -116,6 +122,7 @@ const NewInvoicePage = () => {
 
   const createMutation = useCreateInvoiceMutation();
   const createLineItemMutation = useCreateInvoiceLineItemMutation();
+  const createPaymentMutation = useCreatePaymentMutation();
 
   const saveLineItems = async (invoiceId: string) => {
     const validItems = currentLineItems.filter((item) =>
@@ -140,14 +147,40 @@ const NewInvoicePage = () => {
     );
   };
 
+  const savePayments = async (invoiceId: string) => {
+    const validPayments = currentPayments.filter(
+      (payment) =>
+        Number.parseFloat(payment.amount ?? "0") > 0 && payment.paidAt,
+    );
+
+    await Promise.all(
+      validPayments.map((payment) =>
+        createPaymentMutation.mutateAsync({
+          input: {
+            payment: {
+              invoiceId,
+              amount: payment.amount ?? "0",
+              paidAt: payment.paidAt ? new Date(payment.paidAt) : new Date(),
+              reference: payment.reference ?? null,
+              method: payment.method ?? null,
+            },
+          },
+        }),
+      ),
+    );
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      const paid = normalizePaidFields({
-        status: currentInvoice.status ?? "draft",
-        paidAt: currentInvoice.paidAt ?? null,
-        paymentReference: currentInvoice.paymentReference ?? null,
-      });
+      const paid = derivePaidFields(
+        currentInvoice.total ?? "0",
+        currentInvoice.status ?? "draft",
+        currentPayments.map((payment) => ({
+          amount: payment.amount ?? "0",
+          paidAt: payment.paidAt ?? "",
+        })),
+      );
 
       const result = await createMutation.mutateAsync({
         input: {
@@ -171,7 +204,6 @@ const NewInvoicePage = () => {
             total: currentInvoice.total,
             currency: currentInvoice.currency ?? "USD",
             paidAt: paid.paidAt ? new Date(paid.paidAt) : null,
-            paymentReference: paid.paymentReference,
           },
         },
       });
@@ -179,6 +211,7 @@ const NewInvoicePage = () => {
       const newId = result.createInvoice?.invoice?.rowId;
       if (newId) {
         await saveLineItems(newId);
+        await savePayments(newId);
       }
 
       invalidateInvoices();
@@ -264,6 +297,8 @@ const NewInvoicePage = () => {
             onInvoiceChange={setCurrentInvoice}
             lineItems={currentLineItems}
             onLineItemsChange={setCurrentLineItems}
+            payments={currentPayments}
+            onPaymentsChange={setCurrentPayments}
             onSave={handleSave}
             organizationId={organizationId}
           />
@@ -274,6 +309,7 @@ const NewInvoicePage = () => {
           <InvoicePreview
             invoice={currentInvoice}
             lineItems={currentLineItems}
+            payments={currentPayments}
             organizationId={organizationId}
           />
         </div>
