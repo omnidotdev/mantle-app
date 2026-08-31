@@ -1,3 +1,5 @@
+import { formatProjectType } from "@/features/quotes/lib/projectType";
+
 import type { QuoteLineItem } from "@/features/quotes/types/quote";
 
 interface ContractScopeProps {
@@ -29,7 +31,7 @@ const ContractScope = ({
         </p>
         {projectType && (
           <p>
-            <strong>Type:</strong> {projectType}
+            <strong>Type:</strong> {formatProjectType(projectType)}
           </p>
         )}
         {description && (
