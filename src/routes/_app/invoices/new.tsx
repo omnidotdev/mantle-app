@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
+import { normalizePaidFields } from "@/features/invoices/types/invoice";
 import {
   useCreateInvoiceLineItemMutation,
   useCreateInvoiceMutation,
@@ -142,6 +143,12 @@ const NewInvoicePage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const paid = normalizePaidFields({
+        status: currentInvoice.status ?? "draft",
+        paidAt: currentInvoice.paidAt ?? null,
+        paymentReference: currentInvoice.paymentReference ?? null,
+      });
+
       const result = await createMutation.mutateAsync({
         input: {
           invoice: {
@@ -150,7 +157,7 @@ const NewInvoicePage = () => {
             companyId: currentInvoice.companyId || undefined,
             contactId: currentInvoice.contactId,
             billTo: currentInvoice.billTo,
-            status: currentInvoice.status ?? "draft",
+            status: paid.status,
             issueDate: currentInvoice.issueDate
               ? new Date(currentInvoice.issueDate)
               : new Date(),
@@ -163,6 +170,8 @@ const NewInvoicePage = () => {
             taxAmount: currentInvoice.taxAmount,
             total: currentInvoice.total,
             currency: currentInvoice.currency ?? "USD",
+            paidAt: paid.paidAt ? new Date(paid.paidAt) : null,
+            paymentReference: paid.paymentReference,
           },
         },
       });

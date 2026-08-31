@@ -6,7 +6,11 @@ import {
   DEFAULT_ACCENT,
   getAccentVariants,
 } from "@/features/invoices/types/accentColor";
-import { formatCurrency, formatDate } from "@/features/invoices/types/invoice";
+import {
+  formatCurrency,
+  formatDate,
+  formatPaidDate,
+} from "@/features/invoices/types/invoice";
 import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLogo";
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
@@ -127,6 +131,11 @@ const InvoicePreview = ({
             </div>
             <div className="text-right">
               <h1 className="font-bold text-4xl text-white">INVOICE</h1>
+              {invoice.status === "paid" && (
+                <span className="mt-2 inline-block rounded-md bg-white px-3 py-1 font-bold text-green-700 text-sm uppercase tracking-wide">
+                  Paid
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -199,6 +208,24 @@ const InvoicePreview = ({
                   <span className="font-bold text-foreground">Due Date:</span>
                   <span className="text-foreground">
                     {formatDate(invoice.dueDate)}
+                  </span>
+                </div>
+              )}
+              {invoice.status === "paid" && invoice.paidAt && (
+                <div className="mb-1 flex justify-between">
+                  <span className="font-bold text-foreground">Paid Date:</span>
+                  <span className="text-foreground">
+                    {formatPaidDate(invoice.paidAt)}
+                  </span>
+                </div>
+              )}
+              {invoice.status === "paid" && invoice.paymentReference && (
+                <div className="mb-1 flex justify-between">
+                  <span className="font-bold text-foreground">
+                    Payment Ref:
+                  </span>
+                  <span className="text-foreground">
+                    {invoice.paymentReference}
                   </span>
                 </div>
               )}
