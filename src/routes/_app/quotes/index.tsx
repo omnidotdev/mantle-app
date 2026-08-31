@@ -25,6 +25,7 @@ import {
   useDeleteQuoteMutation,
 } from "@/generated/graphql";
 import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
+import { formatStatus } from "@/lib/utils";
 
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
@@ -325,7 +326,7 @@ const QuotesListPage = () => {
             <span
               className={`inline-block rounded-full px-2 py-1 text-xs ${statusColors[status] || statusColors.draft}`}
             >
-              {status}
+              {formatStatus(status)}
             </span>
           );
         },
@@ -438,7 +439,7 @@ const QuotesListPage = () => {
               <option value="all">All statuses</option>
               {QUOTE_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {formatStatus(status)}
                 </option>
               ))}
             </select>
