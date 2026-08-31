@@ -3,7 +3,7 @@ type DocumentNumberingPreview = {
   prefix: string;
   separator: string;
   dateFormat: string | null;
-  idStrategy: "sequential" | "random";
+  idStrategy: "sequential" | "random" | "timestamp";
   sequentialPadding: number;
   randomLength: number;
 };
@@ -42,6 +42,8 @@ const formatPreview = (config: DocumentNumberingPreview): string => {
 
   if (config.idStrategy === "sequential") {
     parts.push("1".padStart(config.sequentialPadding, "0"));
+  } else if (config.idStrategy === "timestamp") {
+    parts.push(`20260203${config.separator}115447`);
   } else {
     const sample = "A7F3BC90DE12".slice(0, config.randomLength);
     parts.push(sample);

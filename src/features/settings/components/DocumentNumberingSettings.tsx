@@ -27,12 +27,14 @@ import type { DocumentNumberingPreview } from "@/features/settings/types/documen
 
 type DocumentType = "quote" | "invoice";
 
+type IdStrategy = "sequential" | "random" | "timestamp";
+
 type FormState = {
   globalPrefix: string;
   prefix: string;
   separator: string;
   dateFormat: string | null;
-  idStrategy: "sequential" | "random";
+  idStrategy: IdStrategy;
   sequentialPadding: number;
   randomLength: number;
 };
@@ -71,38 +73,35 @@ const dateFormatOptions = [
   { label: "YYYYMM", value: "YYYYMM" },
 ];
 
+const strategyLabels: Record<IdStrategy, string> = {
+  sequential: "Sequential",
+  random: "Random",
+  timestamp: "Timestamp",
+};
+
 const StrategyToggle = ({
   value,
   onChange,
 }: {
-  value: "sequential" | "random";
-  onChange: (v: "sequential" | "random") => void;
+  value: IdStrategy;
+  onChange: (v: IdStrategy) => void;
 }) => (
   <div className="inline-flex rounded-lg border border-border bg-muted p-1">
-    <button
-      type="button"
-      onClick={() => onChange("sequential")}
-      aria-pressed={value === "sequential"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "sequential"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Sequential
-    </button>
-    <button
-      type="button"
-      onClick={() => onChange("random")}
-      aria-pressed={value === "random"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "random"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Random
-    </button>
+    {(Object.keys(strategyLabels) as IdStrategy[]).map((strategy) => (
+      <button
+        key={strategy}
+        type="button"
+        onClick={() => onChange(strategy)}
+        aria-pressed={value === strategy}
+        className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
+          value === strategy
+            ? "bg-card text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        {strategyLabels[strategy]}
+      </button>
+    ))}
   </div>
 );
 
@@ -136,8 +135,11 @@ const DocumentNumberingForm = ({
         prefix: existingConfig.prefix,
         separator: existingConfig.separator,
         dateFormat: existingConfig.dateFormat ?? null,
-        idStrategy:
-          existingConfig.idStrategy === "random" ? "random" : "sequential",
+        idStrategy: (["sequential", "random", "timestamp"] as const).includes(
+          existingConfig.idStrategy as IdStrategy,
+        )
+          ? (existingConfig.idStrategy as IdStrategy)
+          : "sequential",
         sequentialPadding: existingConfig.sequentialPadding,
         randomLength: existingConfig.randomLength,
       });
@@ -273,7 +275,7 @@ const DocumentNumberingForm = ({
           />
         </div>
 
-        {form.idStrategy === "sequential" ? (
+        {form.idStrategy === "sequential" && (
           <div className="space-y-1.5">
             <Label htmlFor={`${documentType}-padding`}>
               Sequential Padding
@@ -289,7 +291,9 @@ const DocumentNumberingForm = ({
               }
             />
           </div>
-        ) : (
+        )}
+
+        {form.idStrategy === "random" && (
           <div className="space-y-1.5">
             <Label htmlFor={`${documentType}-random-length`}>
               Random Length
@@ -304,6 +308,16 @@ const DocumentNumberingForm = ({
                 handleChange("randomLength", Number(e.target.value))
               }
             />
+          </div>
+        )}
+
+        {form.idStrategy === "timestamp" && (
+          <div className="space-y-1.5">
+            <Label>Timestamp</Label>
+            <p className="text-muted-foreground text-sm">
+              Uses the date and time each number is generated, e.g. 20260203
+              {form.separator}115447.
+            </p>
           </div>
         )}
       </div>
