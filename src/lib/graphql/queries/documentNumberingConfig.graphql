@@ -3,6 +3,7 @@ query DocumentNumberingConfigs($organizationId: String!) {
     nodes {
       rowId
       organizationId
+      companyId
       documentType
       globalPrefix
       prefix
@@ -47,6 +48,14 @@ mutation UpdateDocumentNumberingConfig(
       sequentialPadding
       randomLength
     }
+  }
+}
+
+mutation DeleteDocumentNumberingConfig(
+  $input: DeleteDocumentNumberingConfigInput!
+) {
+  deleteDocumentNumberingConfig(input: $input) {
+    deletedDocumentNumberingConfigId
   }
 }
 
