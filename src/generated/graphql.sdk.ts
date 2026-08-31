@@ -1685,6 +1685,9 @@ export type DeleteSupplierPayloadSupplierEdgeArgs = {
 
 export type DocumentNumberingConfig = Node & {
   __typename?: 'DocumentNumberingConfig';
+  /** Reads a single `Company` that is related to this `DocumentNumberingConfig`. */
+  company?: Maybe<Company>;
+  companyId?: Maybe<Scalars['UUID']['output']>;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   dateFormat?: Maybe<Scalars['String']['output']>;
   documentType: Scalars['String']['output'];
@@ -1741,6 +1744,10 @@ export type DocumentNumberingConfigEdge = {
 export type DocumentNumberingConfigFilter = {
   /** Checks for all expressions in this list. */
   and?: InputMaybe<Array<DocumentNumberingConfigFilter>>;
+  /** Filter by the object’s `company` relation. */
+  company?: InputMaybe<CompanyFilter>;
+  /** A related `company` exists. */
+  companyExists?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `documentType` field. */
   documentType?: InputMaybe<StringFilter>;
   /** Negates the expression. */
@@ -1755,6 +1762,7 @@ export type DocumentNumberingConfigFilter = {
 
 /** An input for mutations affecting `DocumentNumberingConfig` */
 export type DocumentNumberingConfigInput = {
+  companyId?: InputMaybe<Scalars['UUID']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   dateFormat?: InputMaybe<Scalars['String']['input']>;
   documentType: Scalars['String']['input'];
@@ -1785,6 +1793,7 @@ export enum DocumentNumberingConfigOrderBy {
 
 /** Represents an update to a `DocumentNumberingConfig`. Fields that are set will be updated. */
 export type DocumentNumberingConfigPatch = {
+  companyId?: InputMaybe<Scalars['UUID']['input']>;
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
   dateFormat?: InputMaybe<Scalars['String']['input']>;
   documentType?: InputMaybe<Scalars['String']['input']>;
@@ -1801,6 +1810,7 @@ export type DocumentNumberingConfigPatch = {
 };
 
 export type GenerateDocumentNumberInput = {
+  companyId?: InputMaybe<Scalars['UUID']['input']>;
   documentType: Scalars['String']['input'];
   idStrategy?: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
@@ -5824,6 +5834,16 @@ export type DeleteCompanyMemberInput = {
   rowId: string;
 };
 
+/** All input for the `deleteDocumentNumberingConfig` mutation. */
+export type DeleteDocumentNumberingConfigInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
 /** All input for the `deleteInvoice` mutation. */
 export type DeleteInvoiceInput = {
   /**
@@ -5896,6 +5916,7 @@ export type DeleteQuoteLineItemInput = {
 
 /** An input for mutations affecting `DocumentNumberingConfig` */
 export type DocumentNumberingConfigInput = {
+  companyId?: string | null | undefined;
   createdAt?: Date | null | undefined;
   dateFormat?: string | null | undefined;
   documentType: string;
@@ -5913,6 +5934,7 @@ export type DocumentNumberingConfigInput = {
 
 /** Represents an update to a `DocumentNumberingConfig`. Fields that are set will be updated. */
 export type DocumentNumberingConfigPatch = {
+  companyId?: string | null | undefined;
   createdAt?: Date | null | undefined;
   dateFormat?: string | null | undefined;
   documentType?: string | null | undefined;
@@ -5929,6 +5951,7 @@ export type DocumentNumberingConfigPatch = {
 };
 
 export type GenerateDocumentNumberInput = {
+  companyId?: string | null | undefined;
   documentType: string;
   idStrategy?: string | null | undefined;
   organizationId: string;
@@ -6343,7 +6366,7 @@ export type DocumentNumberingConfigsQueryVariables = Exact<{
 }>;
 
 
-export type DocumentNumberingConfigsQuery = { documentNumberingConfigs: { nodes: Array<{ rowId: string, organizationId: string, documentType: string, globalPrefix: string | null, prefix: string, separator: string, dateFormat: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
+export type DocumentNumberingConfigsQuery = { documentNumberingConfigs: { nodes: Array<{ rowId: string, organizationId: string, companyId: string | null, documentType: string, globalPrefix: string | null, prefix: string, separator: string, dateFormat: string | null, idStrategy: string, sequentialPadding: number, randomLength: number, nextSequentialNumber: number } | null> } | null };
 
 export type CreateDocumentNumberingConfigMutationVariables = Exact<{
   input: CreateDocumentNumberingConfigInput;
@@ -6358,6 +6381,13 @@ export type UpdateDocumentNumberingConfigMutationVariables = Exact<{
 
 
 export type UpdateDocumentNumberingConfigMutation = { updateDocumentNumberingConfig: { documentNumberingConfig: { rowId: string, globalPrefix: string | null, prefix: string, separator: string, dateFormat: string | null, idStrategy: string, sequentialPadding: number, randomLength: number } | null } | null };
+
+export type DeleteDocumentNumberingConfigMutationVariables = Exact<{
+  input: DeleteDocumentNumberingConfigInput;
+}>;
+
+
+export type DeleteDocumentNumberingConfigMutation = { deleteDocumentNumberingConfig: { deletedDocumentNumberingConfigId: string | null } | null };
 
 export type GenerateDocumentNumberMutationVariables = Exact<{
   input: GenerateDocumentNumberInput;
@@ -6660,6 +6690,7 @@ export const DocumentNumberingConfigsDocument = gql`
     nodes {
       rowId
       organizationId
+      companyId
       documentType
       globalPrefix
       prefix
@@ -6702,6 +6733,13 @@ export const UpdateDocumentNumberingConfigDocument = gql`
       sequentialPadding
       randomLength
     }
+  }
+}
+    `;
+export const DeleteDocumentNumberingConfigDocument = gql`
+    mutation DeleteDocumentNumberingConfig($input: DeleteDocumentNumberingConfigInput!) {
+  deleteDocumentNumberingConfig(input: $input) {
+    deletedDocumentNumberingConfigId
   }
 }
     `;
@@ -7104,6 +7142,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateDocumentNumberingConfig(variables: UpdateDocumentNumberingConfigMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateDocumentNumberingConfigMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateDocumentNumberingConfigMutation>({ document: UpdateDocumentNumberingConfigDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateDocumentNumberingConfig', 'mutation', variables);
+    },
+    DeleteDocumentNumberingConfig(variables: DeleteDocumentNumberingConfigMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteDocumentNumberingConfigMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteDocumentNumberingConfigMutation>({ document: DeleteDocumentNumberingConfigDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteDocumentNumberingConfig', 'mutation', variables);
     },
     GenerateDocumentNumber(variables: GenerateDocumentNumberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GenerateDocumentNumberMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<GenerateDocumentNumberMutation>({ document: GenerateDocumentNumberDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GenerateDocumentNumber', 'mutation', variables);

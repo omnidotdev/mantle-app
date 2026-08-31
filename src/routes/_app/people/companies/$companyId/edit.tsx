@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import ClientInvoiceNumbering from "@/features/invoices/components/ClientInvoiceNumbering";
 import CompanyForm from "@/features/people/components/CompanyForm";
 import CompanyMembers from "@/features/people/components/CompanyMembers";
 import {
@@ -178,6 +179,11 @@ const EditCompanyPage = () => {
       </div>
 
       <CompanyMembers companyId={companyId} organizationId={organizationId} />
+
+      <ClientInvoiceNumbering
+        organizationId={organizationId}
+        companyId={companyId}
+      />
     </div>
   );
 };

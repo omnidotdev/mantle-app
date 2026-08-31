@@ -95,7 +95,11 @@ const InvoiceForm = ({
     if (!organizationId) return;
 
     const result = await generateNumberMutation.mutateAsync({
-      input: { organizationId, documentType: "invoice" },
+      input: {
+        organizationId,
+        documentType: "invoice",
+        companyId: invoice.companyId ?? undefined,
+      },
     });
     const number = result.generateDocumentNumber?.documentNumber;
     if (number) handleChange("invoiceNumber", number);

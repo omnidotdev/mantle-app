@@ -10,6 +10,7 @@ import {
   useAllQuotesQuery,
 } from "@/generated/graphql";
 import appConfig from "@/lib/config/app.config";
+import { formatStatus } from "@/lib/utils";
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -277,7 +278,7 @@ const DashboardPage = () => {
                   <span
                     className={`inline-block rounded-full px-2 py-0.5 text-xs ${statusColors[inv.status] || "bg-muted text-muted-foreground"}`}
                   >
-                    {inv.status}
+                    {formatStatus(inv.status)}
                   </span>
                 </div>
               </div>
