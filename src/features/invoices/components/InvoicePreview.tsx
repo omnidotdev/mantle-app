@@ -171,12 +171,12 @@ const InvoicePreview = ({
                 </div>
               ) : company ? (
                 <>
-                  <p className="text-foreground">{company.name}</p>
                   {contact && (
                     <p className="text-foreground">
                       {contact.firstName} {contact.lastName}
                     </p>
                   )}
+                  <p className="text-foreground">{company.name}</p>
                   {company.email && (
                     <p className="text-muted-foreground text-sm">
                       {company.email}
