@@ -35,6 +35,13 @@ interface InvoiceFormProps {
   onPaymentsChange: (payments: Partial<Payment>[]) => void;
   onSave: () => void;
   organizationId?: string;
+  /**
+   * When true, selecting a client regenerates the invoice number from that
+   * client's numbering scheme. Only enabled while creating (a draft not yet
+   * saved), so editing an existing invoice never silently renumbers it or
+   * consumes a sequence number on every client change.
+   */
+  autoNumberOnClientSelect?: boolean;
 }
 
 const InvoiceForm = ({
@@ -46,6 +53,7 @@ const InvoiceForm = ({
   onPaymentsChange,
   onSave,
   organizationId,
+  autoNumberOnClientSelect = false,
 }: InvoiceFormProps) => {
   const handleChange = (field: keyof Invoice, value: string | null) => {
     onInvoiceChange({ ...invoice, [field]: value });
@@ -392,6 +400,11 @@ const InvoiceForm = ({
                 disabled={!organizationId || generateNumberMutation.isPending}
                 className="flex shrink-0 items-center gap-1 rounded-md border border-input px-3 text-muted-foreground text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Generate invoice number"
+                title={
+                  invoice.companyId
+                    ? "Generate the next number from this client's numbering scheme"
+                    : "Generate the next number from the workspace numbering scheme"
+                }
               >
                 <RefreshCw size={14} />
                 Generate
@@ -433,7 +446,7 @@ const InvoiceForm = ({
           <h3 className="font-medium text-foreground text-lg">Bill To</h3>
           <PopulateButton
             organizationId={organizationId}
-            onPopulateClient={({
+            onPopulateClient={async ({
               companyId,
               contactId,
               companyName,
@@ -443,12 +456,27 @@ const InvoiceForm = ({
               const lines = [contactName, companyName, contactEmail].filter(
                 Boolean,
               );
-              onInvoiceChange({
+              const nextInvoice = {
                 ...invoice,
                 companyId,
                 contactId: contactId ?? null,
                 billTo: lines.join("\n") || null,
-              });
+              };
+              onInvoiceChange(nextInvoice);
+
+              // On a new invoice, pull the number from the selected client's
+              // numbering scheme (falls back to the workspace default server-side
+              // when the client has no override). Build on nextInvoice so the
+              // client fields are not lost by this second update
+              if (autoNumberOnClientSelect && organizationId && companyId) {
+                const result = await generateNumberMutation.mutateAsync({
+                  input: { organizationId, documentType: "invoice", companyId },
+                });
+                const number = result.generateDocumentNumber?.documentNumber;
+                if (number) {
+                  onInvoiceChange({ ...nextInvoice, invoiceNumber: number });
+                }
+              }
             }}
           />
         </div>

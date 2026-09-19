@@ -1,4 +1,4 @@
-import { Building2, Info, Zap } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import CompanyPicker from "@/features/people/components/CompanyPicker";
@@ -114,23 +114,17 @@ const PopulateButton = ({
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 font-medium text-primary-700 text-sm hover:bg-primary-100"
       >
-        <Zap size={14} />
-        Populate with Omni
+        <Building2 size={14} />
+        Select client
       </button>
 
       {open && (
         <div
           ref={popoverRef}
           role="dialog"
-          aria-label="Populate client from Omni"
+          aria-label="Select client"
           className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border border-border bg-card p-4 shadow-lg"
         >
-          {/* Sender info note */}
-          <div className="mb-4 flex items-start gap-2 rounded-md bg-muted p-2 text-muted-foreground text-xs">
-            <Info size={14} className="mt-0.5 shrink-0" />
-            <span>Sender details auto-fill from org profile in Settings</span>
-          </div>
-
           {/* Client section */}
           <div>
             <h4 className="mb-2 flex items-center gap-1.5 font-medium text-foreground text-sm">

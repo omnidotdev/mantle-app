@@ -301,6 +301,7 @@ const NewInvoicePage = () => {
             onPaymentsChange={setCurrentPayments}
             onSave={handleSave}
             organizationId={organizationId}
+            autoNumberOnClientSelect
           />
         </div>
 
