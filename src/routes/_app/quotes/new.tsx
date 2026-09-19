@@ -169,7 +169,12 @@ const NewQuotePage = () => {
     setRegenerating(true);
     try {
       const result = await generateNumber.mutateAsync({
-        input: { organizationId, documentType: "quote", idStrategy: strategy },
+        input: {
+          organizationId,
+          documentType: "quote",
+          idStrategy: strategy,
+          companyId: currentQuote.companyId ?? undefined,
+        },
       });
       const num = result.generateDocumentNumber?.documentNumber;
       if (num) {
@@ -349,6 +354,7 @@ const NewQuotePage = () => {
             organizationId={organizationId}
             onRegenerateNumber={handleRegenerateNumber}
             isRegenerating={regenerating}
+            autoNumberOnClientSelect
           />
         </div>
 

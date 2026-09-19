@@ -13,6 +13,7 @@ import { formatCurrency } from "@/features/invoices/types/invoice";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
 import { QUOTE_STATUSES, SOW_DEFAULTS } from "../types/quote";
 import AdditionalTermsEditor from "./AdditionalTermsEditor";
 import BulletListEditor from "./BulletListEditor";
@@ -31,6 +32,13 @@ interface QuoteFormProps {
   organizationId?: string;
   onRegenerateNumber?: (strategy: IdStrategy) => void;
   isRegenerating?: boolean;
+  /**
+   * When true, selecting a client regenerates the quote number from that
+   * client's numbering scheme. Only enabled while creating (a draft not yet
+   * saved), so editing an existing quote never silently renumbers it or
+   * consumes a sequence number on every client change.
+   */
+  autoNumberOnClientSelect?: boolean;
 }
 
 const QuoteForm = ({
@@ -43,7 +51,29 @@ const QuoteForm = ({
   organizationId,
   onRegenerateNumber,
   isRegenerating,
+  autoNumberOnClientSelect = false,
 }: QuoteFormProps) => {
+  const generateNumberMutation = useGenerateDocumentNumberMutation();
+
+  // Set the client company (and any related fields) and, on a new quote, pull
+  // the number from that client's numbering scheme (server falls back to the
+  // workspace default when the client has no override). Shared by the client
+  // picker and the company dropdown so either path applies the scheme. Build on
+  // nextQuote so the second update never drops the fields set by the first
+  const applyCompany = async (companyId: string, extra: Partial<Quote>) => {
+    const nextQuote = { ...quote, companyId, ...extra };
+    onQuoteChange(nextQuote);
+
+    if (autoNumberOnClientSelect && organizationId && companyId) {
+      const result = await generateNumberMutation.mutateAsync({
+        input: { organizationId, documentType: "quote", companyId },
+      });
+      const number = result.generateDocumentNumber?.documentNumber;
+      if (number) {
+        onQuoteChange({ ...nextQuote, quoteNumber: number });
+      }
+    }
+  };
   const { getProfileForOrg, updateProfile, createProfile } = useSettingsStore();
   const orgProfile = organizationId
     ? getProfileForOrg(organizationId)
@@ -372,15 +402,13 @@ const QuoteForm = ({
               contactId,
               contactName,
               contactEmail,
-            }) => {
-              onQuoteChange({
-                ...quote,
-                companyId,
+            }) =>
+              applyCompany(companyId, {
                 contactId: contactId ?? null,
                 clientName: contactName ?? null,
                 clientEmail: contactEmail ?? null,
-              });
-            }}
+              })
+            }
           />
         </div>
 
@@ -389,7 +417,7 @@ const QuoteForm = ({
             <Label>Company</Label>
             <CompanyPicker
               value={quote.companyId ?? ""}
-              onValueChange={(value) => handleChange("companyId", value)}
+              onValueChange={(value) => applyCompany(value, {})}
               organizationId={organizationId}
             />
           </div>

@@ -229,7 +229,12 @@ const EditQuotePage = () => {
     setRegenerating(true);
     try {
       const result = await generateNumber.mutateAsync({
-        input: { organizationId, documentType: "quote", idStrategy: strategy },
+        input: {
+          organizationId,
+          documentType: "quote",
+          idStrategy: strategy,
+          companyId: currentQuote.companyId ?? undefined,
+        },
       });
       const num = result.generateDocumentNumber?.documentNumber;
       if (num) {
