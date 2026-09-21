@@ -19,18 +19,37 @@ import signIn from "@/lib/auth/signIn";
 import appConfig from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
 import { signOutLocal } from "@/server/functions/auth";
+import { getLastOrgCookie } from "@/server/functions/lastWorkspace";
 
 export const Route = createFileRoute("/_public/")({
   beforeLoad: async ({ context: { session } }) => {
-    // Redirect fully provisioned users to the authenticated area
-    if (session?.user?.identityProviderId) throw redirect({ to: "/dashboard" });
+    const user = session?.user;
+
+    if (!user) return;
+
+    // Fully provisioned: send them into their last-visited workspace (or their
+    // first one), so the active workspace is always carried in the URL
+    if (user.identityProviderId) {
+      const organizations = session?.organizations ?? [];
+      const lastSlug = await getLastOrgCookie();
+      const landing =
+        organizations.find((org) => org.slug === lastSlug) ?? organizations[0];
+
+      if (landing) {
+        throw redirect({
+          to: "/@{$workspaceSlug}",
+          params: { workspaceSlug: landing.slug },
+        });
+      }
+
+      // Provisioned but not yet in any workspace: show the public page
+      return;
+    }
 
     // Clear zombie sessions: user exists in IDP but identityProviderId is
     // missing (auth enrichment failed or cache expired). Without this, the
-    // public layout shows "Sign Out" but the user can't reach /dashboard
-    if (session?.user) {
-      await signOutLocal();
-    }
+    // public layout shows "Sign Out" but the user can't reach the app
+    await signOutLocal();
   },
   component: HomePage,
 });
@@ -113,7 +132,7 @@ function HomePage() {
               className="group h-12 gap-2 px-8 font-semibold shadow-lg"
               onClick={() =>
                 signIn({
-                  redirectUrl: `${BASE_URL}/dashboard`,
+                  redirectUrl: BASE_URL,
                   providerId: "omni",
                 })
               }
@@ -256,7 +275,7 @@ function HomePage() {
             className="group h-14 gap-2 px-10 font-semibold text-lg shadow-lg"
             onClick={() =>
               signIn({
-                redirectUrl: `${BASE_URL}/dashboard`,
+                redirectUrl: BASE_URL,
                 providerId: "omni",
               })
             }
