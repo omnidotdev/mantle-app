@@ -430,10 +430,15 @@ const InvoiceForm = ({
               ))}
               {invoice.status === "paid" && <option value="paid">Paid</option>}
             </select>
-            {invoice.status === "paid" && (
+            {invoice.status === "paid" ? (
               <p className="text-muted-foreground text-xs">
                 Set automatically once payments cover the total. Remove a
                 payment to change it.
+              </p>
+            ) : (
+              <p className="text-muted-foreground text-xs">
+                "Paid" is set automatically once payments cover the total.
+                Record one in Payments below.
               </p>
             )}
           </div>
