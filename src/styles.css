@@ -195,6 +195,17 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* native <select> option popups: an author background on a <select> defeats the
+     color-scheme-based dark rendering of its native option list, leaving light
+     option text on a light popup in dark mode. Give options explicit theme tokens
+     so the popup tracks the theme in every browser (Chromium/Firefox honor these;
+     Safari follows color-scheme) */
+  option,
+  optgroup {
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+  }
 }
 
 @layer utilities {
