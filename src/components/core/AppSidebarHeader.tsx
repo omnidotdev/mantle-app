@@ -7,7 +7,7 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@omnidotdev/thornberry/menu";
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
 import {
@@ -19,11 +19,12 @@ import app from "@/lib/config/app.config";
 import { AUTH_BASE_URL, CONSOLE_URL } from "@/lib/config/env.config";
 import cn from "@/lib/utils";
 import { useOrganization } from "@/providers/OrganizationProvider";
-import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
 const AppSidebarHeader = () => {
-  const router = useRouter();
-  const { organizationId } = useRouteContext({ from: "/_app" });
+  const navigate = useNavigate();
+  const { organizationId } = useRouteContext({
+    from: "/_app/@{$workspaceSlug}",
+  });
   const orgCtx = useOrganization();
   const { closeMobileSidebar } = useSidebar();
 
@@ -68,11 +69,15 @@ const AppSidebarHeader = () => {
                     "flex items-center justify-between gap-2",
                     isActive && "font-medium",
                   )}
-                  onClick={async () => {
+                  onClick={() => {
                     if (isActive) return;
                     closeMobileSidebar();
-                    await setLastOrgCookie({ data: org.slug });
-                    router.invalidate();
+                    // Switching workspace means changing the URL, not toggling a
+                    // global selector: navigate to the target workspace's home
+                    navigate({
+                      to: "/@{$workspaceSlug}",
+                      params: { workspaceSlug: org.slug },
+                    });
                   }}
                 >
                   <span className="truncate">{org.name}</span>

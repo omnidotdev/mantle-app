@@ -4,7 +4,7 @@ import {
   hotkeyLabel,
   useHotkeys,
 } from "@omnidotdev/thornberry/use-hotkeys";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import {
   Boxes,
   FileText,
@@ -30,17 +30,16 @@ import type { CommandAction } from "@omnidotdev/thornberry/command-palette";
 const CommandPalette = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { session } = useRouteContext({ from: "__root__" });
+  // Mounted at the root, so the workspace handle is only present while the user
+  // is inside a workspace. Its presence gates (and supplies the param for) the
+  // workspace navigation commands
+  const { workspaceSlug } = useParams({ strict: false });
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   // App-wide theme shortcut. react-hotkeys-hook ignores form fields by default,
   // so this never fires while typing in the palette input or any other field
   useHotkeys(GLOBAL_HOTKEYS.toggleTheme, toggleTheme);
-
-  // Authenticated app routes redirect to home when signed out, so only surface
-  // them once there is a session
-  const isAuthed = Boolean(session?.user);
 
   const commands: CommandAction[] = [
     {
@@ -50,14 +49,15 @@ const CommandPalette = () => {
       icon: HomeIcon,
       onSelect: () => navigate({ to: "/" }),
     },
-    ...(isAuthed
+    ...(workspaceSlug
       ? ([
           {
             id: "dashboard",
             label: "Dashboard",
             group: "Navigation",
             icon: LayoutDashboard,
-            onSelect: () => navigate({ to: "/dashboard" }),
+            onSelect: () =>
+              navigate({ to: "/@{$workspaceSlug}", params: { workspaceSlug } }),
           },
           {
             id: "people",
@@ -65,7 +65,11 @@ const CommandPalette = () => {
             group: "Navigation",
             icon: Users,
             keywords: ["contacts", "companies"],
-            onSelect: () => navigate({ to: "/people" }),
+            onSelect: () =>
+              navigate({
+                to: "/@{$workspaceSlug}/people",
+                params: { workspaceSlug },
+              }),
           },
           {
             id: "inventory",
@@ -73,28 +77,44 @@ const CommandPalette = () => {
             group: "Navigation",
             icon: Boxes,
             keywords: ["products"],
-            onSelect: () => navigate({ to: "/inventory" }),
+            onSelect: () =>
+              navigate({
+                to: "/@{$workspaceSlug}/inventory",
+                params: { workspaceSlug },
+              }),
           },
           {
             id: "invoices",
             label: "Invoices",
             group: "Navigation",
             icon: Receipt,
-            onSelect: () => navigate({ to: "/invoices" }),
+            onSelect: () =>
+              navigate({
+                to: "/@{$workspaceSlug}/invoices",
+                params: { workspaceSlug },
+              }),
           },
           {
             id: "quotes",
             label: "Quotes",
             group: "Navigation",
             icon: FileText,
-            onSelect: () => navigate({ to: "/quotes" }),
+            onSelect: () =>
+              navigate({
+                to: "/@{$workspaceSlug}/quotes",
+                params: { workspaceSlug },
+              }),
           },
           {
             id: "settings",
             label: "Settings",
             group: "Navigation",
             icon: Settings,
-            onSelect: () => navigate({ to: "/settings" }),
+            onSelect: () =>
+              navigate({
+                to: "/@{$workspaceSlug}/settings",
+                params: { workspaceSlug },
+              }),
           },
         ] satisfies CommandAction[])
       : []),

@@ -12,33 +12,34 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as AppQuotesRouteImport } from './routes/_app/quotes'
-import { Route as AppPeopleRouteImport } from './routes/_app/people'
-import { Route as AppInvoicesRouteImport } from './routes/_app/invoices'
-import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
-import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
-import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
-import { Route as AppQuotesIndexRouteImport } from './routes/_app/quotes/index'
-import { Route as AppPeopleIndexRouteImport } from './routes/_app/people/index'
-import { Route as AppInvoicesIndexRouteImport } from './routes/_app/invoices/index'
-import { Route as AppInventoryIndexRouteImport } from './routes/_app/inventory/index'
+import { Route as AppAtChar123workspaceSlugChar125RouteImport } from './routes/_app/@{$workspaceSlug}'
+import { Route as AppAtChar123workspaceSlugChar125IndexRouteImport } from './routes/_app/@{$workspaceSlug}/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppQuotesNewRouteImport } from './routes/_app/quotes/new'
-import { Route as AppQuotesQuoteIdRouteImport } from './routes/_app/quotes/$quoteId'
-import { Route as AppInvoicesNewRouteImport } from './routes/_app/invoices/new'
-import { Route as AppInvoicesInvoiceIdRouteImport } from './routes/_app/invoices/$invoiceId'
-import { Route as AppInventoryNewRouteImport } from './routes/_app/inventory/new'
-import { Route as AppInventoryProductIdRouteImport } from './routes/_app/inventory/$productId'
-import { Route as AppQuotesQuoteIdIndexRouteImport } from './routes/_app/quotes/$quoteId/index'
-import { Route as AppInvoicesInvoiceIdIndexRouteImport } from './routes/_app/invoices/$invoiceId/index'
-import { Route as AppInventoryProductIdIndexRouteImport } from './routes/_app/inventory/$productId/index'
-import { Route as AppQuotesQuoteIdEditRouteImport } from './routes/_app/quotes/$quoteId/edit'
-import { Route as AppPeopleContactsNewRouteImport } from './routes/_app/people/contacts/new'
-import { Route as AppPeopleCompaniesNewRouteImport } from './routes/_app/people/companies/new'
-import { Route as AppInvoicesInvoiceIdEditRouteImport } from './routes/_app/invoices/$invoiceId/edit'
-import { Route as AppInventoryProductIdEditRouteImport } from './routes/_app/inventory/$productId/edit'
-import { Route as AppPeopleContactsContactIdEditRouteImport } from './routes/_app/people/contacts/$contactId/edit'
-import { Route as AppPeopleCompaniesCompanyIdEditRouteImport } from './routes/_app/people/companies/$companyId/edit'
+import { Route as AppAtChar123workspaceSlugChar125QuotesRouteImport } from './routes/_app/@{$workspaceSlug}/quotes'
+import { Route as AppAtChar123workspaceSlugChar125PeopleRouteImport } from './routes/_app/@{$workspaceSlug}/people'
+import { Route as AppAtChar123workspaceSlugChar125InvoicesRouteImport } from './routes/_app/@{$workspaceSlug}/invoices'
+import { Route as AppAtChar123workspaceSlugChar125InventoryRouteImport } from './routes/_app/@{$workspaceSlug}/inventory'
+import { Route as AppAtChar123workspaceSlugChar125SettingsIndexRouteImport } from './routes/_app/@{$workspaceSlug}/settings/index'
+import { Route as AppAtChar123workspaceSlugChar125QuotesIndexRouteImport } from './routes/_app/@{$workspaceSlug}/quotes/index'
+import { Route as AppAtChar123workspaceSlugChar125PeopleIndexRouteImport } from './routes/_app/@{$workspaceSlug}/people/index'
+import { Route as AppAtChar123workspaceSlugChar125InvoicesIndexRouteImport } from './routes/_app/@{$workspaceSlug}/invoices/index'
+import { Route as AppAtChar123workspaceSlugChar125InventoryIndexRouteImport } from './routes/_app/@{$workspaceSlug}/inventory/index'
+import { Route as AppAtChar123workspaceSlugChar125QuotesNewRouteImport } from './routes/_app/@{$workspaceSlug}/quotes/new'
+import { Route as AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteImport } from './routes/_app/@{$workspaceSlug}/quotes/$quoteId'
+import { Route as AppAtChar123workspaceSlugChar125InvoicesNewRouteImport } from './routes/_app/@{$workspaceSlug}/invoices/new'
+import { Route as AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteImport } from './routes/_app/@{$workspaceSlug}/invoices/$invoiceId'
+import { Route as AppAtChar123workspaceSlugChar125InventoryNewRouteImport } from './routes/_app/@{$workspaceSlug}/inventory/new'
+import { Route as AppAtChar123workspaceSlugChar125InventoryProductIdRouteImport } from './routes/_app/@{$workspaceSlug}/inventory/$productId'
+import { Route as AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRouteImport } from './routes/_app/@{$workspaceSlug}/quotes/$quoteId/index'
+import { Route as AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRouteImport } from './routes/_app/@{$workspaceSlug}/invoices/$invoiceId/index'
+import { Route as AppAtChar123workspaceSlugChar125InventoryProductIdIndexRouteImport } from './routes/_app/@{$workspaceSlug}/inventory/$productId/index'
+import { Route as AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRouteImport } from './routes/_app/@{$workspaceSlug}/quotes/$quoteId/edit'
+import { Route as AppAtChar123workspaceSlugChar125PeopleContactsNewRouteImport } from './routes/_app/@{$workspaceSlug}/people/contacts/new'
+import { Route as AppAtChar123workspaceSlugChar125PeopleCompaniesNewRouteImport } from './routes/_app/@{$workspaceSlug}/people/companies/new'
+import { Route as AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRouteImport } from './routes/_app/@{$workspaceSlug}/invoices/$invoiceId/edit'
+import { Route as AppAtChar123workspaceSlugChar125InventoryProductIdEditRouteImport } from './routes/_app/@{$workspaceSlug}/inventory/$productId/edit'
+import { Route as AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRouteImport } from './routes/_app/@{$workspaceSlug}/people/contacts/$contactId/edit'
+import { Route as AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRouteImport } from './routes/_app/@{$workspaceSlug}/people/companies/$companyId/edit'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -53,320 +54,358 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRoute,
 } as any)
-const AppQuotesRoute = AppQuotesRouteImport.update({
-  id: '/quotes',
-  path: '/quotes',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPeopleRoute = AppPeopleRouteImport.update({
-  id: '/people',
-  path: '/people',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppInvoicesRoute = AppInvoicesRouteImport.update({
-  id: '/invoices',
-  path: '/invoices',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppInventoryRoute = AppInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppQuotesIndexRoute = AppQuotesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppQuotesRoute,
-} as any)
-const AppPeopleIndexRoute = AppPeopleIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppPeopleRoute,
-} as any)
-const AppInvoicesIndexRoute = AppInvoicesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppInvoicesRoute,
-} as any)
-const AppInventoryIndexRoute = AppInventoryIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppInventoryRoute,
-} as any)
+const AppAtChar123workspaceSlugChar125Route =
+  AppAtChar123workspaceSlugChar125RouteImport.update({
+    id: '/@{$workspaceSlug}',
+    path: '/@{$workspaceSlug}',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125IndexRoute =
+  AppAtChar123workspaceSlugChar125IndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125Route,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppQuotesNewRoute = AppQuotesNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AppQuotesRoute,
-} as any)
-const AppQuotesQuoteIdRoute = AppQuotesQuoteIdRouteImport.update({
-  id: '/$quoteId',
-  path: '/$quoteId',
-  getParentRoute: () => AppQuotesRoute,
-} as any)
-const AppInvoicesNewRoute = AppInvoicesNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AppInvoicesRoute,
-} as any)
-const AppInvoicesInvoiceIdRoute = AppInvoicesInvoiceIdRouteImport.update({
-  id: '/$invoiceId',
-  path: '/$invoiceId',
-  getParentRoute: () => AppInvoicesRoute,
-} as any)
-const AppInventoryNewRoute = AppInventoryNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AppInventoryRoute,
-} as any)
-const AppInventoryProductIdRoute = AppInventoryProductIdRouteImport.update({
-  id: '/$productId',
-  path: '/$productId',
-  getParentRoute: () => AppInventoryRoute,
-} as any)
-const AppQuotesQuoteIdIndexRoute = AppQuotesQuoteIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppQuotesQuoteIdRoute,
-} as any)
-const AppInvoicesInvoiceIdIndexRoute =
-  AppInvoicesInvoiceIdIndexRouteImport.update({
+const AppAtChar123workspaceSlugChar125QuotesRoute =
+  AppAtChar123workspaceSlugChar125QuotesRouteImport.update({
+    id: '/quotes',
+    path: '/quotes',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125Route,
+  } as any)
+const AppAtChar123workspaceSlugChar125PeopleRoute =
+  AppAtChar123workspaceSlugChar125PeopleRouteImport.update({
+    id: '/people',
+    path: '/people',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125Route,
+  } as any)
+const AppAtChar123workspaceSlugChar125InvoicesRoute =
+  AppAtChar123workspaceSlugChar125InvoicesRouteImport.update({
+    id: '/invoices',
+    path: '/invoices',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125Route,
+  } as any)
+const AppAtChar123workspaceSlugChar125InventoryRoute =
+  AppAtChar123workspaceSlugChar125InventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125Route,
+  } as any)
+const AppAtChar123workspaceSlugChar125SettingsIndexRoute =
+  AppAtChar123workspaceSlugChar125SettingsIndexRouteImport.update({
+    id: '/settings/',
+    path: '/settings/',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125Route,
+  } as any)
+const AppAtChar123workspaceSlugChar125QuotesIndexRoute =
+  AppAtChar123workspaceSlugChar125QuotesIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppInvoicesInvoiceIdRoute,
+    getParentRoute: () => AppAtChar123workspaceSlugChar125QuotesRoute,
   } as any)
-const AppInventoryProductIdIndexRoute =
-  AppInventoryProductIdIndexRouteImport.update({
+const AppAtChar123workspaceSlugChar125PeopleIndexRoute =
+  AppAtChar123workspaceSlugChar125PeopleIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppInventoryProductIdRoute,
+    getParentRoute: () => AppAtChar123workspaceSlugChar125PeopleRoute,
   } as any)
-const AppQuotesQuoteIdEditRoute = AppQuotesQuoteIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => AppQuotesQuoteIdRoute,
-} as any)
-const AppPeopleContactsNewRoute = AppPeopleContactsNewRouteImport.update({
-  id: '/contacts/new',
-  path: '/contacts/new',
-  getParentRoute: () => AppPeopleRoute,
-} as any)
-const AppPeopleCompaniesNewRoute = AppPeopleCompaniesNewRouteImport.update({
-  id: '/companies/new',
-  path: '/companies/new',
-  getParentRoute: () => AppPeopleRoute,
-} as any)
-const AppInvoicesInvoiceIdEditRoute =
-  AppInvoicesInvoiceIdEditRouteImport.update({
+const AppAtChar123workspaceSlugChar125InvoicesIndexRoute =
+  AppAtChar123workspaceSlugChar125InvoicesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125InvoicesRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InventoryIndexRoute =
+  AppAtChar123workspaceSlugChar125InventoryIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125InventoryRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125QuotesNewRoute =
+  AppAtChar123workspaceSlugChar125QuotesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125QuotesRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute =
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteImport.update({
+    id: '/$quoteId',
+    path: '/$quoteId',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125QuotesRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InvoicesNewRoute =
+  AppAtChar123workspaceSlugChar125InvoicesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125InvoicesRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute =
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteImport.update({
+    id: '/$invoiceId',
+    path: '/$invoiceId',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125InvoicesRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InventoryNewRoute =
+  AppAtChar123workspaceSlugChar125InventoryNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125InventoryRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InventoryProductIdRoute =
+  AppAtChar123workspaceSlugChar125InventoryProductIdRouteImport.update({
+    id: '/$productId',
+    path: '/$productId',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125InventoryRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute =
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute =
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () =>
+      AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute =
+  AppAtChar123workspaceSlugChar125InventoryProductIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () =>
+      AppAtChar123workspaceSlugChar125InventoryProductIdRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute =
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => AppInvoicesInvoiceIdRoute,
+    getParentRoute: () => AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute,
   } as any)
-const AppInventoryProductIdEditRoute =
-  AppInventoryProductIdEditRouteImport.update({
+const AppAtChar123workspaceSlugChar125PeopleContactsNewRoute =
+  AppAtChar123workspaceSlugChar125PeopleContactsNewRouteImport.update({
+    id: '/contacts/new',
+    path: '/contacts/new',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125PeopleRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute =
+  AppAtChar123workspaceSlugChar125PeopleCompaniesNewRouteImport.update({
+    id: '/companies/new',
+    path: '/companies/new',
+    getParentRoute: () => AppAtChar123workspaceSlugChar125PeopleRoute,
+  } as any)
+const AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute =
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => AppInventoryProductIdRoute,
+    getParentRoute: () =>
+      AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute,
   } as any)
-const AppPeopleContactsContactIdEditRoute =
-  AppPeopleContactsContactIdEditRouteImport.update({
-    id: '/contacts/$contactId/edit',
-    path: '/contacts/$contactId/edit',
-    getParentRoute: () => AppPeopleRoute,
+const AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute =
+  AppAtChar123workspaceSlugChar125InventoryProductIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () =>
+      AppAtChar123workspaceSlugChar125InventoryProductIdRoute,
   } as any)
-const AppPeopleCompaniesCompanyIdEditRoute =
-  AppPeopleCompaniesCompanyIdEditRouteImport.update({
-    id: '/companies/$companyId/edit',
-    path: '/companies/$companyId/edit',
-    getParentRoute: () => AppPeopleRoute,
-  } as any)
+const AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute =
+  AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRouteImport.update(
+    {
+      id: '/contacts/$contactId/edit',
+      path: '/contacts/$contactId/edit',
+      getParentRoute: () => AppAtChar123workspaceSlugChar125PeopleRoute,
+    } as any,
+  )
+const AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute =
+  AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRouteImport.update(
+    {
+      id: '/companies/$companyId/edit',
+      path: '/companies/$companyId/edit',
+      getParentRoute: () => AppAtChar123workspaceSlugChar125PeopleRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AppDashboardRoute
-  '/inventory': typeof AppInventoryRouteWithChildren
-  '/invoices': typeof AppInvoicesRouteWithChildren
-  '/people': typeof AppPeopleRouteWithChildren
-  '/quotes': typeof AppQuotesRouteWithChildren
-  '/inventory/$productId': typeof AppInventoryProductIdRouteWithChildren
-  '/inventory/new': typeof AppInventoryNewRoute
-  '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRouteWithChildren
-  '/invoices/new': typeof AppInvoicesNewRoute
-  '/quotes/$quoteId': typeof AppQuotesQuoteIdRouteWithChildren
-  '/quotes/new': typeof AppQuotesNewRoute
+  '/@{$workspaceSlug}': typeof AppAtChar123workspaceSlugChar125RouteWithChildren
+  '/@{$workspaceSlug}/inventory': typeof AppAtChar123workspaceSlugChar125InventoryRouteWithChildren
+  '/@{$workspaceSlug}/invoices': typeof AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren
+  '/@{$workspaceSlug}/people': typeof AppAtChar123workspaceSlugChar125PeopleRouteWithChildren
+  '/@{$workspaceSlug}/quotes': typeof AppAtChar123workspaceSlugChar125QuotesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/inventory/': typeof AppInventoryIndexRoute
-  '/invoices/': typeof AppInvoicesIndexRoute
-  '/people/': typeof AppPeopleIndexRoute
-  '/quotes/': typeof AppQuotesIndexRoute
-  '/settings/': typeof AppSettingsIndexRoute
-  '/inventory/$productId/edit': typeof AppInventoryProductIdEditRoute
-  '/invoices/$invoiceId/edit': typeof AppInvoicesInvoiceIdEditRoute
-  '/people/companies/new': typeof AppPeopleCompaniesNewRoute
-  '/people/contacts/new': typeof AppPeopleContactsNewRoute
-  '/quotes/$quoteId/edit': typeof AppQuotesQuoteIdEditRoute
-  '/inventory/$productId/': typeof AppInventoryProductIdIndexRoute
-  '/invoices/$invoiceId/': typeof AppInvoicesInvoiceIdIndexRoute
-  '/quotes/$quoteId/': typeof AppQuotesQuoteIdIndexRoute
-  '/people/companies/$companyId/edit': typeof AppPeopleCompaniesCompanyIdEditRoute
-  '/people/contacts/$contactId/edit': typeof AppPeopleContactsContactIdEditRoute
+  '/@{$workspaceSlug}/': typeof AppAtChar123workspaceSlugChar125IndexRoute
+  '/@{$workspaceSlug}/inventory/$productId': typeof AppAtChar123workspaceSlugChar125InventoryProductIdRouteWithChildren
+  '/@{$workspaceSlug}/inventory/new': typeof AppAtChar123workspaceSlugChar125InventoryNewRoute
+  '/@{$workspaceSlug}/invoices/$invoiceId': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteWithChildren
+  '/@{$workspaceSlug}/invoices/new': typeof AppAtChar123workspaceSlugChar125InvoicesNewRoute
+  '/@{$workspaceSlug}/quotes/$quoteId': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteWithChildren
+  '/@{$workspaceSlug}/quotes/new': typeof AppAtChar123workspaceSlugChar125QuotesNewRoute
+  '/@{$workspaceSlug}/inventory/': typeof AppAtChar123workspaceSlugChar125InventoryIndexRoute
+  '/@{$workspaceSlug}/invoices/': typeof AppAtChar123workspaceSlugChar125InvoicesIndexRoute
+  '/@{$workspaceSlug}/people/': typeof AppAtChar123workspaceSlugChar125PeopleIndexRoute
+  '/@{$workspaceSlug}/quotes/': typeof AppAtChar123workspaceSlugChar125QuotesIndexRoute
+  '/@{$workspaceSlug}/settings/': typeof AppAtChar123workspaceSlugChar125SettingsIndexRoute
+  '/@{$workspaceSlug}/inventory/$productId/edit': typeof AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute
+  '/@{$workspaceSlug}/invoices/$invoiceId/edit': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute
+  '/@{$workspaceSlug}/people/companies/new': typeof AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute
+  '/@{$workspaceSlug}/people/contacts/new': typeof AppAtChar123workspaceSlugChar125PeopleContactsNewRoute
+  '/@{$workspaceSlug}/quotes/$quoteId/edit': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute
+  '/@{$workspaceSlug}/inventory/$productId/': typeof AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute
+  '/@{$workspaceSlug}/invoices/$invoiceId/': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute
+  '/@{$workspaceSlug}/quotes/$quoteId/': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute
+  '/@{$workspaceSlug}/people/companies/$companyId/edit': typeof AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute
+  '/@{$workspaceSlug}/people/contacts/$contactId/edit': typeof AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AppDashboardRoute
-  '/inventory/new': typeof AppInventoryNewRoute
-  '/invoices/new': typeof AppInvoicesNewRoute
-  '/quotes/new': typeof AppQuotesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/inventory': typeof AppInventoryIndexRoute
-  '/invoices': typeof AppInvoicesIndexRoute
-  '/people': typeof AppPeopleIndexRoute
-  '/quotes': typeof AppQuotesIndexRoute
-  '/settings': typeof AppSettingsIndexRoute
-  '/inventory/$productId/edit': typeof AppInventoryProductIdEditRoute
-  '/invoices/$invoiceId/edit': typeof AppInvoicesInvoiceIdEditRoute
-  '/people/companies/new': typeof AppPeopleCompaniesNewRoute
-  '/people/contacts/new': typeof AppPeopleContactsNewRoute
-  '/quotes/$quoteId/edit': typeof AppQuotesQuoteIdEditRoute
-  '/inventory/$productId': typeof AppInventoryProductIdIndexRoute
-  '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdIndexRoute
-  '/quotes/$quoteId': typeof AppQuotesQuoteIdIndexRoute
-  '/people/companies/$companyId/edit': typeof AppPeopleCompaniesCompanyIdEditRoute
-  '/people/contacts/$contactId/edit': typeof AppPeopleContactsContactIdEditRoute
+  '/@{$workspaceSlug}': typeof AppAtChar123workspaceSlugChar125IndexRoute
+  '/@{$workspaceSlug}/inventory/new': typeof AppAtChar123workspaceSlugChar125InventoryNewRoute
+  '/@{$workspaceSlug}/invoices/new': typeof AppAtChar123workspaceSlugChar125InvoicesNewRoute
+  '/@{$workspaceSlug}/quotes/new': typeof AppAtChar123workspaceSlugChar125QuotesNewRoute
+  '/@{$workspaceSlug}/inventory': typeof AppAtChar123workspaceSlugChar125InventoryIndexRoute
+  '/@{$workspaceSlug}/invoices': typeof AppAtChar123workspaceSlugChar125InvoicesIndexRoute
+  '/@{$workspaceSlug}/people': typeof AppAtChar123workspaceSlugChar125PeopleIndexRoute
+  '/@{$workspaceSlug}/quotes': typeof AppAtChar123workspaceSlugChar125QuotesIndexRoute
+  '/@{$workspaceSlug}/settings': typeof AppAtChar123workspaceSlugChar125SettingsIndexRoute
+  '/@{$workspaceSlug}/inventory/$productId/edit': typeof AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute
+  '/@{$workspaceSlug}/invoices/$invoiceId/edit': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute
+  '/@{$workspaceSlug}/people/companies/new': typeof AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute
+  '/@{$workspaceSlug}/people/contacts/new': typeof AppAtChar123workspaceSlugChar125PeopleContactsNewRoute
+  '/@{$workspaceSlug}/quotes/$quoteId/edit': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute
+  '/@{$workspaceSlug}/inventory/$productId': typeof AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute
+  '/@{$workspaceSlug}/invoices/$invoiceId': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute
+  '/@{$workspaceSlug}/quotes/$quoteId': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute
+  '/@{$workspaceSlug}/people/companies/$companyId/edit': typeof AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute
+  '/@{$workspaceSlug}/people/contacts/$contactId/edit': typeof AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
-  '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/inventory': typeof AppInventoryRouteWithChildren
-  '/_app/invoices': typeof AppInvoicesRouteWithChildren
-  '/_app/people': typeof AppPeopleRouteWithChildren
-  '/_app/quotes': typeof AppQuotesRouteWithChildren
+  '/_app/@{$workspaceSlug}': typeof AppAtChar123workspaceSlugChar125RouteWithChildren
   '/_public/': typeof PublicIndexRoute
-  '/_app/inventory/$productId': typeof AppInventoryProductIdRouteWithChildren
-  '/_app/inventory/new': typeof AppInventoryNewRoute
-  '/_app/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRouteWithChildren
-  '/_app/invoices/new': typeof AppInvoicesNewRoute
-  '/_app/quotes/$quoteId': typeof AppQuotesQuoteIdRouteWithChildren
-  '/_app/quotes/new': typeof AppQuotesNewRoute
+  '/_app/@{$workspaceSlug}/inventory': typeof AppAtChar123workspaceSlugChar125InventoryRouteWithChildren
+  '/_app/@{$workspaceSlug}/invoices': typeof AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren
+  '/_app/@{$workspaceSlug}/people': typeof AppAtChar123workspaceSlugChar125PeopleRouteWithChildren
+  '/_app/@{$workspaceSlug}/quotes': typeof AppAtChar123workspaceSlugChar125QuotesRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_app/inventory/': typeof AppInventoryIndexRoute
-  '/_app/invoices/': typeof AppInvoicesIndexRoute
-  '/_app/people/': typeof AppPeopleIndexRoute
-  '/_app/quotes/': typeof AppQuotesIndexRoute
-  '/_app/settings/': typeof AppSettingsIndexRoute
-  '/_app/inventory/$productId/edit': typeof AppInventoryProductIdEditRoute
-  '/_app/invoices/$invoiceId/edit': typeof AppInvoicesInvoiceIdEditRoute
-  '/_app/people/companies/new': typeof AppPeopleCompaniesNewRoute
-  '/_app/people/contacts/new': typeof AppPeopleContactsNewRoute
-  '/_app/quotes/$quoteId/edit': typeof AppQuotesQuoteIdEditRoute
-  '/_app/inventory/$productId/': typeof AppInventoryProductIdIndexRoute
-  '/_app/invoices/$invoiceId/': typeof AppInvoicesInvoiceIdIndexRoute
-  '/_app/quotes/$quoteId/': typeof AppQuotesQuoteIdIndexRoute
-  '/_app/people/companies/$companyId/edit': typeof AppPeopleCompaniesCompanyIdEditRoute
-  '/_app/people/contacts/$contactId/edit': typeof AppPeopleContactsContactIdEditRoute
+  '/_app/@{$workspaceSlug}/': typeof AppAtChar123workspaceSlugChar125IndexRoute
+  '/_app/@{$workspaceSlug}/inventory/$productId': typeof AppAtChar123workspaceSlugChar125InventoryProductIdRouteWithChildren
+  '/_app/@{$workspaceSlug}/inventory/new': typeof AppAtChar123workspaceSlugChar125InventoryNewRoute
+  '/_app/@{$workspaceSlug}/invoices/$invoiceId': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteWithChildren
+  '/_app/@{$workspaceSlug}/invoices/new': typeof AppAtChar123workspaceSlugChar125InvoicesNewRoute
+  '/_app/@{$workspaceSlug}/quotes/$quoteId': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteWithChildren
+  '/_app/@{$workspaceSlug}/quotes/new': typeof AppAtChar123workspaceSlugChar125QuotesNewRoute
+  '/_app/@{$workspaceSlug}/inventory/': typeof AppAtChar123workspaceSlugChar125InventoryIndexRoute
+  '/_app/@{$workspaceSlug}/invoices/': typeof AppAtChar123workspaceSlugChar125InvoicesIndexRoute
+  '/_app/@{$workspaceSlug}/people/': typeof AppAtChar123workspaceSlugChar125PeopleIndexRoute
+  '/_app/@{$workspaceSlug}/quotes/': typeof AppAtChar123workspaceSlugChar125QuotesIndexRoute
+  '/_app/@{$workspaceSlug}/settings/': typeof AppAtChar123workspaceSlugChar125SettingsIndexRoute
+  '/_app/@{$workspaceSlug}/inventory/$productId/edit': typeof AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute
+  '/_app/@{$workspaceSlug}/invoices/$invoiceId/edit': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute
+  '/_app/@{$workspaceSlug}/people/companies/new': typeof AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute
+  '/_app/@{$workspaceSlug}/people/contacts/new': typeof AppAtChar123workspaceSlugChar125PeopleContactsNewRoute
+  '/_app/@{$workspaceSlug}/quotes/$quoteId/edit': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute
+  '/_app/@{$workspaceSlug}/inventory/$productId/': typeof AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute
+  '/_app/@{$workspaceSlug}/invoices/$invoiceId/': typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute
+  '/_app/@{$workspaceSlug}/quotes/$quoteId/': typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute
+  '/_app/@{$workspaceSlug}/people/companies/$companyId/edit': typeof AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute
+  '/_app/@{$workspaceSlug}/people/contacts/$contactId/edit': typeof AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
-    | '/inventory'
-    | '/invoices'
-    | '/people'
-    | '/quotes'
-    | '/inventory/$productId'
-    | '/inventory/new'
-    | '/invoices/$invoiceId'
-    | '/invoices/new'
-    | '/quotes/$quoteId'
-    | '/quotes/new'
+    | '/@{$workspaceSlug}'
+    | '/@{$workspaceSlug}/inventory'
+    | '/@{$workspaceSlug}/invoices'
+    | '/@{$workspaceSlug}/people'
+    | '/@{$workspaceSlug}/quotes'
     | '/api/auth/$'
-    | '/inventory/'
-    | '/invoices/'
-    | '/people/'
-    | '/quotes/'
-    | '/settings/'
-    | '/inventory/$productId/edit'
-    | '/invoices/$invoiceId/edit'
-    | '/people/companies/new'
-    | '/people/contacts/new'
-    | '/quotes/$quoteId/edit'
-    | '/inventory/$productId/'
-    | '/invoices/$invoiceId/'
-    | '/quotes/$quoteId/'
-    | '/people/companies/$companyId/edit'
-    | '/people/contacts/$contactId/edit'
+    | '/@{$workspaceSlug}/'
+    | '/@{$workspaceSlug}/inventory/$productId'
+    | '/@{$workspaceSlug}/inventory/new'
+    | '/@{$workspaceSlug}/invoices/$invoiceId'
+    | '/@{$workspaceSlug}/invoices/new'
+    | '/@{$workspaceSlug}/quotes/$quoteId'
+    | '/@{$workspaceSlug}/quotes/new'
+    | '/@{$workspaceSlug}/inventory/'
+    | '/@{$workspaceSlug}/invoices/'
+    | '/@{$workspaceSlug}/people/'
+    | '/@{$workspaceSlug}/quotes/'
+    | '/@{$workspaceSlug}/settings/'
+    | '/@{$workspaceSlug}/inventory/$productId/edit'
+    | '/@{$workspaceSlug}/invoices/$invoiceId/edit'
+    | '/@{$workspaceSlug}/people/companies/new'
+    | '/@{$workspaceSlug}/people/contacts/new'
+    | '/@{$workspaceSlug}/quotes/$quoteId/edit'
+    | '/@{$workspaceSlug}/inventory/$productId/'
+    | '/@{$workspaceSlug}/invoices/$invoiceId/'
+    | '/@{$workspaceSlug}/quotes/$quoteId/'
+    | '/@{$workspaceSlug}/people/companies/$companyId/edit'
+    | '/@{$workspaceSlug}/people/contacts/$contactId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
-    | '/inventory/new'
-    | '/invoices/new'
-    | '/quotes/new'
     | '/api/auth/$'
-    | '/inventory'
-    | '/invoices'
-    | '/people'
-    | '/quotes'
-    | '/settings'
-    | '/inventory/$productId/edit'
-    | '/invoices/$invoiceId/edit'
-    | '/people/companies/new'
-    | '/people/contacts/new'
-    | '/quotes/$quoteId/edit'
-    | '/inventory/$productId'
-    | '/invoices/$invoiceId'
-    | '/quotes/$quoteId'
-    | '/people/companies/$companyId/edit'
-    | '/people/contacts/$contactId/edit'
+    | '/@{$workspaceSlug}'
+    | '/@{$workspaceSlug}/inventory/new'
+    | '/@{$workspaceSlug}/invoices/new'
+    | '/@{$workspaceSlug}/quotes/new'
+    | '/@{$workspaceSlug}/inventory'
+    | '/@{$workspaceSlug}/invoices'
+    | '/@{$workspaceSlug}/people'
+    | '/@{$workspaceSlug}/quotes'
+    | '/@{$workspaceSlug}/settings'
+    | '/@{$workspaceSlug}/inventory/$productId/edit'
+    | '/@{$workspaceSlug}/invoices/$invoiceId/edit'
+    | '/@{$workspaceSlug}/people/companies/new'
+    | '/@{$workspaceSlug}/people/contacts/new'
+    | '/@{$workspaceSlug}/quotes/$quoteId/edit'
+    | '/@{$workspaceSlug}/inventory/$productId'
+    | '/@{$workspaceSlug}/invoices/$invoiceId'
+    | '/@{$workspaceSlug}/quotes/$quoteId'
+    | '/@{$workspaceSlug}/people/companies/$companyId/edit'
+    | '/@{$workspaceSlug}/people/contacts/$contactId/edit'
   id:
     | '__root__'
     | '/_app'
     | '/_public'
-    | '/_app/dashboard'
-    | '/_app/inventory'
-    | '/_app/invoices'
-    | '/_app/people'
-    | '/_app/quotes'
+    | '/_app/@{$workspaceSlug}'
     | '/_public/'
-    | '/_app/inventory/$productId'
-    | '/_app/inventory/new'
-    | '/_app/invoices/$invoiceId'
-    | '/_app/invoices/new'
-    | '/_app/quotes/$quoteId'
-    | '/_app/quotes/new'
+    | '/_app/@{$workspaceSlug}/inventory'
+    | '/_app/@{$workspaceSlug}/invoices'
+    | '/_app/@{$workspaceSlug}/people'
+    | '/_app/@{$workspaceSlug}/quotes'
     | '/api/auth/$'
-    | '/_app/inventory/'
-    | '/_app/invoices/'
-    | '/_app/people/'
-    | '/_app/quotes/'
-    | '/_app/settings/'
-    | '/_app/inventory/$productId/edit'
-    | '/_app/invoices/$invoiceId/edit'
-    | '/_app/people/companies/new'
-    | '/_app/people/contacts/new'
-    | '/_app/quotes/$quoteId/edit'
-    | '/_app/inventory/$productId/'
-    | '/_app/invoices/$invoiceId/'
-    | '/_app/quotes/$quoteId/'
-    | '/_app/people/companies/$companyId/edit'
-    | '/_app/people/contacts/$contactId/edit'
+    | '/_app/@{$workspaceSlug}/'
+    | '/_app/@{$workspaceSlug}/inventory/$productId'
+    | '/_app/@{$workspaceSlug}/inventory/new'
+    | '/_app/@{$workspaceSlug}/invoices/$invoiceId'
+    | '/_app/@{$workspaceSlug}/invoices/new'
+    | '/_app/@{$workspaceSlug}/quotes/$quoteId'
+    | '/_app/@{$workspaceSlug}/quotes/new'
+    | '/_app/@{$workspaceSlug}/inventory/'
+    | '/_app/@{$workspaceSlug}/invoices/'
+    | '/_app/@{$workspaceSlug}/people/'
+    | '/_app/@{$workspaceSlug}/quotes/'
+    | '/_app/@{$workspaceSlug}/settings/'
+    | '/_app/@{$workspaceSlug}/inventory/$productId/edit'
+    | '/_app/@{$workspaceSlug}/invoices/$invoiceId/edit'
+    | '/_app/@{$workspaceSlug}/people/companies/new'
+    | '/_app/@{$workspaceSlug}/people/contacts/new'
+    | '/_app/@{$workspaceSlug}/quotes/$quoteId/edit'
+    | '/_app/@{$workspaceSlug}/inventory/$productId/'
+    | '/_app/@{$workspaceSlug}/invoices/$invoiceId/'
+    | '/_app/@{$workspaceSlug}/quotes/$quoteId/'
+    | '/_app/@{$workspaceSlug}/people/companies/$companyId/edit'
+    | '/_app/@{$workspaceSlug}/people/contacts/$contactId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -398,75 +437,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_app/quotes': {
-      id: '/_app/quotes'
-      path: '/quotes'
-      fullPath: '/quotes'
-      preLoaderRoute: typeof AppQuotesRouteImport
+    '/_app/@{$workspaceSlug}': {
+      id: '/_app/@{$workspaceSlug}'
+      path: '/@{$workspaceSlug}'
+      fullPath: '/@{$workspaceSlug}'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125RouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/people': {
-      id: '/_app/people'
-      path: '/people'
-      fullPath: '/people'
-      preLoaderRoute: typeof AppPeopleRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/invoices': {
-      id: '/_app/invoices'
-      path: '/invoices'
-      fullPath: '/invoices'
-      preLoaderRoute: typeof AppInvoicesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/inventory': {
-      id: '/_app/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof AppInventoryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/dashboard': {
-      id: '/_app/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/settings/': {
-      id: '/_app/settings/'
-      path: '/settings'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof AppSettingsIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/quotes/': {
-      id: '/_app/quotes/'
+    '/_app/@{$workspaceSlug}/': {
+      id: '/_app/@{$workspaceSlug}/'
       path: '/'
-      fullPath: '/quotes/'
-      preLoaderRoute: typeof AppQuotesIndexRouteImport
-      parentRoute: typeof AppQuotesRoute
-    }
-    '/_app/people/': {
-      id: '/_app/people/'
-      path: '/'
-      fullPath: '/people/'
-      preLoaderRoute: typeof AppPeopleIndexRouteImport
-      parentRoute: typeof AppPeopleRoute
-    }
-    '/_app/invoices/': {
-      id: '/_app/invoices/'
-      path: '/'
-      fullPath: '/invoices/'
-      preLoaderRoute: typeof AppInvoicesIndexRouteImport
-      parentRoute: typeof AppInvoicesRoute
-    }
-    '/_app/inventory/': {
-      id: '/_app/inventory/'
-      path: '/'
-      fullPath: '/inventory/'
-      preLoaderRoute: typeof AppInventoryIndexRouteImport
-      parentRoute: typeof AppInventoryRoute
+      fullPath: '/@{$workspaceSlug}/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125IndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125Route
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -475,246 +458,365 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/quotes/new': {
-      id: '/_app/quotes/new'
-      path: '/new'
-      fullPath: '/quotes/new'
-      preLoaderRoute: typeof AppQuotesNewRouteImport
-      parentRoute: typeof AppQuotesRoute
+    '/_app/@{$workspaceSlug}/quotes': {
+      id: '/_app/@{$workspaceSlug}/quotes'
+      path: '/quotes'
+      fullPath: '/@{$workspaceSlug}/quotes'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125QuotesRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125Route
     }
-    '/_app/quotes/$quoteId': {
-      id: '/_app/quotes/$quoteId'
+    '/_app/@{$workspaceSlug}/people': {
+      id: '/_app/@{$workspaceSlug}/people'
+      path: '/people'
+      fullPath: '/@{$workspaceSlug}/people'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125PeopleRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125Route
+    }
+    '/_app/@{$workspaceSlug}/invoices': {
+      id: '/_app/@{$workspaceSlug}/invoices'
+      path: '/invoices'
+      fullPath: '/@{$workspaceSlug}/invoices'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InvoicesRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125Route
+    }
+    '/_app/@{$workspaceSlug}/inventory': {
+      id: '/_app/@{$workspaceSlug}/inventory'
+      path: '/inventory'
+      fullPath: '/@{$workspaceSlug}/inventory'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InventoryRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125Route
+    }
+    '/_app/@{$workspaceSlug}/settings/': {
+      id: '/_app/@{$workspaceSlug}/settings/'
+      path: '/settings'
+      fullPath: '/@{$workspaceSlug}/settings/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125SettingsIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125Route
+    }
+    '/_app/@{$workspaceSlug}/quotes/': {
+      id: '/_app/@{$workspaceSlug}/quotes/'
+      path: '/'
+      fullPath: '/@{$workspaceSlug}/quotes/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125QuotesIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125QuotesRoute
+    }
+    '/_app/@{$workspaceSlug}/people/': {
+      id: '/_app/@{$workspaceSlug}/people/'
+      path: '/'
+      fullPath: '/@{$workspaceSlug}/people/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125PeopleIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125PeopleRoute
+    }
+    '/_app/@{$workspaceSlug}/invoices/': {
+      id: '/_app/@{$workspaceSlug}/invoices/'
+      path: '/'
+      fullPath: '/@{$workspaceSlug}/invoices/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InvoicesIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InvoicesRoute
+    }
+    '/_app/@{$workspaceSlug}/inventory/': {
+      id: '/_app/@{$workspaceSlug}/inventory/'
+      path: '/'
+      fullPath: '/@{$workspaceSlug}/inventory/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InventoryIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InventoryRoute
+    }
+    '/_app/@{$workspaceSlug}/quotes/new': {
+      id: '/_app/@{$workspaceSlug}/quotes/new'
+      path: '/new'
+      fullPath: '/@{$workspaceSlug}/quotes/new'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125QuotesNewRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125QuotesRoute
+    }
+    '/_app/@{$workspaceSlug}/quotes/$quoteId': {
+      id: '/_app/@{$workspaceSlug}/quotes/$quoteId'
       path: '/$quoteId'
-      fullPath: '/quotes/$quoteId'
-      preLoaderRoute: typeof AppQuotesQuoteIdRouteImport
-      parentRoute: typeof AppQuotesRoute
+      fullPath: '/@{$workspaceSlug}/quotes/$quoteId'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125QuotesRoute
     }
-    '/_app/invoices/new': {
-      id: '/_app/invoices/new'
+    '/_app/@{$workspaceSlug}/invoices/new': {
+      id: '/_app/@{$workspaceSlug}/invoices/new'
       path: '/new'
-      fullPath: '/invoices/new'
-      preLoaderRoute: typeof AppInvoicesNewRouteImport
-      parentRoute: typeof AppInvoicesRoute
+      fullPath: '/@{$workspaceSlug}/invoices/new'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InvoicesNewRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InvoicesRoute
     }
-    '/_app/invoices/$invoiceId': {
-      id: '/_app/invoices/$invoiceId'
+    '/_app/@{$workspaceSlug}/invoices/$invoiceId': {
+      id: '/_app/@{$workspaceSlug}/invoices/$invoiceId'
       path: '/$invoiceId'
-      fullPath: '/invoices/$invoiceId'
-      preLoaderRoute: typeof AppInvoicesInvoiceIdRouteImport
-      parentRoute: typeof AppInvoicesRoute
+      fullPath: '/@{$workspaceSlug}/invoices/$invoiceId'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InvoicesRoute
     }
-    '/_app/inventory/new': {
-      id: '/_app/inventory/new'
+    '/_app/@{$workspaceSlug}/inventory/new': {
+      id: '/_app/@{$workspaceSlug}/inventory/new'
       path: '/new'
-      fullPath: '/inventory/new'
-      preLoaderRoute: typeof AppInventoryNewRouteImport
-      parentRoute: typeof AppInventoryRoute
+      fullPath: '/@{$workspaceSlug}/inventory/new'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InventoryNewRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InventoryRoute
     }
-    '/_app/inventory/$productId': {
-      id: '/_app/inventory/$productId'
+    '/_app/@{$workspaceSlug}/inventory/$productId': {
+      id: '/_app/@{$workspaceSlug}/inventory/$productId'
       path: '/$productId'
-      fullPath: '/inventory/$productId'
-      preLoaderRoute: typeof AppInventoryProductIdRouteImport
-      parentRoute: typeof AppInventoryRoute
+      fullPath: '/@{$workspaceSlug}/inventory/$productId'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InventoryRoute
     }
-    '/_app/quotes/$quoteId/': {
-      id: '/_app/quotes/$quoteId/'
+    '/_app/@{$workspaceSlug}/quotes/$quoteId/': {
+      id: '/_app/@{$workspaceSlug}/quotes/$quoteId/'
       path: '/'
-      fullPath: '/quotes/$quoteId/'
-      preLoaderRoute: typeof AppQuotesQuoteIdIndexRouteImport
-      parentRoute: typeof AppQuotesQuoteIdRoute
+      fullPath: '/@{$workspaceSlug}/quotes/$quoteId/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute
     }
-    '/_app/invoices/$invoiceId/': {
-      id: '/_app/invoices/$invoiceId/'
+    '/_app/@{$workspaceSlug}/invoices/$invoiceId/': {
+      id: '/_app/@{$workspaceSlug}/invoices/$invoiceId/'
       path: '/'
-      fullPath: '/invoices/$invoiceId/'
-      preLoaderRoute: typeof AppInvoicesInvoiceIdIndexRouteImport
-      parentRoute: typeof AppInvoicesInvoiceIdRoute
+      fullPath: '/@{$workspaceSlug}/invoices/$invoiceId/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute
     }
-    '/_app/inventory/$productId/': {
-      id: '/_app/inventory/$productId/'
+    '/_app/@{$workspaceSlug}/inventory/$productId/': {
+      id: '/_app/@{$workspaceSlug}/inventory/$productId/'
       path: '/'
-      fullPath: '/inventory/$productId/'
-      preLoaderRoute: typeof AppInventoryProductIdIndexRouteImport
-      parentRoute: typeof AppInventoryProductIdRoute
+      fullPath: '/@{$workspaceSlug}/inventory/$productId/'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdIndexRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdRoute
     }
-    '/_app/quotes/$quoteId/edit': {
-      id: '/_app/quotes/$quoteId/edit'
+    '/_app/@{$workspaceSlug}/quotes/$quoteId/edit': {
+      id: '/_app/@{$workspaceSlug}/quotes/$quoteId/edit'
       path: '/edit'
-      fullPath: '/quotes/$quoteId/edit'
-      preLoaderRoute: typeof AppQuotesQuoteIdEditRouteImport
-      parentRoute: typeof AppQuotesQuoteIdRoute
+      fullPath: '/@{$workspaceSlug}/quotes/$quoteId/edit'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute
     }
-    '/_app/people/contacts/new': {
-      id: '/_app/people/contacts/new'
+    '/_app/@{$workspaceSlug}/people/contacts/new': {
+      id: '/_app/@{$workspaceSlug}/people/contacts/new'
       path: '/contacts/new'
-      fullPath: '/people/contacts/new'
-      preLoaderRoute: typeof AppPeopleContactsNewRouteImport
-      parentRoute: typeof AppPeopleRoute
+      fullPath: '/@{$workspaceSlug}/people/contacts/new'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125PeopleContactsNewRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125PeopleRoute
     }
-    '/_app/people/companies/new': {
-      id: '/_app/people/companies/new'
+    '/_app/@{$workspaceSlug}/people/companies/new': {
+      id: '/_app/@{$workspaceSlug}/people/companies/new'
       path: '/companies/new'
-      fullPath: '/people/companies/new'
-      preLoaderRoute: typeof AppPeopleCompaniesNewRouteImport
-      parentRoute: typeof AppPeopleRoute
+      fullPath: '/@{$workspaceSlug}/people/companies/new'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125PeopleCompaniesNewRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125PeopleRoute
     }
-    '/_app/invoices/$invoiceId/edit': {
-      id: '/_app/invoices/$invoiceId/edit'
+    '/_app/@{$workspaceSlug}/invoices/$invoiceId/edit': {
+      id: '/_app/@{$workspaceSlug}/invoices/$invoiceId/edit'
       path: '/edit'
-      fullPath: '/invoices/$invoiceId/edit'
-      preLoaderRoute: typeof AppInvoicesInvoiceIdEditRouteImport
-      parentRoute: typeof AppInvoicesInvoiceIdRoute
+      fullPath: '/@{$workspaceSlug}/invoices/$invoiceId/edit'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute
     }
-    '/_app/inventory/$productId/edit': {
-      id: '/_app/inventory/$productId/edit'
+    '/_app/@{$workspaceSlug}/inventory/$productId/edit': {
+      id: '/_app/@{$workspaceSlug}/inventory/$productId/edit'
       path: '/edit'
-      fullPath: '/inventory/$productId/edit'
-      preLoaderRoute: typeof AppInventoryProductIdEditRouteImport
-      parentRoute: typeof AppInventoryProductIdRoute
+      fullPath: '/@{$workspaceSlug}/inventory/$productId/edit'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdEditRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdRoute
     }
-    '/_app/people/contacts/$contactId/edit': {
-      id: '/_app/people/contacts/$contactId/edit'
+    '/_app/@{$workspaceSlug}/people/contacts/$contactId/edit': {
+      id: '/_app/@{$workspaceSlug}/people/contacts/$contactId/edit'
       path: '/contacts/$contactId/edit'
-      fullPath: '/people/contacts/$contactId/edit'
-      preLoaderRoute: typeof AppPeopleContactsContactIdEditRouteImport
-      parentRoute: typeof AppPeopleRoute
+      fullPath: '/@{$workspaceSlug}/people/contacts/$contactId/edit'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125PeopleRoute
     }
-    '/_app/people/companies/$companyId/edit': {
-      id: '/_app/people/companies/$companyId/edit'
+    '/_app/@{$workspaceSlug}/people/companies/$companyId/edit': {
+      id: '/_app/@{$workspaceSlug}/people/companies/$companyId/edit'
       path: '/companies/$companyId/edit'
-      fullPath: '/people/companies/$companyId/edit'
-      preLoaderRoute: typeof AppPeopleCompaniesCompanyIdEditRouteImport
-      parentRoute: typeof AppPeopleRoute
+      fullPath: '/@{$workspaceSlug}/people/companies/$companyId/edit'
+      preLoaderRoute: typeof AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRouteImport
+      parentRoute: typeof AppAtChar123workspaceSlugChar125PeopleRoute
     }
   }
 }
 
-interface AppInventoryProductIdRouteChildren {
-  AppInventoryProductIdEditRoute: typeof AppInventoryProductIdEditRoute
-  AppInventoryProductIdIndexRoute: typeof AppInventoryProductIdIndexRoute
+interface AppAtChar123workspaceSlugChar125InventoryProductIdRouteChildren {
+  AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute
+  AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute
 }
 
-const AppInventoryProductIdRouteChildren: AppInventoryProductIdRouteChildren = {
-  AppInventoryProductIdEditRoute: AppInventoryProductIdEditRoute,
-  AppInventoryProductIdIndexRoute: AppInventoryProductIdIndexRoute,
-}
+const AppAtChar123workspaceSlugChar125InventoryProductIdRouteChildren: AppAtChar123workspaceSlugChar125InventoryProductIdRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute:
+      AppAtChar123workspaceSlugChar125InventoryProductIdEditRoute,
+    AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute:
+      AppAtChar123workspaceSlugChar125InventoryProductIdIndexRoute,
+  }
 
-const AppInventoryProductIdRouteWithChildren =
-  AppInventoryProductIdRoute._addFileChildren(
-    AppInventoryProductIdRouteChildren,
+const AppAtChar123workspaceSlugChar125InventoryProductIdRouteWithChildren =
+  AppAtChar123workspaceSlugChar125InventoryProductIdRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125InventoryProductIdRouteChildren,
   )
 
-interface AppInventoryRouteChildren {
-  AppInventoryProductIdRoute: typeof AppInventoryProductIdRouteWithChildren
-  AppInventoryNewRoute: typeof AppInventoryNewRoute
-  AppInventoryIndexRoute: typeof AppInventoryIndexRoute
+interface AppAtChar123workspaceSlugChar125InventoryRouteChildren {
+  AppAtChar123workspaceSlugChar125InventoryProductIdRoute: typeof AppAtChar123workspaceSlugChar125InventoryProductIdRouteWithChildren
+  AppAtChar123workspaceSlugChar125InventoryNewRoute: typeof AppAtChar123workspaceSlugChar125InventoryNewRoute
+  AppAtChar123workspaceSlugChar125InventoryIndexRoute: typeof AppAtChar123workspaceSlugChar125InventoryIndexRoute
 }
 
-const AppInventoryRouteChildren: AppInventoryRouteChildren = {
-  AppInventoryProductIdRoute: AppInventoryProductIdRouteWithChildren,
-  AppInventoryNewRoute: AppInventoryNewRoute,
-  AppInventoryIndexRoute: AppInventoryIndexRoute,
+const AppAtChar123workspaceSlugChar125InventoryRouteChildren: AppAtChar123workspaceSlugChar125InventoryRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125InventoryProductIdRoute:
+      AppAtChar123workspaceSlugChar125InventoryProductIdRouteWithChildren,
+    AppAtChar123workspaceSlugChar125InventoryNewRoute:
+      AppAtChar123workspaceSlugChar125InventoryNewRoute,
+    AppAtChar123workspaceSlugChar125InventoryIndexRoute:
+      AppAtChar123workspaceSlugChar125InventoryIndexRoute,
+  }
+
+const AppAtChar123workspaceSlugChar125InventoryRouteWithChildren =
+  AppAtChar123workspaceSlugChar125InventoryRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125InventoryRouteChildren,
+  )
+
+interface AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteChildren {
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute
 }
 
-const AppInventoryRouteWithChildren = AppInventoryRoute._addFileChildren(
-  AppInventoryRouteChildren,
-)
+const AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteChildren: AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute:
+      AppAtChar123workspaceSlugChar125InvoicesInvoiceIdEditRoute,
+    AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute:
+      AppAtChar123workspaceSlugChar125InvoicesInvoiceIdIndexRoute,
+  }
 
-interface AppInvoicesInvoiceIdRouteChildren {
-  AppInvoicesInvoiceIdEditRoute: typeof AppInvoicesInvoiceIdEditRoute
-  AppInvoicesInvoiceIdIndexRoute: typeof AppInvoicesInvoiceIdIndexRoute
+const AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteWithChildren =
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteChildren,
+  )
+
+interface AppAtChar123workspaceSlugChar125InvoicesRouteChildren {
+  AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute: typeof AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteWithChildren
+  AppAtChar123workspaceSlugChar125InvoicesNewRoute: typeof AppAtChar123workspaceSlugChar125InvoicesNewRoute
+  AppAtChar123workspaceSlugChar125InvoicesIndexRoute: typeof AppAtChar123workspaceSlugChar125InvoicesIndexRoute
 }
 
-const AppInvoicesInvoiceIdRouteChildren: AppInvoicesInvoiceIdRouteChildren = {
-  AppInvoicesInvoiceIdEditRoute: AppInvoicesInvoiceIdEditRoute,
-  AppInvoicesInvoiceIdIndexRoute: AppInvoicesInvoiceIdIndexRoute,
+const AppAtChar123workspaceSlugChar125InvoicesRouteChildren: AppAtChar123workspaceSlugChar125InvoicesRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRoute:
+      AppAtChar123workspaceSlugChar125InvoicesInvoiceIdRouteWithChildren,
+    AppAtChar123workspaceSlugChar125InvoicesNewRoute:
+      AppAtChar123workspaceSlugChar125InvoicesNewRoute,
+    AppAtChar123workspaceSlugChar125InvoicesIndexRoute:
+      AppAtChar123workspaceSlugChar125InvoicesIndexRoute,
+  }
+
+const AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren =
+  AppAtChar123workspaceSlugChar125InvoicesRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125InvoicesRouteChildren,
+  )
+
+interface AppAtChar123workspaceSlugChar125PeopleRouteChildren {
+  AppAtChar123workspaceSlugChar125PeopleIndexRoute: typeof AppAtChar123workspaceSlugChar125PeopleIndexRoute
+  AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute: typeof AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute
+  AppAtChar123workspaceSlugChar125PeopleContactsNewRoute: typeof AppAtChar123workspaceSlugChar125PeopleContactsNewRoute
+  AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute: typeof AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute
+  AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute: typeof AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute
 }
 
-const AppInvoicesInvoiceIdRouteWithChildren =
-  AppInvoicesInvoiceIdRoute._addFileChildren(AppInvoicesInvoiceIdRouteChildren)
+const AppAtChar123workspaceSlugChar125PeopleRouteChildren: AppAtChar123workspaceSlugChar125PeopleRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125PeopleIndexRoute:
+      AppAtChar123workspaceSlugChar125PeopleIndexRoute,
+    AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute:
+      AppAtChar123workspaceSlugChar125PeopleCompaniesNewRoute,
+    AppAtChar123workspaceSlugChar125PeopleContactsNewRoute:
+      AppAtChar123workspaceSlugChar125PeopleContactsNewRoute,
+    AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute:
+      AppAtChar123workspaceSlugChar125PeopleCompaniesCompanyIdEditRoute,
+    AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute:
+      AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute,
+  }
 
-interface AppInvoicesRouteChildren {
-  AppInvoicesInvoiceIdRoute: typeof AppInvoicesInvoiceIdRouteWithChildren
-  AppInvoicesNewRoute: typeof AppInvoicesNewRoute
-  AppInvoicesIndexRoute: typeof AppInvoicesIndexRoute
+const AppAtChar123workspaceSlugChar125PeopleRouteWithChildren =
+  AppAtChar123workspaceSlugChar125PeopleRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125PeopleRouteChildren,
+  )
+
+interface AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteChildren {
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute
 }
 
-const AppInvoicesRouteChildren: AppInvoicesRouteChildren = {
-  AppInvoicesInvoiceIdRoute: AppInvoicesInvoiceIdRouteWithChildren,
-  AppInvoicesNewRoute: AppInvoicesNewRoute,
-  AppInvoicesIndexRoute: AppInvoicesIndexRoute,
+const AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteChildren: AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute:
+      AppAtChar123workspaceSlugChar125QuotesQuoteIdEditRoute,
+    AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute:
+      AppAtChar123workspaceSlugChar125QuotesQuoteIdIndexRoute,
+  }
+
+const AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteWithChildren =
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteChildren,
+  )
+
+interface AppAtChar123workspaceSlugChar125QuotesRouteChildren {
+  AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute: typeof AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteWithChildren
+  AppAtChar123workspaceSlugChar125QuotesNewRoute: typeof AppAtChar123workspaceSlugChar125QuotesNewRoute
+  AppAtChar123workspaceSlugChar125QuotesIndexRoute: typeof AppAtChar123workspaceSlugChar125QuotesIndexRoute
 }
 
-const AppInvoicesRouteWithChildren = AppInvoicesRoute._addFileChildren(
-  AppInvoicesRouteChildren,
-)
+const AppAtChar123workspaceSlugChar125QuotesRouteChildren: AppAtChar123workspaceSlugChar125QuotesRouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125QuotesQuoteIdRoute:
+      AppAtChar123workspaceSlugChar125QuotesQuoteIdRouteWithChildren,
+    AppAtChar123workspaceSlugChar125QuotesNewRoute:
+      AppAtChar123workspaceSlugChar125QuotesNewRoute,
+    AppAtChar123workspaceSlugChar125QuotesIndexRoute:
+      AppAtChar123workspaceSlugChar125QuotesIndexRoute,
+  }
 
-interface AppPeopleRouteChildren {
-  AppPeopleIndexRoute: typeof AppPeopleIndexRoute
-  AppPeopleCompaniesNewRoute: typeof AppPeopleCompaniesNewRoute
-  AppPeopleContactsNewRoute: typeof AppPeopleContactsNewRoute
-  AppPeopleCompaniesCompanyIdEditRoute: typeof AppPeopleCompaniesCompanyIdEditRoute
-  AppPeopleContactsContactIdEditRoute: typeof AppPeopleContactsContactIdEditRoute
+const AppAtChar123workspaceSlugChar125QuotesRouteWithChildren =
+  AppAtChar123workspaceSlugChar125QuotesRoute._addFileChildren(
+    AppAtChar123workspaceSlugChar125QuotesRouteChildren,
+  )
+
+interface AppAtChar123workspaceSlugChar125RouteChildren {
+  AppAtChar123workspaceSlugChar125InventoryRoute: typeof AppAtChar123workspaceSlugChar125InventoryRouteWithChildren
+  AppAtChar123workspaceSlugChar125InvoicesRoute: typeof AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren
+  AppAtChar123workspaceSlugChar125PeopleRoute: typeof AppAtChar123workspaceSlugChar125PeopleRouteWithChildren
+  AppAtChar123workspaceSlugChar125QuotesRoute: typeof AppAtChar123workspaceSlugChar125QuotesRouteWithChildren
+  AppAtChar123workspaceSlugChar125IndexRoute: typeof AppAtChar123workspaceSlugChar125IndexRoute
+  AppAtChar123workspaceSlugChar125SettingsIndexRoute: typeof AppAtChar123workspaceSlugChar125SettingsIndexRoute
 }
 
-const AppPeopleRouteChildren: AppPeopleRouteChildren = {
-  AppPeopleIndexRoute: AppPeopleIndexRoute,
-  AppPeopleCompaniesNewRoute: AppPeopleCompaniesNewRoute,
-  AppPeopleContactsNewRoute: AppPeopleContactsNewRoute,
-  AppPeopleCompaniesCompanyIdEditRoute: AppPeopleCompaniesCompanyIdEditRoute,
-  AppPeopleContactsContactIdEditRoute: AppPeopleContactsContactIdEditRoute,
-}
+const AppAtChar123workspaceSlugChar125RouteChildren: AppAtChar123workspaceSlugChar125RouteChildren =
+  {
+    AppAtChar123workspaceSlugChar125InventoryRoute:
+      AppAtChar123workspaceSlugChar125InventoryRouteWithChildren,
+    AppAtChar123workspaceSlugChar125InvoicesRoute:
+      AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren,
+    AppAtChar123workspaceSlugChar125PeopleRoute:
+      AppAtChar123workspaceSlugChar125PeopleRouteWithChildren,
+    AppAtChar123workspaceSlugChar125QuotesRoute:
+      AppAtChar123workspaceSlugChar125QuotesRouteWithChildren,
+    AppAtChar123workspaceSlugChar125IndexRoute:
+      AppAtChar123workspaceSlugChar125IndexRoute,
+    AppAtChar123workspaceSlugChar125SettingsIndexRoute:
+      AppAtChar123workspaceSlugChar125SettingsIndexRoute,
+  }
 
-const AppPeopleRouteWithChildren = AppPeopleRoute._addFileChildren(
-  AppPeopleRouteChildren,
-)
-
-interface AppQuotesQuoteIdRouteChildren {
-  AppQuotesQuoteIdEditRoute: typeof AppQuotesQuoteIdEditRoute
-  AppQuotesQuoteIdIndexRoute: typeof AppQuotesQuoteIdIndexRoute
-}
-
-const AppQuotesQuoteIdRouteChildren: AppQuotesQuoteIdRouteChildren = {
-  AppQuotesQuoteIdEditRoute: AppQuotesQuoteIdEditRoute,
-  AppQuotesQuoteIdIndexRoute: AppQuotesQuoteIdIndexRoute,
-}
-
-const AppQuotesQuoteIdRouteWithChildren =
-  AppQuotesQuoteIdRoute._addFileChildren(AppQuotesQuoteIdRouteChildren)
-
-interface AppQuotesRouteChildren {
-  AppQuotesQuoteIdRoute: typeof AppQuotesQuoteIdRouteWithChildren
-  AppQuotesNewRoute: typeof AppQuotesNewRoute
-  AppQuotesIndexRoute: typeof AppQuotesIndexRoute
-}
-
-const AppQuotesRouteChildren: AppQuotesRouteChildren = {
-  AppQuotesQuoteIdRoute: AppQuotesQuoteIdRouteWithChildren,
-  AppQuotesNewRoute: AppQuotesNewRoute,
-  AppQuotesIndexRoute: AppQuotesIndexRoute,
-}
-
-const AppQuotesRouteWithChildren = AppQuotesRoute._addFileChildren(
-  AppQuotesRouteChildren,
-)
+const AppAtChar123workspaceSlugChar125RouteWithChildren =
+  AppAtChar123workspaceSlugChar125Route._addFileChildren(
+    AppAtChar123workspaceSlugChar125RouteChildren,
+  )
 
 interface AppRouteChildren {
-  AppDashboardRoute: typeof AppDashboardRoute
-  AppInventoryRoute: typeof AppInventoryRouteWithChildren
-  AppInvoicesRoute: typeof AppInvoicesRouteWithChildren
-  AppPeopleRoute: typeof AppPeopleRouteWithChildren
-  AppQuotesRoute: typeof AppQuotesRouteWithChildren
-  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
+  AppAtChar123workspaceSlugChar125Route: typeof AppAtChar123workspaceSlugChar125RouteWithChildren
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppDashboardRoute: AppDashboardRoute,
-  AppInventoryRoute: AppInventoryRouteWithChildren,
-  AppInvoicesRoute: AppInvoicesRouteWithChildren,
-  AppPeopleRoute: AppPeopleRouteWithChildren,
-  AppQuotesRoute: AppQuotesRouteWithChildren,
-  AppSettingsIndexRoute: AppSettingsIndexRoute,
+  AppAtChar123workspaceSlugChar125Route:
+    AppAtChar123workspaceSlugChar125RouteWithChildren,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

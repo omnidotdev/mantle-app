@@ -17,11 +17,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import signOut from "@/lib/auth/signOut";
+import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 import { useTheme } from "@/providers/ThemeProvider";
 
 const AppSidebarFooter = () => {
   const { pathname } = useLocation();
   const { session } = useRouteContext({ from: "__root__" });
+  const workspaceSlug = useWorkspaceSlug();
   const user = session?.user;
   const { open, setOpen } = useSidebar();
   const { theme, setTheme } = useTheme();
@@ -81,9 +83,9 @@ const AppSidebarFooter = () => {
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
-            isActive={pathname.startsWith("/settings")}
+            isActive={pathname.startsWith(`/@${workspaceSlug}/settings`)}
           >
-            <Link to="/settings">
+            <Link to="/@{$workspaceSlug}/settings" params={{ workspaceSlug }}>
               <SettingsIcon className="size-4" />
               <span>Settings</span>
             </Link>
