@@ -9,7 +9,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import OrganizationProvider from "@/providers/OrganizationProvider";
+import WorkspaceProvider from "@/providers/WorkspaceProvider";
 import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
 /**
@@ -56,7 +56,7 @@ function WorkspaceLayout() {
   );
 
   return (
-    <OrganizationProvider organizations={organizations}>
+    <WorkspaceProvider organizations={organizations}>
       <SidebarProvider>
         <div className="flex h-dvh w-full">
           <AppSidebar className="print:hidden" />
@@ -71,6 +71,6 @@ function WorkspaceLayout() {
         </div>
       </SidebarProvider>
       <Toaster position="bottom-right" richColors />
-    </OrganizationProvider>
+    </WorkspaceProvider>
   );
 }

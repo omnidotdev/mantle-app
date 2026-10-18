@@ -18,14 +18,14 @@ import {
 import app from "@/lib/config/app.config";
 import { AUTH_BASE_URL, CONSOLE_URL } from "@/lib/config/env.config";
 import cn from "@/lib/utils";
-import { useOrganization } from "@/providers/OrganizationProvider";
+import { useWorkspace } from "@/providers/WorkspaceProvider";
 
 const AppSidebarHeader = () => {
   const navigate = useNavigate();
   const { organizationId } = useRouteContext({
     from: "/_app/@{$workspaceSlug}",
   });
-  const orgCtx = useOrganization();
+  const orgCtx = useWorkspace();
   const { closeMobileSidebar } = useSidebar();
 
   const organizations = orgCtx?.organizations ?? [];
