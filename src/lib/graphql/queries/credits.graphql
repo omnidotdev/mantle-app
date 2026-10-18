@@ -1,0 +1,24 @@
+query WorkspaceCredits($organizationId: String!) {
+  creditTransactions(condition: { organizationId: $organizationId }) {
+    nodes {
+      rowId
+      organizationId
+      currency
+      amount
+      kind
+      invoiceId
+      paymentId
+      note
+      createdAt
+    }
+  }
+}
+
+mutation ApplyInvoiceCredit($input: ApplyInvoiceCreditInput!) {
+  applyInvoiceCredit(input: $input) {
+    creditTransactionId
+    amountApplied
+    remainingCredit
+    invoiceOutstanding
+  }
+}
