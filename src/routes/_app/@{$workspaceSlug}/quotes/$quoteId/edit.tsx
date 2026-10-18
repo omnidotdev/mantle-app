@@ -369,7 +369,7 @@ const EditQuotePage = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          Select an organization to edit quotes
+          Select a workspace to edit quotes
         </p>
       </div>
     );

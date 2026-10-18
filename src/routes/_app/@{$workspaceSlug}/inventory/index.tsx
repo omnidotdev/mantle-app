@@ -84,7 +84,7 @@ const InventoryPage = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          Select an organization to view inventory
+          Select a workspace to view inventory
         </p>
       </div>
     );

@@ -121,7 +121,7 @@ const EditCompanyPage = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          Select an organization to edit companies
+          Select a workspace to edit companies
         </p>
       </div>
     );

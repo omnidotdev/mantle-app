@@ -50,7 +50,7 @@ const AppSidebarHeader = () => {
         <MenuTrigger asChild>
           <SidebarMenuButton className="w-full justify-between">
             <span className="truncate text-xs">
-              {currentOrg?.name ?? "Select organization"}
+              {currentOrg?.name ?? "Select workspace"}
             </span>
             <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50 group-data-[collapsible=icon]:hidden" />
           </SidebarMenuButton>
@@ -97,7 +97,7 @@ const AppSidebarHeader = () => {
                     className="flex items-center gap-2"
                   >
                     <PlusIcon className="size-4" />
-                    <span>Manage Organizations</span>
+                    <span>Manage Workspaces</span>
                   </a>
                 </MenuItem>
               </>

@@ -89,7 +89,7 @@ const SettingsPage = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          Select an organization to view settings
+          Select a workspace to view settings
         </p>
       </div>
     );
@@ -99,7 +99,7 @@ const SettingsPage = () => {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-semibold text-xl">Organization Profile</h1>
+          <h1 className="font-semibold text-xl">Workspace Profile</h1>
           <p className="mt-1 text-muted-foreground text-sm">
             Configure your company details for auto-filling invoices and
             contracts

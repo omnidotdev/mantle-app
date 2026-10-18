@@ -153,7 +153,7 @@ const PeoplePage = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          Select an organization to view people
+          Select a workspace to view people
         </p>
       </div>
     );

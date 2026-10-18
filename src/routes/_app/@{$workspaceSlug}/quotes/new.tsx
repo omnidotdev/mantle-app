@@ -288,7 +288,7 @@ const NewQuotePage = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          Select an organization to create quotes
+          Select a workspace to create quotes
         </p>
       </div>
     );
