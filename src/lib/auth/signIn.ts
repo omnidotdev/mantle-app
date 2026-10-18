@@ -11,8 +11,9 @@ interface Params {
  * Sign in with OAuth2 provider.
  */
 const signIn = async ({ redirectUrl, providerId }: Params) => {
-  const res = await authClient.signIn.oauth2({
-    providerId,
+  // better-auth 1.7: generic providers sign in through the standard social flow
+  const res = await authClient.signIn.social({
+    provider: providerId,
     callbackURL: redirectUrl,
   });
 

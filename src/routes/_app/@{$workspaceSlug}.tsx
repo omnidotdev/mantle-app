@@ -56,7 +56,7 @@ function WorkspaceLayout() {
   );
 
   return (
-    <WorkspaceProvider organizations={organizations}>
+    <WorkspaceProvider workspaces={organizations}>
       <SidebarProvider>
         <div className="flex h-dvh w-full">
           <AppSidebar className="print:hidden" />

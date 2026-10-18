@@ -28,7 +28,7 @@ const AppSidebarHeader = () => {
   const orgCtx = useWorkspace();
   const { closeMobileSidebar } = useSidebar();
 
-  const organizations = orgCtx?.organizations ?? [];
+  const organizations = orgCtx?.workspaces ?? [];
   const currentOrg = organizations.find((o) => o.id === organizationId);
   const manageUrl = CONSOLE_URL || AUTH_BASE_URL;
 

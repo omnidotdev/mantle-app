@@ -49,8 +49,10 @@ export const signOutLocal = createServerFn({ method: "POST" }).handler(
     // Grab the ID token before we destroy the local session
     let idToken: string | undefined;
     try {
+      // better-auth 1.7 reads the token by stored account cookie (enabled via
+      // account.storeAccountCookie), not by providerId
       const tokenResult = await auth.api.getAccessToken({
-        body: { providerId: "omni" },
+        body: { useAccountCookie: true },
         headers,
       });
       idToken = tokenResult?.idToken;
