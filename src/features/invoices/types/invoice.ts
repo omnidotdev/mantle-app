@@ -39,6 +39,34 @@ export interface Payment {
   method: string | null;
 }
 
+/** Kinds of workspace credit movement, mirroring the API `credit_transaction.kind` */
+export const CREDIT_TRANSACTION_KINDS = [
+  "overpayment",
+  "creditNote",
+  "application",
+  "adjustment",
+  "void",
+] as const;
+
+export type CreditTransactionKind = (typeof CREDIT_TRANSACTION_KINDS)[number];
+
+export interface CreditTransaction {
+  id: string;
+  organizationId: string;
+  currency: string;
+  /**
+   * Numeric string, signed. Positive adds to the workspace balance
+   * (overpayment, creditNote); `application` rows are negative, drawing the
+   * balance down onto an invoice
+   */
+  amount: string;
+  kind: CreditTransactionKind;
+  invoiceId: string | null;
+  paymentId: string | null;
+  note: string | null;
+  createdAt: string;
+}
+
 export interface Invoice {
   id: string;
   organizationId: string;
@@ -101,20 +129,67 @@ export const sumPayments = (payments: Pick<Payment, "amount">[]): number =>
     0,
   );
 
-/** Outstanding balance: invoice total minus everything paid so far */
+/** Signed total of credit-transaction amounts, in dollars */
+export const sumCredits = (
+  credits: Pick<CreditTransaction, "amount">[],
+): number =>
+  credits.reduce(
+    (total, credit) => total + (Number.parseFloat(credit.amount) || 0),
+    0,
+  );
+
+/**
+ * The workspace's available credit balance for a currency: the signed sum of
+ * every transaction in that currency (applications already net it down)
+ */
+export const creditBalance = (
+  credits: Pick<CreditTransaction, "amount" | "currency">[],
+  currency: string,
+): number =>
+  sumCredits(credits.filter((credit) => credit.currency === currency));
+
+/**
+ * Credit applied to a single invoice, in dollars as a positive amount.
+ * `application` rows carry a negative amount (the balance drawn down onto the
+ * invoice), so the amount applied is the negation of their sum
+ */
+export const appliedCredit = (
+  credits: Pick<CreditTransaction, "amount" | "kind" | "invoiceId">[],
+  invoiceId: string,
+): number =>
+  -sumCredits(
+    credits.filter(
+      (credit) =>
+        credit.kind === "application" && credit.invoiceId === invoiceId,
+    ),
+  ) || 0;
+
+/**
+ * Outstanding balance: invoice total minus everything paid so far and any
+ * workspace credit already applied to it
+ */
 export const invoiceBalance = (
   total: string,
   payments: Pick<Payment, "amount">[],
-): number => (Number.parseFloat(total) || 0) - sumPayments(payments);
+  appliedCredits = 0,
+): number =>
+  (Number.parseFloat(total) || 0) - sumPayments(payments) - appliedCredits;
 
-/** Whether payments cover the invoice total (needs a positive total) */
+/**
+ * Whether payments plus applied workspace credit cover the invoice total (needs
+ * a positive total)
+ */
 export const isPaidInFull = (
   total: string,
   payments: Pick<Payment, "amount">[],
+  appliedCredits = 0,
 ): boolean => {
   const totalCents = toCents(Number.parseFloat(total) || 0);
 
-  return totalCents > 0 && toCents(sumPayments(payments)) >= totalCents;
+  return (
+    totalCents > 0 &&
+    toCents(sumPayments(payments) + appliedCredits) >= totalCents
+  );
 };
 
 /**
@@ -144,11 +219,20 @@ export const derivePaidFields = (
   total: string,
   status: InvoiceStatus,
   payments: Pick<Payment, "amount" | "paidAt">[],
+  appliedCredits = 0,
 ): { status: InvoiceStatus; paidAt: string | null } => {
-  if (isPaidInFull(total, payments)) {
+  if (isPaidInFull(total, payments, appliedCredits)) {
+    // Attribute settlement to the latest payment date; credit can settle an
+    // invoice that has no payment to date it to, leaving paidAt null
+    const latestPayment = payments.reduce<string | null>(
+      (latest, payment) =>
+        !latest || payment.paidAt > latest ? payment.paidAt : latest,
+      null,
+    );
+
     return {
       status: "paid",
-      paidAt: toPaidAtTimestamp(paidInFullDate(total, payments) ?? ""),
+      paidAt: toPaidAtTimestamp(latestPayment ?? ""),
     };
   }
 
