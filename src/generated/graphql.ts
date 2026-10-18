@@ -35,6 +35,20 @@ export type Scalars = {
   UUID: { input: string; output: string; }
 };
 
+export type ApplyInvoiceCreditInput = {
+  amount: Scalars['String']['input'];
+  invoiceId: Scalars['UUID']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ApplyInvoiceCreditPayload = {
+  __typename?: 'ApplyInvoiceCreditPayload';
+  amountApplied: Scalars['String']['output'];
+  creditTransactionId: Scalars['UUID']['output'];
+  invoiceOutstanding: Scalars['String']['output'];
+  remainingCredit: Scalars['String']['output'];
+};
+
 export type ChannelConnection = Node & {
   __typename?: 'ChannelConnection';
   createdAt?: Maybe<Scalars['Datetime']['output']>;
@@ -550,6 +564,39 @@ export type CreateCompanyPayloadCompanyEdgeArgs = {
   orderBy?: Array<CompanyOrderBy>;
 };
 
+/** All input for the create `CreditTransaction` mutation. */
+export type CreateCreditTransactionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The `CreditTransaction` to be created by this mutation. */
+  creditTransaction: CreditTransactionInput;
+};
+
+/** The output of our create `CreditTransaction` mutation. */
+export type CreateCreditTransactionPayload = {
+  __typename?: 'CreateCreditTransactionPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `CreditTransaction` that was created by this mutation. */
+  creditTransaction?: Maybe<CreditTransaction>;
+  /** An edge for our `CreditTransaction`. May be used by Relay 1. */
+  creditTransactionEdge?: Maybe<CreditTransactionEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our create `CreditTransaction` mutation. */
+export type CreateCreditTransactionPayloadCreditTransactionEdgeArgs = {
+  orderBy?: Array<CreditTransactionOrderBy>;
+};
+
 /** All input for the create `DocumentNumberingConfig` mutation. */
 export type CreateDocumentNumberingConfigInput = {
   /**
@@ -979,6 +1026,129 @@ export type CreateSupplierPayloadSupplierEdgeArgs = {
   orderBy?: Array<SupplierOrderBy>;
 };
 
+export type CreditTransaction = Node & {
+  __typename?: 'CreditTransaction';
+  amount: Scalars['BigFloat']['output'];
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  currency: Scalars['String']['output'];
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  /** Reads a single `Invoice` that is related to this `CreditTransaction`. */
+  invoice?: Maybe<Invoice>;
+  invoiceId?: Maybe<Scalars['UUID']['output']>;
+  kind: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  /** Reads a single `Payment` that is related to this `CreditTransaction`. */
+  payment?: Maybe<Payment>;
+  paymentId?: Maybe<Scalars['UUID']['output']>;
+  rowId: Scalars['UUID']['output'];
+};
+
+/**
+ * A condition to be used against `CreditTransaction` object types. All fields are
+ * tested for equality and combined with a logical ‘and.’
+ */
+export type CreditTransactionCondition = {
+  /** Checks for equality with the object’s `invoiceId` field. */
+  invoiceId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `paymentId` field. */
+  paymentId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `CreditTransaction` values. */
+export type CreditTransactionConnection = {
+  __typename?: 'CreditTransactionConnection';
+  /** A list of edges which contains the `CreditTransaction` and cursor to aid in pagination. */
+  edges: Array<Maybe<CreditTransactionEdge>>;
+  /** A list of `CreditTransaction` objects. */
+  nodes: Array<Maybe<CreditTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `CreditTransaction` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `CreditTransaction` edge in the connection. */
+export type CreditTransactionEdge = {
+  __typename?: 'CreditTransactionEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `CreditTransaction` at the end of the edge. */
+  node?: Maybe<CreditTransaction>;
+};
+
+/** A filter to be used against `CreditTransaction` object types. All fields are combined with a logical ‘and.’ */
+export type CreditTransactionFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<CreditTransactionFilter>>;
+  /** Filter by the object’s `invoice` relation. */
+  invoice?: InputMaybe<InvoiceFilter>;
+  /** A related `invoice` exists. */
+  invoiceExists?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filter by the object’s `invoiceId` field. */
+  invoiceId?: InputMaybe<UuidFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<CreditTransactionFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<CreditTransactionFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `payment` relation. */
+  payment?: InputMaybe<PaymentFilter>;
+  /** A related `payment` exists. */
+  paymentExists?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filter by the object’s `paymentId` field. */
+  paymentId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+};
+
+/** An input for mutations affecting `CreditTransaction` */
+export type CreditTransactionInput = {
+  amount: Scalars['BigFloat']['input'];
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  invoiceId?: InputMaybe<Scalars['UUID']['input']>;
+  kind: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  paymentId?: InputMaybe<Scalars['UUID']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** Methods to use when ordering `CreditTransaction`. */
+export enum CreditTransactionOrderBy {
+  InvoiceIdAsc = 'INVOICE_ID_ASC',
+  InvoiceIdDesc = 'INVOICE_ID_DESC',
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PaymentIdAsc = 'PAYMENT_ID_ASC',
+  PaymentIdDesc = 'PAYMENT_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC'
+}
+
+/** Represents an update to a `CreditTransaction`. Fields that are set will be updated. */
+export type CreditTransactionPatch = {
+  amount?: InputMaybe<Scalars['BigFloat']['input']>;
+  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  invoiceId?: InputMaybe<Scalars['UUID']['input']>;
+  kind?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  paymentId?: InputMaybe<Scalars['UUID']['input']>;
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
 /** All input for the `deleteChannelConnectionById` mutation. */
 export type DeleteChannelConnectionByIdInput = {
   /**
@@ -1109,6 +1279,50 @@ export type DeleteCompanyPayload = {
 /** The output of our delete `Company` mutation. */
 export type DeleteCompanyPayloadCompanyEdgeArgs = {
   orderBy?: Array<CompanyOrderBy>;
+};
+
+/** All input for the `deleteCreditTransactionById` mutation. */
+export type DeleteCreditTransactionByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `CreditTransaction` to be deleted. */
+  id: Scalars['ID']['input'];
+};
+
+/** All input for the `deleteCreditTransaction` mutation. */
+export type DeleteCreditTransactionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our delete `CreditTransaction` mutation. */
+export type DeleteCreditTransactionPayload = {
+  __typename?: 'DeleteCreditTransactionPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `CreditTransaction` that was deleted by this mutation. */
+  creditTransaction?: Maybe<CreditTransaction>;
+  /** An edge for our `CreditTransaction`. May be used by Relay 1. */
+  creditTransactionEdge?: Maybe<CreditTransactionEdge>;
+  deletedCreditTransactionId?: Maybe<Scalars['ID']['output']>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our delete `CreditTransaction` mutation. */
+export type DeleteCreditTransactionPayloadCreditTransactionEdgeArgs = {
+  orderBy?: Array<CreditTransactionOrderBy>;
 };
 
 /** All input for the `deleteDocumentNumberingConfigById` mutation. */
@@ -1951,6 +2165,8 @@ export type Invoice = Node & {
   contact?: Maybe<Person>;
   contactId?: Maybe<Scalars['UUID']['output']>;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
+  /** Reads and enables pagination through a set of `CreditTransaction`. */
+  creditTransactions: CreditTransactionConnection;
   currency?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['Date']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
@@ -1973,6 +2189,18 @@ export type Invoice = Node & {
   taxRate?: Maybe<Scalars['BigFloat']['output']>;
   total?: Maybe<Scalars['BigFloat']['output']>;
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+
+export type InvoiceCreditTransactionsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<CreditTransactionCondition>;
+  filter?: InputMaybe<CreditTransactionFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CreditTransactionOrderBy>>;
 };
 
 
@@ -2049,6 +2277,10 @@ export type InvoiceFilter = {
   contact?: InputMaybe<PersonFilter>;
   /** A related `contact` exists. */
   contactExists?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filter by the object’s `creditTransactions` relation. */
+  creditTransactions?: InputMaybe<InvoiceToManyCreditTransactionFilter>;
+  /** Some related `creditTransactions` exist. */
+  creditTransactionsExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `invoiceLineItems` relation. */
   invoiceLineItems?: InputMaybe<InvoiceToManyInvoiceLineItemFilter>;
   /** Some related `invoiceLineItems` exist. */
@@ -2249,6 +2481,16 @@ export type InvoicePatch = {
   updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
 };
 
+/** A filter to be used against many `CreditTransaction` object types. All fields are combined with a logical ‘and.’ */
+export type InvoiceToManyCreditTransactionFilter = {
+  /** Every related `CreditTransaction` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<CreditTransactionFilter>;
+  /** No related `CreditTransaction` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<CreditTransactionFilter>;
+  /** Some related `CreditTransaction` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<CreditTransactionFilter>;
+};
+
 /** A filter to be used against many `InvoiceLineItem` object types. All fields are combined with a logical ‘and.’ */
 export type InvoiceToManyInvoiceLineItemFilter = {
   /** Every related `InvoiceLineItem` matches the filter criteria. All fields are combined with a logical ‘and.’ */
@@ -2272,12 +2514,15 @@ export type InvoiceToManyPaymentFilter = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: 'Mutation';
+  applyInvoiceCredit?: Maybe<ApplyInvoiceCreditPayload>;
   /** Creates a single `ChannelConnection`. */
   createChannelConnection?: Maybe<CreateChannelConnectionPayload>;
   /** Creates a single `Company`. */
   createCompany?: Maybe<CreateCompanyPayload>;
   /** Creates a single `CompanyMember`. */
   createCompanyMember?: Maybe<CreateCompanyMemberPayload>;
+  /** Creates a single `CreditTransaction`. */
+  createCreditTransaction?: Maybe<CreateCreditTransactionPayload>;
   /** Creates a single `DocumentNumberingConfig`. */
   createDocumentNumberingConfig?: Maybe<CreateDocumentNumberingConfigPayload>;
   /** Creates a single `InventoryAdjustment`. */
@@ -2316,6 +2561,10 @@ export type Mutation = {
   deleteCompanyMember?: Maybe<DeleteCompanyMemberPayload>;
   /** Deletes a single `CompanyMember` using its globally unique id. */
   deleteCompanyMemberById?: Maybe<DeleteCompanyMemberPayload>;
+  /** Deletes a single `CreditTransaction` using a unique key. */
+  deleteCreditTransaction?: Maybe<DeleteCreditTransactionPayload>;
+  /** Deletes a single `CreditTransaction` using its globally unique id. */
+  deleteCreditTransactionById?: Maybe<DeleteCreditTransactionPayload>;
   /** Deletes a single `DocumentNumberingConfig` using a unique key. */
   deleteDocumentNumberingConfig?: Maybe<DeleteDocumentNumberingConfigPayload>;
   /** Deletes a single `DocumentNumberingConfig` using its globally unique id. */
@@ -2381,6 +2630,10 @@ export type Mutation = {
   updateCompanyMember?: Maybe<UpdateCompanyMemberPayload>;
   /** Updates a single `CompanyMember` using its globally unique id and a patch. */
   updateCompanyMemberById?: Maybe<UpdateCompanyMemberPayload>;
+  /** Updates a single `CreditTransaction` using a unique key and a patch. */
+  updateCreditTransaction?: Maybe<UpdateCreditTransactionPayload>;
+  /** Updates a single `CreditTransaction` using its globally unique id and a patch. */
+  updateCreditTransactionById?: Maybe<UpdateCreditTransactionPayload>;
   /** Updates a single `DocumentNumberingConfig` using a unique key and a patch. */
   updateDocumentNumberingConfig?: Maybe<UpdateDocumentNumberingConfigPayload>;
   /** Updates a single `DocumentNumberingConfig` using its globally unique id and a patch. */
@@ -2437,6 +2690,12 @@ export type Mutation = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationApplyInvoiceCreditArgs = {
+  input: ApplyInvoiceCreditInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateChannelConnectionArgs = {
   input: CreateChannelConnectionInput;
 };
@@ -2451,6 +2710,12 @@ export type MutationCreateCompanyArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateCompanyMemberArgs = {
   input: CreateCompanyMemberInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateCreditTransactionArgs = {
+  input: CreateCreditTransactionInput;
 };
 
 
@@ -2565,6 +2830,18 @@ export type MutationDeleteCompanyMemberArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteCompanyMemberByIdArgs = {
   input: DeleteCompanyMemberByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteCreditTransactionArgs = {
+  input: DeleteCreditTransactionInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteCreditTransactionByIdArgs = {
+  input: DeleteCreditTransactionByIdInput;
 };
 
 
@@ -2763,6 +3040,18 @@ export type MutationUpdateCompanyMemberArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateCompanyMemberByIdArgs = {
   input: UpdateCompanyMemberByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateCreditTransactionArgs = {
+  input: UpdateCreditTransactionInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateCreditTransactionByIdArgs = {
+  input: UpdateCreditTransactionByIdInput;
 };
 
 
@@ -3030,6 +3319,8 @@ export type PageInfo = {
 export type Payment = Node & {
   __typename?: 'Payment';
   amount: Scalars['BigFloat']['output'];
+  /** Reads and enables pagination through a set of `CreditTransaction`. */
+  creditTransactions: CreditTransactionConnection;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   /** Reads a single `Invoice` that is related to this `Payment`. */
@@ -3039,6 +3330,18 @@ export type Payment = Node & {
   paidAt: Scalars['Date']['output'];
   reference?: Maybe<Scalars['String']['output']>;
   rowId: Scalars['UUID']['output'];
+};
+
+
+export type PaymentCreditTransactionsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<CreditTransactionCondition>;
+  filter?: InputMaybe<CreditTransactionFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CreditTransactionOrderBy>>;
 };
 
 /** A condition to be used against `Payment` object types. All fields are tested for equality and combined with a logical ‘and.’ */
@@ -3075,6 +3378,10 @@ export type PaymentEdge = {
 export type PaymentFilter = {
   /** Checks for all expressions in this list. */
   and?: InputMaybe<Array<PaymentFilter>>;
+  /** Filter by the object’s `creditTransactions` relation. */
+  creditTransactions?: InputMaybe<PaymentToManyCreditTransactionFilter>;
+  /** Some related `creditTransactions` exist. */
+  creditTransactionsExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `invoice` relation. */
   invoice?: InputMaybe<InvoiceFilter>;
   /** Filter by the object’s `invoiceId` field. */
@@ -3116,6 +3423,16 @@ export type PaymentPatch = {
   paidAt?: InputMaybe<Scalars['Date']['input']>;
   reference?: InputMaybe<Scalars['String']['input']>;
   rowId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A filter to be used against many `CreditTransaction` object types. All fields are combined with a logical ‘and.’ */
+export type PaymentToManyCreditTransactionFilter = {
+  /** Every related `CreditTransaction` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<CreditTransactionFilter>;
+  /** No related `CreditTransaction` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<CreditTransactionFilter>;
+  /** Some related `CreditTransaction` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<CreditTransactionFilter>;
 };
 
 export type Person = Node & {
@@ -3732,6 +4049,12 @@ export type Query = Node & {
   companyMemberById?: Maybe<CompanyMember>;
   /** Reads and enables pagination through a set of `CompanyMember`. */
   companyMembers?: Maybe<CompanyMemberConnection>;
+  /** Get a single `CreditTransaction`. */
+  creditTransaction?: Maybe<CreditTransaction>;
+  /** Reads a single `CreditTransaction` using its globally unique `ID`. */
+  creditTransactionById?: Maybe<CreditTransaction>;
+  /** Reads and enables pagination through a set of `CreditTransaction`. */
+  creditTransactions?: Maybe<CreditTransactionConnection>;
   /** Get a single `DocumentNumberingConfig`. */
   documentNumberingConfig?: Maybe<DocumentNumberingConfig>;
   /** Reads a single `DocumentNumberingConfig` using its globally unique `ID`. */
@@ -3903,6 +4226,31 @@ export type QueryCompanyMembersArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<CompanyMemberOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryCreditTransactionArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryCreditTransactionByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryCreditTransactionsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<CreditTransactionCondition>;
+  filter?: InputMaybe<CreditTransactionFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CreditTransactionOrderBy>>;
 };
 
 
@@ -5022,6 +5370,53 @@ export type UpdateCompanyPayloadCompanyEdgeArgs = {
   orderBy?: Array<CompanyOrderBy>;
 };
 
+/** All input for the `updateCreditTransactionById` mutation. */
+export type UpdateCreditTransactionByIdInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The globally unique `ID` which will identify a single `CreditTransaction` to be updated. */
+  id: Scalars['ID']['input'];
+  /** An object where the defined keys will be set on the `CreditTransaction` being updated. */
+  patch: CreditTransactionPatch;
+};
+
+/** All input for the `updateCreditTransaction` mutation. */
+export type UpdateCreditTransactionInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** An object where the defined keys will be set on the `CreditTransaction` being updated. */
+  patch: CreditTransactionPatch;
+  rowId: Scalars['UUID']['input'];
+};
+
+/** The output of our update `CreditTransaction` mutation. */
+export type UpdateCreditTransactionPayload = {
+  __typename?: 'UpdateCreditTransactionPayload';
+  /**
+   * The exact same `clientMutationId` that was provided in the mutation input,
+   * unchanged and unused. May be used by a client to track mutations.
+   */
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** The `CreditTransaction` that was updated by this mutation. */
+  creditTransaction?: Maybe<CreditTransaction>;
+  /** An edge for our `CreditTransaction`. May be used by Relay 1. */
+  creditTransactionEdge?: Maybe<CreditTransactionEdge>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
+
+/** The output of our update `CreditTransaction` mutation. */
+export type UpdateCreditTransactionPayloadCreditTransactionEdgeArgs = {
+  orderBy?: Array<CreditTransactionOrderBy>;
+};
+
 /** All input for the `updateDocumentNumberingConfigById` mutation. */
 export type UpdateDocumentNumberingConfigByIdInput = {
   /**
@@ -5631,6 +6026,12 @@ export type UpdateSupplierPayload = {
 /** The output of our update `Supplier` mutation. */
 export type UpdateSupplierPayloadSupplierEdgeArgs = {
   orderBy?: Array<SupplierOrderBy>;
+};
+
+export type ApplyInvoiceCreditInput = {
+  amount: string;
+  invoiceId: string;
+  note?: string | null | undefined;
 };
 
 /** An input for mutations affecting `Company` */
@@ -6361,6 +6762,20 @@ export type DeleteCompanyMemberMutationVariables = Exact<{
 
 export type DeleteCompanyMemberMutation = { deleteCompanyMember: { deletedCompanyMemberId: string | null } | null };
 
+export type WorkspaceCreditsQueryVariables = Exact<{
+  organizationId: string;
+}>;
+
+
+export type WorkspaceCreditsQuery = { creditTransactions: { nodes: Array<{ rowId: string, organizationId: string, currency: string, amount: string, kind: string, invoiceId: string | null, paymentId: string | null, note: string | null, createdAt: string | null } | null> } | null };
+
+export type ApplyInvoiceCreditMutationVariables = Exact<{
+  input: ApplyInvoiceCreditInput;
+}>;
+
+
+export type ApplyInvoiceCreditMutation = { applyInvoiceCredit: { creditTransactionId: string, amountApplied: string, remainingCredit: string, invoiceOutstanding: string } | null };
+
 export type DocumentNumberingConfigsQueryVariables = Exact<{
   organizationId: string;
 }>;
@@ -7062,6 +7477,134 @@ useDeleteCompanyMemberMutation.getKey = () => ['DeleteCompanyMember'];
 
 
 useDeleteCompanyMemberMutation.fetcher = (variables: DeleteCompanyMemberMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteCompanyMemberMutation, DeleteCompanyMemberMutationVariables>(DeleteCompanyMemberDocument, variables, options);
+
+export const WorkspaceCreditsDocument = new TypedDocumentString(`
+    query WorkspaceCredits($organizationId: String!) {
+  creditTransactions(condition: {organizationId: $organizationId}) {
+    nodes {
+      rowId
+      organizationId
+      currency
+      amount
+      kind
+      invoiceId
+      paymentId
+      note
+      createdAt
+    }
+  }
+}
+    `);
+
+export const useWorkspaceCreditsQuery = <
+      TData = WorkspaceCreditsQuery,
+      TError = unknown
+    >(
+      variables: WorkspaceCreditsQueryVariables,
+      options?: Omit<UseQueryOptions<WorkspaceCreditsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<WorkspaceCreditsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<WorkspaceCreditsQuery, TError, TData>(
+      {
+    queryKey: ['WorkspaceCredits', variables],
+    queryFn: graphqlFetch<WorkspaceCreditsQuery, WorkspaceCreditsQueryVariables>(WorkspaceCreditsDocument, variables),
+    ...options
+  }
+    )};
+
+useWorkspaceCreditsQuery.getKey = (variables: WorkspaceCreditsQueryVariables) => ['WorkspaceCredits', variables];
+
+export const useSuspenseWorkspaceCreditsQuery = <
+      TData = WorkspaceCreditsQuery,
+      TError = unknown
+    >(
+      variables: WorkspaceCreditsQueryVariables,
+      options?: Omit<UseSuspenseQueryOptions<WorkspaceCreditsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<WorkspaceCreditsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseQuery<WorkspaceCreditsQuery, TError, TData>(
+      {
+    queryKey: ['WorkspaceCredits', variables],
+    queryFn: graphqlFetch<WorkspaceCreditsQuery, WorkspaceCreditsQueryVariables>(WorkspaceCreditsDocument, variables),
+    ...options
+  }
+    )};
+
+useSuspenseWorkspaceCreditsQuery.getKey = (variables: WorkspaceCreditsQueryVariables) => ['WorkspaceCredits', variables];
+
+export const useInfiniteWorkspaceCreditsQuery = <
+      TData = InfiniteData<WorkspaceCreditsQuery>,
+      TError = unknown
+    >(
+      variables: WorkspaceCreditsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<WorkspaceCreditsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<WorkspaceCreditsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<WorkspaceCreditsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['WorkspaceCredits.infinite', variables],
+      queryFn: (metaData) => graphqlFetch<WorkspaceCreditsQuery, WorkspaceCreditsQueryVariables>(WorkspaceCreditsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteWorkspaceCreditsQuery.getKey = (variables: WorkspaceCreditsQueryVariables) => ['WorkspaceCredits.infinite', variables];
+
+export const useSuspenseInfiniteWorkspaceCreditsQuery = <
+      TData = InfiniteData<WorkspaceCreditsQuery>,
+      TError = unknown
+    >(
+      variables: WorkspaceCreditsQueryVariables,
+      options: Omit<UseSuspenseInfiniteQueryOptions<WorkspaceCreditsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseInfiniteQueryOptions<WorkspaceCreditsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseInfiniteQuery<WorkspaceCreditsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['WorkspaceCredits.infinite', variables],
+      queryFn: (metaData) => graphqlFetch<WorkspaceCreditsQuery, WorkspaceCreditsQueryVariables>(WorkspaceCreditsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useSuspenseInfiniteWorkspaceCreditsQuery.getKey = (variables: WorkspaceCreditsQueryVariables) => ['WorkspaceCredits.infinite', variables];
+
+
+useWorkspaceCreditsQuery.fetcher = (variables: WorkspaceCreditsQueryVariables, options?: RequestInit['headers']) => graphqlFetch<WorkspaceCreditsQuery, WorkspaceCreditsQueryVariables>(WorkspaceCreditsDocument, variables, options);
+
+export const ApplyInvoiceCreditDocument = new TypedDocumentString(`
+    mutation ApplyInvoiceCredit($input: ApplyInvoiceCreditInput!) {
+  applyInvoiceCredit(input: $input) {
+    creditTransactionId
+    amountApplied
+    remainingCredit
+    invoiceOutstanding
+  }
+}
+    `);
+
+export const useApplyInvoiceCreditMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<ApplyInvoiceCreditMutation, TError, ApplyInvoiceCreditMutationVariables, TContext>) => {
+    
+    return useMutation<ApplyInvoiceCreditMutation, TError, ApplyInvoiceCreditMutationVariables, TContext>(
+      {
+    mutationKey: ['ApplyInvoiceCredit'],
+    mutationFn: (variables?: ApplyInvoiceCreditMutationVariables) => graphqlFetch<ApplyInvoiceCreditMutation, ApplyInvoiceCreditMutationVariables>(ApplyInvoiceCreditDocument, variables)(),
+    ...options
+  }
+    )};
+
+useApplyInvoiceCreditMutation.getKey = () => ['ApplyInvoiceCredit'];
+
+
+useApplyInvoiceCreditMutation.fetcher = (variables: ApplyInvoiceCreditMutationVariables, options?: RequestInit['headers']) => graphqlFetch<ApplyInvoiceCreditMutation, ApplyInvoiceCreditMutationVariables>(ApplyInvoiceCreditDocument, variables, options);
 
 export const DocumentNumberingConfigsDocument = new TypedDocumentString(`
     query DocumentNumberingConfigs($organizationId: String!) {

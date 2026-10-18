@@ -14,6 +14,18 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   confirmLabel?: string;
   variant?: "danger" | "default";
+  /**
+   * Keep the dialog open after confirming so the caller can close it once an
+   * async action settles. Defaults to closing immediately on confirm
+   */
+  closeOnConfirm?: boolean;
+  /**
+   * Action in flight: disables both buttons and blocks dismissal (backdrop,
+   * escape, the close control) until it settles
+   */
+  loading?: boolean;
+  /** Label shown on the confirm button while `loading` is true */
+  loadingLabel?: string;
 }
 
 const ConfirmDialog = ({
@@ -24,6 +36,9 @@ const ConfirmDialog = ({
   onConfirm,
   confirmLabel = "Delete",
   variant = "danger",
+  closeOnConfirm = true,
+  loading = false,
+  loadingLabel,
 }: ConfirmDialogProps) => {
   const confirmClass =
     variant === "danger"
@@ -31,7 +46,14 @@ const ConfirmDialog = ({
       : "bg-primary text-white hover:bg-primary-700";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        // Hold the dialog open while the action is in flight
+        if (loading) return;
+        onOpenChange(next);
+      }}
+    >
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -41,7 +63,8 @@ const ConfirmDialog = ({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
+            disabled={loading}
+            className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>
@@ -49,11 +72,12 @@ const ConfirmDialog = ({
             type="button"
             onClick={() => {
               onConfirm();
-              onOpenChange(false);
+              if (closeOnConfirm) onOpenChange(false);
             }}
-            className={`rounded-lg px-4 py-2 text-sm ${confirmClass}`}
+            disabled={loading}
+            className={`rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50 ${confirmClass}`}
           >
-            {confirmLabel}
+            {loading ? (loadingLabel ?? confirmLabel) : confirmLabel}
           </button>
         </div>
       </DialogContent>

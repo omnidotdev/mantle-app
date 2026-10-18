@@ -1,12 +1,15 @@
 import { describe, expect, it } from "bun:test";
 
 import {
+  appliedCredit,
+  creditBalance,
   derivePaidFields,
   formatCurrency,
   formatDate,
   invoiceBalance,
   isPaidInFull,
   paidInFullDate,
+  sumCredits,
   sumPayments,
   toPaidAtTimestamp,
 } from "./invoice";
@@ -102,6 +105,65 @@ describe("invoiceBalance", () => {
   it("should equal the total when there are no payments", () => {
     expect(invoiceBalance("9000", [])).toBe(9000);
   });
+
+  it("should subtract applied credit from the balance", () => {
+    expect(invoiceBalance("100", [], 30)).toBe(70);
+  });
+
+  it("should combine payments and applied credit", () => {
+    expect(invoiceBalance("100", [{ amount: "60" }], 40)).toBe(0);
+  });
+});
+
+describe("sumCredits", () => {
+  it("should sign-sum credit amounts (positive add, negative draw down)", () => {
+    expect(
+      sumCredits([{ amount: "100" }, { amount: "-40" }, { amount: "25" }]),
+    ).toBe(85);
+  });
+
+  it("should return 0 for no credits", () => {
+    expect(sumCredits([])).toBe(0);
+  });
+
+  it("should ignore non-numeric amounts", () => {
+    expect(sumCredits([{ amount: "" }, { amount: "10" }])).toBe(10);
+  });
+});
+
+const creditRows = [
+  { amount: "100", kind: "overpayment", currency: "USD", invoiceId: null },
+  { amount: "-40", kind: "application", currency: "USD", invoiceId: "inv-1" },
+  { amount: "50", kind: "creditNote", currency: "EUR", invoiceId: null },
+  { amount: "-20", kind: "application", currency: "USD", invoiceId: "inv-2" },
+] as const;
+
+describe("creditBalance", () => {
+  it("should sum only transactions in the given currency", () => {
+    expect(creditBalance(creditRows, "USD")).toBe(40);
+  });
+
+  it("should isolate a different currency", () => {
+    expect(creditBalance(creditRows, "EUR")).toBe(50);
+  });
+
+  it("should be zero when no transactions match the currency", () => {
+    expect(creditBalance(creditRows, "GBP")).toBe(0);
+  });
+});
+
+describe("appliedCredit", () => {
+  it("should return the positive amount applied to an invoice", () => {
+    expect(appliedCredit(creditRows, "inv-1")).toBe(40);
+  });
+
+  it("should only count application rows for the given invoice", () => {
+    expect(appliedCredit(creditRows, "inv-2")).toBe(20);
+  });
+
+  it("should be zero when no credit was applied to the invoice", () => {
+    expect(appliedCredit(creditRows, "inv-3")).toBe(0);
+  });
 });
 
 describe("isPaidInFull", () => {
@@ -128,6 +190,14 @@ describe("isPaidInFull", () => {
       { amount: "33.33" },
     ];
     expect(isPaidInFull("100.00", thirds)).toBe(true);
+  });
+
+  it("should be true when payments plus applied credit cover the total", () => {
+    expect(isPaidInFull("100", [{ amount: "60" }], 40)).toBe(true);
+  });
+
+  it("should be false when applied credit alone does not cover the total", () => {
+    expect(isPaidInFull("100", [], 30)).toBe(false);
   });
 });
 
@@ -159,6 +229,20 @@ describe("derivePaidFields", () => {
   it("should downgrade a stale paid status when payments no longer cover the total", () => {
     expect(derivePaidFields("9000", "paid", [twoPayments[0]])).toEqual({
       status: "sent",
+      paidAt: null,
+    });
+  });
+
+  it("should mark paid when payments plus applied credit cover the total", () => {
+    expect(derivePaidFields("9000", "sent", [twoPayments[0]], 4500)).toEqual({
+      status: "paid",
+      paidAt: "2026-08-05T00:00:00.000Z",
+    });
+  });
+
+  it("should mark paid with no settlement date when credit alone settles it", () => {
+    expect(derivePaidFields("100", "sent", [], 100)).toEqual({
+      status: "paid",
       paidAt: null,
     });
   });

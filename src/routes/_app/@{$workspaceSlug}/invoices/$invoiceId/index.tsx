@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
 
+import InvoiceCreditPanel from "@/features/invoices/components/InvoiceCreditPanel";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
 import { useAllInvoicesQuery } from "@/generated/graphql";
 
@@ -158,6 +159,8 @@ const InvoicePreviewPage = () => {
           </button>
         </div>
       </div>
+
+      <InvoiceCreditPanel invoice={invoice} organizationId={organizationId} />
 
       <div>
         <InvoicePreview
