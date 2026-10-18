@@ -30,8 +30,10 @@ if (AUTH_CLIENT_ID && AUTH_CLIENT_SECRET && AUTH_BASE_URL) {
     mapProfileToUser: (profile) => ({
       name: profile.name,
       email: profile.email,
-      emailVerified: profile.email_verified,
-      image: profile.picture,
+      // better-auth 1.7 types these OIDC claims as unknown; coerce to the
+      // OAuthMappedUser shape (emailVerified?: boolean, image?: string)
+      emailVerified: profile.email_verified === true,
+      image: typeof profile.picture === "string" ? profile.picture : undefined,
     }),
   });
 }
