@@ -71,7 +71,7 @@
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/devtools-vite": "^0.4.1",
     "@tanstack/nitro-v2-vite-plugin": "^1.154.7",
-    "@tanstack/react-devtools": "^0.9.6",
+    "@tanstack/react-devtools": "^0.10.0",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-router-devtools": "^1.163.3",
     "@types/ms": "^2.1.0",
