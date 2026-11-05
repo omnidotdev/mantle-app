@@ -4,7 +4,7 @@ import { getCookie, setCookie } from "@tanstack/react-start/server";
 const COOKIE_NAME = "mantle:lastOrgSlug";
 const COOKIE_TTL = 60 * 60 * 24 * 7; // 7 days
 
-export const getLastOrgCookie = createServerFn({ method: "GET" }).handler(
+export const getLastOrgCookie = createServerFn({ method: "POST" }).handler(
   async () => getCookie(COOKIE_NAME) ?? null,
 );
 

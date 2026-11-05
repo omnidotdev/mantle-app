@@ -40,7 +40,7 @@ interface ExtendedSession extends Omit<Session, "user"> {
 }
 
 const fetchSessionAndTheme = createServerFn({
-  method: "GET",
+  method: "POST",
 }).handler(async () => {
   const [{ session }, theme] = await Promise.all([fetchSession(), getTheme()]);
 
