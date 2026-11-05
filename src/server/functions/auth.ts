@@ -10,13 +10,15 @@ import {
   BASE_URL,
 } from "@/lib/config/env.config";
 
-export const fetchSession = createServerFn().handler(async () => {
-  const request = getRequest();
+export const fetchSession = createServerFn({ method: "POST" }).handler(
+  async () => {
+    const request = getRequest();
 
-  const session = await getAuth(request);
+    const session = await getAuth(request);
 
-  return { session };
-});
+    return { session };
+  },
+);
 
 const clearAuthCacheCookie = () => {
   setCookie(authCache.cookieName, "", { maxAge: 0, path: "/" });
