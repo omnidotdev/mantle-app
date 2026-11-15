@@ -1,8 +1,10 @@
 {
   "name": "@omnidotdev/mantle-app",
+  "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "release": "changeset publish",
     "dev": "concurrently --kill-others --names \"GRAPHQL-CODEGEN,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run graphql:generate:watch\" \"bun dev:vite\"",
     "dev:vite": "bun --env-file .env.local --env-file .env.development vite dev",
     "build": "tsc --noEmit && vite build",
@@ -59,6 +61,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.31.0",
     "@graphql-codegen/add": "^7.0.1",
     "@graphql-codegen/cli": "^7.1.3",
     "@graphql-codegen/import-types-preset": "^4.0.1",
