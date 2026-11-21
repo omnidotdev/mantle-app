@@ -1,3 +1,4 @@
+import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { Check, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
@@ -375,18 +376,19 @@ const QuoteForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="quote-status">Status</Label>
-            <select
+            <NativeSelect
               id="quote-status"
               value={quote.status ?? "draft"}
               onChange={(e) => handleChange("status", e.target.value)}
-              className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="w-full"
+              selectClassName="capitalize"
             >
               {QUOTE_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           </div>
         </div>
       </div>
@@ -467,13 +469,13 @@ const QuoteForm = ({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="quote-project-type">Project Type</Label>
-            <select
+            <NativeSelect
               id="quote-project-type"
               value={quote.projectType ?? ""}
               onChange={(e) =>
                 handleChange("projectType", e.target.value || null)
               }
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
+              className="w-full"
             >
               <option value="">Select type</option>
               <option value="web">Web Application</option>
@@ -481,7 +483,7 @@ const QuoteForm = ({
               <option value="desktop">Desktop Application</option>
               <option value="api">API / Backend</option>
               <option value="other">Other</option>
-            </select>
+            </NativeSelect>
           </div>
 
           <div className="space-y-1.5">
@@ -629,20 +631,20 @@ const QuoteForm = ({
                   <Label htmlFor={`item-pricing-${item.id}`}>
                     Pricing Type
                   </Label>
-                  <select
+                  <NativeSelect
                     id={`item-pricing-${item.id}`}
                     value={item.pricingType ?? "fixed"}
                     onChange={(e) =>
                       handleLineItemChange(index, "pricingType", e.target.value)
                     }
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
+                    className="w-full"
                   >
                     <option value="fixed">Fixed</option>
                     <option value="hourly">Hourly</option>
                     <option value="royalty">Royalty</option>
                     <option value="complimentary">Complimentary</option>
                     <option value="included">Included</option>
-                  </select>
+                  </NativeSelect>
                 </div>
               </div>
 
@@ -806,7 +808,7 @@ const QuoteForm = ({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor={`item-rtfu-${item.id}`}>Unit</Label>
-                    <select
+                    <NativeSelect
                       id={`item-rtfu-${item.id}`}
                       value={item.royaltyTimeframeUnit ?? ""}
                       onChange={(e) =>
@@ -816,13 +818,13 @@ const QuoteForm = ({
                           e.target.value || null,
                         )
                       }
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:text-sm"
+                      className="w-full"
                     >
                       <option value="">Select</option>
                       <option value="months">Months</option>
                       <option value="years">Years</option>
                       <option value="perpetual">Perpetual</option>
-                    </select>
+                    </NativeSelect>
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor={`item-threshold-${item.id}`}>
