@@ -1,3 +1,4 @@
+import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
@@ -364,7 +365,7 @@ const InvoicesListPage = () => {
                 className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
-            <select
+            <NativeSelect
               value={statusFilter}
               onChange={(e) =>
                 navigate({
@@ -372,7 +373,7 @@ const InvoicesListPage = () => {
                 })
               }
               aria-label="Filter by status"
-              className="cursor-pointer appearance-none rounded-lg border border-input bg-card px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+              selectClassName="rounded-lg bg-card"
             >
               <option value="all">All statuses</option>
               {INVOICE_STATUSES.map((status) => (
@@ -380,7 +381,7 @@ const InvoicesListPage = () => {
                   {formatStatus(status)}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           </div>
 
           <DataTable

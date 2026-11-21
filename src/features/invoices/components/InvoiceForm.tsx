@@ -1,3 +1,4 @@
+import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { Check, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
@@ -414,14 +415,15 @@ const InvoiceForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="invoice-status">Status</Label>
-            <select
+            <NativeSelect
               id="invoice-status"
               value={
                 invoice.status === "paid" ? "paid" : (invoice.status ?? "draft")
               }
               onChange={(e) => handleChange("status", e.target.value)}
               disabled={invoice.status === "paid"}
-              className="flex h-9 w-full cursor-pointer appearance-none rounded-md border border-input bg-transparent px-3 py-1 text-sm capitalize shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full"
+              selectClassName="capitalize"
             >
               {MANUAL_INVOICE_STATUSES.map((status) => (
                 <option key={status} value={status}>
@@ -429,7 +431,7 @@ const InvoiceForm = ({
                 </option>
               ))}
               {invoice.status === "paid" && <option value="paid">Paid</option>}
-            </select>
+            </NativeSelect>
             {invoice.status === "paid" ? (
               <p className="text-muted-foreground text-xs">
                 Set automatically once payments cover the total. Remove a
