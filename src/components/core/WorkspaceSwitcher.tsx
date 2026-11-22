@@ -1,8 +1,9 @@
+import { workspacesUrl } from "@omnidotdev/providers/react";
 import { WorkspaceSwitcher as SharedWorkspaceSwitcher } from "@omnidotdev/thornberry/workspace-switcher";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
 import { useSidebar } from "@/components/ui/sidebar";
-import { AUTH_BASE_URL, CONSOLE_URL } from "@/lib/config/env.config";
+import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { useWorkspace } from "@/providers/WorkspaceProvider";
 
 import type { WorkspaceOption } from "@omnidotdev/thornberry/workspace-switcher";
@@ -27,7 +28,8 @@ export const getWorkspaceSlugToOpen = (
 
 /**
  * Sidebar workspace switcher, built on the shared Thornberry switcher.
- * Switching workspace changes the URL rather than a global selector.
+ * Switching workspace changes the URL rather than a global selector, and
+ * workspaces are managed on the account hub.
  */
 const WorkspaceSwitcher = () => {
   const navigate = useNavigate();
@@ -55,7 +57,7 @@ const WorkspaceSwitcher = () => {
       workspaces={workspaces}
       currentWorkspaceId={organizationId}
       onSelect={handleSelect}
-      manageUrl={CONSOLE_URL || AUTH_BASE_URL}
+      manageUrl={workspacesUrl(ACCOUNT_URL)}
     />
   );
 };
