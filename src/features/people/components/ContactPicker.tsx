@@ -1,6 +1,6 @@
+import { OptionsSelect } from "@omnidotdev/thornberry/select";
 import { useMemo } from "react";
 
-import FieldSelect from "@/components/core/FieldSelect";
 import { useAllPeopleQuery } from "@/generated/graphql";
 
 interface ContactPickerProps {
@@ -44,7 +44,7 @@ const ContactPicker = ({
   );
 
   return (
-    <FieldSelect
+    <OptionsSelect
       value={value}
       options={options}
       onValueChange={onValueChange}

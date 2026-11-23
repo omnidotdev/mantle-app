@@ -1,5 +1,6 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
 import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
+import { DataTable } from "@omnidotdev/thornberry/data-table";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
@@ -7,7 +8,6 @@ import { Edit, Eye, Loader2, Package, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { DataTable } from "@/components/ui/data-table";
 import { inventoryListSearchSchema } from "@/features/inventory/searchParams";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import {

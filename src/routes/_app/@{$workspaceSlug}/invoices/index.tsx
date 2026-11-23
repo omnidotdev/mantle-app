@@ -1,4 +1,5 @@
 import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
+import { DataTable } from "@omnidotdev/thornberry/data-table";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -15,7 +16,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { DataTable } from "@/components/ui/data-table";
 import { invoiceListSearchSchema } from "@/features/invoices/searchParams";
 import {
   INVOICE_STATUSES,

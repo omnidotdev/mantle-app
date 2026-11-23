@@ -1,6 +1,6 @@
+import { OptionsSelect } from "@omnidotdev/thornberry/select";
 import { useMemo } from "react";
 
-import FieldSelect from "@/components/core/FieldSelect";
 import { useAllCompaniesQuery } from "@/generated/graphql";
 
 interface CompanyPickerProps {
@@ -34,7 +34,7 @@ const CompanyPicker = ({
   );
 
   return (
-    <FieldSelect
+    <OptionsSelect
       value={value}
       options={options}
       onValueChange={onValueChange}

@@ -1,4 +1,5 @@
 import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
+import { DataTable } from "@omnidotdev/thornberry/data-table";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -16,7 +17,6 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { DataTable } from "@/components/ui/data-table";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import { quoteListSearchSchema } from "@/features/quotes/searchParams";
 import { QUOTE_STATUSES } from "@/features/quotes/types/quote";

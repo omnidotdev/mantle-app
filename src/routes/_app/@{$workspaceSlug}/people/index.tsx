@@ -1,5 +1,6 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
 import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
+import { DataTable } from "@omnidotdev/thornberry/data-table";
 import {
   TabsContent,
   TabsList,
@@ -24,7 +25,6 @@ import {
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { DataTable } from "@/components/ui/data-table";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";

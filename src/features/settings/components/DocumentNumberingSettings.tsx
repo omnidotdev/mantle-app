@@ -1,5 +1,6 @@
 import { Input } from "@omnidotdev/thornberry/input";
 import { Label } from "@omnidotdev/thornberry/label";
+import { OptionsSelect } from "@omnidotdev/thornberry/select";
 import {
   TabsContent,
   TabsList,
@@ -9,7 +10,6 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import FieldSelect from "@/components/core/FieldSelect";
 import { formatPreview } from "@/features/settings/types/documentNumbering";
 import {
   useCreateDocumentNumberingConfigMutation,
@@ -54,10 +54,14 @@ const defaultConfig: Record<DocumentType, FormState> = {
   },
 };
 
+// The select reads an empty value as nothing selected, so "no separator" (stored
+// as "") goes through a sentinel in the list
+const NO_SEPARATOR = "none";
+
 const separatorOptions = [
   { label: "Dash (-)", value: "-" },
   { label: "Slash (/)", value: "/" },
-  { label: "None", value: "" },
+  { label: "None", value: NO_SEPARATOR },
 ];
 
 const dateFormatOptions = [
@@ -217,18 +221,20 @@ const DocumentNumberingForm = ({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-separator`}>Separator</Label>
-          <FieldSelect
+          <OptionsSelect
             id={`${documentType}-separator`}
-            value={form.separator}
+            value={form.separator || NO_SEPARATOR}
             options={separatorOptions}
-            onValueChange={(v) => handleChange("separator", v)}
+            onValueChange={(v) =>
+              handleChange("separator", v === NO_SEPARATOR ? "" : v)
+            }
             placeholder="Select separator"
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-date-format`}>Date Segment</Label>
-          <FieldSelect
+          <OptionsSelect
             id={`${documentType}-date-format`}
             value={form.dateFormat ?? "none"}
             options={dateFormatOptions}
