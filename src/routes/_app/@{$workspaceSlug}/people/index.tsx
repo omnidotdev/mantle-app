@@ -1,4 +1,5 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
 import {
   TabsContent,
   TabsList,
@@ -23,7 +24,6 @@ import {
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
@@ -289,7 +289,10 @@ const PeoplePage = () => {
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title={`Delete ${deleteConfirm.type === "company" ? "Company" : "Contact"}`}
         description="Are you sure you want to delete this record? This action cannot be undone."
+        confirmLabel="Delete"
         onConfirm={() => {
+          // Close as soon as the delete fires
+          setDeleteConfirm((prev) => ({ ...prev, open: false }));
           if (deleteConfirm.type === "company") {
             deleteCompanyMutation.mutate(
               { input: { rowId: deleteConfirm.id } },

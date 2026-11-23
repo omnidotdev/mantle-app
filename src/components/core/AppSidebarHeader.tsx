@@ -1,7 +1,7 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { SidebarHeader } from "@omnidotdev/thornberry/sidebar";
 
 import WorkspaceSwitcher from "@/components/core/WorkspaceSwitcher";
-import { SidebarHeader } from "@/components/ui/sidebar";
 import app from "@/lib/config/app.config";
 
 const AppSidebarHeader = () => (

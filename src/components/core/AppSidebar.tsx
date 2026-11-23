@@ -1,4 +1,5 @@
-import { Sidebar } from "@/components/ui/sidebar";
+import { Sidebar } from "@omnidotdev/thornberry/sidebar";
+
 import AppSidebarContent from "./AppSidebarContent";
 import AppSidebarFooter from "./AppSidebarFooter";
 import AppSidebarHeader from "./AppSidebarHeader";

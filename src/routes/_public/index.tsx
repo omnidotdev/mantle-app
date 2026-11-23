@@ -1,4 +1,5 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { Button } from "@omnidotdev/thornberry/button";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
@@ -14,7 +15,6 @@ import {
 import { LuGithub as GithubIcon } from "react-icons/lu";
 
 import VolcanicCard from "@/components/core/VolcanicCard";
-import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import appConfig from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";

@@ -1,9 +1,9 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Input } from "@/components/ui/input";
 import {
   useCompanyMembersByCompanyQuery,
   useCreateCompanyMemberMutation,

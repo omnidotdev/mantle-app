@@ -1,8 +1,8 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";

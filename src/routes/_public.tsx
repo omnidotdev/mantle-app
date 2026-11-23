@@ -5,6 +5,7 @@ import {
 } from "@icons-pack/react-simple-icons";
 import { AppFooter } from "@omnidotdev/thornberry/app-footer";
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { Button } from "@omnidotdev/thornberry/button";
 import {
   Outlet,
   createFileRoute,
@@ -14,7 +15,6 @@ import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { FaLinkedin as LinkedInIcon } from "react-icons/fa6";
 
-import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import signOut from "@/lib/auth/signOut";
 import appConfig from "@/lib/config/app.config";

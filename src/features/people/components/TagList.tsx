@@ -1,8 +1,8 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { Input } from "@omnidotdev/thornberry/input";
 import { X } from "lucide-react";
 import { useState } from "react";
 
-import { Input } from "@/components/ui/input";
 import { COMMON_TAGS } from "@/features/people/types";
 
 interface TagListProps {

@@ -1,6 +1,3 @@
-import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboardIcon } from "lucide-react";
-
 import {
   SidebarContent,
   SidebarGroup,
@@ -9,7 +6,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@omnidotdev/thornberry/sidebar";
+import { Link, useLocation } from "@tanstack/react-router";
+import { LayoutDashboardIcon } from "lucide-react";
+
 import app from "@/lib/config/app.config";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 

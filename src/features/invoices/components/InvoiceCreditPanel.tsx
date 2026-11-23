@@ -1,8 +1,8 @@
+import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import ConfirmDialog from "@/components/ui/confirm-dialog";
 import {
   appliedCredit,
   creditBalance,
@@ -145,13 +145,12 @@ const InvoiceCreditPanel = ({
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        variant="default"
+        confirmVariant="solid"
         title="Apply workspace credit"
         description={`Apply ${formatCurrency(applicable.toFixed(2), currency)} of workspace credit to invoice ${invoice.invoiceNumber}? This cannot be undone.`}
         confirmLabel="Apply credit"
-        loadingLabel="Applying..."
-        closeOnConfirm={false}
-        loading={applyMutation.isPending}
+        pendingLabel="Applying..."
+        isPending={applyMutation.isPending}
         onConfirm={handleApply}
       />
     </div>

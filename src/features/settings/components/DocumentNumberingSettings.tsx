@@ -1,3 +1,5 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import {
   TabsContent,
   TabsList,
@@ -7,15 +9,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import FieldSelect from "@/components/core/FieldSelect";
 import { formatPreview } from "@/features/settings/types/documentNumbering";
 import {
   useCreateDocumentNumberingConfigMutation,
@@ -223,48 +217,26 @@ const DocumentNumberingForm = ({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-separator`}>Separator</Label>
-          <Select
-            items={separatorOptions}
+          <FieldSelect
+            id={`${documentType}-separator`}
             value={form.separator}
+            options={separatorOptions}
             onValueChange={(v) => handleChange("separator", v)}
-            itemToString={(item) => item.label}
-            itemToValue={(item) => item.value}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select separator" />
-            </SelectTrigger>
-            <SelectContent>
-              {separatorOptions.map((opt) => (
-                <SelectItem key={opt.value || "none"} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Select separator"
+          />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-date-format`}>Date Segment</Label>
-          <Select
-            items={dateFormatOptions}
+          <FieldSelect
+            id={`${documentType}-date-format`}
             value={form.dateFormat ?? "none"}
+            options={dateFormatOptions}
             onValueChange={(v) =>
               handleChange("dateFormat", v === "none" ? null : v)
             }
-            itemToString={(item) => item.label}
-            itemToValue={(item) => item.value}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select date format" />
-            </SelectTrigger>
-            <SelectContent>
-              {dateFormatOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Select date format"
+          />
         </div>
 
         <div className="space-y-1.5">

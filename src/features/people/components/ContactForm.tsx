@@ -1,8 +1,14 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
+import { Textarea } from "@omnidotdev/thornberry/textarea";
+
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import EmailList from "./EmailList";
 import TagList from "./TagList";
 
@@ -74,11 +80,18 @@ const ContactForm = ({
           </div>
 
           <div className="flex items-center gap-3 self-end pb-1">
-            <Switch
-              id="contact-internal"
+            <SwitchRoot
+              ids={{ hiddenInput: "contact-internal" }}
               checked={person.internal ?? false}
-              onCheckedChange={(checked) => handleChange("internal", checked)}
-            />
+              onCheckedChange={(details) =>
+                handleChange("internal", details.checked)
+              }
+            >
+              <SwitchControl>
+                <SwitchThumb />
+              </SwitchControl>
+              <SwitchHiddenInput />
+            </SwitchRoot>
             <Label htmlFor="contact-internal">Internal team member</Label>
           </div>
         </div>

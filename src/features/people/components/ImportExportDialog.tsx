@@ -1,4 +1,13 @@
 import {
+  DialogBackdrop,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogPortal,
+  DialogPositioner,
+  DialogRoot,
+  DialogTitle,
+} from "@omnidotdev/thornberry/dialog";
+import {
   TabsContent,
   TabsList,
   TabsRoot,
@@ -9,12 +18,6 @@ import { Download, Upload } from "lucide-react";
 import Papa from "papaparse";
 import { useRef, useState } from "react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   useAllCompaniesQuery,
   useAllPeopleQuery,
@@ -231,84 +234,95 @@ const ImportExportDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh]">
-        <DialogHeader>
-          <DialogTitle>
-            Import / Export {context === "contacts" ? "People" : "Companies"}
-          </DialogTitle>
-        </DialogHeader>
+    <DialogRoot
+      open={open}
+      onOpenChange={(details) => onOpenChange(details.open)}
+      lazyMount
+      unmountOnExit
+    >
+      <DialogPortal>
+        <DialogBackdrop />
+        <DialogPositioner>
+          <DialogContent>
+            <DialogTitle>
+              Import / Export {context === "contacts" ? "People" : "Companies"}
+            </DialogTitle>
 
-        <TabsRoot
-          value={importTab}
-          onValueChange={(d) => setImportTab(d.value)}
-        >
-          <TabsList className="mb-4">
-            <TabsTrigger value="export" className="flex items-center gap-2">
-              <Download size={14} />
-              Export
-            </TabsTrigger>
-            <TabsTrigger value="import" className="flex items-center gap-2">
-              <Upload size={14} />
-              Import
-            </TabsTrigger>
-          </TabsList>
+            <TabsRoot
+              value={importTab}
+              onValueChange={(d) => setImportTab(d.value)}
+            >
+              <TabsList className="mb-4">
+                <TabsTrigger value="export" className="flex items-center gap-2">
+                  <Download size={14} />
+                  Export
+                </TabsTrigger>
+                <TabsTrigger value="import" className="flex items-center gap-2">
+                  <Upload size={14} />
+                  Import
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="export">
-            <div className="space-y-3">
-              <p className="text-foreground text-sm">
-                Export{" "}
-                {context === "contacts"
-                  ? `${people.length} contacts`
-                  : `${companies.length} companies`}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={exportJSON}
-                  className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
-                >
-                  Export JSON
-                </button>
-                <button
-                  type="button"
-                  onClick={exportCSV}
-                  className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
-                >
-                  Export CSV
-                </button>
-              </div>
-            </div>
-          </TabsContent>
+              <TabsContent value="export">
+                <div className="space-y-3">
+                  <p className="text-foreground text-sm">
+                    Export{" "}
+                    {context === "contacts"
+                      ? `${people.length} contacts`
+                      : `${companies.length} companies`}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={exportJSON}
+                      className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
+                    >
+                      Export JSON
+                    </button>
+                    <button
+                      type="button"
+                      onClick={exportCSV}
+                      className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
+                    >
+                      Export CSV
+                    </button>
+                  </div>
+                </div>
+              </TabsContent>
 
-          <TabsContent value="import">
-            <div className="space-y-3">
-              <p className="text-foreground text-sm">
-                Import {context === "contacts" ? "contacts" : "companies"} from
-                a JSON or CSV file
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json,.csv"
-                aria-label="Choose file to import"
-                onChange={handleImport}
-                disabled={importing}
-                className="block w-full text-muted-foreground text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-medium file:text-primary-700 file:text-sm hover:file:bg-primary-100"
-              />
-              {importing && (
-                <p className="text-muted-foreground text-sm">Importing...</p>
-              )}
-              {importError && (
-                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive text-sm">
-                  {importError}
-                </p>
-              )}
-            </div>
-          </TabsContent>
-        </TabsRoot>
-      </DialogContent>
-    </Dialog>
+              <TabsContent value="import">
+                <div className="space-y-3">
+                  <p className="text-foreground text-sm">
+                    Import {context === "contacts" ? "contacts" : "companies"}{" "}
+                    from a JSON or CSV file
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json,.csv"
+                    aria-label="Choose file to import"
+                    onChange={handleImport}
+                    disabled={importing}
+                    className="block w-full text-muted-foreground text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-medium file:text-primary-700 file:text-sm hover:file:bg-primary-100"
+                  />
+                  {importing && (
+                    <p className="text-muted-foreground text-sm">
+                      Importing...
+                    </p>
+                  )}
+                  {importError && (
+                    <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                      {importError}
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+            </TabsRoot>
+            <DialogCloseTrigger />
+          </DialogContent>
+        </DialogPositioner>
+      </DialogPortal>
+    </DialogRoot>
   );
 };
 

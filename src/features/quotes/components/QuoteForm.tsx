@@ -1,11 +1,11 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
+import { Textarea } from "@omnidotdev/thornberry/textarea";
 import { Check, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import SortableList from "@/components/core/SortableList";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   ACCENT_PRESETS,
   DEFAULT_ACCENT,

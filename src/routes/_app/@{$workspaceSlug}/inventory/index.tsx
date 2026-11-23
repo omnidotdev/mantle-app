@@ -1,4 +1,5 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
@@ -6,7 +7,6 @@ import { Edit, Eye, Loader2, Package, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { inventoryListSearchSchema } from "@/features/inventory/searchParams";
 import { formatCurrency } from "@/features/invoices/types/invoice";
@@ -132,7 +132,10 @@ const InventoryPage = () => {
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title="Delete Product"
         description="Are you sure you want to delete this product? This action cannot be undone."
-        onConfirm={() =>
+        confirmLabel="Delete"
+        onConfirm={() => {
+          // Close as soon as the delete fires
+          setDeleteConfirm((prev) => ({ ...prev, open: false }));
           deleteProductMutation.mutate(
             { input: { rowId: deleteConfirm.id } },
             {
@@ -143,8 +146,8 @@ const InventoryPage = () => {
                     : "Failed to delete product",
                 ),
             },
-          )
-        }
+          );
+        }}
       />
     </div>
   );

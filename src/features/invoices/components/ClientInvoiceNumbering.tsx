@@ -1,10 +1,15 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { formatPreview } from "@/features/settings/types/documentNumbering";
 import {
   useCreateDocumentNumberingConfigMutation,
@@ -153,11 +158,16 @@ const ClientInvoiceNumbering = ({
       </div>
 
       <div className="flex items-center gap-3">
-        <Switch
-          id="client-custom-numbering"
+        <SwitchRoot
+          ids={{ hiddenInput: "client-custom-numbering" }}
           checked={enabled}
-          onCheckedChange={handleToggle}
-        />
+          onCheckedChange={(details) => handleToggle(details.checked)}
+        >
+          <SwitchControl>
+            <SwitchThumb />
+          </SwitchControl>
+          <SwitchHiddenInput />
+        </SwitchRoot>
         <Label htmlFor="client-custom-numbering">
           Custom invoice numbering for this client
         </Label>

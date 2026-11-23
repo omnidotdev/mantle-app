@@ -1,3 +1,4 @@
+import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -14,7 +15,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { invoiceListSearchSchema } from "@/features/invoices/searchParams";
 import {
@@ -422,9 +422,12 @@ const InvoicesListPage = () => {
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title="Delete Invoice"
         description="Are you sure you want to delete this invoice? This action cannot be undone."
-        onConfirm={() =>
-          deleteMutation.mutate({ input: { rowId: deleteConfirm.id } })
-        }
+        confirmLabel="Delete"
+        onConfirm={() => {
+          // Close as soon as the delete fires
+          setDeleteConfirm((prev) => ({ ...prev, open: false }));
+          deleteMutation.mutate({ input: { rowId: deleteConfirm.id } });
+        }}
       />
     </div>
   );

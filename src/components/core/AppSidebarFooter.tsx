@@ -1,3 +1,11 @@
+import {
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+  useSidebar,
+} from "@omnidotdev/thornberry/sidebar";
 import { Link, useLocation, useRouteContext } from "@tanstack/react-router";
 import {
   LogOutIcon,
@@ -8,14 +16,6 @@ import {
   SunIcon,
 } from "lucide-react";
 
-import {
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import signOut from "@/lib/auth/signOut";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 import { useTheme } from "@/providers/ThemeProvider";

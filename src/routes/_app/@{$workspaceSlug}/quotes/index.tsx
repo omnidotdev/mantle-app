@@ -1,3 +1,4 @@
+import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -15,7 +16,6 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import { quoteListSearchSchema } from "@/features/quotes/searchParams";
@@ -488,7 +488,10 @@ const QuotesListPage = () => {
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
         title="Delete Quote"
         description="Are you sure you want to delete this quote? This action cannot be undone."
-        onConfirm={() =>
+        confirmLabel="Delete"
+        onConfirm={() => {
+          // Close as soon as the delete fires
+          setDeleteConfirm((prev) => ({ ...prev, open: false }));
           deleteMutation.mutate(
             { input: { rowId: deleteConfirm.id } },
             {
@@ -497,8 +500,8 @@ const QuotesListPage = () => {
                   err instanceof Error ? err.message : "Failed to delete quote",
                 ),
             },
-          )
-        }
+          );
+        }}
       />
     </div>
   );

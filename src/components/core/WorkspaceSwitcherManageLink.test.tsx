@@ -21,8 +21,8 @@ mock.module("@tanstack/react-router", () => ({
   useRouteContext: () => ({ organizationId: "w1" }),
 }));
 
-mock.module("@/components/ui/sidebar", () => ({
-  useSidebar: () => ({ closeMobileSidebar: () => {} }),
+mock.module("@omnidotdev/thornberry/sidebar", () => ({
+  useSidebar: () => ({ isMobile: false, setOpenMobile: () => {} }),
 }));
 
 mock.module("@/providers/WorkspaceProvider", () => ({

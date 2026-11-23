@@ -1,14 +1,10 @@
+import { SidebarInset, SidebarProvider } from "@omnidotdev/thornberry/sidebar";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Toaster } from "sonner";
 
 import AppSidebar from "@/components/core/AppSidebar";
 import ErrorBoundary from "@/components/core/ErrorBoundary";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
 import WorkspaceProvider from "@/providers/WorkspaceProvider";
 import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
@@ -59,11 +55,15 @@ function WorkspaceLayout() {
     <WorkspaceProvider workspaces={organizations}>
       <SidebarProvider>
         <div className="flex h-dvh w-full">
-          <AppSidebar className="print:hidden" />
+          {/* Hide the whole sidebar (including its layout gap) when printing,
+              so invoices and quotes fill the page */}
+          <div className="contents print:hidden">
+            <AppSidebar />
+          </div>
           <SidebarInset>
-            <div className="flex items-center p-2 md:hidden print:hidden">
-              <SidebarTrigger />
-            </div>
+            {/* On phones the sidebar renders its own sheet trigger in the top
+                right corner; reserve the row so it never covers page content */}
+            <div className="h-14 shrink-0 md:hidden print:hidden" />
             <ErrorBoundary>
               <Outlet />
             </ErrorBoundary>

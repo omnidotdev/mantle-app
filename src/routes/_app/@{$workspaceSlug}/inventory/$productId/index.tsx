@@ -1,12 +1,12 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Loader2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import AdjustmentLog from "@/features/inventory/components/AdjustmentLog";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import {
