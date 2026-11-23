@@ -198,11 +198,6 @@
 }
 
 @layer utilities {
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
   /* gradient text shimmer (magma glow) */
   .text-shimmer {
     background: linear-gradient(
