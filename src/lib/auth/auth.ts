@@ -9,6 +9,7 @@ import {
   AUTH_CLIENT_ID,
   AUTH_CLIENT_SECRET,
   BASE_URL,
+  TRUSTED_PROXIES,
 } from "@/lib/config/env.config";
 
 const { AUTH_SECRET } = process.env;
@@ -106,13 +107,17 @@ const auth = betterAuth({
     enabled: false,
   },
   advanced: {
-    // Resolve the real client IP from Cloudflare's `cf-connecting-ip` header so
-    // Better Auth rate-limit buckets are keyed per client. Without it, getIp
-    // sees a multi-hop `x-forwarded-for` behind Cloudflare, resolves to null,
-    // and collapses every request into one global shared bucket, sharing the
-    // per-IP browser limits (e.g. /sign-in at 3/10s) across all users
+    // Resolve the real client IP so Better Auth rate-limit buckets are keyed
+    // per client. Behind Cloudflare that is `cf-connecting-ip`; without it
+    // (self-hosted, or a request that skipped Cloudflare) fall back to the
+    // proxy's `x-forwarded-for`, then `x-real-ip`. A multi-hop forwarded chain
+    // resolves only through TRUSTED_PROXIES (CIDRs of the proxies in front of
+    // the app). An unresolved IP collapses every request into one shared
+    // bucket, sharing the per-IP browser limits (e.g. /sign-in at 3/10s)
+    // across all users
     ipAddress: {
-      ipAddressHeaders: ["cf-connecting-ip"],
+      ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for", "x-real-ip"],
+      ...(TRUSTED_PROXIES.length > 0 && { trustedProxies: TRUSTED_PROXIES }),
     },
     // Use custom cookie prefix to avoid collision with IDP cookies
     cookiePrefix: "mantle",

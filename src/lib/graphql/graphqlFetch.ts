@@ -4,8 +4,6 @@ import { GraphQLClient, gql } from "graphql-request";
 import { API_GRAPHQL_URL } from "@/lib/config/env.config";
 import { fetchSession } from "@/server/functions/auth";
 
-const SERVICE_KEY = process.env.SERVICE_KEY;
-
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import type { Variables } from "graphql-request";
 
@@ -20,7 +18,9 @@ type FetchOptions = {
  * ! NB: this wrapper is not meant to be used directly. It is intended to be used by GraphQL Code Generator as a custom fetch implementation.
  *
  * Fetches a fresh access token from better-auth via server function for each request,
- * ensuring tokens are never stale after idle periods.
+ * ensuring tokens are never stale after idle periods. Requests act only as the
+ * signed-in user: the API's service key (which bypasses workspace scoping) is
+ * never attached, so every read and write is limited to the user's workspaces
  */
 export const graphqlFetch =
   <TData, TVariables>(
@@ -45,7 +45,6 @@ export const graphqlFetch =
       variables: variables as Variables,
       requestHeaders: {
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        ...(SERVICE_KEY ? { "x-service-key": SERVICE_KEY } : {}),
         ...restOptions,
       },
     });
