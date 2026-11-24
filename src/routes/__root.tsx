@@ -12,9 +12,11 @@ import CommandPalette from "@/components/CommandPalette";
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import NotFound from "@/components/NotFound";
 import app from "@/lib/config/app.config";
+import { publicEnvScript } from "@/lib/config/publicEnv";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { fetchSession } from "@/server/functions/auth";
+import { getPublicEnv } from "@/server/functions/env";
 import { getTheme } from "@/server/functions/theme";
 import appStyles from "@/styles.css?url";
 
@@ -57,7 +59,10 @@ export const Route = createRootRouteWithContext<{
 
     return { session, theme };
   },
-  head: () => ({
+  // Public runtime config is fixed for the life of the server process
+  loader: () => getPublicEnv(),
+  staleTime: Number.POSITIVE_INFINITY,
+  head: ({ loaderData }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -92,6 +97,11 @@ export const Route = createRootRouteWithContext<{
         sizes: "180x180",
         href: "/apple-touch-icon.png",
       },
+    ],
+    scripts: [
+      // Inline classic script in <head>, so `window.__ENV__` is set before the
+      // deferred client bundle evaluates env.config
+      { children: publicEnvScript(loaderData ?? {}) },
     ],
   }),
   component: RootComponent,
