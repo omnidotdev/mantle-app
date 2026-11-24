@@ -24,6 +24,7 @@ import {
   useCreatePaymentMutation,
   useGenerateDocumentNumberMutation,
 } from "@/generated/graphql";
+import { planLimitMessage } from "@/lib/graphql/errors";
 
 import type {
   Invoice,
@@ -230,8 +231,10 @@ const NewInvoicePage = () => {
           params: { workspaceSlug, invoiceId: newId },
         });
       }
-    } catch {
-      toast.error("Could not save the invoice. Try again.");
+    } catch (err) {
+      toast.error(
+        planLimitMessage(err) ?? "Could not save the invoice. Try again.",
+      );
     } finally {
       setSaving(false);
     }

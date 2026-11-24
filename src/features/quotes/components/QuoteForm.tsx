@@ -9,6 +9,7 @@ import {
   RefreshCwIcon,
   Trash2Icon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import SectionCard from "@/components/core/SectionCard";
@@ -21,8 +22,9 @@ import {
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
-import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
 import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
+import { profileSaveErrorMessage } from "@/lib/graphql/errors";
 import cn, { formatStatus } from "@/lib/utils";
 import { QUOTE_STATUSES, SOW_DEFAULTS } from "../types/quote";
 import ListItemEditor from "./ListItemEditor";
@@ -86,36 +88,18 @@ const QuoteForm = ({
       }
     }
   };
-  const { getProfileForOrg, updateProfile, createProfile } = useSettingsStore();
-  const orgProfile = organizationId
-    ? getProfileForOrg(organizationId)
-    : undefined;
+  const { profile: orgProfile, updateField } =
+    useWorkspaceProfile(organizationId);
 
-  const handleProfileChange = (field: string, value: string | null) => {
-    if (!organizationId) return;
-    if (orgProfile) {
-      updateProfile(orgProfile.id, { [field]: value });
-    } else {
-      createProfile({
-        organizationId,
-        companyName: "",
-        contactName: "",
-        contactTitle: null,
-        email: "",
-        phone: null,
-        website: null,
-        addressLine1: null,
-        addressLine2: null,
-        city: null,
-        state: null,
-        postalCode: null,
-        country: null,
-        logoUrl: null,
-        registrationState: null,
-        accentColor: value,
-      });
-    }
-  };
+  // The profile is the workspace's own, shared with Settings: edits here save
+  // to it after a short pause
+  const handleProfileChange = (
+    field: Parameters<typeof updateField>[0],
+    value: string | null,
+  ) =>
+    updateField(field, value, (err) =>
+      toast.error(profileSaveErrorMessage(err), { id: "workspace-profile" }),
+    );
 
   const handleChange = (
     field: keyof Quote,
