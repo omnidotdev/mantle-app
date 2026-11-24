@@ -3,66 +3,62 @@ import type { OrganizationProfile } from "@/features/settings/types";
 interface ContractSignaturesProps {
   orgProfile: OrganizationProfile | undefined;
   clientName: string;
+  /** Workspace accent used for the party headings */
+  accentColor: string;
 }
+
+/** Blank line to sign or write on by hand */
+const SignLine = ({ tall }: { tall?: boolean }) => (
+  <div className={`mb-1 border-base-300 border-b ${tall ? "pb-6" : "pb-4"}`} />
+);
+
+/** A filled-in value, or a blank line to write it in by hand when unknown */
+const Field = ({ value, label }: { value?: string | null; label: string }) => (
+  <div>
+    {value ? <p className="text-sm">{value}</p> : <SignLine />}
+    <p className="text-base-500 text-xs">{label}</p>
+  </div>
+);
 
 const ContractSignatures = ({
   orgProfile,
   clientName,
+  accentColor,
 }: ContractSignaturesProps) => {
   return (
-    <div className="mt-8 space-y-4">
-      <h3 className="font-semibold text-foreground text-lg">Signatures</h3>
+    <div className="mt-8 break-inside-avoid space-y-4">
+      <h3 className="font-semibold text-lg">Signatures</h3>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 print:grid-cols-2">
         {/* Developer signature */}
         <div className="space-y-4">
-          <h4 className="font-medium text-primary-700">Service Provider</h4>
+          <h4 className="font-medium" style={{ color: accentColor }}>
+            Service provider
+          </h4>
           <div className="space-y-3">
             <div>
-              <div className="mb-1 border-input border-b pb-6" />
-              <p className="text-muted-foreground text-xs">Signature</p>
+              <SignLine tall />
+              <p className="text-base-500 text-xs">Signature</p>
             </div>
-            <div>
-              <p className="text-foreground text-sm">
-                {orgProfile?.contactName ?? "_______________"}
-              </p>
-              <p className="text-muted-foreground text-xs">Name</p>
-            </div>
-            <div>
-              <p className="text-foreground text-sm">
-                {orgProfile?.contactTitle ?? "_______________"}
-              </p>
-              <p className="text-muted-foreground text-xs">Title</p>
-            </div>
-            <div>
-              <div className="mb-1 border-input border-b pb-4" />
-              <p className="text-muted-foreground text-xs">Date</p>
-            </div>
+            <Field value={orgProfile?.contactName} label="Name" />
+            <Field value={orgProfile?.contactTitle} label="Title" />
+            <Field label="Date" />
           </div>
         </div>
 
         {/* Client signature */}
         <div className="space-y-4">
-          <h4 className="font-medium text-primary-700">Client</h4>
+          <h4 className="font-medium" style={{ color: accentColor }}>
+            Client
+          </h4>
           <div className="space-y-3">
             <div>
-              <div className="mb-1 border-input border-b pb-6" />
-              <p className="text-muted-foreground text-xs">Signature</p>
+              <SignLine tall />
+              <p className="text-base-500 text-xs">Signature</p>
             </div>
-            <div>
-              <p className="text-foreground text-sm">
-                {clientName || "_______________"}
-              </p>
-              <p className="text-muted-foreground text-xs">Name</p>
-            </div>
-            <div>
-              <div className="mb-1 border-input border-b pb-4" />
-              <p className="text-muted-foreground text-xs">Title</p>
-            </div>
-            <div>
-              <div className="mb-1 border-input border-b pb-4" />
-              <p className="text-muted-foreground text-xs">Date</p>
-            </div>
+            <Field value={clientName} label="Name" />
+            <Field label="Title" />
+            <Field label="Date" />
           </div>
         </div>
       </div>

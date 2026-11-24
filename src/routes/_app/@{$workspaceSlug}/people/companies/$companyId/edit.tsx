@@ -1,14 +1,24 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Building2, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import MobileActionBar from "@/components/core/MobileActionBar";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import { Button, buttonVariants } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import ClientInvoiceNumbering from "@/features/invoices/components/ClientInvoiceNumbering";
 import CompanyForm from "@/features/people/components/CompanyForm";
 import CompanyMembers from "@/features/people/components/CompanyMembers";
+import { MobileDeleteMenu } from "@/features/people/components/RowActions";
 import {
   useAllCompaniesQuery,
+  useDeleteCompanyMutation,
   useUpdateCompanyMutation,
 } from "@/generated/graphql";
 
@@ -18,8 +28,11 @@ const EditCompanyPage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug, companyId } = Route.useParams();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [saving, setSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [currentCompany, setCurrentCompany] = useState<Partial<Company>>({});
   const [initialized, setInitialized] = useState(false);
 
@@ -102,10 +115,8 @@ const EditCompanyPage = () => {
       });
       invalidateCompanies();
       toast.success("Company saved");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save company",
-      );
+    } catch {
+      toast.error("Failed to save company");
     } finally {
       setSaving(false);
     }
@@ -117,81 +128,156 @@ const EditCompanyPage = () => {
     }
   };
 
+  const deleteCompanyMutation = useDeleteCompanyMutation();
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteCompanyMutation.mutateAsync({ input: { rowId: companyId } });
+      invalidateCompanies();
+      toast.success("Company deleted");
+      setDeleteOpen(false);
+      navigate({
+        to: "/@{$workspaceSlug}/people",
+        params: { workspaceSlug },
+        search: { tab: "companies" },
+      });
+    } catch {
+      toast.error("Failed to delete company");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const canSave = !!currentCompany.name?.trim() && !saving;
+
+  const headerActions = (
+    <div className="hidden md:flex md:flex-wrap md:gap-2">
+      <Button
+        variant="ghost"
+        onClick={() => setDeleteOpen(true)}
+        disabled={saving || deleting}
+        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+      >
+        <Trash2 />
+        Delete
+      </Button>
+      <Button variant="outline" onClick={handleCancel} disabled={saving}>
+        Cancel
+      </Button>
+      <Button onClick={handleSave} disabled={!canSave}>
+        {saving ? "Saving..." : "Save"}
+      </Button>
+    </div>
+  );
+
+  const backLink = (
+    <BackLink
+      to="/@{$workspaceSlug}/people"
+      params={{ workspaceSlug }}
+      search={{ tab: "companies" }}
+    >
+      People
+    </BackLink>
+  );
+
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to edit companies
-        </p>
-      </div>
+      <PageContainer width="narrow">
+        <EmptyState
+          icon={Building2}
+          title="No workspace selected"
+          description="Select a workspace to edit companies."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading company"
-        />
-      </div>
+      <PageContainer width="narrow">
+        <LoadingState label="Loading company" />
+      </PageContainer>
     );
   }
 
   if (!company) {
     return (
-      <div className="p-6">
-        <Link
-          to="/@{$workspaceSlug}/people"
-          params={{ workspaceSlug }}
-          search={{ tab: "companies" }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">Company not found</p>
-        </div>
-      </div>
+      <PageContainer width="narrow">
+        <PageHeader back={backLink} title="Company" />
+        <EmptyState
+          icon={Building2}
+          title="Company not found"
+          description="It may have been deleted, or the link is out of date."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/people"
+              params={{ workspaceSlug }}
+              search={{ tab: "companies" }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Back to people
+            </Link>
+          }
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Link
-          to="/@{$workspaceSlug}/people"
-          params={{ workspaceSlug }}
-          search={{ tab: "companies" }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-      </div>
+    <PageContainer width="narrow">
+      <PageHeader
+        back={backLink}
+        title={`Edit ${company.name}`}
+        actions={headerActions}
+      />
 
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-6 font-semibold text-lg">Edit Company</h2>
+      <div className="space-y-5">
         <CompanyForm
           company={currentCompany}
           onCompanyChange={setCurrentCompany}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saving={saving}
+        />
+
+        <CompanyMembers companyId={companyId} organizationId={organizationId} />
+
+        <ClientInvoiceNumbering
+          organizationId={organizationId}
+          companyId={companyId}
         />
       </div>
 
-      <CompanyMembers companyId={companyId} organizationId={organizationId} />
+      <MobileActionBar>
+        <MobileDeleteMenu
+          label="Delete company"
+          onDelete={() => setDeleteOpen(true)}
+          disabled={saving || deleting}
+        />
+        <Button variant="outline" onClick={handleCancel} disabled={saving}>
+          Cancel
+        </Button>
+        <Button className="flex-1" onClick={handleSave} disabled={!canSave}>
+          {saving ? "Saving..." : "Save"}
+        </Button>
+      </MobileActionBar>
 
-      <ClientInvoiceNumbering
-        organizationId={organizationId}
-        companyId={companyId}
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={`Delete company "${company.name}"?`}
+        description="This permanently deletes the company. This action cannot be undone."
+        confirmLabel="Delete company"
+        closeOnConfirm={false}
+        loading={deleting}
+        loadingLabel="Deleting..."
+        onConfirm={handleDelete}
       />
-    </div>
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute(
   "/_app/@{$workspaceSlug}/people/companies/$companyId/edit",
 )({
+  staticData: { title: "Edit company" },
   component: EditCompanyPage,
 });

@@ -1,52 +1,30 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { Loader2 } from "lucide-react";
+import { FileTextIcon, PencilIcon, PrinterIcon } from "lucide-react";
 import { useMemo } from "react";
 
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import MobileActionBar from "@/components/core/MobileActionBar";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import StatusBadge from "@/components/core/StatusBadge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { formatDate } from "@/features/invoices/types/invoice";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
 import { sortLineItemsByOrder } from "@/features/quotes/lib/lineItems";
+import {
+  PREVIEW_TYPE_OPTIONS,
+  printQuoteDocument,
+} from "@/features/quotes/lib/previewType";
 import { quotePreviewSearchSchema } from "@/features/quotes/searchParams";
 import { useAllQuotesQuery } from "@/generated/graphql";
+import cn from "@/lib/utils";
 
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
-
-type PreviewType = "quote" | "contract";
-
-const PreviewToggle = ({
-  value,
-  onChange,
-}: {
-  value: PreviewType;
-  onChange: (v: PreviewType) => void;
-}) => (
-  <div className="mb-4 inline-flex rounded-lg border border-border bg-muted p-1">
-    <button
-      type="button"
-      onClick={() => onChange("quote")}
-      aria-pressed={value === "quote"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "quote"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Quote
-    </button>
-    <button
-      type="button"
-      onClick={() => onChange("contract")}
-      aria-pressed={value === "contract"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "contract"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Contract
-    </button>
-  </div>
-);
 
 const QuotePreviewPage = () => {
   const { organizationId } = Route.useRouteContext();
@@ -85,8 +63,8 @@ const QuotePreviewPage = () => {
             projectType: node.projectType ?? null,
             timeRange: node.timeRange ?? null,
             additionalTerms: (node.additionalTerms as string[]) ?? null,
-            clientName: null,
-            clientEmail: null,
+            clientName: node.clientName ?? null,
+            clientEmail: node.clientEmail ?? null,
             additionalItemsLabel:
               ((node as Record<string, unknown>)
                 .additionalItemsLabel as string) ?? null,
@@ -157,107 +135,124 @@ const QuotePreviewPage = () => {
     [quotes, quoteId],
   );
 
+  const backLink = (
+    <BackLink to="/@{$workspaceSlug}/quotes" params={{ workspaceSlug }}>
+      Quotes
+    </BackLink>
+  );
+
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to view quotes
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileTextIcon}
+          title="No workspace selected"
+          description="Select a workspace from the sidebar to view its quotes."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading quote"
-        />
-      </div>
+      <PageContainer>
+        <LoadingState label="Loading quote" />
+      </PageContainer>
     );
   }
 
   if (!quote) {
     return (
-      <div className="p-6">
-        <Link
-          to="/@{$workspaceSlug}/quotes"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">Quote not found</p>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileTextIcon}
+          title="Quote not found"
+          description="It may have been deleted, or the link is out of date."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/quotes"
+              params={{ workspaceSlug }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Back to quotes
+            </Link>
+          }
+        />
+      </PageContainer>
     );
   }
 
-  const renderPreview = () => {
-    const orderedLineItems = sortLineItemsByOrder(quote.quoteLineItems);
-    if (previewType === "contract") {
-      return (
+  const orderedLineItems = sortLineItemsByOrder(quote.quoteLineItems);
+  const clientLabel = quote.company?.name || quote.clientName;
+  const handlePrint = () => printQuoteDocument(previewType, quote.quoteNumber);
+
+  const editLink = (className?: string) => (
+    <Link
+      to="/@{$workspaceSlug}/quotes/$quoteId/edit"
+      params={{ workspaceSlug, quoteId }}
+      className={cn(buttonVariants({ variant: "outline" }), className)}
+    >
+      <PencilIcon />
+      Edit
+    </Link>
+  );
+
+  return (
+    <PageContainer>
+      <PageHeader
+        back={backLink}
+        title={<span className="tabular">{quote.quoteNumber}</span>}
+        badge={<StatusBadge status={quote.status} />}
+        description={
+          <>
+            {clientLabel || "No client yet"}
+            {" · "}
+            {quote.validUntil
+              ? `valid until ${formatDate(quote.validUntil.slice(0, 10))}`
+              : "no expiry"}
+          </>
+        }
+        actions={
+          <div className="hidden md:flex md:flex-wrap md:gap-2">
+            {editLink()}
+            <Button onClick={handlePrint}>
+              <PrinterIcon />
+              Print or save PDF
+            </Button>
+          </div>
+        }
+      />
+
+      <SegmentedControl
+        label="Document view"
+        className="mb-4 w-fit"
+        options={PREVIEW_TYPE_OPTIONS}
+        value={previewType}
+        onValueChange={(value) => navigate({ search: { previewType: value } })}
+      />
+
+      {previewType === "contract" ? (
         <ContractPreview
           quote={quote}
           lineItems={orderedLineItems}
           organizationId={organizationId}
         />
-      );
-    }
-    return (
-      <QuotePreview
-        quote={quote}
-        lineItems={orderedLineItems}
-        organizationId={organizationId}
-      />
-    );
-  };
-
-  return (
-    <div className="p-6 print:p-0">
-      <div className="print-hide sticky top-0 z-10 mb-6 flex items-center justify-between bg-background py-4">
-        <Link
-          to="/@{$workspaceSlug}/quotes"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="flex gap-2">
-          <Link
-            to="/@{$workspaceSlug}/quotes/$quoteId/edit"
-            params={{ workspaceSlug, quoteId }}
-            className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            Edit
-          </Link>
-          <button
-            type="button"
-            onClick={() => {
-              const originalTitle = document.title;
-              const prefix = previewType === "contract" ? "contract" : "quote";
-              document.title = `${prefix}_${quote.quoteNumber}`;
-              window.print();
-              document.title = originalTitle;
-            }}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-          >
-            Print
-          </button>
-        </div>
-      </div>
-
-      <div className="print-hide">
-        <PreviewToggle
-          value={previewType}
-          onChange={(v) => navigate({ search: { previewType: v } })}
+      ) : (
+        <QuotePreview
+          quote={quote}
+          lineItems={orderedLineItems}
+          organizationId={organizationId}
         />
-      </div>
+      )}
 
-      {renderPreview()}
-    </div>
+      <MobileActionBar>
+        {editLink("flex-1")}
+        <Button className="flex-1" onClick={handlePrint}>
+          <PrinterIcon />
+          Save PDF
+        </Button>
+      </MobileActionBar>
+    </PageContainer>
   );
 };
 
@@ -266,4 +261,5 @@ export const Route = createFileRoute(
 )({
   component: QuotePreviewPage,
   validateSearch: zodValidator(quotePreviewSearchSchema),
+  staticData: { title: "Quote" },
 });

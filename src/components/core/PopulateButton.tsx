@@ -1,6 +1,15 @@
+import { Portal } from "@ark-ui/react";
+import {
+  PopoverContent,
+  PopoverPositioner,
+  PopoverRoot,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@omnidotdev/thornberry/popover";
 import { Building2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
+import { Button, buttonVariants } from "@/components/ui/button";
 import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
@@ -23,7 +32,6 @@ const PopulateButton = ({
   const [open, setOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState("");
   const [selectedContact, setSelectedContact] = useState("");
-  const popoverRef = useRef<HTMLDivElement>(null);
 
   const { data: companiesData } = useAllCompaniesQuery(
     { organizationId: organizationId ?? "" },
@@ -60,37 +68,6 @@ const PopulateButton = ({
     [peopleData],
   );
 
-  // Close on outside click or ESC, ignoring Portal-rendered elements (e.g. Select dropdowns)
-  useEffect(() => {
-    if (!open) return;
-
-    const handleClickOutside = (e: PointerEvent) => {
-      if (!popoverRef.current) return;
-
-      const target = e.target as HTMLElement;
-
-      // Ignore clicks inside the popover
-      if (popoverRef.current.contains(target)) return;
-
-      // Ignore clicks inside Portal-rendered elements (Ark UI renders into [data-scope])
-      if (target.closest("[data-scope]")) return;
-
-      setOpen(false);
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-
-    document.addEventListener("pointerdown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
   const handleApplyClient = () => {
     const company = companies.find((c) => c.id === selectedCompany);
     const contact = selectedContact
@@ -108,29 +85,24 @@ const PopulateButton = ({
   };
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 font-medium text-primary-700 text-sm hover:bg-primary-100"
+    <PopoverRoot
+      open={open}
+      onOpenChange={(details) => setOpen(details.open)}
+      positioning={{ placement: "bottom-end", gutter: 8 }}
+    >
+      <PopoverTrigger
+        className={buttonVariants({ variant: "outline", size: "sm" })}
       >
-        <Building2 size={14} />
+        <Building2 />
         Select client
-      </button>
-
-      {open && (
-        <div
-          ref={popoverRef}
-          role="dialog"
-          aria-label="Select client"
-          className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border border-border bg-card p-4 shadow-lg"
-        >
-          {/* Client section */}
-          <div>
-            <h4 className="mb-2 flex items-center gap-1.5 font-medium text-foreground text-sm">
-              <Building2 size={14} />
+      </PopoverTrigger>
+      <Portal>
+        <PopoverPositioner>
+          <PopoverContent className="w-[min(20rem,calc(100vw-2rem))] rounded-2xl bg-card p-4 shadow-raised">
+            <PopoverTitle className="mb-3 flex items-center gap-1.5 font-semibold text-sm">
+              <Building2 className="size-4 text-muted-foreground" />
               Client
-            </h4>
+            </PopoverTitle>
             <div className="space-y-2">
               <CompanyPicker
                 value={selectedCompany}
@@ -142,19 +114,18 @@ const PopulateButton = ({
                 onValueChange={setSelectedContact}
                 organizationId={organizationId}
               />
-              <button
-                type="button"
+              <Button
+                className="w-full"
                 onClick={handleApplyClient}
                 disabled={!selectedCompany}
-                className="w-full rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Apply Client
-              </button>
+                Apply client
+              </Button>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+          </PopoverContent>
+        </PopoverPositioner>
+      </Portal>
+    </PopoverRoot>
   );
 };
 

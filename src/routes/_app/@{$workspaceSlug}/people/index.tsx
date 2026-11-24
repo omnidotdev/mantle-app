@@ -1,33 +1,32 @@
-import { Badge } from "@omnidotdev/thornberry/badge";
-import {
-  TabsContent,
-  TabsList,
-  TabsRoot,
-  TabsTrigger,
-} from "@omnidotdev/thornberry/tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import {
-  Building2,
-  Edit,
-  Loader2,
-  Mail,
-  Network,
-  Plus,
-  Search,
-  Share2,
-  Trash2,
-  Users,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import { Building2, Plus, Share2, Users } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import EmptyState from "@/components/core/EmptyState";
+import EmptyValue from "@/components/core/EmptyValue";
+import ListToolbar from "@/components/core/ListToolbar";
+import LoadingState from "@/components/core/LoadingState";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import SectionCard from "@/components/core/SectionCard";
+import StatusBadge from "@/components/core/StatusBadge";
+import { Button, buttonVariants } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { PhoneDisplay } from "@/components/ui/phone-display";
+import { SearchInput } from "@/components/ui/search-input";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";
+import {
+  EmailAction,
+  RowMenu,
+  StopRowClick,
+} from "@/features/people/components/RowActions";
+import TagChip from "@/features/people/components/TagChip";
 import { peopleListSearchSchema } from "@/features/people/searchParams";
 import {
   useAllCompaniesQuery,
@@ -47,6 +46,11 @@ const CONTACTS_DEFAULT_SORTING: SortingState = [
   { id: "lastName", desc: false },
 ];
 
+const plural = (count: number, one: string, many: string) =>
+  `${count} ${count === 1 ? one : many}`;
+
+const fullName = (person: Person) => `${person.firstName} ${person.lastName}`;
+
 const PeoplePage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug } = Route.useParams();
@@ -59,8 +63,9 @@ const PeoplePage = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
+    name: string;
     type: "company" | "contact";
-  }>({ open: false, id: "", type: "company" });
+  }>({ open: false, id: "", name: "", type: "company" });
 
   const { data: companiesData, isLoading: companiesLoading } =
     useAllCompaniesQuery(
@@ -151,129 +156,137 @@ const PeoplePage = () => {
 
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to view people
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={Users}
+          title="No workspace selected"
+          description="Select a workspace to view people."
+        />
+      </PageContainer>
     );
   }
 
   if (companiesLoading || peopleLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading people"
-        />
-      </div>
+      <PageContainer>
+        <LoadingState label="Loading people" />
+      </PageContainer>
     );
   }
 
-  return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold text-xl">People</h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            {companies.length}{" "}
-            {companies.length === 1 ? "company" : "companies"}
-            {" · "}
-            {people.length} {people.length === 1 ? "contact" : "contacts"}
-          </p>
-        </div>
-        <div
-          className={`flex gap-2 ${activeTab === "network" ? "invisible" : ""}`}
-        >
-          <button
-            type="button"
-            onClick={() => setImportExportOpen(true)}
-            className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            <Share2 size={16} />
-            Import/Export
-          </button>
-          <Link
-            to={
-              activeTab === "companies"
-                ? "/@{$workspaceSlug}/people/companies/new"
-                : "/@{$workspaceSlug}/people/contacts/new"
-            }
-            params={{ workspaceSlug }}
-            className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-          >
-            <Plus size={16} />
-            {activeTab === "companies" ? "Add Company" : "Add Contact"}
-          </Link>
-        </div>
-      </div>
+  const isNetwork = activeTab === "network";
 
-      <TabsRoot
+  const setSearchTerm = (value: string) =>
+    navigate({ search: (prev) => ({ ...prev, search: value }) });
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title="People"
+        description={
+          <>
+            <span className="tabular">
+              {plural(companies.length, "company", "companies")}
+            </span>
+            {" · "}
+            <span className="tabular">
+              {plural(people.length, "contact", "contacts")}
+            </span>
+          </>
+        }
+        actions={
+          isNetwork ? undefined : (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => setImportExportOpen(true)}
+              >
+                <Share2 />
+                Import or export
+              </Button>
+              <Link
+                to={
+                  activeTab === "companies"
+                    ? "/@{$workspaceSlug}/people/companies/new"
+                    : "/@{$workspaceSlug}/people/contacts/new"
+                }
+                params={{ workspaceSlug }}
+                className={buttonVariants({
+                  variant: "solid",
+                  className: "max-md:hidden",
+                })}
+              >
+                <Plus />
+                {activeTab === "companies" ? "Add company" : "Add contact"}
+              </Link>
+            </>
+          )
+        }
+      />
+
+      <SegmentedControl<ActiveTab>
+        label="People view"
         value={activeTab}
-        onValueChange={(details) =>
+        onValueChange={(tab) =>
           navigate({
             search: (prev) => ({
               ...prev,
-              tab: details.value as ActiveTab,
+              tab,
+              search: "",
               sortBy: undefined,
               sortDir: undefined,
             }),
           })
         }
-      >
-        <TabsList className="mb-4">
-          <TabsTrigger value="companies" className="flex items-center gap-2">
-            <Building2 size={16} />
-            Companies
-          </TabsTrigger>
-          <TabsTrigger value="contacts" className="flex items-center gap-2">
-            <Users size={16} />
-            Contacts
-          </TabsTrigger>
-          <TabsTrigger value="network" className="flex items-center gap-2">
-            <Network size={16} />
-            Network
-          </TabsTrigger>
-        </TabsList>
+        options={[
+          { value: "companies", label: "Companies", count: companies.length },
+          { value: "contacts", label: "Contacts", count: people.length },
+          { value: "network", label: "Network" },
+        ]}
+        className="mb-4 w-full sm:w-fit [&>button]:flex-1 [&>button]:justify-center sm:[&>button]:flex-none"
+      />
 
-        <TabsContent value="companies">
-          {activeTab === "companies" && (
-            <CompaniesTable
-              companies={companies}
-              search={search}
-              navigate={navigate}
-              onDelete={(id) =>
-                setDeleteConfirm({ open: true, id, type: "company" })
-              }
-            />
-          )}
-        </TabsContent>
+      {activeTab === "companies" && (
+        <CompaniesTable
+          companies={companies}
+          search={search}
+          navigate={navigate}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onDelete={(company) =>
+            setDeleteConfirm({
+              open: true,
+              id: company.id,
+              name: company.name,
+              type: "company",
+            })
+          }
+        />
+      )}
 
-        <TabsContent value="contacts">
-          {activeTab === "contacts" && (
-            <ContactsTable
-              people={people}
-              search={search}
-              navigate={navigate}
-              searchTerm={searchTerm}
-              typeFilter={typeFilter}
-              onSearchChange={(value) =>
-                navigate({ search: (prev) => ({ ...prev, search: value }) })
-              }
-              onTypeFilterChange={(value) =>
-                navigate({ search: (prev) => ({ ...prev, type: value }) })
-              }
-              onDelete={(id) =>
-                setDeleteConfirm({ open: true, id, type: "contact" })
-              }
-            />
-          )}
-        </TabsContent>
+      {activeTab === "contacts" && (
+        <ContactsTable
+          people={people}
+          search={search}
+          navigate={navigate}
+          searchTerm={searchTerm}
+          typeFilter={typeFilter}
+          onSearchChange={setSearchTerm}
+          onTypeFilterChange={(value) =>
+            navigate({ search: (prev) => ({ ...prev, type: value }) })
+          }
+          onDelete={(person) =>
+            setDeleteConfirm({
+              open: true,
+              id: person.id,
+              name: fullName(person),
+              type: "contact",
+            })
+          }
+        />
+      )}
 
-        <TabsContent value="network">
-          {activeTab === "network" && <NetworkSection people={people} />}
-        </TabsContent>
-      </TabsRoot>
+      {isNetwork && <NetworkSection people={people} />}
 
       <ImportExportDialog
         open={importExportOpen}
@@ -287,37 +300,23 @@ const PeoplePage = () => {
       <ConfirmDialog
         open={deleteConfirm.open}
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
-        title={`Delete ${deleteConfirm.type === "company" ? "Company" : "Contact"}`}
-        description="Are you sure you want to delete this record? This action cannot be undone."
+        title={`Delete ${deleteConfirm.type} "${deleteConfirm.name}"?`}
+        description="This permanently deletes the record. This action cannot be undone."
         onConfirm={() => {
           if (deleteConfirm.type === "company") {
             deleteCompanyMutation.mutate(
               { input: { rowId: deleteConfirm.id } },
-              {
-                onError: (err) =>
-                  toast.error(
-                    err instanceof Error
-                      ? err.message
-                      : "Failed to delete company",
-                  ),
-              },
+              { onError: () => toast.error("Failed to delete company") },
             );
           } else {
             deletePersonMutation.mutate(
               { input: { rowId: deleteConfirm.id } },
-              {
-                onError: (err) =>
-                  toast.error(
-                    err instanceof Error
-                      ? err.message
-                      : "Failed to delete contact",
-                  ),
-              },
+              { onError: () => toast.error("Failed to delete contact") },
             );
           }
         }}
       />
-    </div>
+    </PageContainer>
   );
 };
 
@@ -328,12 +327,16 @@ const CompaniesTable = ({
   companies,
   search,
   navigate: routeNavigate,
+  searchTerm,
+  onSearchChange,
   onDelete,
 }: {
   companies: Company[];
   search: PeopleSearch;
   navigate: PeopleNavigate;
-  onDelete: (id: string) => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onDelete: (company: Company) => void;
 }) => {
   const navigate = useNavigate();
   const workspaceSlug = useWorkspaceSlug();
@@ -344,41 +347,28 @@ const CompaniesTable = ({
     navigate: routeNavigate,
   });
 
+  const filteredCompanies = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return companies;
+
+    return companies.filter((c) =>
+      [c.name, c.industry, c.email, c.phone, c.website].some((field) =>
+        (field ?? "").toLowerCase().includes(term),
+      ),
+    );
+  }, [companies, searchTerm]);
+
+  const openCompany = useCallback(
+    (company: Company) =>
+      navigate({
+        to: "/@{$workspaceSlug}/people/companies/$companyId/edit",
+        params: { workspaceSlug, companyId: company.id },
+      }),
+    [navigate, workspaceSlug],
+  );
+
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
-      {
-        id: "actions",
-        header: "Actions",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const company = row.original;
-          return (
-            <div
-              className="flex gap-2"
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-              role="presentation"
-            >
-              <Link
-                to="/@{$workspaceSlug}/people/companies/$companyId/edit"
-                params={{ workspaceSlug, companyId: company.id }}
-                className="text-muted-foreground hover:text-foreground"
-                aria-label="Edit company"
-              >
-                <Edit size={16} />
-              </Link>
-              <button
-                type="button"
-                onClick={() => onDelete(company.id)}
-                className="text-destructive hover:text-destructive/90"
-                aria-label="Delete company"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          );
-        },
-      },
       {
         id: "name",
         accessorKey: "name",
@@ -391,13 +381,17 @@ const CompaniesTable = ({
         id: "industry",
         accessorKey: "industry",
         header: "Industry",
-        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">
+            {getValue<string | null>() ?? <EmptyValue />}
+          </span>
+        ),
       },
       {
         id: "email",
         accessorKey: "email",
         header: "Email",
-        cell: ({ getValue }) => getValue<string | null>() ?? "—",
+        cell: ({ getValue }) => getValue<string | null>() ?? <EmptyValue />,
       },
       {
         id: "phone",
@@ -407,108 +401,90 @@ const CompaniesTable = ({
           <PhoneDisplay value={getValue<string | null>()} />
         ),
       },
+      {
+        id: "actions",
+        header: () => <span className="sr-only">Actions</span>,
+        enableSorting: false,
+        meta: { align: "right" },
+        cell: ({ row }) => (
+          <StopRowClick>
+            <RowMenu
+              label={`Actions for ${row.original.name}`}
+              onEdit={() => openCompany(row.original)}
+              onDelete={() => onDelete(row.original)}
+            />
+          </StopRowClick>
+        ),
+      },
     ],
-    [onDelete, workspaceSlug],
+    [onDelete, openCompany],
   );
 
-  return (
-    <div className="overflow-x-auto rounded-lg border border-border bg-card">
-      <DataTable
-        data={companies}
-        columns={columns}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        minWidth="600px"
-        onRowClick={(company) =>
-          navigate({
-            to: "/@{$workspaceSlug}/people/companies/$companyId/edit",
-            params: { workspaceSlug, companyId: company.id },
-          })
-        }
-        emptyState={
-          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
-            <Building2
-              size={32}
-              className="mx-auto mb-2 text-muted-foreground"
-            />
-            <p className="mb-4 text-muted-foreground">No companies yet</p>
+  if (companies.length === 0) {
+    return (
+      <SectionCard>
+        <EmptyState
+          icon={Building2}
+          title="No companies yet"
+          description="Add the businesses you work with to link contacts, quotes, and invoices to them."
+          action={
             <Link
               to="/@{$workspaceSlug}/people/companies/new"
               params={{ workspaceSlug }}
-              className="text-primary-600 hover:text-primary-700"
+              className={buttonVariants({ variant: "solid" })}
             >
-              Add your first company
+              <Plus />
+              Add company
             </Link>
-          </div>
-        }
-      />
-    </div>
-  );
-};
-
-const EmailActionButton = ({
-  emails,
-  name,
-}: {
-  emails: string[];
-  name: string;
-}) => {
-  const [open, setOpen] = useState(false);
-
-  if (emails.length === 1) {
-    return (
-      <a
-        href={`mailto:${emails[0]}?subject=${encodeURIComponent(`Hello ${name}`)}`}
-        className="text-muted-foreground hover:text-foreground"
-        aria-label={`Email ${emails[0]}`}
-      >
-        <Mail size={16} />
-      </a>
+          }
+        />
+      </SectionCard>
     );
   }
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="text-muted-foreground hover:text-foreground"
-        aria-label="Send email"
-      >
-        <Mail size={16} />
-      </button>
-      {open && (
-        <>
-          <div
-            role="presentation"
-            className="fixed inset-0 z-10"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute right-0 z-20 mt-1 min-w-48 rounded-lg border border-border bg-card py-1 shadow-lg">
-            {emails.map((email) => (
-              <a
-                key={email}
-                href={`mailto:${email}?subject=${encodeURIComponent(`Hello ${name}`)}`}
-                className="block px-4 py-2 text-foreground text-sm hover:bg-muted"
-                onClick={() => setOpen(false)}
-              >
-                {email}
-              </a>
-            ))}
+    <SectionCard flush>
+      <ListToolbar>
+        <SearchInput
+          label="Search companies"
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </ListToolbar>
+
+      <DataTable
+        data={filteredCompanies}
+        columns={columns}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        minWidth="640px"
+        onRowClick={openCompany}
+        rowLabel={(company) => `Open company ${company.name}`}
+        renderMobileRow={(company) => (
+          <div className="min-w-0">
+            <p className="truncate font-medium text-sm">{company.name}</p>
+            <p className="mt-0.5 truncate text-muted-foreground text-xs">
+              {[company.industry, company.email].filter(Boolean).join(" · ") ||
+                "No details yet"}
+            </p>
           </div>
-        </>
-      )}
-    </div>
+        )}
+        emptyState={
+          <EmptyState
+            title="No companies match your search"
+            action={
+              <Button variant="outline" onClick={() => onSearchChange("")}>
+                Clear search
+              </Button>
+            }
+          />
+        }
+      />
+    </SectionCard>
   );
 };
 
 type ContactTypeFilter = "all" | "internal" | "external";
-
-const TYPE_BUTTONS: { value: ContactTypeFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "internal", label: "Internal" },
-  { value: "external", label: "External" },
-];
 
 const ContactsTable = ({
   people,
@@ -524,10 +500,10 @@ const ContactsTable = ({
   search: PeopleSearch;
   navigate: PeopleNavigate;
   searchTerm: string;
-  typeFilter: string;
+  typeFilter: ContactTypeFilter;
   onSearchChange: (value: string) => void;
   onTypeFilterChange: (value: ContactTypeFilter) => void;
-  onDelete: (id: string) => void;
+  onDelete: (person: Person) => void;
 }) => {
   const navigate = useNavigate();
   const workspaceSlug = useWorkspaceSlug();
@@ -544,7 +520,7 @@ const ContactsTable = ({
     return people.filter((p) => {
       const matchesSearch =
         !term ||
-        `${p.firstName} ${p.lastName}`.toLowerCase().includes(term) ||
+        fullName(p).toLowerCase().includes(term) ||
         p.emails.some((e) => e.toLowerCase().includes(term)) ||
         (p.phone ?? "").toLowerCase().includes(term);
 
@@ -557,55 +533,28 @@ const ContactsTable = ({
     });
   }, [people, searchTerm, typeFilter]);
 
+  const internalCount = useMemo(
+    () => people.filter((p) => p.internal).length,
+    [people],
+  );
+
+  const openContact = useCallback(
+    (person: Person) =>
+      navigate({
+        to: "/@{$workspaceSlug}/people/contacts/$contactId/edit",
+        params: { workspaceSlug, contactId: person.id },
+      }),
+    [navigate, workspaceSlug],
+  );
+
   const columns = useMemo<ColumnDef<Person>[]>(
     () => [
-      {
-        id: "actions",
-        header: "Actions",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const person = row.original;
-          return (
-            <div
-              className="flex gap-2"
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-              role="presentation"
-            >
-              {person.emails.length > 0 && (
-                <EmailActionButton
-                  emails={person.emails}
-                  name={`${person.firstName} ${person.lastName}`}
-                />
-              )}
-              <Link
-                to="/@{$workspaceSlug}/people/contacts/$contactId/edit"
-                params={{ workspaceSlug, contactId: person.id }}
-                className="text-muted-foreground hover:text-foreground"
-                aria-label="Edit contact"
-              >
-                <Edit size={16} />
-              </Link>
-              <button
-                type="button"
-                onClick={() => onDelete(person.id)}
-                className="text-destructive hover:text-destructive/90"
-                aria-label="Delete contact"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          );
-        },
-      },
       {
         id: "lastName",
         accessorFn: (row) => `${row.lastName} ${row.firstName}`,
         header: "Name",
         cell: ({ row }) => (
-          <span className="font-medium">
-            {row.original.firstName} {row.original.lastName}
-          </span>
+          <span className="font-medium">{fullName(row.original)}</span>
         ),
       },
       {
@@ -613,14 +562,14 @@ const ContactsTable = ({
         accessorFn: (row) => row.emails[0] ?? "",
         header: "Email",
         cell: ({ row }) => {
-          const emails = row.original.emails;
-          if (emails.length === 0) return "—";
-          if (emails.length === 1) return emails[0];
+          const [first, ...rest] = row.original.emails;
+          if (!first) return <EmptyValue />;
+          if (rest.length === 0) return first;
           return (
-            <span title={emails.join(", ")}>
-              {emails[0]}{" "}
-              <span className="text-muted-foreground">
-                +{emails.length - 1}
+            <span title={row.original.emails.join(", ")}>
+              {first}{" "}
+              <span className="tabular text-muted-foreground">
+                +{rest.length}
               </span>
             </span>
           );
@@ -638,124 +587,161 @@ const ContactsTable = ({
         id: "internal",
         accessorKey: "internal",
         header: "Type",
-        cell: ({ getValue }) => {
-          const internal = getValue<boolean>();
-          return (
-            <Badge variant={internal ? "solid" : "outline"} className="text-xs">
-              {internal ? "Internal" : "External"}
-            </Badge>
-          );
-        },
+        cell: ({ getValue }) => (
+          <ContactTypeBadge internal={getValue<boolean>()} />
+        ),
       },
       {
         id: "tags",
         accessorFn: (row) => row.tags?.join(", ") ?? "",
         header: "Tags",
         enableSorting: false,
-        cell: ({ row }) => (
-          <div className="flex flex-wrap gap-1">
-            {row.original.tags?.length ? (
-              row.original.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))
-            ) : (
-              <span className="text-muted-foreground text-sm">{"—"}</span>
-            )}
-          </div>
-        ),
+        cell: ({ row }) =>
+          row.original.tags?.length ? (
+            <div className="flex flex-wrap gap-1">
+              {row.original.tags.map((tag) => (
+                <TagChip key={tag} tag={tag} />
+              ))}
+            </div>
+          ) : (
+            <EmptyValue>No tags</EmptyValue>
+          ),
+      },
+      {
+        id: "actions",
+        header: () => <span className="sr-only">Actions</span>,
+        enableSorting: false,
+        meta: { align: "right" },
+        cell: ({ row }) => {
+          const person = row.original;
+          return (
+            <StopRowClick>
+              <EmailAction emails={person.emails} name={fullName(person)} />
+              <RowMenu
+                label={`Actions for ${fullName(person)}`}
+                onEdit={() => openContact(person)}
+                onDelete={() => onDelete(person)}
+              />
+            </StopRowClick>
+          );
+        },
       },
     ],
-    [onDelete, workspaceSlug],
+    [onDelete, openContact],
   );
 
   if (people.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
-        <Users size={32} className="mx-auto mb-2 text-muted-foreground" />
-        <p className="mb-4 text-muted-foreground">No contacts yet</p>
-        <Link
-          to="/@{$workspaceSlug}/people/contacts/new"
-          params={{ workspaceSlug }}
-          className="text-primary-600 hover:text-primary-700"
-        >
-          Add your first contact
-        </Link>
-      </div>
+      <SectionCard>
+        <EmptyState
+          icon={Users}
+          title="No contacts yet"
+          description="Add the people you work with, then tag them and link them to companies."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/people/contacts/new"
+              params={{ workspaceSlug }}
+              className={buttonVariants({ variant: "solid" })}
+            >
+              <Plus />
+              Add contact
+            </Link>
+          }
+        />
+      </SectionCard>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-border bg-card">
-      <div className="flex min-w-[700px] items-center gap-4 border-border border-b p-4">
-        <div className="relative flex-1">
-          <Search
-            className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <input
-            type="text"
-            placeholder="Search contacts..."
-            aria-label="Search contacts"
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-lg border border-input py-2 pr-4 pl-9 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
-          />
-        </div>
-        <div className="inline-flex rounded-lg border border-border bg-muted p-1">
-          {TYPE_BUTTONS.map((btn) => (
-            <button
-              key={btn.value}
-              type="button"
-              onClick={() => onTypeFilterChange(btn.value)}
-              className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-                typeFilter === btn.value
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-      </div>
+    <SectionCard flush>
+      <ListToolbar>
+        <SegmentedControl<ContactTypeFilter>
+          label="Filter by type"
+          size="sm"
+          value={typeFilter}
+          onValueChange={onTypeFilterChange}
+          options={[
+            { value: "all", label: "All", count: people.length },
+            { value: "internal", label: "Internal", count: internalCount },
+            {
+              value: "external",
+              label: "External",
+              count: people.length - internalCount,
+            },
+          ]}
+        />
+        <SearchInput
+          label="Search contacts"
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </ListToolbar>
 
       <DataTable
         data={filteredPeople}
         columns={columns}
         sorting={sorting}
         onSortingChange={setSorting}
-        minWidth="700px"
-        onRowClick={(person) =>
-          navigate({
-            to: "/@{$workspaceSlug}/people/contacts/$contactId/edit",
-            params: { workspaceSlug, contactId: person.id },
-          })
-        }
-        emptyState={
-          <div className="py-12 text-center">
-            <p className="text-muted-foreground">
-              No contacts match your filters
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                onSearchChange("");
-                onTypeFilterChange("all");
-              }}
-              className="mt-2 text-primary-600 text-sm hover:text-primary-700"
-            >
-              Clear filters
-            </button>
+        minWidth="760px"
+        onRowClick={openContact}
+        rowLabel={(person) => `Open contact ${fullName(person)}`}
+        renderMobileRow={(person) => (
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-medium text-sm">{fullName(person)}</p>
+              <p className="mt-0.5 truncate text-muted-foreground text-xs">
+                {person.emails[0] ?? "No email yet"}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap justify-end gap-1">
+              {person.tags?.length ? (
+                <>
+                  {person.tags.slice(0, 2).map((tag) => (
+                    <TagChip key={tag} tag={tag} />
+                  ))}
+                  {person.tags.length > 2 && (
+                    <span className="tabular self-center text-muted-foreground text-xs">
+                      +{person.tags.length - 2}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <ContactTypeBadge internal={person.internal} />
+              )}
+            </div>
           </div>
+        )}
+        emptyState={
+          <EmptyState
+            title="No contacts match your filters"
+            action={
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onSearchChange("");
+                  onTypeFilterChange("all");
+                }}
+              >
+                Clear filters
+              </Button>
+            }
+          />
         }
       />
-    </div>
+    </SectionCard>
   );
 };
 
+const ContactTypeBadge = ({ internal }: { internal: boolean }) => (
+  <StatusBadge
+    status={internal ? "internal" : "external"}
+    label={internal ? "Internal" : "External"}
+    tone={internal ? "brand" : "neutral"}
+  />
+);
+
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/people/")({
+  staticData: { title: "People" },
   component: PeoplePage,
   validateSearch: zodValidator(peopleListSearchSchema),
 });

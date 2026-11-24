@@ -1,5 +1,7 @@
 import { ark } from "@ark-ui/react";
-import { PanelLeftIcon } from "lucide-react";
+import { GLOBAL_HOTKEYS, useHotkeys } from "@omnidotdev/thornberry/use-hotkeys";
+import { useLocation } from "@tanstack/react-router";
+import { MenuIcon } from "lucide-react";
 import {
   createContext,
   useCallback,
@@ -102,6 +104,28 @@ const SidebarProvider = ({
     }
   }, [isMobile]);
 
+  // Shared Omni shortcut (listed in the shortcuts dialog); ignored while typing
+  useHotkeys(GLOBAL_HOTKEYS.toggleSidebar, toggleSidebar);
+
+  // Close the phone drawer whenever the route changes (a nav link was tapped)
+  const { pathname } = useLocation();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run on pathname change only
+  useEffect(() => {
+    setOpenMobile(false);
+  }, [pathname]);
+
+  // Escape closes the phone drawer from anywhere, not only the backdrop
+  useEffect(() => {
+    if (!openMobile) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenMobile(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [openMobile]);
+
   const state = open ? "expanded" : "collapsed";
 
   const contextValue = useMemo<SidebarContextProps>(
@@ -185,19 +209,22 @@ const Sidebar = ({
         {openMobile && (
           <div
             data-slot="sidebar-backdrop"
-            className="fixed inset-0 z-50 bg-black/80"
+            aria-hidden
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-[2px]"
             onClick={() => setOpenMobile(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") setOpenMobile(false);
-            }}
           />
         )}
         <div
           data-slot="sidebar"
           data-sidebar="sidebar"
           data-mobile="true"
+          role="dialog"
+          aria-modal={openMobile}
+          aria-label="Navigation"
+          // Keep the closed drawer out of the tab order and accessibility tree
+          inert={!openMobile}
           className={cn(
-            "fixed inset-y-0 z-50 flex w-3/4 max-w-xs flex-col bg-sidebar text-sidebar-foreground transition-transform duration-200 ease-in-out",
+            "fixed inset-y-0 z-50 flex w-4/5 max-w-xs flex-col bg-sidebar pt-[env(safe-area-inset-top)] text-sidebar-foreground shadow-2xl transition-transform duration-200 ease-in-out",
             side === "left"
               ? openMobile
                 ? "left-0 translate-x-0"
@@ -217,7 +244,7 @@ const Sidebar = ({
 
   return (
     <div
-      className="group peer hidden text-sidebar-foreground md:block"
+      className="group peer hidden text-sidebar-foreground md:block print:hidden"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
@@ -245,7 +272,7 @@ const Sidebar = ({
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
           className,
         )}
         {...rest}
@@ -275,15 +302,15 @@ const SidebarTrigger = ({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn("sticky top-2 ml-2 size-8", className)}
+      className={cn("size-9", className)}
       onClick={(event: MouseEvent<HTMLButtonElement>) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...rest}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      <MenuIcon />
+      <span className="sr-only">Open navigation</span>
     </Button>
   );
 };
@@ -293,7 +320,7 @@ const SidebarInset = ({ className, ...rest }: ComponentProps<"main">) => {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "relative flex min-w-0 flex-1 flex-col bg-background",
+        "relative flex min-w-0 flex-1 flex-col bg-canvas",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl",
         className,
       )}
@@ -319,7 +346,7 @@ const SidebarContent = ({ className, ...rest }: ComponentProps<"div">) => {
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
-        "custom-scrollbar mb-2 flex min-h-0 flex-1 flex-col gap-4 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "mb-2 flex min-h-0 flex-1 flex-col gap-4 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
         className,
       )}
       {...rest}
@@ -424,7 +451,7 @@ const SidebarMenuButton = ({
       data-active={isActive}
       className={cn(
         // Base layout and spacing
-        "peer/menu-button flex h-8 w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md px-2 text-left text-sm transition-[width,height,padding,color,box-shadow] duration-0",
+        "peer/menu-button flex h-9 w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-xl px-2.5 text-left text-sm transition-[width,height,padding,color,box-shadow] duration-0",
         // Typography and base text color
         "font-medium text-sidebar-foreground/70",
         // Hover styles
@@ -437,7 +464,7 @@ const SidebarMenuButton = ({
         "disabled:pointer-events-none disabled:opacity-50",
         "aria-disabled:pointer-events-none aria-disabled:opacity-50",
         // Data attribute states
-        "data-[active=true]:bg-sidebar-accent/80 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground",
+        "data-[active=true]:bg-card data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[active=true]:shadow-raised data-[active=true]:[&>svg]:text-primary",
         "data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground",
         // Collapsible size variant
         "group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2!",

@@ -1,12 +1,6 @@
+import { OptionsSelect } from "@omnidotdev/thornberry/select";
 import { useMemo } from "react";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useAllCompaniesQuery } from "@/generated/graphql";
 
 interface CompanyPickerProps {
@@ -34,27 +28,18 @@ const CompanyPicker = ({
     [data],
   );
 
-  const items = companies.map((c) => c.id);
+  const options = useMemo(
+    () => companies.map(({ id, name }) => ({ value: id, label: name })),
+    [companies],
+  );
 
   return (
-    <Select
-      items={items}
+    <OptionsSelect
       value={value}
+      options={options}
       onValueChange={onValueChange}
-      itemToString={(id) => companies.find((c) => c.id === id)?.name ?? id}
-      itemToValue={(id) => id}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Select a company" />
-      </SelectTrigger>
-      <SelectContent>
-        {companies.map((company) => (
-          <SelectItem key={company.id} value={company.id}>
-            {company.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+      placeholder="Select a company"
+    />
   );
 };
 

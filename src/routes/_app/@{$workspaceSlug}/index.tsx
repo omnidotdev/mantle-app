@@ -1,321 +1,468 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { DollarSign, FileText, Loader2, TrendingUp, Users } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CircleAlertIcon,
+  FileTextIcon,
+  PlusIcon,
+  ReceiptIcon,
+  TrendingUpIcon,
+} from "lucide-react";
 import { useMemo } from "react";
 
-import { formatCurrency } from "@/features/invoices/types/invoice";
+import LoadingState from "@/components/core/LoadingState";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import SectionCard from "@/components/core/SectionCard";
+import StatCard from "@/components/core/StatCard";
+import { buttonVariants } from "@/components/ui/button";
+import AttentionCard from "@/features/dashboard/components/AttentionCard";
+import GetStartedCard from "@/features/dashboard/components/GetStartedCard";
+import InvoicedChart from "@/features/dashboard/components/InvoicedChart";
+import ModulesCard from "@/features/dashboard/components/ModulesCard";
+import RecentInvoicesCard from "@/features/dashboard/components/RecentInvoicesCard";
+import {
+  addMonths,
+  expiringQuotes,
+  formatMonthYear,
+  formatWholeCurrency,
+  invoicedPerMonth,
+  lowStockProducts,
+  monthKeyOf,
+  openQuotesSummary,
+  outstandingSummary,
+  overdueInvoices,
+  paidInMonth,
+  percentChange,
+  pluralize,
+  primaryCurrency,
+  toDateKey,
+} from "@/features/dashboard/lib/metrics";
+import { appliedCredit } from "@/features/invoices/types/invoice";
 import {
   useAllCompaniesQuery,
   useAllInvoicesQuery,
   useAllPeopleQuery,
+  useAllProductsQuery,
   useAllQuotesQuery,
+  useWorkspaceCreditsQuery,
 } from "@/generated/graphql";
-import appConfig from "@/lib/config/app.config";
-import { formatStatus } from "@/lib/utils";
+import cn from "@/lib/utils";
+import { useWorkspace } from "@/providers/WorkspaceProvider";
 
-const statusColors: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "bg-primary-100 text-primary-700",
-  paid: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  overdue: "bg-destructive/10 text-destructive",
-};
+/** First non-empty line of a free-text bill-to block (usually the name) */
+const billToName = (billTo: string | null): string | null =>
+  billTo
+    ?.split("\n")
+    .map((line) => line.trim())
+    .find(Boolean) ?? null;
+
+const personName = (
+  person: { firstName: string; lastName: string } | null,
+): string | null =>
+  person ? `${person.firstName} ${person.lastName}`.trim() || null : null;
 
 const DashboardPage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug } = Route.useParams();
+  const workspaceCtx = useWorkspace();
+
+  const workspaceName =
+    workspaceCtx?.workspaces?.find((ws) => ws.slug === workspaceSlug)?.name ??
+    `@${workspaceSlug}`;
+
+  const queryVars = { organizationId: organizationId ?? "" };
+  const queryOptions = { enabled: !!organizationId };
 
   const { data: companiesData, isLoading: companiesLoading } =
-    useAllCompaniesQuery(
-      { organizationId: organizationId ?? "" },
-      { enabled: !!organizationId },
-    );
-
+    useAllCompaniesQuery(queryVars, queryOptions);
   const { data: peopleData, isLoading: peopleLoading } = useAllPeopleQuery(
-    { organizationId: organizationId ?? "" },
-    { enabled: !!organizationId },
+    queryVars,
+    queryOptions,
   );
-
   const { data: quotesData, isLoading: quotesLoading } = useAllQuotesQuery(
-    { organizationId: organizationId ?? "" },
-    { enabled: !!organizationId },
+    queryVars,
+    queryOptions,
+  );
+  const { data: invoiceData, isLoading: invoicesLoading } = useAllInvoicesQuery(
+    queryVars,
+    queryOptions,
+  );
+  const { data: productsData, isLoading: productsLoading } =
+    useAllProductsQuery(queryVars, queryOptions);
+  const { data: creditsData } = useWorkspaceCreditsQuery(
+    queryVars,
+    queryOptions,
   );
 
-  const { data: invoiceData, isLoading: invoicesLoading } = useAllInvoicesQuery(
-    { organizationId: organizationId ?? "" },
-    { enabled: !!organizationId },
-  );
+  const todayKey = toDateKey(new Date());
+  const monthKey = monthKeyOf(todayKey);
 
   const companiesCount = companiesData?.companies?.nodes?.length ?? 0;
   const peopleCount = peopleData?.people?.nodes?.length ?? 0;
 
-  const quotes = useMemo(
+  // Only credit applications reduce an invoice's balance
+  const credits = useMemo(
     () =>
-      (quotesData?.quotes?.nodes ?? []).flatMap((node) => {
+      (creditsData?.creditTransactions?.nodes ?? []).flatMap((node) =>
+        node?.kind === "application"
+          ? [
+              {
+                amount: node.amount,
+                kind: "application" as const,
+                invoiceId: node.invoiceId ?? null,
+              },
+            ]
+          : [],
+      ),
+    [creditsData],
+  );
+
+  const allInvoices = useMemo(
+    () =>
+      (invoiceData?.invoices?.nodes ?? []).flatMap((node) => {
         if (!node) return [];
+
         return [
           {
             id: node.rowId,
-            status: (node.status ?? "draft") as string,
+            number: node.invoiceNumber,
+            status: node.status ?? "draft",
+            issueDate: node.issueDate ?? "",
+            dueDate: node.dueDate ?? null,
+            total: node.total ?? "0",
+            currency: node.currency ?? "USD",
+            createdAt: node.createdAt ?? "",
+            clientName:
+              node.company?.name ??
+              personName(node.contact) ??
+              billToName(node.billTo ?? null),
+            payments: node.payments.nodes.flatMap((payment) =>
+              payment
+                ? [{ amount: payment.amount, paidAt: payment.paidAt }]
+                : [],
+            ),
+            appliedCredit: appliedCredit(credits, node.rowId),
+          },
+        ];
+      }),
+    [invoiceData, credits],
+  );
+
+  const allQuotes = useMemo(
+    () =>
+      (quotesData?.quotes?.nodes ?? []).flatMap((node) => {
+        if (!node) return [];
+
+        return [
+          {
+            id: node.rowId,
+            number: node.quoteNumber,
+            status: node.status ?? "draft",
+            validUntil: node.validUntil ?? "",
+            total: node.total ?? "0",
+            currency: node.currency ?? "USD",
+            clientName:
+              node.company?.name ?? node.clientName ?? personName(node.contact),
           },
         ];
       }),
     [quotesData],
   );
 
-  const invoices = useMemo(
+  const products = useMemo(
     () =>
-      (invoiceData?.invoices?.nodes ?? []).flatMap((node) => {
-        if (!node) return [];
-        return [
-          {
-            id: node.rowId,
-            invoiceNumber: node.invoiceNumber,
-            companyName: node.company?.name ?? null,
-            status: (node.status ?? "draft") as string,
-            total: node.total ?? "0",
-            dueDate: node.dueDate ?? "",
-            issueDate: node.issueDate ?? "",
-            currency: node.currency ?? "USD",
-          },
-        ];
-      }),
-    [invoiceData],
-  );
-
-  const totalInvoiced = useMemo(
-    () =>
-      invoices.reduce(
-        (sum, inv) => sum + (Number.parseFloat(inv.total) || 0),
-        0,
+      (productsData?.products?.nodes ?? []).flatMap((node) =>
+        node
+          ? [
+              {
+                id: node.rowId,
+                name: node.name,
+                currentQuantity: node.currentQuantity ?? 0,
+                lowStockThreshold: node.lowStockThreshold ?? null,
+                isActive: node.isActive ?? true,
+              },
+            ]
+          : [],
       ),
-    [invoices],
+    [productsData],
   );
 
-  const paidTotal = useMemo(
+  // Money totals use one currency so amounts in different currencies are
+  // never added together
+  const currency = useMemo(
     () =>
-      invoices
-        .filter((inv) => inv.status === "paid")
-        .reduce((sum, inv) => sum + (Number.parseFloat(inv.total) || 0), 0),
-    [invoices],
+      primaryCurrency([
+        ...allInvoices.map((inv) => inv.currency),
+        ...allQuotes.map((quote) => quote.currency),
+      ]),
+    [allInvoices, allQuotes],
   );
 
-  const pendingCount = useMemo(
-    () =>
-      invoices.filter((inv) => inv.status !== "paid" && inv.status !== "void")
-        .length,
-    [invoices],
+  const invoices = useMemo(
+    () => allInvoices.filter((inv) => inv.currency === currency),
+    [allInvoices, currency],
+  );
+  const quotes = useMemo(
+    () => allQuotes.filter((quote) => quote.currency === currency),
+    [allQuotes, currency],
+  );
+  const hasOtherCurrencies =
+    invoices.length !== allInvoices.length ||
+    quotes.length !== allQuotes.length;
+
+  const outstanding = useMemo(() => outstandingSummary(invoices), [invoices]);
+
+  const overdue = useMemo(
+    () => overdueInvoices(allInvoices, todayKey),
+    [allInvoices, todayKey],
+  );
+  const overdueInCurrency = overdue.filter(
+    (item) => item.invoice.currency === currency,
+  );
+  const overdueAmount = overdueInCurrency.reduce(
+    (sum, item) => sum + item.balance,
+    0,
+  );
+
+  const paidThisMonth = useMemo(
+    () => paidInMonth(invoices, monthKey),
+    [invoices, monthKey],
+  );
+  const paidLastMonth = useMemo(
+    () => paidInMonth(invoices, addMonths(monthKey, -1)),
+    [invoices, monthKey],
+  );
+  const paidChange = percentChange(paidThisMonth.amount, paidLastMonth.amount);
+  const lastMonthName = new Date(
+    `${addMonths(monthKey, -1)}-01T00:00:00Z`,
+  ).toLocaleDateString("en-US", { month: "long", timeZone: "UTC" });
+
+  const openQuotes = useMemo(() => openQuotesSummary(quotes), [quotes]);
+
+  const months = useMemo(
+    () => invoicedPerMonth(invoices, todayKey, 6),
+    [invoices, todayKey],
   );
 
   const recentInvoices = useMemo(
     () =>
-      [...invoices]
-        .sort((a, b) => b.issueDate.localeCompare(a.issueDate))
+      [...allInvoices]
+        .sort(
+          (a, b) =>
+            b.issueDate.localeCompare(a.issueDate) ||
+            b.createdAt.localeCompare(a.createdAt),
+        )
         .slice(0, 5),
-    [invoices],
+    [allInvoices],
   );
 
-  const isLoadingPeople = companiesLoading || peopleLoading;
-  const isLoadingFinancials = invoicesLoading;
+  const expiring = useMemo(
+    () => expiringQuotes(allQuotes, todayKey, 7),
+    [allQuotes, todayKey],
+  );
+  const lowStock = useMemo(() => lowStockProducts(products), [products]);
 
-  const totalInvoicedLabel = formatCurrency(totalInvoiced.toFixed(2));
-  const paidTotalLabel = formatCurrency(paidTotal.toFixed(2));
+  const openInvoiceCount = allInvoices.filter((inv) =>
+    ["sent", "viewed", "overdue"].includes(inv.status),
+  ).length;
+  const openQuoteCount = allQuotes.filter(
+    (quote) => quote.status === "sent",
+  ).length;
+
+  const isLoadingCore =
+    invoicesLoading || quotesLoading || peopleLoading || companiesLoading;
+
+  const isNewWorkspace =
+    !isLoadingCore &&
+    allInvoices.length === 0 &&
+    allQuotes.length === 0 &&
+    peopleCount === 0 &&
+    companiesCount === 0;
+
+  const money = (amount: number) => formatWholeCurrency(amount, currency);
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold text-xl">{appConfig.name}</h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            {appConfig.tagline}
-          </p>
-        </div>
-      </div>
-
-      {/* Stat cards */}
-      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="shrink-0 rounded-md bg-emerald-100 p-1.5">
-              <DollarSign className="h-4 w-4 text-emerald-700" />
-            </div>
-            <span className="truncate text-muted-foreground text-xs">
-              Total Invoiced
-            </span>
-          </div>
-          {isLoadingFinancials ? (
-            <Loader2
-              className="h-5 w-5 animate-spin text-muted-foreground"
-              aria-label="Loading"
-            />
-          ) : (
-            <p
-              className="truncate font-bold text-base md:text-lg"
-              title={totalInvoicedLabel}
-            >
-              {totalInvoicedLabel}
-            </p>
-          )}
-        </div>
-
-        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="shrink-0 rounded-md bg-emerald-100 p-1.5">
-              <TrendingUp className="h-4 w-4 text-emerald-700" />
-            </div>
-            <span className="truncate text-muted-foreground text-xs">Paid</span>
-          </div>
-          {isLoadingFinancials ? (
-            <Loader2
-              className="h-5 w-5 animate-spin text-muted-foreground"
-              aria-label="Loading"
-            />
-          ) : (
-            <p
-              className="truncate font-bold text-base md:text-lg"
-              title={paidTotalLabel}
-            >
-              {paidTotalLabel}
-            </p>
-          )}
-        </div>
-
-        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="shrink-0 rounded-md bg-primary-200 p-1.5">
-              <FileText className="h-4 w-4 text-primary-800" />
-            </div>
-            <span className="truncate text-muted-foreground text-xs">
-              Pending
-            </span>
-          </div>
-          {isLoadingFinancials ? (
-            <Loader2
-              className="h-5 w-5 animate-spin text-muted-foreground"
-              aria-label="Loading"
-            />
-          ) : (
-            <p className="truncate font-bold text-base md:text-lg">
-              {pendingCount}
-            </p>
-          )}
-        </div>
-
-        <div className="volcanic-glow min-w-0 rounded-lg border border-border bg-card p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="shrink-0 rounded-md bg-primary-100 p-1.5">
-              <Users className="h-4 w-4 text-primary-700" />
-            </div>
-            <span className="truncate text-muted-foreground text-xs">
-              People
-            </span>
-          </div>
-          {isLoadingPeople ? (
-            <Loader2
-              className="h-5 w-5 animate-spin text-muted-foreground"
-              aria-label="Loading"
-            />
-          ) : (
-            <>
-              <p className="truncate font-bold text-base md:text-lg">
-                {companiesCount + peopleCount}
-              </p>
-              <p className="truncate text-muted-foreground text-xs">
-                {companiesCount} companies, {peopleCount} contacts
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Module grid */}
-      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {Object.entries(appConfig.modules)
-          .filter(([, config]) => config.enabled)
-          .map(([key, config]) => (
+    <PageContainer>
+      <PageHeader
+        title="Overview"
+        description={`${workspaceName} · ${formatMonthYear(todayKey)}`}
+        actions={
+          <>
             <Link
-              key={key}
-              to={
-                `/@{$workspaceSlug}/${key}` as
-                  | "/@{$workspaceSlug}/invoices"
-                  | "/@{$workspaceSlug}/people"
-                  | "/@{$workspaceSlug}/quotes"
-                  | "/@{$workspaceSlug}/inventory"
+              to="/@{$workspaceSlug}/quotes/new"
+              params={{ workspaceSlug }}
+              className={buttonVariants({
+                variant: "outline",
+                className: "max-md:hidden",
+              })}
+            >
+              <FileTextIcon />
+              New quote
+            </Link>
+            <Link
+              to="/@{$workspaceSlug}/invoices/new"
+              params={{ workspaceSlug }}
+              className={buttonVariants({
+                variant: "solid",
+                className: "max-md:hidden",
+              })}
+            >
+              <PlusIcon />
+              New invoice
+            </Link>
+          </>
+        }
+      />
+
+      {isNewWorkspace && <GetStartedCard workspaceSlug={workspaceSlug} />}
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <StatCard
+          icon={ReceiptIcon}
+          label="Outstanding"
+          value={money(outstanding.amount)}
+          title={money(outstanding.amount)}
+          sub={pluralize(outstanding.count, "open invoice")}
+          loading={invoicesLoading}
+        />
+        <StatCard
+          icon={CircleAlertIcon}
+          label="Overdue"
+          value={money(overdueAmount)}
+          title={money(overdueAmount)}
+          sub={
+            overdueInCurrency.length > 0 ? (
+              <>
+                <span className="text-destructive">
+                  {pluralize(overdueInCurrency.length, "invoice")}
+                </span>{" "}
+                past due
+              </>
+            ) : (
+              "Nothing past due"
+            )
+          }
+          loading={invoicesLoading}
+        />
+        <StatCard
+          icon={TrendingUpIcon}
+          label="Paid this month"
+          value={money(paidThisMonth.amount)}
+          title={money(paidThisMonth.amount)}
+          sub={
+            paidChange != null ? (
+              <>
+                <span
+                  className={cn(
+                    paidChange >= 0 ? "text-success" : "text-destructive",
+                  )}
+                >
+                  {paidChange >= 0 ? "+" : ""}
+                  {paidChange}%
+                </span>{" "}
+                vs {lastMonthName}
+              </>
+            ) : (
+              `${pluralize(paidThisMonth.count, "payment")} received`
+            )
+          }
+          loading={invoicesLoading}
+        />
+        <StatCard
+          icon={FileTextIcon}
+          label="Open quotes"
+          value={money(openQuotes.amount)}
+          title={money(openQuotes.amount)}
+          sub={`${openQuotes.count} awaiting a decision`}
+          loading={quotesLoading}
+        />
+      </div>
+
+      {hasOtherCurrencies && (
+        <p className="mt-2 text-muted-foreground text-xs">
+          Totals include {currency} amounts only.
+        </p>
+      )}
+
+      <div className="mt-4 grid gap-4 lg:mt-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        {!isNewWorkspace && (
+          <div className="grid content-start gap-4">
+            <SectionCard
+              title="Invoiced per month"
+              action={
+                <Link
+                  to="/@{$workspaceSlug}/invoices"
+                  params={{ workspaceSlug }}
+                  className={buttonVariants({ variant: "ghost", size: "sm" })}
+                >
+                  Invoices
+                  <ArrowRightIcon />
+                </Link>
               }
-              params={{ workspaceSlug }}
-              className="volcanic-glow flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
             >
-              <span className="text-3xl">{config.icon}</span>
-              <span className="text-center font-medium text-card-foreground">
-                {config.label}
-              </span>
-            </Link>
-          ))}
+              {invoicesLoading ? (
+                <LoadingState label="Loading invoiced totals" />
+              ) : (
+                <InvoicedChart months={months} currency={currency} />
+              )}
+            </SectionCard>
+
+            <RecentInvoicesCard
+              workspaceSlug={workspaceSlug}
+              invoices={recentInvoices}
+              loading={invoicesLoading}
+            />
+          </div>
+        )}
+
+        {/* Below lg this column dissolves into the page grid so "Needs attention" leads on phones */}
+        <div
+          className={cn(
+            "grid content-start gap-4 max-lg:contents",
+            isNewWorkspace && "lg:col-span-2",
+          )}
+        >
+          {!isLoadingCore && !productsLoading && (
+            <div className="empty:hidden max-lg:order-first">
+              <AttentionCard
+                workspaceSlug={workspaceSlug}
+                overdue={overdue.map((item) => ({
+                  id: item.invoice.id,
+                  number: item.invoice.number,
+                  clientName: item.invoice.clientName,
+                  balance: item.balance,
+                  currency: item.invoice.currency,
+                  daysOverdue: item.daysOverdue,
+                }))}
+                lowStock={lowStock}
+                expiringQuotes={expiring.map((item) => ({
+                  id: item.quote.id,
+                  number: item.quote.number,
+                  clientName: item.quote.clientName,
+                  total: item.quote.total,
+                  currency: item.quote.currency,
+                  daysLeft: item.daysLeft,
+                }))}
+              />
+            </div>
+          )}
+
+          <ModulesCard
+            workspaceSlug={workspaceSlug}
+            summaries={{
+              people: `${pluralize(peopleCount, "contact")} · ${pluralize(companiesCount, "company", "companies")}`,
+              invoices: `${pluralize(allInvoices.length, "invoice")} · ${openInvoiceCount} open`,
+              quotes: `${pluralize(allQuotes.length, "quote")} · ${openQuoteCount} open`,
+              inventory: `${pluralize(products.length, "product")} · ${lowStock.length} low`,
+            }}
+          />
+        </div>
       </div>
-
-      {/* Recent invoices */}
-      {recentInvoices.length > 0 && (
-        <div className="rounded-lg border border-border bg-card">
-          <div className="flex items-center justify-between border-border border-b px-4 py-3">
-            <h2 className="font-semibold text-sm">Recent Invoices</h2>
-            <Link
-              to="/@{$workspaceSlug}/invoices"
-              params={{ workspaceSlug }}
-              className="text-muted-foreground text-xs hover:text-foreground"
-            >
-              View all
-            </Link>
-          </div>
-          <div className="divide-y divide-border">
-            {recentInvoices.map((inv) => (
-              <div
-                key={inv.id}
-                className="flex items-center justify-between px-4 py-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-mono text-sm">
-                    {inv.invoiceNumber}
-                  </p>
-                  <p className="truncate text-muted-foreground text-xs">
-                    {inv.companyName || "No company"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="font-medium text-sm">
-                    {formatCurrency(inv.total, inv.currency)}
-                  </span>
-                  <span
-                    className={`inline-block rounded-full px-2 py-0.5 text-xs ${statusColors[inv.status] || "bg-muted text-muted-foreground"}`}
-                  >
-                    {formatStatus(inv.status)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Quote summary */}
-      {!quotesLoading && quotes.length > 0 && (
-        <div className="mt-4 rounded-lg border border-border bg-card px-4 py-3">
-          <div className="flex items-center justify-between">
-            <p className="text-muted-foreground text-sm">
-              {quotes.length} {quotes.length === 1 ? "quote" : "quotes"} (
-              {quotes.filter((q) => q.status === "accepted").length} accepted)
-            </p>
-            <Link
-              to="/@{$workspaceSlug}/quotes"
-              params={{ workspaceSlug }}
-              className="text-muted-foreground text-xs hover:text-foreground"
-            >
-              View all
-            </Link>
-          </div>
-        </div>
-      )}
-    </div>
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/")({
+  staticData: { title: "Dashboard" },
   component: DashboardPage,
 });

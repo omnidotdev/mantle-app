@@ -1,10 +1,20 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { Building2Icon, PackageXIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import ProductForm from "@/features/inventory/components/ProductForm";
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import MobileActionBar from "@/components/core/MobileActionBar";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import { Button, buttonVariants } from "@/components/ui/button";
+import ProductForm, {
+  PRODUCT_FORM_ID,
+} from "@/features/inventory/components/ProductForm";
+import { productsFromQuery } from "@/features/inventory/types/product";
 import {
   useAllProductsQuery,
   useUpdateProductMutation,
@@ -26,32 +36,9 @@ const EditProductPage = () => {
     { enabled: !!organizationId },
   );
 
-  const products = useMemo(
-    () =>
-      (productsData?.products?.nodes ?? []).flatMap((node) => {
-        if (!node) return [];
-        return [
-          {
-            id: node.rowId,
-            organizationId: node.organizationId,
-            name: node.name,
-            description: node.description ?? null,
-            sku: node.sku ?? null,
-            unitPrice: node.unitPrice ?? null,
-            currentQuantity: node.currentQuantity ?? 0,
-            lowStockThreshold: node.lowStockThreshold ?? null,
-            isActive: node.isActive ?? true,
-            createdAt: node.createdAt ?? "",
-            updatedAt: node.updatedAt ?? "",
-          },
-        ];
-      }),
-    [productsData],
-  );
-
   const product = useMemo(
-    () => products.find((p) => p.id === productId),
-    [products, productId],
+    () => productsFromQuery(productsData).find((p) => p.id === productId),
+    [productsData, productId],
   );
 
   useEffect(() => {
@@ -72,6 +59,7 @@ const EditProductPage = () => {
   const updateProductMutation = useUpdateProductMutation();
 
   const handleSave = async () => {
+    if (saving) return;
     setSaving(true);
     try {
       await updateProductMutation.mutateAsync({
@@ -90,88 +78,114 @@ const EditProductPage = () => {
       });
       invalidateProducts();
       toast.success("Product saved");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save product",
-      );
+    } catch {
+      toast.error("Could not save the product");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleCancel = () => {
-    if (product) {
-      setCurrentProduct(product);
-    }
-  };
-
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to edit products
-        </p>
-      </div>
+      <PageContainer width="narrow">
+        <EmptyState
+          icon={Building2Icon}
+          title="No workspace selected"
+          description="Select a workspace to edit products."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading product"
-        />
-      </div>
+      <PageContainer width="narrow">
+        <LoadingState label="Loading product" />
+      </PageContainer>
     );
   }
 
   if (!product) {
     return (
-      <div className="p-6">
-        <Link
-          to="/@{$workspaceSlug}/inventory"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">Product not found</p>
-        </div>
-      </div>
+      <PageContainer width="narrow">
+        <EmptyState
+          icon={PackageXIcon}
+          title="Product not found"
+          description="It may have been deleted, or the link is wrong."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/inventory"
+              params={{ workspaceSlug }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Back to inventory
+            </Link>
+          }
+        />
+      </PageContainer>
     );
   }
 
+  const canSave = !!currentProduct.name?.trim() && !saving;
+
+  // Cancel leaves without saving and returns to the product
+  const productLinkProps = {
+    to: "/@{$workspaceSlug}/inventory/$productId",
+    params: { workspaceSlug, productId },
+  } as const;
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <PageContainer width="narrow">
+      <PageHeader
+        back={<BackLink {...productLinkProps}>{product.name}</BackLink>}
+        title={`Edit ${product.name}`}
+        actions={
+          <div className="hidden md:flex md:flex-wrap md:gap-2">
+            <Link
+              {...productLinkProps}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Cancel
+            </Link>
+            <Button type="submit" form={PRODUCT_FORM_ID} disabled={!canSave}>
+              {saving ? "Saving" : "Save"}
+            </Button>
+          </div>
+        }
+      />
+
+      <ProductForm
+        product={currentProduct}
+        onProductChange={setCurrentProduct}
+        onSubmit={handleSave}
+      />
+
+      <MobileActionBar>
         <Link
-          to="/@{$workspaceSlug}/inventory"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
+          {...productLinkProps}
+          className={buttonVariants({
+            variant: "outline",
+            className: "flex-1",
+          })}
         >
-          &larr; Back to list
+          Cancel
         </Link>
-      </div>
-
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-6 font-semibold text-lg">Edit Product</h2>
-
-        <ProductForm
-          product={currentProduct}
-          onProductChange={setCurrentProduct}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saving={saving}
-        />
-      </div>
-    </div>
+        <Button
+          type="submit"
+          form={PRODUCT_FORM_ID}
+          disabled={!canSave}
+          className="flex-1"
+        >
+          {saving ? "Saving" : "Save"}
+        </Button>
+      </MobileActionBar>
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute(
   "/_app/@{$workspaceSlug}/inventory/$productId/edit",
 )({
+  staticData: { title: "Edit product" },
   component: EditProductPage,
 });

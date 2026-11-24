@@ -1,9 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Input } from "@/components/ui/input";
 import {
   useCompanyMembersByCompanyQuery,
   useCreateCompanyMemberMutation,
@@ -11,6 +9,7 @@ import {
   useUpdateCompanyMemberMutation,
 } from "@/generated/graphql";
 import ContactPicker from "./ContactPicker";
+import MembershipList from "./MembershipList";
 
 import type { CompanyMembersByCompanyQuery } from "@/generated/graphql";
 
@@ -60,8 +59,8 @@ const CompanyMembers = ({ companyId, organizationId }: CompanyMembersProps) => {
       setNewPersonId("");
       setNewTitle("");
       toast.success("Member added");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to add member");
+    } catch {
+      toast.error("Failed to add member");
     }
   };
 
@@ -71,10 +70,8 @@ const CompanyMembers = ({ companyId, organizationId }: CompanyMembersProps) => {
         input: { rowId, patch: { title: title || null } },
       });
       invalidate();
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to update member",
-      );
+    } catch {
+      toast.error("Failed to update member");
     }
   };
 
@@ -108,11 +105,9 @@ const CompanyMembers = ({ companyId, organizationId }: CompanyMembersProps) => {
         input: { rowId, patch: { isPrimary: !currentValue } },
       });
       invalidate();
-    } catch (err) {
+    } catch {
       queryClient.setQueryData(key, previous);
-      toast.error(
-        err instanceof Error ? err.message : "Failed to update member",
-      );
+      toast.error("Failed to update member");
     }
   };
 
@@ -121,91 +116,40 @@ const CompanyMembers = ({ companyId, organizationId }: CompanyMembersProps) => {
       await deleteMutation.mutateAsync({ input: { rowId } });
       invalidate();
       toast.success("Member removed");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to remove member",
-      );
+    } catch {
+      toast.error("Failed to remove member");
     }
   };
 
   return (
-    <div className="mt-4 rounded-lg border border-border bg-card p-6">
-      <h3 className="mb-4 font-medium text-sm">Members</h3>
-
-      {members.length > 0 && (
-        <div className="mb-4 space-y-2">
-          {members.map((member) => (
-            <div
-              key={member.rowId}
-              className="flex items-center gap-3 rounded-md border border-border px-3 py-2"
-            >
-              <span className="min-w-[140px] text-sm">
-                {member.person?.firstName} {member.person?.lastName}
-              </span>
-              <Input
-                placeholder="Title"
-                defaultValue={member.title ?? ""}
-                onBlur={(e) => {
-                  if (e.target.value !== (member.title ?? "")) {
-                    handleUpdateTitle(member.rowId, e.target.value);
-                  }
-                }}
-                className="h-9 max-w-[200px] text-sm"
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  handleTogglePrimary(member.rowId, member.isPrimary ?? false)
-                }
-                className={`p-1 ${member.isPrimary ? "text-amber-500" : "text-muted-foreground hover:text-foreground"}`}
-                aria-label={
-                  member.isPrimary ? "Remove primary" : "Set as primary"
-                }
-                title={member.isPrimary ? "Primary contact" : "Set as primary"}
-              >
-                <Star
-                  size={16}
-                  fill={member.isPrimary ? "currentColor" : "none"}
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRemove(member.rowId)}
-                className="p-1 text-destructive hover:text-destructive/90"
-                aria-label="Remove member"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-center gap-3">
-        <div className="min-w-[140px]">
-          <ContactPicker
-            value={newPersonId}
-            onValueChange={setNewPersonId}
-            organizationId={organizationId}
-          />
-        </div>
-        <Input
-          placeholder="Title"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          className="h-9 max-w-[200px] text-sm"
+    <MembershipList
+      heading="Members"
+      items={members.map((member) => ({
+        rowId: member.rowId,
+        name: [member.person?.firstName, member.person?.lastName]
+          .filter(Boolean)
+          .join(" "),
+        title: member.title ?? null,
+        isPrimary: member.isPrimary ?? false,
+      }))}
+      emptyLabel="No members yet"
+      primaryLabel="Primary contact"
+      removeDescription="The contact stays in People. Only their link to this company is removed."
+      picker={
+        <ContactPicker
+          value={newPersonId}
+          onValueChange={setNewPersonId}
+          organizationId={organizationId}
         />
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={!newPersonId}
-          className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Plus size={14} />
-          Add
-        </button>
-      </div>
-    </div>
+      }
+      canAdd={!!newPersonId && !createMutation.isPending}
+      newTitle={newTitle}
+      onNewTitleChange={setNewTitle}
+      onAdd={handleAdd}
+      onUpdateTitle={handleUpdateTitle}
+      onTogglePrimary={handleTogglePrimary}
+      onRemove={handleRemove}
+    />
   );
 };
 

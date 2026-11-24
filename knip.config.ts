@@ -28,7 +28,6 @@ const knipConfig: KnipConfig = {
     "dotenv",
     // UI libraries (some not yet used)
     "@internationalized/date",
-    "@tanstack/react-form",
     "jose",
     "ms",
     "ts-pattern",

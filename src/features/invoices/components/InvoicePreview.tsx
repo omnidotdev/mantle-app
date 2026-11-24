@@ -1,7 +1,12 @@
+import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
 import { useMemo, useState } from "react";
 
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   DEFAULT_ACCENT,
   getAccentVariants,
@@ -18,6 +23,7 @@ import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLog
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
+import cn, { formatStatus } from "@/lib/utils";
 
 import type {
   Invoice,
@@ -97,34 +103,50 @@ const InvoicePreview = ({
   const settledDate = paidInFullDate(String(total), recordedPayments);
 
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-3">
       {/* Toggle for Qty / Unit Price columns */}
-      <div className="flex items-center gap-2 print:hidden">
-        <Switch
-          id="show-details"
+      <div className="flex items-center gap-2.5 print:hidden">
+        <SwitchRoot
+          ids={{ hiddenInput: "show-details" }}
           checked={showDetails}
-          onCheckedChange={setShowDetails}
-        />
+          onCheckedChange={(details) => setShowDetails(details.checked)}
+        >
+          <SwitchControl>
+            <SwitchThumb />
+          </SwitchControl>
+          <SwitchHiddenInput />
+        </SwitchRoot>
         <Label htmlFor="show-details" className="text-muted-foreground text-sm">
-          Show Qty &amp; Unit Price
+          Show quantity and unit price
         </Label>
       </div>
 
-      <div className="rounded-lg border border-border bg-card shadow-sm print:min-h-screen print:border-0 print:shadow-none">
+      {/* Paper document: stays light on screen in dark mode, since it previews a printed page */}
+      <div className="overflow-hidden rounded-2xl border border-base-200 bg-white text-base-900 shadow-card dark:border-transparent print:min-h-screen print:overflow-visible print:rounded-none print:border-0 print:shadow-none">
         {/* Gradient header */}
         <div
-          className="rounded-t-lg p-6 text-white print:rounded-none"
+          className="p-4 text-white sm:p-6 print:rounded-none print:p-6"
           style={{
             background: `linear-gradient(to right, ${accent.gradientFrom}, ${accent.gradientTo})`,
           }}
         >
-          <div className="mb-2 flex justify-between">
-            <div className="flex items-start gap-3">
+          <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:justify-between print:flex-row print:justify-between">
+            <div className="flex min-w-0 items-start gap-3">
               <DocumentBannerLogo logo={logo} />
-              <div>
-                <h3 className="font-bold text-white text-xl">
-                  {orgProfile?.companyName || "Your Company"}
-                </h3>
+              <div className="min-w-0">
+                {orgProfile?.companyName ? (
+                  <h3 className="font-bold text-white text-xl">
+                    {orgProfile.companyName}
+                  </h3>
+                ) : (
+                  // Placeholder hint on screen only, so a print never shows fake data
+                  <p
+                    className="text-sm italic print:hidden"
+                    style={{ color: accent.subtleText }}
+                  >
+                    Add your business details in Settings
+                  </p>
+                )}
                 {orgProfile?.addressLine1 && (
                   <p className="text-sm" style={{ color: accent.subtleText }}>
                     {orgProfile.addressLine1}
@@ -146,10 +168,13 @@ const InvoicePreview = ({
                 )}
               </div>
             </div>
-            <div className="text-right">
-              <h1 className="font-bold text-4xl text-white">INVOICE</h1>
+            <div className="sm:text-right print:text-right">
+              {/* Not an h1: the page header owns the only h1 */}
+              <h2 className="font-bold text-3xl text-white sm:text-4xl print:text-4xl">
+                INVOICE
+              </h2>
               {paidInFull && (
-                <span className="mt-2 inline-block rounded-md bg-white px-3 py-1 font-bold text-green-700 text-sm uppercase tracking-wide">
+                <span className="mt-2 inline-block rounded-md bg-white px-3 py-1 font-bold text-sm text-success uppercase tracking-wide dark:bg-success dark:text-base-1000">
                   Paid
                 </span>
               )}
@@ -157,13 +182,13 @@ const InvoicePreview = ({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6 print:p-6">
           {/* Invoice details and client */}
-          <div className="mb-8 grid grid-cols-2 gap-8">
+          <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 print:grid-cols-2 print:gap-8">
             <div>
-              <h4 className="mb-2 font-bold text-foreground">Bill To:</h4>
+              <h4 className="mb-2 font-bold text-base-900">Bill To:</h4>
               {invoice.billTo ? (
-                <div className="text-foreground">
+                <div className="text-base-900">
                   {invoice.billTo.split("\n").map((line, i) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: static address lines, never reordered
                     <p key={`bill-${i}`}>{line}</p>
@@ -172,18 +197,16 @@ const InvoicePreview = ({
               ) : company ? (
                 <>
                   {contact && (
-                    <p className="text-foreground">
+                    <p className="text-base-900">
                       {contact.firstName} {contact.lastName}
                     </p>
                   )}
-                  <p className="text-foreground">{company.name}</p>
+                  <p className="text-base-900">{company.name}</p>
                   {company.email && (
-                    <p className="text-muted-foreground text-sm">
-                      {company.email}
-                    </p>
+                    <p className="text-base-600 text-sm">{company.email}</p>
                   )}
                   {company.addressLine1 && (
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-base-600 text-sm">
                       {[
                         company.addressLine1,
                         [
@@ -201,38 +224,42 @@ const InvoicePreview = ({
                   )}
                 </>
               ) : (
-                <p className="text-muted-foreground">Not specified</p>
+                <p className="text-base-500">Not specified</p>
               )}
             </div>
             <div>
               <div className="mb-1 flex justify-between">
-                <span className="font-bold text-foreground">Invoice ID:</span>
-                <span className="text-foreground">
-                  {invoice.invoiceNumber || "INV-0001"}
-                </span>
+                <span className="font-bold text-base-900">Invoice ID:</span>
+                {invoice.invoiceNumber ? (
+                  <span className="tabular text-base-900">
+                    {invoice.invoiceNumber}
+                  </span>
+                ) : (
+                  <span className="text-base-500 italic print:hidden">
+                    Not assigned yet
+                  </span>
+                )}
               </div>
               {invoice.issueDate && (
                 <div className="mb-1 flex justify-between">
-                  <span className="font-bold text-foreground">
-                    Invoice Date:
-                  </span>
-                  <span className="text-foreground">
+                  <span className="font-bold text-base-900">Invoice Date:</span>
+                  <span className="text-base-900">
                     {formatDate(invoice.issueDate)}
                   </span>
                 </div>
               )}
               {invoice.dueDate && (
                 <div className="mb-1 flex justify-between">
-                  <span className="font-bold text-foreground">Due Date:</span>
-                  <span className="text-foreground">
+                  <span className="font-bold text-base-900">Due Date:</span>
+                  <span className="text-base-900">
                     {formatDate(invoice.dueDate)}
                   </span>
                 </div>
               )}
               {paidInFull && settledDate && (
                 <div className="mb-1 flex justify-between">
-                  <span className="font-bold text-foreground">Paid Date:</span>
-                  <span className="text-foreground">
+                  <span className="font-bold text-base-900">Paid Date:</span>
+                  <span className="text-base-900">
                     {formatDate(settledDate)}
                   </span>
                 </div>
@@ -242,53 +269,64 @@ const InvoicePreview = ({
 
           {/* Line items table */}
           <div className="mb-8">
-            <table className="w-full">
-              <thead>
-                <tr
-                  className="text-white"
-                  style={{ backgroundColor: accent.base }}
-                >
-                  <th className="px-4 py-2 text-left">Item Description</th>
-                  {showDetails && (
-                    <>
-                      <th className="px-4 py-2 text-right">Qty</th>
-                      <th className="px-4 py-2 text-right">Unit Price</th>
-                    </>
-                  )}
-                  <th className="px-4 py-2 text-right">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lineItems.map(
-                  (item) =>
-                    item.description && (
-                      <tr key={item.id}>
-                        <td className="border-border border-b px-4 py-3 text-foreground">
-                          {item.description}
-                        </td>
-                        {showDetails && (
-                          <>
-                            <td className="border-border border-b px-4 py-3 text-right text-foreground">
-                              {item.quantity}
-                            </td>
-                            <td className="border-border border-b px-4 py-3 text-right text-foreground">
-                              {formatCurrency(item.unitPrice || "0", currency)}
-                            </td>
-                          </>
-                        )}
-                        <td className="border-border border-b px-4 py-3 text-right text-foreground">
-                          {formatCurrency(item.amount || "0", currency)}
-                        </td>
-                      </tr>
-                    ),
+            <div className="overflow-x-auto print:overflow-visible">
+              <table
+                className={cn(
+                  "w-full print:min-w-0",
+                  // Only force a sideways scroll on phones when qty and price columns are shown
+                  showDetails && "min-w-88",
                 )}
-              </tbody>
-            </table>
+              >
+                <thead>
+                  <tr
+                    className="text-white"
+                    style={{ backgroundColor: accent.base }}
+                  >
+                    <th className="px-4 py-2 text-left">Item Description</th>
+                    {showDetails && (
+                      <>
+                        <th className="px-4 py-2 text-right">Qty</th>
+                        <th className="px-4 py-2 text-right">Unit Price</th>
+                      </>
+                    )}
+                    <th className="px-4 py-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lineItems.map(
+                    (item) =>
+                      item.description && (
+                        <tr key={item.id}>
+                          <td className="border-base-200 border-b px-4 py-3 text-base-900">
+                            {item.description}
+                          </td>
+                          {showDetails && (
+                            <>
+                              <td className="border-base-200 border-b px-4 py-3 text-right text-base-900">
+                                {item.quantity}
+                              </td>
+                              <td className="border-base-200 border-b px-4 py-3 text-right text-base-900">
+                                {formatCurrency(
+                                  item.unitPrice || "0",
+                                  currency,
+                                )}
+                              </td>
+                            </>
+                          )}
+                          <td className="border-base-200 border-b px-4 py-3 text-right text-base-900">
+                            {formatCurrency(item.amount || "0", currency)}
+                          </td>
+                        </tr>
+                      ),
+                  )}
+                </tbody>
+              </table>
+            </div>
 
             {/* Totals */}
             <div className="mt-6 flex justify-end">
               <div
-                className="w-1/3 rounded p-3"
+                className="tabular w-full rounded p-3 sm:w-1/2 sm:min-w-64 2xl:w-1/3 print:w-1/3 print:min-w-0"
                 style={{
                   backgroundColor: accent.light,
                   color: accent.gradientFrom,
@@ -331,34 +369,39 @@ const InvoicePreview = ({
           {/* Payment schedule */}
           {hasPayments && (
             <div className="mb-8">
-              <h4 className="mb-2 font-bold text-foreground">Payments:</h4>
-              <table className="w-full">
-                <tbody>
-                  {payments.map((payment) => (
-                    <tr key={payment.id}>
-                      <td className="border-border border-b px-4 py-2 text-foreground text-sm">
-                        {payment.paidAt ? formatDate(payment.paidAt) : ""}
-                      </td>
-                      <td className="border-border border-b px-4 py-2 text-muted-foreground text-sm">
-                        {[payment.method, payment.reference]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </td>
-                      <td className="border-border border-b px-4 py-2 text-right text-foreground text-sm">
-                        {formatCurrency(payment.amount || "0", currency)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <h4 className="mb-2 font-bold text-base-900">Payments:</h4>
+              <div className="overflow-x-auto print:overflow-visible">
+                <table className="w-full">
+                  <tbody>
+                    {payments.map((payment) => (
+                      <tr key={payment.id}>
+                        <td className="border-base-200 border-b px-4 py-2 text-base-900 text-sm">
+                          {payment.paidAt ? formatDate(payment.paidAt) : ""}
+                        </td>
+                        <td className="border-base-200 border-b px-4 py-2 text-base-600 text-sm">
+                          {[
+                            payment.method && formatStatus(payment.method),
+                            payment.reference,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </td>
+                        <td className="border-base-200 border-b px-4 py-2 text-right text-base-900 text-sm">
+                          {formatCurrency(payment.amount || "0", currency)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
           {/* Notes */}
           {invoice.notes && (
             <div>
-              <h4 className="mb-2 font-bold text-foreground">Notes:</h4>
-              <div className="text-foreground">
+              <h4 className="mb-2 font-bold text-base-900">Notes:</h4>
+              <div className="text-base-900">
                 {invoice.notes.split("\n").map((line, i) => (
                   // biome-ignore lint/suspicious/noArrayIndexKey: static note lines, never reordered
                   <p key={`note-${i}`}>{line}</p>

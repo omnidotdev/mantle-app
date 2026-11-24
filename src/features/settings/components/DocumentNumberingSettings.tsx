@@ -1,21 +1,13 @@
-import {
-  TabsContent,
-  TabsList,
-  TabsRoot,
-  TabsTrigger,
-} from "@omnidotdev/thornberry/tabs";
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import { OptionsSelect } from "@omnidotdev/thornberry/select";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import SectionCard from "@/components/core/SectionCard";
+import { Button } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { formatPreview } from "@/features/settings/types/documentNumbering";
 import {
   useCreateDocumentNumberingConfigMutation,
@@ -60,10 +52,13 @@ const defaultConfig: Record<DocumentType, FormState> = {
   },
 };
 
+// The select can't hold an empty value, so "no separator" uses a sentinel
+const NO_SEPARATOR = "none";
+
 const separatorOptions = [
   { label: "Dash (-)", value: "-" },
   { label: "Slash (/)", value: "/" },
-  { label: "None", value: "" },
+  { label: "None", value: NO_SEPARATOR },
 ];
 
 const dateFormatOptions = [
@@ -73,37 +68,21 @@ const dateFormatOptions = [
   { label: "YYYYMM", value: "YYYYMM" },
 ];
 
-const strategyLabels: Record<IdStrategy, string> = {
-  sequential: "Sequential",
-  random: "Random",
-  timestamp: "Timestamp",
-};
+const strategyOptions: { value: IdStrategy; label: string }[] = [
+  { value: "sequential", label: "Sequential" },
+  { value: "random", label: "Random" },
+  { value: "timestamp", label: "Timestamp" },
+];
 
-const StrategyToggle = ({
-  value,
-  onChange,
-}: {
-  value: IdStrategy;
-  onChange: (v: IdStrategy) => void;
-}) => (
-  <div className="inline-flex rounded-lg border border-border bg-muted p-1">
-    {(Object.keys(strategyLabels) as IdStrategy[]).map((strategy) => (
-      <button
-        key={strategy}
-        type="button"
-        onClick={() => onChange(strategy)}
-        aria-pressed={value === strategy}
-        className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-          value === strategy
-            ? "bg-card text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        {strategyLabels[strategy]}
-      </button>
-    ))}
-  </div>
-);
+const documentTypeOptions: { value: DocumentType; label: string }[] = [
+  { value: "quote", label: "Quotes" },
+  { value: "invoice", label: "Invoices" },
+];
+
+const documentTypeNames: Record<DocumentType, string> = {
+  quote: "Quote",
+  invoice: "Invoice",
+};
 
 const DocumentNumberingForm = ({
   organizationId,
@@ -126,7 +105,6 @@ const DocumentNumberingForm = ({
   const queryClient = useQueryClient();
 
   const [form, setForm] = useState<FormState>(defaultConfig[documentType]);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (existingConfig) {
@@ -154,7 +132,6 @@ const DocumentNumberingForm = ({
     value: FormState[K],
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    setSaved(false);
   };
 
   const handleSave = async () => {
@@ -168,29 +145,33 @@ const DocumentNumberingForm = ({
       randomLength: form.randomLength,
     };
 
-    if (existingConfig?.rowId) {
-      await updateMutation.mutateAsync({
-        input: {
-          rowId: existingConfig.rowId,
-          patch,
-        },
-      });
-    } else {
-      await createMutation.mutateAsync({
-        input: {
-          documentNumberingConfig: {
-            organizationId,
-            documentType,
-            ...patch,
+    try {
+      if (existingConfig?.rowId) {
+        await updateMutation.mutateAsync({
+          input: {
+            rowId: existingConfig.rowId,
+            patch,
           },
-        },
-      });
-    }
+        });
+      } else {
+        await createMutation.mutateAsync({
+          input: {
+            documentNumberingConfig: {
+              organizationId,
+              documentType,
+              ...patch,
+            },
+          },
+        });
+      }
 
-    await queryClient.invalidateQueries({
-      queryKey: ["DocumentNumberingConfigs"],
-    });
-    setSaved(true);
+      await queryClient.invalidateQueries({
+        queryKey: ["DocumentNumberingConfigs"],
+      });
+      toast.success(`${documentTypeNames[documentType]} numbering saved`);
+    } catch {
+      toast.error("Could not save numbering. Please try again.");
+    }
   };
 
   const preview = formatPreview(form as DocumentNumberingPreview);
@@ -201,7 +182,7 @@ const DocumentNumberingForm = ({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-global-prefix`}>
-            Company Prefix
+            Company prefix
           </Label>
           <Input
             id={`${documentType}-global-prefix`}
@@ -223,62 +204,47 @@ const DocumentNumberingForm = ({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-separator`}>Separator</Label>
-          <Select
-            items={separatorOptions}
-            value={form.separator}
-            onValueChange={(v) => handleChange("separator", v)}
-            itemToString={(item) => item.label}
-            itemToValue={(item) => item.value}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select separator" />
-            </SelectTrigger>
-            <SelectContent>
-              {separatorOptions.map((opt) => (
-                <SelectItem key={opt.value || "none"} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <OptionsSelect
+            id={`${documentType}-separator`}
+            value={form.separator || NO_SEPARATOR}
+            options={separatorOptions}
+            onValueChange={(v) =>
+              handleChange("separator", v === NO_SEPARATOR ? "" : v)
+            }
+            placeholder="Select separator"
+          />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor={`${documentType}-date-format`}>Date Segment</Label>
-          <Select
-            items={dateFormatOptions}
+          <Label htmlFor={`${documentType}-date-format`}>Date segment</Label>
+          <OptionsSelect
+            id={`${documentType}-date-format`}
             value={form.dateFormat ?? "none"}
+            options={dateFormatOptions}
             onValueChange={(v) =>
               handleChange("dateFormat", v === "none" ? null : v)
             }
-            itemToString={(item) => item.label}
-            itemToValue={(item) => item.value}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select date format" />
-            </SelectTrigger>
-            <SelectContent>
-              {dateFormatOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Select date format"
+          />
         </div>
 
-        <div className="space-y-1.5">
-          <Label>ID Strategy</Label>
-          <StrategyToggle
+        <div className="space-y-1.5 sm:col-span-2">
+          <span className="block font-medium text-sm leading-none">
+            ID strategy
+          </span>
+          <SegmentedControl
+            label="ID strategy"
+            options={strategyOptions}
             value={form.idStrategy}
-            onChange={(v) => handleChange("idStrategy", v)}
+            onValueChange={(v) => handleChange("idStrategy", v)}
+            className="w-fit"
           />
         </div>
 
         {form.idStrategy === "sequential" && (
           <div className="space-y-1.5">
             <Label htmlFor={`${documentType}-padding`}>
-              Sequential Padding
+              Sequential padding
             </Label>
             <Input
               id={`${documentType}-padding`}
@@ -296,7 +262,7 @@ const DocumentNumberingForm = ({
         {form.idStrategy === "random" && (
           <div className="space-y-1.5">
             <Label htmlFor={`${documentType}-random-length`}>
-              Random Length
+              Random length
             </Label>
             <Input
               id={`${documentType}-random-length`}
@@ -313,7 +279,9 @@ const DocumentNumberingForm = ({
 
         {form.idStrategy === "timestamp" && (
           <div className="space-y-1.5">
-            <Label>Timestamp</Label>
+            <span className="block font-medium text-sm leading-none">
+              Timestamp
+            </span>
             <p className="text-muted-foreground text-sm">
               Uses the date and time each number is generated, e.g. 20260203
               {form.separator}115447.
@@ -324,27 +292,25 @@ const DocumentNumberingForm = ({
 
       {/* Live preview */}
       <div className="space-y-1.5">
-        <Label>Preview</Label>
-        <div className="rounded-md border border-border bg-muted/50 px-4 py-3">
-          <code className="font-mono text-sm">{preview}</code>
-        </div>
+        <span className="block font-medium text-sm leading-none">Preview</span>
+        <output
+          aria-live="polite"
+          className="block rounded-lg bg-muted px-4 py-3"
+        >
+          <code className="break-all font-mono text-sm">{preview}</code>
+        </output>
       </div>
 
-      {/* Save */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
+      <div className="flex justify-end border-border border-t pt-4">
+        <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="rounded-md bg-primary px-4 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="max-sm:w-full"
         >
-          {isSaving ? "Saving..." : "Save"}
-        </button>
-        {saved && (
-          <span className="text-emerald-600 text-sm dark:text-emerald-400">
-            Saved successfully
-          </span>
-        )}
+          {isSaving
+            ? "Saving"
+            : `Save ${documentTypeNames[documentType].toLowerCase()} numbering`}
+        </Button>
       </div>
     </div>
   );
@@ -357,44 +323,42 @@ const DocumentNumberingSettings = ({
 }) => {
   const { data } = useDocumentNumberingConfigsQuery({ organizationId });
 
+  const [documentType, setDocumentType] = useState<DocumentType>("quote");
+
   const configs = data?.documentNumberingConfigs?.nodes ?? [];
   const quoteConfig = configs.find((c) => c?.documentType === "quote");
   const invoiceConfig = configs.find((c) => c?.documentType === "invoice");
 
   return (
-    <div className="mt-6 space-y-6 rounded-lg border border-border bg-card p-6">
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">
-          Document Numbering
-        </h3>
-        <p className="text-muted-foreground text-sm">
-          Configure the numbering format for quotes and invoices
-        </p>
+    <SectionCard title="Document numbering">
+      <p className="text-muted-foreground text-sm">
+        Choose how new quote and invoice numbers are built.
+      </p>
+
+      <SegmentedControl
+        label="Document type"
+        options={documentTypeOptions}
+        value={documentType}
+        onValueChange={setDocumentType}
+        className="mt-4 mb-5 w-fit"
+      />
+
+      {/* Both forms stay mounted so unsaved edits survive switching */}
+      <div hidden={documentType !== "quote"}>
+        <DocumentNumberingForm
+          organizationId={organizationId}
+          documentType="quote"
+          existingConfig={quoteConfig}
+        />
       </div>
-
-      <TabsRoot defaultValue="quote">
-        <TabsList>
-          <TabsTrigger value="quote">Quotes</TabsTrigger>
-          <TabsTrigger value="invoice">Invoices</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="quote">
-          <DocumentNumberingForm
-            organizationId={organizationId}
-            documentType="quote"
-            existingConfig={quoteConfig}
-          />
-        </TabsContent>
-
-        <TabsContent value="invoice">
-          <DocumentNumberingForm
-            organizationId={organizationId}
-            documentType="invoice"
-            existingConfig={invoiceConfig}
-          />
-        </TabsContent>
-      </TabsRoot>
-    </div>
+      <div hidden={documentType !== "invoice"}>
+        <DocumentNumberingForm
+          organizationId={organizationId}
+          documentType="invoice"
+          existingConfig={invoiceConfig}
+        />
+      </div>
+    </SectionCard>
   );
 };
 
