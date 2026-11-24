@@ -72,6 +72,10 @@ export type CompanyPatch = {
   website?: string | null | undefined;
 };
 
+export type ConvertQuoteToInvoiceInput = {
+  quoteId: string;
+};
+
 /** All input for the create `Company` mutation. */
 export type CreateCompanyInput = {
   /**
@@ -1026,6 +1030,13 @@ export type DeleteQuoteLineItemMutationVariables = Exact<{
 
 export type DeleteQuoteLineItemMutation = { deleteQuoteLineItem: { deletedQuoteLineItemId: string | null } | null };
 
+export type ConvertQuoteToInvoiceMutationVariables = Exact<{
+  input: ConvertQuoteToInvoiceInput;
+}>;
+
+
+export type ConvertQuoteToInvoiceMutation = { convertQuoteToInvoice: { invoiceId: string, invoiceNumber: string, skippedLineItems: Array<{ rowId: string, description: string, pricingType: string }> } | null };
+
 export type WorkspaceProfileFieldsFragment = { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null };
 
 export type WorkspaceProfileQueryVariables = Exact<{
@@ -1640,6 +1651,19 @@ export const DeleteQuoteLineItemDocument = gql`
   }
 }
     `;
+export const ConvertQuoteToInvoiceDocument = gql`
+    mutation ConvertQuoteToInvoice($input: ConvertQuoteToInvoiceInput!) {
+  convertQuoteToInvoice(input: $input) {
+    invoiceId
+    invoiceNumber
+    skippedLineItems {
+      rowId
+      description
+      pricingType
+    }
+  }
+}
+    `;
 export const WorkspaceProfileDocument = gql`
     query WorkspaceProfile($organizationId: String!) {
   organizationSettings(condition: {organizationId: $organizationId}, first: 1) {
@@ -1807,6 +1831,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteQuoteLineItem(variables: DeleteQuoteLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteQuoteLineItemMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteQuoteLineItemMutation>({ document: DeleteQuoteLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteQuoteLineItem', 'mutation', variables);
+    },
+    ConvertQuoteToInvoice(variables: ConvertQuoteToInvoiceMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ConvertQuoteToInvoiceMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ConvertQuoteToInvoiceMutation>({ document: ConvertQuoteToInvoiceDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ConvertQuoteToInvoice', 'mutation', variables);
     },
     WorkspaceProfile(variables: WorkspaceProfileQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<WorkspaceProfileQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<WorkspaceProfileQuery>({ document: WorkspaceProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'WorkspaceProfile', 'query', variables);

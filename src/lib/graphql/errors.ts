@@ -20,6 +20,17 @@ export const planLimitMessage = (err: unknown): string | null =>
     ? (firstGraphqlError(err)?.message ?? null)
     : null;
 
+/**
+ * The invoice a quote was already turned into, when a conversion was refused
+ * because the quote has one (e.g. converted from another tab), else null
+ */
+export const alreadyConvertedInvoiceId = (err: unknown): string | null => {
+  if (graphqlErrorCode(err) !== "QUOTE_ALREADY_CONVERTED") return null;
+  const invoiceId = firstGraphqlError(err)?.extensions?.invoiceId;
+
+  return typeof invoiceId === "string" ? invoiceId : null;
+};
+
 /** Toast-ready message for a workspace profile save the API refused */
 export const profileSaveErrorMessage = (err: unknown): string =>
   graphqlErrorCode(err) === "FORBIDDEN"

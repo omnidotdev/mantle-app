@@ -103,3 +103,15 @@ mutation DeleteQuoteLineItem($input: DeleteQuoteLineItemInput!) {
     deletedQuoteLineItemId
   }
 }
+
+mutation ConvertQuoteToInvoice($input: ConvertQuoteToInvoiceInput!) {
+  convertQuoteToInvoice(input: $input) {
+    invoiceId
+    invoiceNumber
+    skippedLineItems {
+      rowId
+      description
+      pricingType
+    }
+  }
+}
