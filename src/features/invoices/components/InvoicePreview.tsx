@@ -1,7 +1,12 @@
+import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
 import { useMemo, useState } from "react";
 
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   DEFAULT_ACCENT,
   getAccentVariants,
@@ -101,11 +106,16 @@ const InvoicePreview = ({
     <div className="min-w-0 space-y-3">
       {/* Toggle for Qty / Unit Price columns */}
       <div className="flex items-center gap-2.5 print:hidden">
-        <Switch
-          id="show-details"
+        <SwitchRoot
+          ids={{ hiddenInput: "show-details" }}
           checked={showDetails}
-          onCheckedChange={setShowDetails}
-        />
+          onCheckedChange={(details) => setShowDetails(details.checked)}
+        >
+          <SwitchControl>
+            <SwitchThumb />
+          </SwitchControl>
+          <SwitchHiddenInput />
+        </SwitchRoot>
         <Label htmlFor="show-details" className="text-muted-foreground text-sm">
           Show quantity and unit price
         </Label>

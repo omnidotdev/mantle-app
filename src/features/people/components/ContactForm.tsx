@@ -1,9 +1,15 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
+import { Textarea } from "@omnidotdev/thornberry/textarea";
+
 import SectionCard from "@/components/core/SectionCard";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import EmailList from "./EmailList";
 import TagList from "./TagList";
 
@@ -61,11 +67,18 @@ const ContactForm = ({ person, onPersonChange }: ContactFormProps) => {
 
           <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-2 sm:self-end">
             <Label htmlFor="contact-internal">Internal team member</Label>
-            <Switch
-              id="contact-internal"
+            <SwitchRoot
+              ids={{ hiddenInput: "contact-internal" }}
               checked={person.internal ?? false}
-              onCheckedChange={(checked) => handleChange("internal", checked)}
-            />
+              onCheckedChange={(details) =>
+                handleChange("internal", details.checked)
+              }
+            >
+              <SwitchControl>
+                <SwitchThumb />
+              </SwitchControl>
+              <SwitchHiddenInput />
+            </SwitchRoot>
           </div>
         </div>
       </SectionCard>

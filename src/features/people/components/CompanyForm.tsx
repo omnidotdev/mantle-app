@@ -1,8 +1,9 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import { Textarea } from "@omnidotdev/thornberry/textarea";
+
 import SectionCard from "@/components/core/SectionCard";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Textarea } from "@/components/ui/textarea";
 import { resolveRegion } from "@/lib/phone";
 
 import type { Company } from "@/features/people/types";

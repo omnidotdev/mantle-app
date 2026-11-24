@@ -1,10 +1,10 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import { Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import SectionCard from "@/components/core/SectionCard";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
-import { Input } from "@/components/ui/input";
 import cn from "@/lib/utils";
 
 import type { ReactNode } from "react";

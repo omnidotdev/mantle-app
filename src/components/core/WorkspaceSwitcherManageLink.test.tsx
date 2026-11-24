@@ -22,7 +22,7 @@ mock.module("@tanstack/react-router", () => ({
 }));
 
 mock.module("@/components/ui/sidebar", () => ({
-  useSidebar: () => ({ closeMobileSidebar: () => {} }),
+  useSidebar: () => ({ isMobile: false, setOpenMobile: () => {} }),
 }));
 
 mock.module("@/providers/WorkspaceProvider", () => ({

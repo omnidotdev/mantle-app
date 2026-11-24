@@ -1,7 +1,7 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import { X } from "lucide-react";
 import { useState } from "react";
 
-import { Input } from "@/components/ui/input";
 import { getTagChipClass } from "@/features/people/tagPalette";
 import { COMMON_TAGS } from "@/features/people/types";
 import cn from "@/lib/utils";

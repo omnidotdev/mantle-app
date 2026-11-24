@@ -1,3 +1,5 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { SettingsIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -8,8 +10,6 @@ import PageContainer from "@/components/core/PageContainer";
 import PageHeader from "@/components/core/PageHeader";
 import SectionCard from "@/components/core/SectionCard";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
