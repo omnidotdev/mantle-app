@@ -1,6 +1,7 @@
 import { parse } from "graphql";
 import { GraphQLClient, gql } from "graphql-request";
 
+import { isDemoActive } from "@/features/demo/config";
 import { API_GRAPHQL_URL } from "@/lib/config/env.config";
 import { fetchSession } from "@/server/functions/auth";
 
@@ -20,7 +21,10 @@ type FetchOptions = {
  * Fetches a fresh access token from better-auth via server function for each request,
  * ensuring tokens are never stale after idle periods. Requests act only as the
  * signed-in user: the API's service key (which bypasses workspace scoping) is
- * never attached, so every read and write is limited to the user's workspaces
+ * never attached, so every read and write is limited to the user's workspaces.
+ *
+ * In the public demo every operation is answered in the browser from sample
+ * data instead, so no request reaches the API or the auth server
  */
 export const graphqlFetch =
   <TData, TVariables>(
@@ -29,6 +33,15 @@ export const graphqlFetch =
     options?: (HeadersInit & FetchOptions) | FetchOptions,
   ) =>
   async (): Promise<TData> => {
+    if (isDemoActive()) {
+      const { resolveDemoOperation } = await import("@/features/demo/resolve");
+
+      return resolveDemoOperation<TData>(
+        query,
+        variables as Record<string, unknown> | undefined,
+      );
+    }
+
     const { session } = await fetchSession();
     const accessToken = session?.accessToken;
 

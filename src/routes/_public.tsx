@@ -15,6 +15,7 @@ import { FaLinkedin as LinkedInIcon } from "react-icons/fa6";
 
 import MantleLogo from "@/components/core/MantleLogo";
 import { Button } from "@/components/ui/button";
+import { DEMO_PATH } from "@/features/demo/config";
 import signIn from "@/lib/auth/signIn";
 import signOut from "@/lib/auth/signOut";
 import appConfig from "@/lib/config/app.config";
@@ -89,6 +90,12 @@ function PublicLayout() {
             className="ml-auto hidden items-center gap-2 md:flex"
           >
             <a
+              href={DEMO_PATH}
+              className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Demo
+            </a>
+            <a
               href={appConfig.links.docs}
               target="_blank"
               rel="noopener noreferrer"
@@ -143,6 +150,12 @@ function PublicLayout() {
           className="px-4 pb-3 md:hidden"
         >
           <div className="space-y-1 rounded-2xl bg-card p-2 shadow-card dark:border dark:border-border/60 dark:shadow-none">
+            <a
+              href={DEMO_PATH}
+              className="flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Demo
+            </a>
             <a
               href={appConfig.links.docs}
               target="_blank"

@@ -8,6 +8,7 @@ import { ACCOUNT_URL } from "@/lib/config/env.config";
 import type { WorkspaceSwitcherProps } from "@omnidotdev/thornberry/workspace-switcher";
 
 let switcherProps: WorkspaceSwitcherProps | undefined;
+let publicHref = "/@ada";
 
 // capture the props the real switcher would receive; defined at module level so React sees a stable component
 const FakeWorkspaceSwitcher = (props: WorkspaceSwitcherProps) => {
@@ -22,6 +23,11 @@ mock.module("@omnidotdev/thornberry/workspace-switcher", () => ({
 mock.module("@tanstack/react-router", () => ({
   useNavigate: () => () => {},
   useRouteContext: () => ({ organizationId: "w1" }),
+  useLocation: ({
+    select,
+  }: {
+    select: (location: { publicHref: string }) => unknown;
+  }) => select({ publicHref }),
 }));
 
 mock.module("@/components/ui/sidebar", () => ({
@@ -42,5 +48,13 @@ describe("WorkspaceSwitcher manage link", () => {
 
     expect(switcherProps?.manageUrl).toBe(workspacesUrl(ACCOUNT_URL));
     expect(switcherProps?.manageUrl ?? "").not.toContain("identity.");
+  });
+
+  test("has no manage link in the demo, whose workspace is sample data", () => {
+    publicHref = "/demo/quotes";
+    renderToStaticMarkup(<WorkspaceSwitcher />);
+    publicHref = "/@ada";
+
+    expect(switcherProps?.manageUrl).toBeUndefined();
   });
 });

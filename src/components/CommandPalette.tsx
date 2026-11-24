@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import useIsDemo from "@/features/demo/useIsDemo";
 import { useTheme } from "@/providers/ThemeProvider";
 
 import type { CommandAction } from "@omnidotdev/thornberry/command-palette";
@@ -37,6 +38,8 @@ const CommandPalette = () => {
   // is inside a workspace. Its presence gates (and supplies the param for) the
   // workspace navigation commands
   const { workspaceSlug } = useParams({ strict: false });
+  // The demo workspace has no settings page
+  const isDemo = useIsDemo();
 
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
@@ -110,17 +113,21 @@ const CommandPalette = () => {
                 params: { workspaceSlug },
               }),
           },
-          {
-            id: "settings",
-            label: "Settings",
-            group: "Navigation",
-            icon: Settings,
-            onSelect: () =>
-              navigate({
-                to: "/@{$workspaceSlug}/settings",
-                params: { workspaceSlug },
-              }),
-          },
+          ...(isDemo
+            ? []
+            : [
+                {
+                  id: "settings",
+                  label: "Settings",
+                  group: "Navigation",
+                  icon: Settings,
+                  onSelect: () =>
+                    navigate({
+                      to: "/@{$workspaceSlug}/settings",
+                      params: { workspaceSlug },
+                    }),
+                },
+              ]),
         ] satisfies CommandAction[])
       : []),
     {

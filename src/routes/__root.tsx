@@ -11,6 +11,8 @@ import { createServerFn } from "@tanstack/react-start";
 import CommandPalette from "@/components/CommandPalette";
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import NotFound from "@/components/NotFound";
+import { isDemoActive, isDemoHref } from "@/features/demo/config";
+import { demoSession } from "@/features/demo/session";
 import app from "@/lib/config/app.config";
 import { publicEnvScript } from "@/lib/config/publicEnv";
 import createMetaTags from "@/lib/util/createMetaTags";
@@ -25,6 +27,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import type { Session } from "better-auth/types";
 import type { ReactNode } from "react";
+import type { Theme } from "@/server/functions/theme";
 
 interface ExtendedUser {
   id: string;
@@ -49,12 +52,32 @@ const fetchSessionAndTheme = createServerFn({
   return { session, theme };
 });
 
+/**
+ * The demo's theme without a server round trip on the client: keep the one
+ * the page already shows (the server render set it from the theme cookie)
+ */
+const getDemoTheme = async (): Promise<Theme> =>
+  typeof document === "undefined"
+    ? getTheme()
+    : document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light";
+
+// Keep the OAuth access token fresh, except in the demo, which has none
+const refreshSession = () => (isDemoActive() ? undefined : fetchSession());
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   session: ExtendedSession | null;
   theme: string;
 }>()({
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
+    // The public demo runs on a sample session and never asks the auth server
+    // who the visitor is
+    if (isDemoHref(location.publicHref)) {
+      return { session: demoSession, theme: await getDemoTheme() };
+    }
+
     const { session, theme } = await fetchSessionAndTheme();
 
     return { session, theme };
@@ -122,7 +145,7 @@ function ErrorComponent(props: ErrorComponentProps) {
 
 function RootComponent() {
   // Keep the OAuth access token fresh while the user is idle
-  useSessionRefresh(fetchSession);
+  useSessionRefresh(refreshSession);
 
   const { theme } = useRouteContext({ from: "__root__" });
 

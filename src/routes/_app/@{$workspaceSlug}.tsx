@@ -7,6 +7,9 @@ import AppTopBar from "@/components/core/AppTopBar";
 import ErrorBoundary from "@/components/core/ErrorBoundary";
 import MobileTabBar from "@/components/core/MobileTabBar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import DemoBanner from "@/features/demo/components/DemoBanner";
+import { isDemoHref } from "@/features/demo/config";
+import useIsDemo from "@/features/demo/useIsDemo";
 import WorkspaceProvider from "@/providers/WorkspaceProvider";
 import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
@@ -16,9 +19,17 @@ import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
  * slug is resolved to an organization here and injected as `organizationId` for
  * every nested route. The last-visited slug is persisted only as a landing hint
  * for `/`, the URL stays authoritative.
+ *
+ * The public demo (`/demo/...`) is this same layout on the sample workspace.
+ * It renders in the browser only, where its sample data lives
  */
 export const Route = createFileRoute("/_app/@{$workspaceSlug}")({
-  beforeLoad: async ({ context: { session }, params: { workspaceSlug } }) => {
+  ssr: ({ location }) => (isDemoHref(location.publicHref) ? false : undefined),
+  beforeLoad: async ({
+    context: { session },
+    location,
+    params: { workspaceSlug },
+  }) => {
     const organizations = session?.organizations ?? [];
     const active = organizations.find((org) => org.slug === workspaceSlug);
 
@@ -37,8 +48,11 @@ export const Route = createFileRoute("/_app/@{$workspaceSlug}")({
       throw redirect({ to: "/" });
     }
 
-    // Remember where the user last was, so `/` can return them here
-    await setLastOrgCookie({ data: active.slug });
+    // Remember where the user last was, so `/` can return them here (the demo
+    // is not somewhere to return to)
+    if (!isDemoHref(location.publicHref)) {
+      await setLastOrgCookie({ data: active.slug });
+    }
 
     return { organizationId: active.id, workspaceSlug: active.slug };
   },
@@ -47,6 +61,7 @@ export const Route = createFileRoute("/_app/@{$workspaceSlug}")({
 
 function WorkspaceLayout() {
   const { session } = Route.useRouteContext();
+  const isDemo = useIsDemo();
 
   const organizations = useMemo(
     () => session?.organizations ?? [],
@@ -59,6 +74,7 @@ function WorkspaceLayout() {
         <div className="flex min-h-dvh w-full">
           <AppSidebar className="print:hidden" />
           <SidebarInset>
+            {isDemo && <DemoBanner />}
             <AppTopBar />
             <ErrorBoundary>
               <Outlet />
