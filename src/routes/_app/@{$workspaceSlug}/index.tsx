@@ -386,7 +386,7 @@ const DashboardPage = () => {
 
       <div className="mt-4 grid gap-4 lg:mt-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         {!isNewWorkspace && (
-          <div className="grid content-start gap-4">
+          <div className="grid min-w-0 content-start gap-4">
             <SectionCard
               title="Invoiced per month"
               action={
@@ -418,12 +418,12 @@ const DashboardPage = () => {
         {/* Below lg this column dissolves into the page grid so "Needs attention" leads on phones */}
         <div
           className={cn(
-            "grid content-start gap-4 max-lg:contents",
+            "grid min-w-0 content-start gap-4 max-lg:contents",
             isNewWorkspace && "lg:col-span-2",
           )}
         >
           {!isLoadingCore && !productsLoading && (
-            <div className="empty:hidden max-lg:order-first">
+            <div className="min-w-0 empty:hidden max-lg:order-first">
               <AttentionCard
                 workspaceSlug={workspaceSlug}
                 overdue={overdue.map((item) => ({
