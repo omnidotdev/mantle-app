@@ -95,7 +95,7 @@ export const Route = createRootRouteWithContext<{
       { name: "apple-mobile-web-app-title", content: app.name },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "msapplication-TileColor", content: "#f4efe9" },
-      ...createMetaTags(),
+      ...createMetaTags({ keywords: app.keywords }),
     ],
     links: [
       { rel: "stylesheet", href: appStyles },

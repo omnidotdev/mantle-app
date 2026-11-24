@@ -8,7 +8,10 @@ const app = {
   icon: "🌋",
   /** App description (used in SEO meta tags) */
   description:
-    "People, invoices, quotes, and inventory in one open-source workspace for running a small business.",
+    "Open-source relationship management (CRM), quote to cash, invoicing, and inventory for small businesses, in one workspace you can self-host.",
+  /** Search keywords (used in SEO meta tags) */
+  keywords:
+    "crm, relationship management, quote to cash, invoicing, billing, quotes, contracts, inventory management, small business, back office, business operations, open source, self-hosted",
   /** App tagline */
   tagline: "Forged under pressure",
   /** Production URL */
