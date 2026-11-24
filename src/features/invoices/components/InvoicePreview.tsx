@@ -7,6 +7,7 @@ import {
 } from "@omnidotdev/thornberry/switch";
 import { useMemo, useState } from "react";
 
+import InvoicePaymentLink from "@/features/invoices/components/InvoicePaymentLink";
 import {
   DEFAULT_ACCENT,
   getAccentVariants,
@@ -392,6 +393,14 @@ const InvoicePreview = ({
                 </table>
               </div>
             </div>
+          )}
+
+          {/* Payment link, while there is something left to pay */}
+          {!paidInFull && (
+            <InvoicePaymentLink
+              url={invoice.paymentLinkUrl}
+              accentColor={accent.base}
+            />
           )}
 
           {/* Notes */}

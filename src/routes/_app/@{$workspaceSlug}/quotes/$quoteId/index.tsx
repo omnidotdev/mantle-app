@@ -218,7 +218,7 @@ const QuotePreviewPage = () => {
         variant="outline"
         className={className}
         disabled={converting}
-        onClick={() => convert(quote, orderedLineItems)}
+        onClick={() => convert(quote)}
       >
         <ReceiptIcon />
         {converting ? "Creating..." : "Create invoice"}

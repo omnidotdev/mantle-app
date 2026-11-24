@@ -72,6 +72,10 @@ export type CompanyPatch = {
   website?: string | null | undefined;
 };
 
+export type ConvertQuoteToInvoiceInput = {
+  quoteId: string;
+};
+
 /** All input for the create `Company` mutation. */
 export type CreateCompanyInput = {
   /**
@@ -1025,6 +1029,13 @@ export type DeleteQuoteLineItemMutationVariables = Exact<{
 
 
 export type DeleteQuoteLineItemMutation = { deleteQuoteLineItem: { deletedQuoteLineItemId: string | null } | null };
+
+export type ConvertQuoteToInvoiceMutationVariables = Exact<{
+  input: ConvertQuoteToInvoiceInput;
+}>;
+
+
+export type ConvertQuoteToInvoiceMutation = { convertQuoteToInvoice: { invoiceId: string, invoiceNumber: string, skippedLineItems: Array<{ rowId: string, description: string, pricingType: string }> } | null };
 
 export type WorkspaceProfileFieldsFragment = { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null };
 
@@ -3048,6 +3059,38 @@ useDeleteQuoteLineItemMutation.getKey = () => ['DeleteQuoteLineItem'];
 
 
 useDeleteQuoteLineItemMutation.fetcher = (variables: DeleteQuoteLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteQuoteLineItemMutation, DeleteQuoteLineItemMutationVariables>(DeleteQuoteLineItemDocument, variables, options);
+
+export const ConvertQuoteToInvoiceDocument = new TypedDocumentString(`
+    mutation ConvertQuoteToInvoice($input: ConvertQuoteToInvoiceInput!) {
+  convertQuoteToInvoice(input: $input) {
+    invoiceId
+    invoiceNumber
+    skippedLineItems {
+      rowId
+      description
+      pricingType
+    }
+  }
+}
+    `);
+
+export const useConvertQuoteToInvoiceMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<ConvertQuoteToInvoiceMutation, TError, ConvertQuoteToInvoiceMutationVariables, TContext>) => {
+    
+    return useMutation<ConvertQuoteToInvoiceMutation, TError, ConvertQuoteToInvoiceMutationVariables, TContext>(
+      {
+    mutationKey: ['ConvertQuoteToInvoice'],
+    mutationFn: (variables?: ConvertQuoteToInvoiceMutationVariables) => graphqlFetch<ConvertQuoteToInvoiceMutation, ConvertQuoteToInvoiceMutationVariables>(ConvertQuoteToInvoiceDocument, variables)(),
+    ...options
+  }
+    )};
+
+useConvertQuoteToInvoiceMutation.getKey = () => ['ConvertQuoteToInvoice'];
+
+
+useConvertQuoteToInvoiceMutation.fetcher = (variables: ConvertQuoteToInvoiceMutationVariables, options?: RequestInit['headers']) => graphqlFetch<ConvertQuoteToInvoiceMutation, ConvertQuoteToInvoiceMutationVariables>(ConvertQuoteToInvoiceDocument, variables, options);
 
 export const WorkspaceProfileDocument = new TypedDocumentString(`
     query WorkspaceProfile($organizationId: String!) {

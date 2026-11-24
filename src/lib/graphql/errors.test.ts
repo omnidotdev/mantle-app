@@ -3,16 +3,21 @@ import { describe, expect, test } from "bun:test";
 import { ClientError } from "graphql-request";
 
 import {
+  alreadyConvertedInvoiceId,
   graphqlErrorCode,
   planLimitMessage,
   profileSaveErrorMessage,
 } from "./errors";
 
-const apiError = (message: string, code?: string) =>
+const apiError = (
+  message: string,
+  code?: string,
+  extra: Record<string, unknown> = {},
+) =>
   new ClientError(
     {
       status: 200,
-      errors: [{ message, extensions: code ? { code } : {} }],
+      errors: [{ message, extensions: code ? { code, ...extra } : {} }],
     } as never,
     { query: "mutation { x }" },
   );
@@ -45,5 +50,23 @@ describe("API error helpers", () => {
     expect(profileSaveErrorMessage(new Error("offline"))).toBe(
       "Could not save the workspace profile. Try again.",
     );
+  });
+
+  test("a refused conversion points at the quote's existing invoice", () => {
+    expect(
+      alreadyConvertedInvoiceId(
+        apiError(
+          "This quote already has an invoice",
+          "QUOTE_ALREADY_CONVERTED",
+          {
+            invoiceId: "inv-1",
+          },
+        ),
+      ),
+    ).toBe("inv-1");
+    expect(
+      alreadyConvertedInvoiceId(apiError("Quote not found", "NOT_FOUND")),
+    ).toBeNull();
+    expect(alreadyConvertedInvoiceId(new Error("offline"))).toBeNull();
   });
 });
