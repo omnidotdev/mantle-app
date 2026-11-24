@@ -1,3 +1,5 @@
+import DocumentHint from "@/features/quotes/components/DocumentHint";
+
 interface ContractLegalProps {
   registrationState: string | null;
   /** Quote-specific terms, numbered after the standard legal sections */
@@ -8,7 +10,8 @@ const ContractLegal = ({
   registrationState,
   additionalTerms,
 }: ContractLegalProps) => {
-  const governingState = registrationState || "Minnesota";
+  // Never assume a state: without one set, name the jurisdiction generically
+  const governingState = registrationState?.trim() || null;
 
   return (
     <div className="space-y-4 text-sm">
@@ -49,12 +52,24 @@ const ContractLegal = ({
         <h3 className="font-semibold text-lg">
           13. Governing law and dispute resolution
         </h3>
-        <p>
-          This Agreement shall be governed by the laws of the State of{" "}
-          {governingState}. Any disputes shall first be resolved through good
-          faith mediation. If mediation fails, disputes shall be settled by
-          binding arbitration in {governingState}.
-        </p>
+        {governingState ? (
+          <p>
+            This Agreement shall be governed by the laws of the State of{" "}
+            {governingState}. Any disputes shall first be resolved through good
+            faith mediation. If mediation fails, disputes shall be settled by
+            binding arbitration in {governingState}.
+          </p>
+        ) : (
+          <p>
+            This Agreement shall be governed by the laws of the jurisdiction in
+            which the Developer is registered. Any disputes shall first be
+            resolved through good faith mediation. If mediation fails, disputes
+            shall be settled by binding arbitration in that jurisdiction.{" "}
+            <DocumentHint>
+              Add your registration state in Settings to name it here.
+            </DocumentHint>
+          </p>
+        )}
       </div>
 
       {/* Section 14: Miscellaneous */}
