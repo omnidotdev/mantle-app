@@ -9,7 +9,7 @@ const AppSidebarHeader = () => (
   <SidebarHeader className="gap-3 px-2 pt-3">
     {/* App branding */}
     <div className="flex items-center gap-2 px-2 py-1">
-      <MantleLogo className="h-5" />
+      <MantleLogo className="h-5 text-primary-500" />
       <span className="truncate text-[0.9375rem] font-bold tracking-tight group-data-[collapsible=icon]:hidden">
         {app.name}
       </span>
