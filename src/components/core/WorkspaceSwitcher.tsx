@@ -3,6 +3,7 @@ import { WorkspaceSwitcher as SharedWorkspaceSwitcher } from "@omnidotdev/thornb
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
 import { useSidebar } from "@/components/ui/sidebar";
+import useIsDemo from "@/features/demo/useIsDemo";
 import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { useWorkspace } from "@/providers/WorkspaceProvider";
 
@@ -38,6 +39,8 @@ const WorkspaceSwitcher = () => {
   });
   const workspaceCtx = useWorkspace();
   const { isMobile, setOpenMobile } = useSidebar();
+  // The sample workspace is not managed on the account hub
+  const isDemo = useIsDemo();
 
   const workspaces: SwitchableWorkspace[] = (
     workspaceCtx?.workspaces ?? []
@@ -58,7 +61,7 @@ const WorkspaceSwitcher = () => {
       workspaces={workspaces}
       currentWorkspaceId={organizationId}
       onSelect={handleSelect}
-      manageUrl={workspacesUrl(ACCOUNT_URL)}
+      manageUrl={isDemo ? undefined : workspacesUrl(ACCOUNT_URL)}
     />
   );
 };

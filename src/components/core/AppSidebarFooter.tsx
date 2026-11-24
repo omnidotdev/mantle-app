@@ -16,6 +16,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
+import useIsDemo from "@/features/demo/useIsDemo";
 import signOut from "@/lib/auth/signOut";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -27,6 +28,8 @@ const AppSidebarFooter = () => {
   const user = session?.user;
   const { open, setOpen, isMobile } = useSidebar();
   const { theme, setTheme } = useTheme();
+  // The demo workspace has no settings to change and no account to sign out of
+  const isDemo = useIsDemo();
 
   const toggleTheme = () =>
     theme === "dark" ? setTheme("light") : setTheme("dark");
@@ -83,24 +86,31 @@ const AppSidebarFooter = () => {
           </SidebarMenuButton>
         </SidebarMenuItem>
 
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            asChild
-            isActive={pathname.startsWith(`/@${workspaceSlug}/settings`)}
-          >
-            <Link to="/@{$workspaceSlug}/settings" params={{ workspaceSlug }}>
-              <SettingsIcon className="size-4" />
-              <span>Settings</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {!isDemo && (
+          <>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith(`/@${workspaceSlug}/settings`)}
+              >
+                <Link
+                  to="/@{$workspaceSlug}/settings"
+                  params={{ workspaceSlug }}
+                >
+                  <SettingsIcon className="size-4" />
+                  <span>Settings</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
-        <SidebarMenuItem>
-          <SidebarMenuButton onClick={signOut}>
-            <LogOutIcon className="size-4" />
-            <span>Sign out</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={signOut}>
+                <LogOutIcon className="size-4" />
+                <span>Sign out</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </>
+        )}
       </SidebarMenu>
     </SidebarFooter>
   );

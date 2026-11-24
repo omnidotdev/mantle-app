@@ -5,6 +5,7 @@ import {
   FileTextIcon,
   LayoutGridIcon,
   LogInIcon,
+  PlayIcon,
   ReceiptIcon,
   RocketIcon,
   UsersIcon,
@@ -13,6 +14,7 @@ import { LuGithub as GithubIcon } from "react-icons/lu";
 
 import StatusBadge from "@/components/core/StatusBadge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { DEMO_PATH } from "@/features/demo/config";
 import signIn from "@/lib/auth/signIn";
 import appConfig from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
@@ -213,14 +215,13 @@ function HomePage() {
               Get started free
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </Button>
+            {/* A plain link (full page load), so the demo always starts fresh */}
             <a
-              href={appConfig.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={DEMO_PATH}
               className={buttonVariants({ variant: "outline", size: "lg" })}
             >
-              <GithubIcon />
-              View on GitHub
+              <PlayIcon />
+              Try the demo
             </a>
           </div>
 

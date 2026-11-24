@@ -1,6 +1,6 @@
 import { Input } from "@omnidotdev/thornberry/input";
 import { Label } from "@omnidotdev/thornberry/label";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import PageHeader from "@/components/core/PageHeader";
 import SectionCard from "@/components/core/SectionCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { isDemoHref } from "@/features/demo/config";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import WorkspacePlanCard from "@/features/settings/components/WorkspacePlanCard";
 import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
@@ -411,5 +412,12 @@ const SettingsPage = () => {
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/settings/")({
   staticData: { title: "Settings" },
+  // The demo workspace has no settings to change (its plan and branding are
+  // fixed sample data), so send links here back to the dashboard
+  beforeLoad: ({ location, params }) => {
+    if (isDemoHref(location.publicHref)) {
+      throw redirect({ to: "/@{$workspaceSlug}", params });
+    }
+  },
   component: SettingsPage,
 });

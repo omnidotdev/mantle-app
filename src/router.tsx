@@ -4,6 +4,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
 import NotFound from "@/components/NotFound";
+import { createDemoRewrite, isDemoHref } from "@/features/demo/config";
 import { routeTree } from "./routeTree.gen";
 
 /**
@@ -22,6 +23,8 @@ const getRouter = () => {
   const router = createTanStackRouter({
     routeTree,
     scrollRestoration: true,
+    // `/demo/...` serves the sample workspace's routes (see features/demo)
+    rewrite: createDemoRewrite(),
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
     context: {
@@ -32,6 +35,15 @@ const getRouter = () => {
   });
 
   setupRouterSsrQueryIntegration({ router, queryClient });
+
+  // Keep sample data and real data apart: drop the query cache whenever a
+  // navigation enters or leaves the demo
+  router.subscribe("onBeforeNavigate", ({ fromLocation, toLocation }) => {
+    if (!fromLocation) return;
+
+    const fromDemo = isDemoHref(fromLocation.publicHref);
+    if (fromDemo !== isDemoHref(toLocation.publicHref)) queryClient.clear();
+  });
 
   return router;
 };
