@@ -13,6 +13,7 @@ import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { FaLinkedin as LinkedInIcon } from "react-icons/fa6";
 
+import MantleLogo from "@/components/core/MantleLogo";
 import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import signOut from "@/lib/auth/signOut";
@@ -78,9 +79,7 @@ function PublicLayout() {
             href="/"
             className="flex items-center gap-2 text-lg font-bold tracking-tight"
           >
-            <span aria-hidden className="text-2xl">
-              {appConfig.icon}
-            </span>
+            <MantleLogo className="h-7" />
             {appConfig.name}
           </a>
 

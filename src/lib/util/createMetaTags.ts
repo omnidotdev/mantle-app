@@ -15,14 +15,14 @@ interface Params {
 }
 
 /**
- * Create meta tags. A social preview image is only emitted when one is passed,
- * so links unfurl as a text card until a final preview image exists
+ * Create meta tags. Pages share Mantle's social preview image unless they pass
+ * their own
  */
 const createMetaTags = ({
   title: _title,
   description: _description,
   url: _url,
-  image,
+  image = `${BASE_URL}/og.png`,
   keywords,
 }: Params = {}) => {
   const title = _title ? `${_title} | ${app.name}` : app.name,

@@ -1,5 +1,6 @@
 import { Badge } from "@omnidotdev/thornberry/badge";
 
+import MantleLogo from "@/components/core/MantleLogo";
 import WorkspaceSwitcher from "@/components/core/WorkspaceSwitcher";
 import { SidebarHeader } from "@/components/ui/sidebar";
 import app from "@/lib/config/app.config";
@@ -8,9 +9,7 @@ const AppSidebarHeader = () => (
   <SidebarHeader className="gap-3 px-2 pt-3">
     {/* App branding */}
     <div className="flex items-center gap-2 px-2 py-1">
-      <span className="text-lg" aria-hidden>
-        {app.icon}
-      </span>
+      <MantleLogo className="h-5" />
       <span className="truncate text-[0.9375rem] font-bold tracking-tight group-data-[collapsible=icon]:hidden">
         {app.name}
       </span>
