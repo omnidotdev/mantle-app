@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -40,11 +41,6 @@ const ConfirmDialog = ({
   loading = false,
   loadingLabel,
 }: ConfirmDialogProps) => {
-  const confirmClass =
-    variant === "danger"
-      ? "bg-destructive text-white hover:bg-destructive/90"
-      : "bg-primary text-white hover:bg-primary-700";
-
   return (
     <Dialog
       open={open}
@@ -59,26 +55,24 @@ const ConfirmDialog = ({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
-            className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant={variant === "danger" ? "destructive" : "solid"}
             onClick={() => {
               onConfirm();
               if (closeOnConfirm) onOpenChange(false);
             }}
             disabled={loading}
-            className={`rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50 ${confirmClass}`}
           >
             {loading ? (loadingLabel ?? confirmLabel) : confirmLabel}
-          </button>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

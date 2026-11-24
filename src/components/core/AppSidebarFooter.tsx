@@ -25,7 +25,7 @@ const AppSidebarFooter = () => {
   const { session } = useRouteContext({ from: "__root__" });
   const workspaceSlug = useWorkspaceSlug();
   const user = session?.user;
-  const { open, setOpen } = useSidebar();
+  const { open, setOpen, isMobile } = useSidebar();
   const { theme, setTheme } = useTheme();
 
   const toggleTheme = () =>
@@ -42,7 +42,7 @@ const AppSidebarFooter = () => {
               className="h-7 w-7 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-100 font-medium text-primary-700 text-xs">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/12 font-medium text-primary-600 text-xs dark:text-primary-300">
               {(user.name?.[0] || user.email?.[0] || "?").toUpperCase()}
             </div>
           )}
@@ -58,16 +58,19 @@ const AppSidebarFooter = () => {
       )}
       <SidebarSeparator />
       <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton onClick={() => setOpen(!open)}>
-            {open ? (
-              <PanelLeftCloseIcon className="size-4" />
-            ) : (
-              <PanelLeftIcon className="size-4" />
-            )}
-            <span>{open ? "Collapse" : "Expand"} Sidebar</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {/* Collapsing only applies to the desktop rail, not the phone drawer */}
+        {!isMobile && (
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={() => setOpen(!open)}>
+              {open ? (
+                <PanelLeftCloseIcon className="size-4" />
+              ) : (
+                <PanelLeftIcon className="size-4" />
+              )}
+              <span>{open ? "Collapse sidebar" : "Expand sidebar"}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
 
         <SidebarMenuItem>
           <SidebarMenuButton onClick={toggleTheme}>
@@ -76,7 +79,7 @@ const AppSidebarFooter = () => {
             ) : (
               <SunIcon className="size-4" />
             )}
-            <span>Toggle Theme</span>
+            <span>{theme === "dark" ? "Light theme" : "Dark theme"}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
@@ -95,7 +98,7 @@ const AppSidebarFooter = () => {
         <SidebarMenuItem>
           <SidebarMenuButton onClick={signOut}>
             <LogOutIcon className="size-4" />
-            <span>Sign Out</span>
+            <span>Sign out</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

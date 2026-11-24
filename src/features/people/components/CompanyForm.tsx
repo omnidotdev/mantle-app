@@ -1,3 +1,4 @@
+import SectionCard from "@/components/core/SectionCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -9,30 +10,17 @@ import type { Company } from "@/features/people/types";
 interface CompanyFormProps {
   company: Partial<Company>;
   onCompanyChange: (company: Partial<Company>) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  saving?: boolean;
 }
 
-const CompanyForm = ({
-  company,
-  onCompanyChange,
-  onSave,
-  onCancel,
-  saving,
-}: CompanyFormProps) => {
+/** Company fields grouped into section cards. Save and cancel live in the page header */
+const CompanyForm = ({ company, onCompanyChange }: CompanyFormProps) => {
   const handleChange = (field: keyof Company, value: string | null) => {
     onCompanyChange({ ...company, [field]: value });
   };
 
   return (
-    <div className="space-y-6">
-      {/* Basic information */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">
-          Basic Information
-        </h3>
-
+    <div className="space-y-5">
+      <SectionCard title="Details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="company-name">Name *</Label>
@@ -87,15 +75,12 @@ const CompanyForm = ({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Address */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Address</h3>
-
+      <SectionCard title="Address">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="company-address1">Address Line 1</Label>
+            <Label htmlFor="company-address1">Address line 1</Label>
             <Input
               id="company-address1"
               value={company.addressLine1 ?? ""}
@@ -107,7 +92,7 @@ const CompanyForm = ({
           </div>
 
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="company-address2">Address Line 2</Label>
+            <Label htmlFor="company-address2">Address line 2</Label>
             <Input
               id="company-address2"
               value={company.addressLine2 ?? ""}
@@ -139,7 +124,7 @@ const CompanyForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="company-postal">Postal Code</Label>
+            <Label htmlFor="company-postal">Postal code</Label>
             <Input
               id="company-postal"
               value={company.postalCode ?? ""}
@@ -160,11 +145,12 @@ const CompanyForm = ({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Notes */}
-      <div className="space-y-4">
-        <Label htmlFor="company-notes">Notes</Label>
+      <SectionCard title="Notes">
+        <Label htmlFor="company-notes" className="sr-only">
+          Notes
+        </Label>
         <Textarea
           id="company-notes"
           value={company.notes ?? ""}
@@ -172,26 +158,7 @@ const CompanyForm = ({
           rows={3}
           placeholder="Additional notes about this company"
         />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-2 border-border border-t pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={!company.name?.trim() || saving}
-          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Save
-        </button>
-      </div>
+      </SectionCard>
     </div>
   );
 };

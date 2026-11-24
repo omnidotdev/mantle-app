@@ -9,8 +9,10 @@ import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLog
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
+import cn from "@/lib/utils";
 import { formatProjectType } from "../lib/projectType";
 import { applyTermTokens } from "../types/quote";
+import DocumentHint from "./DocumentHint";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -21,7 +23,7 @@ interface QuotePreviewProps {
 }
 
 const pricingLabels: Record<string, string> = {
-  fixed: "Fixed Price",
+  fixed: "Fixed price",
   hourly: "Hourly",
   royalty: "Royalty",
   complimentary: "Complimentary",
@@ -52,6 +54,11 @@ const Divider = ({ color }: { color: string }) => (
   <div className="my-6 border-t border-dashed" style={{ borderColor: color }} />
 );
 
+/**
+ * Printable quote document. The paper surface stays light in dark mode (it
+ * previews a printed page), so it uses the fixed `base-*` scale rather than
+ * the themed foreground tokens
+ */
 const QuotePreview = ({
   quote,
   lineItems,
@@ -148,7 +155,7 @@ const QuotePreview = ({
     // Determine the displayed price
     let priceDisplay: string;
     if (isComplimentary) {
-      priceDisplay = "FREE";
+      priceDisplay = "Free";
     } else if (isIncluded) {
       priceDisplay = "";
     } else if (isHourly && item.hourlyRate) {
@@ -218,50 +225,45 @@ const QuotePreview = ({
             color: accent.gradientFrom,
           };
 
-    const badgeClass = isComplimentary
-      ? "inline-block rounded-full border border-emerald-300 bg-emerald-50 px-3 py-0.5 font-medium text-emerald-700 text-xs"
-      : isIncluded
-        ? "inline-block rounded-full border border-border bg-muted px-3 py-0.5 font-medium text-muted-foreground text-xs"
-        : "inline-block rounded-full border px-3 py-0.5 font-medium text-xs";
+    const badgeClass = cn(
+      "inline-block whitespace-nowrap rounded-full border px-3 py-0.5 font-medium text-xs",
+      isComplimentary &&
+        "border-success/30 bg-success/12 text-success dark:text-base-800",
+      isIncluded && "border-base-200 bg-base-50 text-base-600",
+    );
 
     return (
       <div
         key={item.id}
-        className="rounded-lg border border-border bg-card p-5"
+        className="break-inside-avoid rounded-xl border border-base-200 bg-white p-4 sm:p-5 print:p-5"
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <p className="font-medium text-foreground text-lg">
-              {item.description}
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4 print:flex-row print:items-start print:justify-between print:gap-4">
+          <p className="min-w-0 flex-1 font-medium text-lg">
+            {item.description}
+          </p>
+          <div className="flex shrink-0 flex-wrap items-center gap-3">
             <span className={badgeClass} style={badgeStyle}>
               {pricingLabels[item.pricingType || "fixed"]}
             </span>
             {priceDisplay && (
-              <span className="font-semibold text-foreground text-xl">
+              <span className="tabular font-semibold text-xl">
                 {priceDisplay}
               </span>
             )}
           </div>
         </div>
         {item.subtitle && (
-          <p className="mt-2 text-muted-foreground text-sm italic">
-            {item.subtitle}
-          </p>
+          <p className="mt-2 text-base-600 text-sm italic">{item.subtitle}</p>
         )}
         {autoSubDescription && (
-          <p className="mt-1 text-muted-foreground text-sm">
-            {autoSubDescription}
-          </p>
+          <p className="mt-1 text-base-600 text-sm">{autoSubDescription}</p>
         )}
         {item.deliverables && item.deliverables.length > 0 && (
           <details className="group mt-2">
-            <summary className="cursor-pointer text-muted-foreground text-xs hover:text-foreground">
+            <summary className="cursor-pointer text-base-500 text-xs hover:text-base-900">
               Deliverables ({item.deliverables.length})
             </summary>
-            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground text-xs">
+            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-base-600 text-xs">
               {item.deliverables.map((d) => (
                 <li key={d}>{d}</li>
               ))}
@@ -272,90 +274,100 @@ const QuotePreview = ({
     );
   };
 
+  const renderTerm = (term: string) =>
+    term.includes(":") ? (
+      <>
+        <strong>{term.split(":")[0]}:</strong>
+        {term.slice(term.indexOf(":") + 1)}
+      </>
+    ) : (
+      term
+    );
+
+  const clientDisplayName = quote.clientName || resolvedContactName;
+
   return (
-    <div className="rounded-lg border border-border bg-white shadow-sm print:min-h-screen print:border-0 print:shadow-none">
+    <div className="overflow-hidden rounded-2xl border border-base-200 bg-white text-base-900 shadow-card print:min-h-screen print:overflow-visible print:rounded-none print:border-0 print:shadow-none">
       {/* Header banner */}
       <div
-        className="flex items-center justify-between rounded-t-lg px-8 py-6 text-white print:rounded-none"
+        className="flex flex-col gap-4 px-4 py-6 text-base-50 sm:flex-row sm:items-center sm:justify-between sm:px-8 print:flex-row print:items-center print:justify-between print:px-8"
         style={{
           background: `linear-gradient(to right, ${accent.gradientFrom}, ${accent.gradientTo})`,
         }}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 items-center gap-4">
           <DocumentBannerLogo logo={logo} size="h-10 w-10" />
-          <h1 className="font-bold text-white text-xl leading-tight">
-            Quote for Professional Software
-            <br />
-            Development Services
+          <h1 className="min-w-0 break-words font-bold text-xl leading-tight">
+            {quote.title?.trim() || "Quote"}
           </h1>
         </div>
-        <div className="text-right text-sm">
+        <div className="shrink-0 text-sm sm:text-right print:text-right">
           <p>Date prepared: {displayDate}</p>
-          <p>Quote ID: {quote.quoteNumber || "—"}</p>
+          {quote.quoteNumber ? (
+            <p>
+              Quote ID: <span className="tabular">{quote.quoteNumber}</span>
+            </p>
+          ) : (
+            <p className="italic opacity-80 print:hidden">
+              No quote number yet
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="px-8 py-8">
-        {/* Prepared By / Prepared For */}
-        <div className="grid grid-cols-2 gap-12">
+      <div className="px-4 py-8 sm:px-8 print:px-8">
+        {/* Prepared by / prepared for */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-12 print:grid-cols-2 print:gap-12">
           <div>
-            <p className="mb-1 text-muted-foreground text-sm">Prepared By</p>
-            <p className="font-semibold text-foreground">
-              {orgProfile?.contactName || "—"}
+            <p className="mb-1 text-base-500 text-sm">Prepared by</p>
+            <p className="font-semibold">
+              {orgProfile?.contactName || (
+                <DocumentHint>Add your name in settings</DocumentHint>
+              )}
             </p>
-            <p className="text-foreground">
-              {orgProfile?.companyName || "Your Company"}
+            <p>
+              {orgProfile?.companyName || (
+                <DocumentHint className="text-sm">
+                  Add your company name in settings
+                </DocumentHint>
+              )}
             </p>
-            {orgProfile?.email && (
-              <p className="text-foreground text-sm">{orgProfile.email}</p>
-            )}
+            {orgProfile?.email && <p className="text-sm">{orgProfile.email}</p>}
           </div>
           <div>
-            <p className="mb-1 text-muted-foreground text-sm">Prepared For</p>
-            <p className="font-semibold text-foreground">
-              {quote.clientName ||
-                resolvedContactName ||
-                "Client not specified"}
+            <p className="mb-1 text-base-500 text-sm">Prepared for</p>
+            <p className="font-semibold">
+              {clientDisplayName || <DocumentHint>No client yet</DocumentHint>}
             </p>
-            {resolvedCompanyName && (
-              <p className="text-foreground">{resolvedCompanyName}</p>
-            )}
+            {resolvedCompanyName && <p>{resolvedCompanyName}</p>}
             {quote.clientEmail && (
-              <p className="text-foreground text-sm">{quote.clientEmail}</p>
+              <p className="text-sm">{quote.clientEmail}</p>
             )}
             {contact && !quote.clientEmail && contact.emails?.[0] && (
-              <p className="text-foreground text-sm">{contact.emails[0]}</p>
+              <p className="text-sm">{contact.emails[0]}</p>
             )}
           </div>
         </div>
 
         <Divider color={accent.base} />
 
-        {/* Project Overview */}
+        {/* Project overview */}
         {(quote.title || quote.description || quote.projectType) && (
           <>
-            <h2 className="mb-4 font-bold text-foreground text-xl">
-              Project Overview
-            </h2>
+            <h2 className="mb-4 font-bold text-xl">Project overview</h2>
 
             {(quote.title || quote.projectType) && (
-              <div className="mb-4 grid grid-cols-2 gap-12">
+              <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-12 print:grid-cols-2 print:gap-12">
                 {quote.title && (
                   <div>
-                    <p className="mb-1 text-muted-foreground text-sm">
-                      Project Name
-                    </p>
-                    <p className="font-medium text-foreground text-lg">
-                      {quote.title}
-                    </p>
+                    <p className="mb-1 text-base-500 text-sm">Project name</p>
+                    <p className="font-medium text-lg">{quote.title}</p>
                   </div>
                 )}
                 {quote.projectType && (
                   <div>
-                    <p className="mb-1 text-muted-foreground text-sm">
-                      Project Type
-                    </p>
-                    <p className="font-medium text-foreground text-lg">
+                    <p className="mb-1 text-base-500 text-sm">Project type</p>
+                    <p className="font-medium text-lg">
                       {formatProjectType(quote.projectType)}
                     </p>
                   </div>
@@ -365,26 +377,22 @@ const QuotePreview = ({
 
             {quote.description && (
               <div className="mb-4">
-                <p className="mb-1 text-muted-foreground text-sm">
-                  Description
-                </p>
-                <p className="text-foreground">{quote.description}</p>
+                <p className="mb-1 text-base-500 text-sm">Description</p>
+                <p>{quote.description}</p>
               </div>
             )}
 
             {quote.timeRange && (
               <div className="mb-2">
-                <p className="mb-0.5 text-muted-foreground text-sm">
-                  Estimated Timeline
+                <p className="mb-0.5 text-base-500 text-sm">
+                  Estimated timeline
                 </p>
-                <p className="text-muted-foreground text-sm italic">
+                <p className="text-base-500 text-sm italic">
                   This is a rough estimate based on the current project scope
                   and requirements. The final time estimate may vary as the
                   project develops and requirements are refined.
                 </p>
-                <p className="mt-1 font-semibold text-foreground text-lg">
-                  {quote.timeRange}
-                </p>
+                <p className="mt-1 font-semibold text-lg">{quote.timeRange}</p>
               </div>
             )}
 
@@ -392,20 +400,18 @@ const QuotePreview = ({
           </>
         )}
 
-        {/* Cost Breakdown */}
+        {/* Cost breakdown */}
         {validItems.length > 0 && (
           <>
-            <h2 className="mb-5 font-bold text-foreground text-xl">
-              Cost Breakdown
-            </h2>
+            <h2 className="mb-5 font-bold text-xl">Cost breakdown</h2>
 
             <div className="space-y-4">
               {baseItem && renderLineItemCard(baseItem)}
 
               {additionalItems.length > 0 && (
                 <>
-                  <p className="mt-6 mb-3 font-medium text-muted-foreground text-sm">
-                    {quote.additionalItemsLabel || "Additional Deliverables"}
+                  <p className="mt-6 mb-3 font-medium text-base-500 text-sm">
+                    {quote.additionalItemsLabel || "Additional deliverables"}
                   </p>
                   {additionalItems.map((item) => renderLineItemCard(item))}
                 </>
@@ -416,13 +422,14 @@ const QuotePreview = ({
           </>
         )}
 
-        {/* Total Investment */}
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-bold text-foreground text-xl">
-            Total Investment
-          </h2>
-          <div className="text-right">
-            <p className="font-bold text-3xl" style={{ color: accent.base }}>
+        {/* Total investment */}
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4 print:flex-row print:items-baseline print:justify-between print:gap-4">
+          <h2 className="font-bold text-xl">Total investment</h2>
+          <div className="sm:text-right print:text-right">
+            <p
+              className="tabular font-bold text-3xl"
+              style={{ color: accent.base }}
+            >
               {formatCurrency(
                 String(
                   taxRate > 0 ? total : fixedTotal > 0 ? fixedTotal : total,
@@ -431,7 +438,7 @@ const QuotePreview = ({
               )}
             </p>
             {hasHourly && (
-              <p className="mt-1 text-muted-foreground text-sm">
+              <p className="mt-1 text-base-500 text-sm">
                 + hourly services
                 {hourlyMaxMonthly > 0
                   ? ` (maximum ${formatCurrency(String(hourlyMaxMonthly), currency)}/mo)`
@@ -439,12 +446,12 @@ const QuotePreview = ({
               </p>
             )}
             {hasRoyalty && (
-              <p className="mt-1 text-muted-foreground text-sm">
+              <p className="mt-1 text-base-500 text-sm">
                 + royalty-based services
               </p>
             )}
             {taxRate > 0 && (
-              <p className="mt-1 text-muted-foreground text-sm">
+              <p className="tabular mt-1 text-base-500 text-sm">
                 Includes {taxRate}% tax (
                 {formatCurrency(String(taxAmount), currency)})
               </p>
@@ -454,14 +461,12 @@ const QuotePreview = ({
 
         <Divider color={accent.base} />
 
-        {/* Terms & Conditions */}
-        {(quote.terms || quote.additionalTerms?.length) && (
+        {/* Terms and conditions */}
+        {(!!quote.terms || !!quote.additionalTerms?.length) && (
           <>
-            <h2 className="mb-3 font-bold text-foreground text-xl">
-              Terms &amp; Conditions
-            </h2>
+            <h2 className="mb-3 font-bold text-xl">Terms and conditions</h2>
 
-            <p className="mb-4 text-foreground italic">
+            <p className="mb-4 italic">
               This quote is not legally binding and is subject to a formal
               agreement. If the client accepts this quote, a separate contract
               governing all legally binding terms will be prepared for
@@ -469,48 +474,26 @@ const QuotePreview = ({
             </p>
 
             {quote.terms && (
-              <ul className="mb-4 list-disc space-y-2 pl-5 text-foreground">
+              <ul className="mb-4 list-disc space-y-2 pl-5">
                 {quote.terms.split("\n").map((rawLine) => {
                   const line = applyTermTokens(rawLine, {
                     companyName: orgProfile?.companyName,
                     timeRange: quote.timeRange,
                   }).trim();
                   if (!line) return null;
-                  return (
-                    <li key={line}>
-                      {line.includes(":") ? (
-                        <>
-                          <strong>{line.split(":")[0]}:</strong>
-                          {line.slice(line.indexOf(":") + 1)}
-                        </>
-                      ) : (
-                        line
-                      )}
-                    </li>
-                  );
+                  return <li key={line}>{renderTerm(line)}</li>;
                 })}
               </ul>
             )}
 
             {quote.additionalTerms && quote.additionalTerms.length > 0 && (
-              <ul className="list-disc space-y-2 pl-5 text-foreground">
+              <ul className="list-disc space-y-2 pl-5">
                 {quote.additionalTerms.map((rawTerm) => {
                   const term = applyTermTokens(rawTerm, {
                     companyName: orgProfile?.companyName,
                     timeRange: quote.timeRange,
                   });
-                  return (
-                    <li key={term}>
-                      {term.includes(":") ? (
-                        <>
-                          <strong>{term.split(":")[0]}:</strong>
-                          {term.slice(term.indexOf(":") + 1)}
-                        </>
-                      ) : (
-                        term
-                      )}
-                    </li>
-                  );
+                  return <li key={term}>{renderTerm(term)}</li>;
                 })}
               </ul>
             )}
@@ -523,8 +506,8 @@ const QuotePreview = ({
         {quote.notes && (
           <>
             <div className="mb-4">
-              <h4 className="mb-2 font-bold text-foreground">Notes</h4>
-              <div className="text-foreground">
+              <h4 className="mb-2 font-bold">Notes</h4>
+              <div>
                 {quote.notes.split("\n").map((line) => (
                   <p key={line}>{line}</p>
                 ))}
@@ -536,7 +519,7 @@ const QuotePreview = ({
 
         {/* Footer */}
         <div className="pt-2 text-center">
-          <p className="mb-4 text-foreground italic">
+          <p className="mb-4 italic">
             We appreciate the opportunity to work with you and look forward to
             bringing your vision to life.
           </p>
@@ -546,9 +529,13 @@ const QuotePreview = ({
               alt={logo.alt}
               className="h-6 w-6 object-contain"
             />
-            <span className="font-bold text-foreground">
-              {orgProfile?.companyName || "Your Company"}
-            </span>
+            {orgProfile?.companyName ? (
+              <span className="font-bold">{orgProfile.companyName}</span>
+            ) : (
+              <DocumentHint className="text-sm">
+                Add your company name in settings
+              </DocumentHint>
+            )}
           </div>
         </div>
       </div>

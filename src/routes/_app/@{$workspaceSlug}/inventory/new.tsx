@@ -1,9 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Building2Icon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import ProductForm from "@/features/inventory/components/ProductForm";
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import MobileActionBar from "@/components/core/MobileActionBar";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import { Button, buttonVariants } from "@/components/ui/button";
+import ProductForm, {
+  PRODUCT_FORM_ID,
+} from "@/features/inventory/components/ProductForm";
 import {
   useAllProductsQuery,
   useCreateProductMutation,
@@ -42,6 +51,7 @@ const NewProductPage = () => {
   const createProductMutation = useCreateProductMutation();
 
   const handleSave = async () => {
+    if (saving) return;
     setSaving(true);
     try {
       const result = await createProductMutation.mutateAsync({
@@ -69,56 +79,82 @@ const NewProductPage = () => {
           params: { workspaceSlug, productId: newId },
         });
       }
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save product",
-      );
+    } catch {
+      toast.error("Could not save the product");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleCancel = () => {
-    navigate({ to: "/@{$workspaceSlug}/inventory", params: { workspaceSlug } });
-  };
-
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to create products
-        </p>
-      </div>
+      <PageContainer width="narrow">
+        <EmptyState
+          icon={Building2Icon}
+          title="No workspace selected"
+          description="Select a workspace to add products."
+        />
+      </PageContainer>
     );
   }
 
+  const canSave = !!currentProduct.name?.trim() && !saving;
+
+  const cancelLinkProps = {
+    to: "/@{$workspaceSlug}/inventory",
+    params: { workspaceSlug },
+  } as const;
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <PageContainer width="narrow">
+      <PageHeader
+        back={<BackLink {...cancelLinkProps}>Inventory</BackLink>}
+        title="New product"
+        actions={
+          <div className="hidden md:flex md:flex-wrap md:gap-2">
+            <Link
+              {...cancelLinkProps}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Cancel
+            </Link>
+            <Button type="submit" form={PRODUCT_FORM_ID} disabled={!canSave}>
+              {saving ? "Saving" : "Save"}
+            </Button>
+          </div>
+        }
+      />
+
+      <ProductForm
+        product={currentProduct}
+        onProductChange={setCurrentProduct}
+        onSubmit={handleSave}
+      />
+
+      <MobileActionBar>
         <Link
-          to="/@{$workspaceSlug}/inventory"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
+          {...cancelLinkProps}
+          className={buttonVariants({
+            variant: "outline",
+            className: "flex-1",
+          })}
         >
-          &larr; Back to list
+          Cancel
         </Link>
-      </div>
-
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-6 font-semibold text-lg">New Product</h2>
-
-        <ProductForm
-          product={currentProduct}
-          onProductChange={setCurrentProduct}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saving={saving}
-        />
-      </div>
-    </div>
+        <Button
+          type="submit"
+          form={PRODUCT_FORM_ID}
+          disabled={!canSave}
+          className="flex-1"
+        >
+          {saving ? "Saving" : "Save"}
+        </Button>
+      </MobileActionBar>
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/inventory/new")({
+  staticData: { title: "New product" },
   component: NewProductPage,
 });

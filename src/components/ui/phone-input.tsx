@@ -72,7 +72,7 @@ const PhoneInput = ({
         {Flag ? (
           <Flag
             title={country ?? undefined}
-            className="h-3.5 w-5 rounded-[2px] shadow-sm ring-1 ring-black/10"
+            className="h-3.5 w-5 rounded-[2px] shadow-sm ring-1 ring-foreground/10"
           />
         ) : (
           // Neutral placeholder keeps the text aligned before a country resolves

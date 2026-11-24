@@ -1,5 +1,9 @@
 import { useMemo } from "react";
 
+import {
+  DEFAULT_ACCENT,
+  getAccentVariants,
+} from "@/features/invoices/types/accentColor";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import ContractHeader from "./contract/ContractHeader";
@@ -18,6 +22,10 @@ interface ContractPreviewProps {
   organizationId?: string;
 }
 
+/**
+ * Printable service agreement built from a quote. Like the quote document, the
+ * paper surface stays light in dark mode and uses the fixed `base-*` scale
+ */
 const ContractPreview = ({
   quote,
   lineItems,
@@ -29,6 +37,11 @@ const ContractPreview = ({
     : undefined;
   const currency = quote.currency || "USD";
   const date = quote.validUntil || new Date().toISOString().split("T")[0];
+
+  const accent = useMemo(
+    () => getAccentVariants(orgProfile?.accentColor ?? DEFAULT_ACCENT),
+    [orgProfile?.accentColor],
+  );
 
   const { data: companiesData } = useAllCompaniesQuery(
     { organizationId: organizationId ?? "" },
@@ -63,54 +76,57 @@ const ContractPreview = ({
   const resolvedClientCompany = company?.name || "";
 
   return (
-    <div className="rounded-lg border border-border bg-card shadow-sm print:min-h-screen print:border-0 print:shadow-none">
+    <div className="overflow-hidden rounded-2xl border border-base-200 bg-white text-base-900 shadow-card print:min-h-screen print:overflow-visible print:rounded-none print:border-0 print:shadow-none">
       <ContractHeader
         orgProfile={orgProfile}
         contractId={quote.quoteNumber || "CT-0001"}
         date={date}
+        accent={accent}
       />
 
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 px-4 py-6 sm:px-6 print:px-6">
         <ContractParties
           orgProfile={orgProfile}
           clientName={resolvedClientName}
           clientEmail={quote.clientEmail || ""}
           clientCompany={resolvedClientCompany}
           date={date}
+          accentColor={accent.gradientFrom}
         />
 
-        <hr className="border-border" />
+        <hr className="border-base-200" />
 
         <ContractScope
-          projectName={quote.title || "Untitled Project"}
+          projectName={quote.title || "Untitled project"}
           projectType={quote.projectType ?? null}
           description={quote.description ?? null}
           lineItems={lineItems}
         />
 
-        <hr className="border-border" />
+        <hr className="border-base-200" />
 
         <ContractPricing lineItems={lineItems} currency={currency} />
 
-        <hr className="border-border" />
+        <hr className="border-base-200" />
 
         <ContractTerms
           timeRange={quote.timeRange ?? null}
-          additionalTerms={quote.additionalTerms ?? null}
           lineItems={lineItems}
         />
 
-        <hr className="border-border" />
+        <hr className="border-base-200" />
 
         <ContractLegal
           registrationState={orgProfile?.registrationState ?? null}
+          additionalTerms={quote.additionalTerms ?? null}
         />
 
-        <hr className="border-border" />
+        <hr className="border-base-200" />
 
         <ContractSignatures
           orgProfile={orgProfile}
           clientName={quote.clientName || ""}
+          accentColor={accent.gradientFrom}
         />
       </div>
     </div>

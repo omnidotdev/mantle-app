@@ -5,15 +5,17 @@ import { SidebarHeader } from "@/components/ui/sidebar";
 import app from "@/lib/config/app.config";
 
 const AppSidebarHeader = () => (
-  <SidebarHeader>
+  <SidebarHeader className="gap-3 px-2 pt-3">
     {/* App branding */}
-    <div className="flex items-center gap-2 px-1 py-1.5">
-      <span className="text-lg">🌋</span>
-      <span className="truncate font-semibold text-sm group-data-[collapsible=icon]:hidden">
+    <div className="flex items-center gap-2 px-2 py-1">
+      <span className="text-lg" aria-hidden>
+        {app.icon}
+      </span>
+      <span className="truncate font-bold text-[0.9375rem] tracking-tight group-data-[collapsible=icon]:hidden">
         {app.name}
       </span>
-      <Badge className="border-primary/20 bg-primary/10 text-primary text-xs group-data-[collapsible=icon]:hidden">
-        Early Access
+      <Badge className="border-primary/20 bg-primary/10 text-primary-600 text-xs group-data-[collapsible=icon]:hidden dark:text-primary-300">
+        Early access
       </Badge>
     </div>
 

@@ -1,8 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Building2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import MobileActionBar from "@/components/core/MobileActionBar";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import { Button } from "@/components/ui/button";
 import CompanyForm from "@/features/people/components/CompanyForm";
 import {
   useAllCompaniesQuery,
@@ -79,10 +86,8 @@ const NewCompanyPage = () => {
           params: { workspaceSlug, companyId: newId },
         });
       }
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save company",
-      );
+    } catch {
+      toast.error("Failed to save company");
     } finally {
       setSaving(false);
     }
@@ -96,45 +101,67 @@ const NewCompanyPage = () => {
     });
   };
 
+  const canSave = !!currentCompany.name?.trim() && !saving;
+
+  const headerActions = (
+    <div className="hidden md:flex md:flex-wrap md:gap-2">
+      <Button variant="outline" onClick={handleCancel} disabled={saving}>
+        Cancel
+      </Button>
+      <Button onClick={handleSave} disabled={!canSave}>
+        {saving ? "Saving..." : "Save"}
+      </Button>
+    </div>
+  );
+
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to create companies
-        </p>
-      </div>
+      <PageContainer width="narrow">
+        <EmptyState
+          icon={Building2}
+          title="No workspace selected"
+          description="Select a workspace to create companies."
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Link
-          to="/@{$workspaceSlug}/people"
-          params={{ workspaceSlug }}
-          search={{ tab: "companies" }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-      </div>
+    <PageContainer width="narrow">
+      <PageHeader
+        back={
+          <BackLink
+            to="/@{$workspaceSlug}/people"
+            params={{ workspaceSlug }}
+            search={{ tab: "companies" }}
+          >
+            People
+          </BackLink>
+        }
+        title="New company"
+        actions={headerActions}
+      />
 
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-6 font-semibold text-lg">New Company</h2>
-        <CompanyForm
-          company={currentCompany}
-          onCompanyChange={setCurrentCompany}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saving={saving}
-        />
-      </div>
-    </div>
+      <CompanyForm
+        company={currentCompany}
+        onCompanyChange={setCurrentCompany}
+      />
+
+      <MobileActionBar>
+        <Button variant="outline" onClick={handleCancel} disabled={saving}>
+          Cancel
+        </Button>
+        <Button className="flex-1" onClick={handleSave} disabled={!canSave}>
+          {saving ? "Saving..." : "Save"}
+        </Button>
+      </MobileActionBar>
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute(
   "/_app/@{$workspaceSlug}/people/companies/new",
 )({
+  staticData: { title: "New company" },
   component: NewCompanyPage,
 });
