@@ -521,11 +521,13 @@ const QuotePreview = ({
             bringing your vision to life.
           </p>
           <div className="flex items-center justify-center gap-2">
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="h-6 w-6 object-contain"
-            />
+            {logo.src && (
+              <img
+                src={logo.src}
+                alt={logo.alt}
+                className="h-6 w-6 object-contain"
+              />
+            )}
             {orgProfile?.companyName ? (
               <span className="font-bold">{orgProfile.companyName}</span>
             ) : (
