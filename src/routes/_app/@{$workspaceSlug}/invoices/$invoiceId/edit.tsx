@@ -13,6 +13,13 @@ import InvoiceEditorLayout from "@/features/invoices/components/InvoiceEditorLay
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
 import {
+  planChildSync,
+  sameLineItem,
+  samePayment,
+  savableLineItems,
+  savablePayments,
+} from "@/features/invoices/lib/invoiceChildren";
+import {
   derivePaidFields,
   paymentLinkError,
 } from "@/features/invoices/types/invoice";
@@ -159,54 +166,92 @@ const EditInvoicePage = () => {
   const createPaymentMutation = useCreatePaymentMutation();
   const deletePaymentMutation = useDeletePaymentMutation();
 
-  const saveLineItems = async (id: string) => {
-    const validItems = currentLineItems.filter((item) =>
-      item.description?.trim(),
-    );
+  /**
+   * The invoice's line items and payments as the server has them right now,
+   * fetched fresh so a save never diffs against a stale cache
+   */
+  const fetchSavedChildren = async () => {
+    const fresh = await queryClient.fetchQuery({
+      queryKey: useAllInvoicesQuery.getKey({
+        organizationId: organizationId ?? "",
+      }),
+      queryFn: useAllInvoicesQuery.fetcher({
+        organizationId: organizationId ?? "",
+      }),
+    });
+    const node = fresh.invoices?.nodes.find((n) => n?.rowId === invoiceId);
 
-    await Promise.all(
-      validItems.map((item, index) =>
+    return {
+      lineItems: (node?.invoiceLineItems.nodes ?? []).flatMap((li) =>
+        li
+          ? [
+              {
+                id: li.rowId,
+                productId: li.productId ?? null,
+                description: li.description,
+                quantity: li.quantity,
+                unitPrice: li.unitPrice,
+                amount: li.amount,
+                sortOrder: li.sortOrder ?? 0,
+              },
+            ]
+          : [],
+      ),
+      payments: (node?.payments.nodes ?? []).flatMap((pay) =>
+        pay
+          ? [
+              {
+                id: pay.rowId,
+                amount: pay.amount,
+                paidAt: pay.paidAt,
+                reference: pay.reference ?? null,
+                method: pay.method ?? null,
+              },
+            ]
+          : [],
+      ),
+    };
+  };
+
+  /**
+   * Bring the saved line items and payments in line with the edited ones,
+   * touching only rows that changed: new and changed rows are written before
+   * removed ones are deleted, so a failure part way never loses a payment the
+   * user kept
+   */
+  const syncChildren = async (
+    lineItems: Partial<InvoiceLineItem>[],
+    payments: Partial<Payment>[],
+  ) => {
+    const saved = await fetchSavedChildren();
+    const lineItemPlan = planChildSync(
+      saved.lineItems,
+      lineItems,
+      sameLineItem,
+    );
+    const paymentPlan = planChildSync(saved.payments, payments, samePayment);
+
+    await Promise.all([
+      ...lineItemPlan.create.map((item) =>
         createLineItemMutation.mutateAsync({
           input: {
             invoiceLineItem: {
-              invoiceId: id,
+              invoiceId,
+              productId: item.productId ?? null,
               description: item.description ?? "",
               quantity: item.quantity ?? "1",
               unitPrice: item.unitPrice ?? "0",
               amount: item.amount ?? "0",
-              sortOrder: index,
+              sortOrder: item.sortOrder ?? 0,
             },
           },
         }),
       ),
-    );
-  };
-
-  const deleteExistingLineItems = async () => {
-    const existing = invoices.find((inv) => inv.id === invoiceId);
-    if (!existing?.invoiceLineItems.length) return;
-
-    await Promise.all(
-      existing.invoiceLineItems.map((item) =>
-        deleteLineItemMutation.mutateAsync({
-          input: { rowId: item.id },
-        }),
-      ),
-    );
-  };
-
-  const savePayments = async (id: string) => {
-    const validPayments = currentPayments.filter(
-      (payment) =>
-        Number.parseFloat(payment.amount ?? "0") > 0 && payment.paidAt,
-    );
-
-    await Promise.all(
-      validPayments.map((payment) =>
+      ...paymentPlan.create.map((payment) =>
         createPaymentMutation.mutateAsync({
           input: {
             payment: {
-              invoiceId: id,
+              invoiceId,
               amount: payment.amount ?? "0",
               paidAt: payment.paidAt ? new Date(payment.paidAt) : new Date(),
               reference: payment.reference ?? null,
@@ -215,20 +260,18 @@ const EditInvoicePage = () => {
           },
         }),
       ),
-    );
-  };
+    ]);
 
-  const deleteExistingPayments = async () => {
-    const existing = invoices.find((inv) => inv.id === invoiceId);
-    if (!existing?.payments.length) return;
-
-    await Promise.all(
-      existing.payments.map((payment) =>
+    await Promise.all([
+      ...lineItemPlan.remove.map((item) =>
+        deleteLineItemMutation.mutateAsync({ input: { rowId: item.id ?? "" } }),
+      ),
+      ...paymentPlan.remove.map((payment) =>
         deletePaymentMutation.mutateAsync({
-          input: { rowId: payment.id },
+          input: { rowId: payment.id ?? "" },
         }),
       ),
-    );
+    ]);
   };
 
   const handleSave = async () => {
@@ -240,10 +283,17 @@ const EditInvoicePage = () => {
 
     setSaving(true);
     try {
+      const lineItems = savableLineItems(currentLineItems);
+      const payments = savablePayments(currentPayments);
+
+      // line items and payments first, the invoice (and its paid status) last,
+      // so the status never claims payments that were not saved
+      await syncChildren(lineItems, payments);
+
       const paid = derivePaidFields(
         currentInvoice.total ?? "0",
         currentInvoice.status ?? "draft",
-        currentPayments.map((payment) => ({
+        payments.map((payment) => ({
           amount: payment.amount ?? "0",
           paidAt: payment.paidAt ?? "",
         })),
@@ -275,10 +325,6 @@ const EditInvoicePage = () => {
           },
         },
       });
-      await deleteExistingLineItems();
-      await saveLineItems(invoiceId);
-      await deleteExistingPayments();
-      await savePayments(invoiceId);
 
       invalidateInvoices();
       toast.success("Invoice saved");

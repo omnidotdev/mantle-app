@@ -18,6 +18,10 @@ import InvoiceEditorLayout from "@/features/invoices/components/InvoiceEditorLay
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
 import {
+  savableLineItems,
+  savablePayments,
+} from "@/features/invoices/lib/invoiceChildren";
+import {
   derivePaidFields,
   paymentLinkError,
 } from "@/features/invoices/types/invoice";
@@ -136,21 +140,18 @@ const NewInvoicePage = () => {
   const createPaymentMutation = useCreatePaymentMutation();
 
   const saveLineItems = async (invoiceId: string) => {
-    const validItems = currentLineItems.filter((item) =>
-      item.description?.trim(),
-    );
-
     await Promise.all(
-      validItems.map((item, index) =>
+      savableLineItems(currentLineItems).map((item) =>
         createLineItemMutation.mutateAsync({
           input: {
             invoiceLineItem: {
               invoiceId,
+              productId: item.productId ?? null,
               description: item.description ?? "",
               quantity: item.quantity ?? "1",
               unitPrice: item.unitPrice ?? "0",
               amount: item.amount ?? "0",
-              sortOrder: index,
+              sortOrder: item.sortOrder ?? 0,
             },
           },
         }),
@@ -159,13 +160,8 @@ const NewInvoicePage = () => {
   };
 
   const savePayments = async (invoiceId: string) => {
-    const validPayments = currentPayments.filter(
-      (payment) =>
-        Number.parseFloat(payment.amount ?? "0") > 0 && payment.paidAt,
-    );
-
     await Promise.all(
-      validPayments.map((payment) =>
+      savablePayments(currentPayments).map((payment) =>
         createPaymentMutation.mutateAsync({
           input: {
             payment: {
@@ -193,7 +189,8 @@ const NewInvoicePage = () => {
       const paid = derivePaidFields(
         currentInvoice.total ?? "0",
         currentInvoice.status ?? "draft",
-        currentPayments.map((payment) => ({
+        // only payments that will be saved can mark the invoice paid
+        savablePayments(currentPayments).map((payment) => ({
           amount: payment.amount ?? "0",
           paidAt: payment.paidAt ?? "",
         })),
