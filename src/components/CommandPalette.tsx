@@ -1,4 +1,5 @@
 import { CommandPalette as CommandPaletteShell } from "@omnidotdev/thornberry/command-palette";
+import { ShortcutsDialog } from "@omnidotdev/thornberry/shortcuts-dialog";
 import {
   GLOBAL_HOTKEYS,
   hotkeyLabel,
@@ -9,12 +10,14 @@ import {
   Boxes,
   FileText,
   HomeIcon,
+  Keyboard,
   LayoutDashboard,
   MoonStar,
   Receipt,
   Settings,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 
 import { useTheme } from "@/providers/ThemeProvider";
 
@@ -34,6 +37,8 @@ const CommandPalette = () => {
   // is inside a workspace. Its presence gates (and supplies the param for) the
   // workspace navigation commands
   const { workspaceSlug } = useParams({ strict: false });
+
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
@@ -128,10 +133,36 @@ const CommandPalette = () => {
       shortcut: hotkeyLabel(GLOBAL_HOTKEYS.toggleTheme),
       onSelect: toggleTheme,
     },
+    {
+      id: "keyboard-shortcuts",
+      label: "Keyboard shortcuts",
+      group: "Preferences",
+      icon: Keyboard,
+      keywords: ["hotkeys", "keys", "help"],
+      shortcut: hotkeyLabel(GLOBAL_HOTKEYS.showShortcuts),
+      onSelect: () => setShortcutsOpen(true),
+    },
   ];
 
   return (
-    <CommandPaletteShell commands={commands} placeholder="Search actions..." />
+    <>
+      <CommandPaletteShell
+        commands={commands}
+        placeholder="Search actions..."
+      />
+      {/* `?` opens it anywhere; the palette entry opens it too. The sidebar
+          binds `b` to collapse it */}
+      <ShortcutsDialog
+        globals={[
+          "commandPalette",
+          "showShortcuts",
+          "toggleSidebar",
+          "toggleTheme",
+        ]}
+        open={shortcutsOpen}
+        onOpenChange={setShortcutsOpen}
+      />
+    </>
   );
 };
 

@@ -44,6 +44,11 @@ declare module "@tanstack/react-router" {
   interface HistoryState {
     duplicateFrom?: unknown;
   }
+
+  interface StaticDataRouteOption {
+    /** Page title shown in the app top bar (the deepest match with one wins) */
+    title?: string;
+  }
 }
 
 export { getRouter };

@@ -1,17 +1,17 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  Link,
   createFileRoute,
   useLocation,
   useNavigate,
 } from "@tanstack/react-router";
-import { Loader2, Printer } from "lucide-react";
+import { FileTextIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import ContractPreview from "@/features/quotes/components/ContractPreview";
-import QuoteForm from "@/features/quotes/components/QuoteForm";
-import QuotePreview from "@/features/quotes/components/QuotePreview";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import PageContainer from "@/components/core/PageContainer";
+import QuoteEditorLayout from "@/features/quotes/components/QuoteEditorLayout";
 import { buildQuoteLineItemInput } from "@/features/quotes/lib/lineItems";
 import { DEFAULT_QUOTE_TERMS } from "@/features/quotes/types/quote";
 import {
@@ -21,8 +21,6 @@ import {
 } from "@/generated/graphql";
 
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
-
-type PreviewType = "quote" | "contract";
 
 const defaultQuote: Partial<Quote> = {
   quoteNumber: "",
@@ -71,41 +69,6 @@ const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   acceptanceCriteria: ["Client review and sign-off"],
 };
 
-const PreviewToggle = ({
-  value,
-  onChange,
-}: {
-  value: PreviewType;
-  onChange: (v: PreviewType) => void;
-}) => (
-  <div className="mb-4 inline-flex rounded-lg border border-border bg-muted p-1">
-    <button
-      type="button"
-      onClick={() => onChange("quote")}
-      aria-pressed={value === "quote"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "quote"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Quote
-    </button>
-    <button
-      type="button"
-      onClick={() => onChange("contract")}
-      aria-pressed={value === "contract"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "contract"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Contract
-    </button>
-  </div>
-);
-
 const NewQuotePage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug } = Route.useParams();
@@ -123,7 +86,6 @@ const NewQuotePage = () => {
 
   const [saving, setSaving] = useState(false);
   const [generatingNumber, setGeneratingNumber] = useState(false);
-  const [previewType, setPreviewType] = useState<PreviewType>("quote");
 
   const [currentQuote, setCurrentQuote] = useState<Partial<Quote>>({
     ...defaultQuote,
@@ -259,124 +221,55 @@ const NewQuotePage = () => {
         });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save quote");
+      console.error("Failed to create quote", err);
+      toast.error("Could not save the quote. Try again.");
     } finally {
       setSaving(false);
     }
   };
 
-  const renderPreview = () => {
-    if (previewType === "contract") {
-      return (
-        <ContractPreview
-          quote={currentQuote}
-          lineItems={currentLineItems}
-          organizationId={organizationId}
-        />
-      );
-    }
-    return (
-      <QuotePreview
-        quote={currentQuote}
-        lineItems={currentLineItems}
-        organizationId={organizationId}
-      />
-    );
-  };
-
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to create quotes
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileTextIcon}
+          title="No workspace selected"
+          description="Select a workspace from the sidebar to create quotes."
+        />
+      </PageContainer>
     );
   }
 
   if (generatingNumber) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading"
-        />
-      </div>
+      <PageContainer>
+        <LoadingState label="Preparing quote" />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6 print:p-0">
-      <div className="print-hide mb-6 flex items-center justify-between">
-        <Link
-          to="/@{$workspaceSlug}/quotes"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              const originalTitle = document.title;
-              const prefix = previewType === "contract" ? "contract" : "quote";
-              document.title = `${prefix}_${currentQuote.quoteNumber}`;
-              window.print();
-              document.title = originalTitle;
-            }}
-            className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            <Printer size={14} />
-            Print
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {saving ? "Saving..." : "Create Quote"}
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 print:block">
-        <div className="rounded-lg border border-border bg-card p-6 print:hidden">
-          <h2 className="mb-4 font-semibold text-lg">
-            {duplicateFrom ? "Duplicate Quote" : "New Quote"}
-          </h2>
-          <QuoteForm
-            quote={currentQuote}
-            onQuoteChange={setCurrentQuote}
-            lineItems={currentLineItems}
-            onLineItemsChange={setCurrentLineItems}
-            onSave={handleSave}
-            onCancel={() =>
-              navigate({
-                to: "/@{$workspaceSlug}/quotes",
-                params: { workspaceSlug },
-              })
-            }
-            organizationId={organizationId}
-            onRegenerateNumber={handleRegenerateNumber}
-            isRegenerating={regenerating}
-            autoNumberOnClientSelect
-          />
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between print:hidden">
-            <h2 className="mb-4 font-semibold text-lg">Preview</h2>
-            <PreviewToggle value={previewType} onChange={setPreviewType} />
-          </div>
-          {renderPreview()}
-        </div>
-      </div>
-    </div>
+    <QuoteEditorLayout
+      title={duplicateFrom ? "Duplicate quote" : "New quote"}
+      workspaceSlug={workspaceSlug}
+      organizationId={organizationId}
+      onSave={handleSave}
+      saving={saving}
+      quote={currentQuote}
+      onQuoteChange={setCurrentQuote}
+      lineItems={currentLineItems}
+      onLineItemsChange={setCurrentLineItems}
+      onRegenerateNumber={handleRegenerateNumber}
+      isRegenerating={regenerating}
+      autoNumberOnClientSelect
+    />
   );
 };
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/quotes/new")({
   component: NewQuotePage,
+  // Seed line items get random ids on first render; render on the client only
+  // so the server and client never disagree on them
+  ssr: false,
+  staticData: { title: "New quote" },
 });

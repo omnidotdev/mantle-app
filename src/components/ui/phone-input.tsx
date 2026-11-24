@@ -1,8 +1,8 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import * as Flags from "country-flag-icons/react/3x2";
 import { AsYouType } from "libphonenumber-js";
 import { useEffect, useRef, useState } from "react";
 
-import { Input } from "@/components/ui/input";
 import { DEFAULT_REGION, getPhoneCountry, toE164 } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
@@ -72,7 +72,7 @@ const PhoneInput = ({
         {Flag ? (
           <Flag
             title={country ?? undefined}
-            className="h-3.5 w-5 rounded-[2px] shadow-sm ring-1 ring-black/10"
+            className="h-3.5 w-5 rounded-[2px] shadow-sm ring-1 ring-foreground/10"
           />
         ) : (
           // Neutral placeholder keeps the text aligned before a country resolves

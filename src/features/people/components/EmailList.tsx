@@ -1,7 +1,8 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface EmailListProps {
   emails: string[];
@@ -46,17 +47,16 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           onKeyDown={handleKeyDown}
           placeholder="email@example.com"
           aria-label="Add email address"
-          className="flex-1"
+          className="min-w-0 flex-1"
         />
-        <button
-          type="button"
+        <Button
+          variant="outline"
           onClick={addEmail}
           disabled={!input.trim() || !EMAIL_REGEX.test(input.trim())}
-          className="flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <Plus size={14} />
+          <Plus />
           Add
-        </button>
+        </Button>
       </div>
 
       {emails.length > 0 && (
@@ -64,9 +64,9 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           {emails.map((email, index) => (
             <span
               key={email}
-              className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-foreground text-sm"
+              className="inline-flex max-w-full items-center gap-1 rounded-full bg-foreground/6 px-3 py-1 text-foreground text-sm"
             >
-              {email}
+              <span className="truncate">{email}</span>
               <button
                 type="button"
                 onClick={() => removeEmail(index)}

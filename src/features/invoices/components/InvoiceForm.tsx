@@ -1,12 +1,14 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
-import { Check, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Textarea } from "@omnidotdev/thornberry/textarea";
+import { CheckIcon, PlusIcon, RefreshCwIcon, Trash2Icon } from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
+import SectionCard from "@/components/core/SectionCard";
 import SortableList from "@/components/core/SortableList";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   ACCENT_PRESETS,
   DEFAULT_ACCENT,
@@ -20,6 +22,7 @@ import {
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
 import { resolveRegion } from "@/lib/phone";
+import cn, { formatStatus } from "@/lib/utils";
 
 import type {
   Invoice,
@@ -34,7 +37,6 @@ interface InvoiceFormProps {
   onLineItemsChange: (items: Partial<InvoiceLineItem>[]) => void;
   payments: Partial<Payment>[];
   onPaymentsChange: (payments: Partial<Payment>[]) => void;
-  onSave: () => void;
   organizationId?: string;
   /**
    * When true, selecting a client regenerates the invoice number from that
@@ -52,7 +54,6 @@ const InvoiceForm = ({
   onLineItemsChange,
   payments,
   onPaymentsChange,
-  onSave,
   organizationId,
   autoNumberOnClientSelect = false,
 }: InvoiceFormProps) => {
@@ -233,27 +234,34 @@ const InvoiceForm = ({
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* From (your company) */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">From</h3>
+  const balanceLabel = isPaidInFull(invoice.total ?? "0", recordedPayments)
+    ? "Paid in full"
+    : `Balance ${formatCurrency(
+        String(invoiceBalance(invoice.total ?? "0", recordedPayments)),
+        invoice.currency,
+      )}`;
 
+  const activeAccent = orgProfile?.accentColor ?? DEFAULT_ACCENT;
+
+  return (
+    <div className="space-y-5">
+      {/* From (your business) */}
+      <SectionCard title="From">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="from-company-name">Company Name</Label>
+            <Label htmlFor="from-company-name">Business name</Label>
             <Input
               id="from-company-name"
               value={orgProfile?.companyName ?? ""}
               onChange={(e) =>
                 handleProfileChange("companyName", e.target.value)
               }
-              placeholder="Your company name"
+              placeholder="Your business name"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="from-contact-name">Contact Name</Label>
+            <Label htmlFor="from-contact-name">Contact name</Label>
             <Input
               id="from-contact-name"
               value={orgProfile?.contactName ?? ""}
@@ -324,7 +332,7 @@ const InvoiceForm = ({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="from-postal">Postal Code</Label>
+              <Label htmlFor="from-postal">Postal code</Label>
               <Input
                 id="from-postal"
                 value={orgProfile?.postalCode ?? ""}
@@ -336,70 +344,71 @@ const InvoiceForm = ({
             </div>
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Accent color */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Invoice Theme</h3>
-        <div className="flex flex-wrap items-center gap-2">
+      <SectionCard title="Invoice theme">
+        <fieldset className="flex flex-wrap items-center gap-2.5">
+          <legend className="sr-only">Accent color</legend>
           {ACCENT_PRESETS.map((preset) => {
-            const isActive =
-              (orgProfile?.accentColor ?? DEFAULT_ACCENT) === preset.value;
+            const isActive = activeAccent === preset.value;
 
             return (
               <button
                 key={preset.value}
                 type="button"
                 onClick={() => handleProfileChange("accentColor", preset.value)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
-                style={{
-                  backgroundColor: preset.value,
-                  borderColor: isActive ? "var(--foreground)" : "transparent",
-                }}
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full ring-offset-2 ring-offset-card transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  isActive && "ring-2 ring-foreground",
+                )}
+                // User-chosen brand colors, not UI tokens
+                style={{ backgroundColor: preset.value }}
                 aria-label={preset.label}
+                aria-pressed={isActive}
                 title={preset.label}
               >
-                {isActive && <Check size={14} className="text-white" />}
+                {isActive && <CheckIcon className="size-3.5 text-white" />}
               </button>
             );
           })}
-          <div className="flex items-center gap-1.5">
+
+          <span aria-hidden className="mx-1 h-6 w-px bg-border" />
+
+          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-input bg-card py-1 pr-3 pl-1 text-sm shadow-xs hover:bg-accent">
             <input
               type="color"
-              value={orgProfile?.accentColor ?? DEFAULT_ACCENT}
+              value={activeAccent}
               onChange={(e) =>
                 handleProfileChange("accentColor", e.target.value)
               }
-              className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
+              className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-full [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
               aria-label="Custom accent color"
-              title="Custom color"
             />
-            <span className="font-mono text-muted-foreground text-xs">
-              {orgProfile?.accentColor ?? DEFAULT_ACCENT}
+            <span className="font-mono text-muted-foreground text-xs uppercase">
+              {activeAccent}
             </span>
-          </div>
-        </div>
-      </div>
+          </label>
+        </fieldset>
+      </SectionCard>
 
       {/* Invoice details */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Invoice Details</h3>
-
+      <SectionCard title="Invoice details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="invoice-number">Invoice Number</Label>
+            <Label htmlFor="invoice-number">Invoice number</Label>
             <div className="flex gap-2">
               <Input
                 id="invoice-number"
                 value={invoice.invoiceNumber ?? ""}
                 onChange={(e) => handleChange("invoiceNumber", e.target.value)}
-                placeholder="INV-0001"
+                placeholder="e.g. INV-0001"
+                className="tabular"
               />
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 onClick={generateInvoiceNumber}
                 disabled={!organizationId || generateNumberMutation.isPending}
-                className="flex shrink-0 items-center gap-1 rounded-md border border-input px-3 text-muted-foreground text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Generate invoice number"
                 title={
                   invoice.companyId
@@ -407,9 +416,9 @@ const InvoiceForm = ({
                     : "Generate the next number from the workspace numbering scheme"
                 }
               >
-                <RefreshCw size={14} />
-                Generate
-              </button>
+                <RefreshCwIcon />
+                <span className="max-sm:sr-only">Generate</span>
+              </Button>
             </div>
           </div>
 
@@ -427,30 +436,45 @@ const InvoiceForm = ({
             >
               {MANUAL_INVOICE_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {formatStatus(status)}
                 </option>
               ))}
               {invoice.status === "paid" && <option value="paid">Paid</option>}
             </NativeSelect>
-            {invoice.status === "paid" ? (
-              <p className="text-muted-foreground text-xs">
-                Set automatically once payments cover the total. Remove a
-                payment to change it.
-              </p>
-            ) : (
-              <p className="text-muted-foreground text-xs">
-                "Paid" is set automatically once payments cover the total.
-                Record one in Payments below.
-              </p>
-            )}
+            <p className="text-muted-foreground text-xs">
+              {invoice.status === "paid"
+                ? "Set automatically once payments cover the total. Remove a payment to change it."
+                : '"Paid" is set automatically once payments cover the total. Record one in Payments below.'}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-issue-date">Issue date</Label>
+            <Input
+              id="invoice-issue-date"
+              type="date"
+              value={invoice.issueDate ?? ""}
+              onChange={(e) => handleChange("issueDate", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-due-date">Due date</Label>
+            <Input
+              id="invoice-due-date"
+              type="date"
+              value={invoice.dueDate ?? ""}
+              onChange={(e) => handleChange("dueDate", e.target.value || null)}
+            />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Bill To */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium text-foreground text-lg">Bill To</h3>
+      {/* Bill to; overflow stays visible so the client picker popover is not clipped */}
+      <SectionCard
+        title="Bill to"
+        className="overflow-visible"
+        action={
           <PopulateButton
             organizationId={organizationId}
             onPopulateClient={async ({
@@ -486,8 +510,8 @@ const InvoiceForm = ({
               }
             }}
           />
-        </div>
-
+        }
+      >
         <div className="space-y-1.5">
           <Label htmlFor="invoice-bill-to">Recipient name and address</Label>
           <Textarea
@@ -496,133 +520,113 @@ const InvoiceForm = ({
             onChange={(e) => handleChange("billTo", e.target.value || null)}
             rows={4}
             placeholder={
-              "Company Name\nContact Name\n123 Main St\nCity, State ZIP"
+              "Company name\nContact name\n123 Main St\nCity, State ZIP"
             }
           />
         </div>
-      </div>
-
-      {/* Dates */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Dates</h3>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="invoice-issue-date">Issue Date</Label>
-            <Input
-              id="invoice-issue-date"
-              type="date"
-              value={invoice.issueDate ?? ""}
-              onChange={(e) => handleChange("issueDate", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="invoice-due-date">Due Date</Label>
-            <Input
-              id="invoice-due-date"
-              type="date"
-              value={invoice.dueDate ?? ""}
-              onChange={(e) => handleChange("dueDate", e.target.value || null)}
-            />
-          </div>
-        </div>
-      </div>
+      </SectionCard>
 
       {/* Line items */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Line Items</h3>
+      <SectionCard
+        title="Line items"
+        action={
+          <span className="tabular text-muted-foreground text-sm">
+            {formatCurrency(String(subtotal), invoice.currency)}
+          </span>
+        }
+      >
+        <div className="space-y-3">
+          <SortableList
+            items={lineItems}
+            onReorder={onLineItemsChange}
+            renderItem={(item, index) => (
+              <div className="space-y-3 rounded-xl border border-border p-3 sm:p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-sm">Item {index + 1}</span>
+                  {lineItems.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => handleRemoveLineItem(index)}
+                      className="text-destructive hover:text-destructive"
+                      aria-label={`Remove item ${index + 1}`}
+                    >
+                      <Trash2Icon />
+                    </Button>
+                  )}
+                </div>
 
-        <SortableList
-          items={lineItems}
-          onReorder={onLineItemsChange}
-          renderItem={(item, index) => (
-            <div className="space-y-3 rounded-lg border border-border p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-foreground text-sm">
-                  Item {index + 1}
-                </span>
-                {lineItems.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveLineItem(index)}
-                    className="text-destructive hover:text-destructive/80"
-                    aria-label="Remove item"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
-                <Input
-                  id={`item-desc-${item.id}`}
-                  value={item.description ?? ""}
-                  onChange={(e) =>
-                    handleLineItemChange(index, "description", e.target.value)
-                  }
-                  placeholder="Item description"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                  <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
                   <Input
-                    id={`item-qty-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={item.quantity ?? "1"}
+                    id={`item-desc-${item.id}`}
+                    value={item.description ?? ""}
                     onChange={(e) =>
-                      handleLineItemChange(index, "quantity", e.target.value)
+                      handleLineItemChange(index, "description", e.target.value)
                     }
+                    placeholder="Item description"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
-                  <Input
-                    id={`item-price-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={item.unitPrice ?? "0"}
-                    onChange={(e) =>
-                      handleLineItemChange(index, "unitPrice", e.target.value)
-                    }
-                  />
-                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                    <Input
+                      id={`item-qty-${item.id}`}
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="1"
+                      value={item.quantity ?? "1"}
+                      onChange={(e) =>
+                        handleLineItemChange(index, "quantity", e.target.value)
+                      }
+                      className="tabular"
+                    />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
-                  <Input
-                    id={`item-amount-${item.id}`}
-                    value={formatCurrency(item.amount || "0", invoice.currency)}
-                    readOnly
-                    className="bg-muted"
-                  />
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`item-price-${item.id}`}>Unit price</Label>
+                    <Input
+                      id={`item-price-${item.id}`}
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
+                      value={item.unitPrice ?? "0"}
+                      onChange={(e) =>
+                        handleLineItemChange(index, "unitPrice", e.target.value)
+                      }
+                      className="tabular"
+                    />
+                  </div>
+
+                  <div className="col-span-2 space-y-1.5 sm:col-span-1">
+                    <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
+                    <Input
+                      id={`item-amount-${item.id}`}
+                      value={formatCurrency(
+                        item.amount || "0",
+                        invoice.currency,
+                      )}
+                      readOnly
+                      className="tabular bg-muted font-medium"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        />
+            )}
+          />
 
-        <button
-          type="button"
-          onClick={handleAddLineItem}
-          className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
-        >
-          <Plus size={18} />
-          <span>Add Line Item</span>
-        </button>
-      </div>
+          <Button variant="outline" size="sm" onClick={handleAddLineItem}>
+            <PlusIcon />
+            Add line item
+          </Button>
+        </div>
+      </SectionCard>
 
-      {/* Financials */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Financials</h3>
-
+      {/* Totals */}
+      <SectionCard title="Totals">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="invoice-subtotal">Subtotal</Label>
@@ -630,31 +634,33 @@ const InvoiceForm = ({
               id="invoice-subtotal"
               value={formatCurrency(String(subtotal), invoice.currency)}
               readOnly
-              className="bg-muted"
+              className="tabular bg-muted"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="invoice-tax-rate">Tax Rate (%)</Label>
+            <Label htmlFor="invoice-tax-rate">Tax rate (%)</Label>
             <Input
               id="invoice-tax-rate"
               type="number"
+              inputMode="decimal"
               min="0"
               max="100"
               step="0.01"
               value={invoice.taxRate ?? ""}
               onChange={(e) => handleTaxRateChange(e.target.value)}
               placeholder="0"
+              className="tabular"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="invoice-tax-amount">Tax Amount</Label>
+            <Label htmlFor="invoice-tax-amount">Tax amount</Label>
             <Input
               id="invoice-tax-amount"
               value={formatCurrency(invoice.taxAmount || "0", invoice.currency)}
               readOnly
-              className="bg-muted"
+              className="tabular bg-muted"
             />
           </div>
 
@@ -664,7 +670,7 @@ const InvoiceForm = ({
               id="invoice-total"
               value={formatCurrency(invoice.total || "0", invoice.currency)}
               readOnly
-              className="bg-muted font-medium"
+              className="tabular bg-muted font-semibold"
             />
           </div>
 
@@ -678,141 +684,128 @@ const InvoiceForm = ({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Payments */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium text-foreground text-lg">Payments</h3>
-          <span className="text-muted-foreground text-sm">
-            {isPaidInFull(invoice.total ?? "0", recordedPayments)
-              ? "Paid in full"
-              : `Balance ${formatCurrency(
-                  String(
-                    invoiceBalance(invoice.total ?? "0", recordedPayments),
-                  ),
-                  invoice.currency,
-                )}`}
+      <SectionCard
+        title="Payments"
+        action={
+          <span className="tabular text-muted-foreground text-sm">
+            {balanceLabel}
           </span>
+        }
+      >
+        <div className="space-y-3">
+          {payments.length === 0 && (
+            <p className="text-muted-foreground text-sm">
+              No payments recorded yet.
+            </p>
+          )}
+
+          {payments.map((payment, index) => (
+            <div
+              key={payment.id}
+              className="space-y-3 rounded-xl border border-border p-3 sm:p-4"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-medium text-sm">Payment {index + 1}</span>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => handleRemovePayment(index)}
+                  className="text-destructive hover:text-destructive"
+                  aria-label={`Remove payment ${index + 1}`}
+                >
+                  <Trash2Icon />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor={`payment-date-${payment.id}`}>Date</Label>
+                  <Input
+                    id={`payment-date-${payment.id}`}
+                    type="date"
+                    value={payment.paidAt ?? ""}
+                    onChange={(e) =>
+                      handlePaymentChange(index, "paidAt", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={`payment-amount-${payment.id}`}>Amount</Label>
+                  <Input
+                    id={`payment-amount-${payment.id}`}
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    step="0.01"
+                    value={payment.amount ?? ""}
+                    onChange={(e) =>
+                      handlePaymentChange(index, "amount", e.target.value)
+                    }
+                    className="tabular"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={`payment-reference-${payment.id}`}>
+                    Reference
+                  </Label>
+                  <Input
+                    id={`payment-reference-${payment.id}`}
+                    value={payment.reference ?? ""}
+                    onChange={(e) =>
+                      handlePaymentChange(
+                        index,
+                        "reference",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="Check number, transfer ID"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={`payment-method-${payment.id}`}>Method</Label>
+                  <Input
+                    id={`payment-method-${payment.id}`}
+                    value={payment.method ?? ""}
+                    onChange={(e) =>
+                      handlePaymentChange(
+                        index,
+                        "method",
+                        e.target.value || null,
+                      )
+                    }
+                    placeholder="Check, wire, card, cash"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <Button variant="outline" size="sm" onClick={handleAddPayment}>
+            <PlusIcon />
+            Add payment
+          </Button>
         </div>
-
-        {payments.map((payment, index) => (
-          <div
-            key={payment.id}
-            className="space-y-3 rounded-lg border border-border p-4"
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-foreground text-sm">
-                Payment {index + 1}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleRemovePayment(index)}
-                className="text-destructive hover:text-destructive/80"
-                aria-label="Remove payment"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor={`payment-date-${payment.id}`}>Date</Label>
-                <Input
-                  id={`payment-date-${payment.id}`}
-                  type="date"
-                  value={payment.paidAt ?? ""}
-                  onChange={(e) =>
-                    handlePaymentChange(index, "paidAt", e.target.value)
-                  }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`payment-amount-${payment.id}`}>Amount</Label>
-                <Input
-                  id={`payment-amount-${payment.id}`}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={payment.amount ?? ""}
-                  onChange={(e) =>
-                    handlePaymentChange(index, "amount", e.target.value)
-                  }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`payment-reference-${payment.id}`}>
-                  Reference
-                </Label>
-                <Input
-                  id={`payment-reference-${payment.id}`}
-                  value={payment.reference ?? ""}
-                  onChange={(e) =>
-                    handlePaymentChange(
-                      index,
-                      "reference",
-                      e.target.value || null,
-                    )
-                  }
-                  placeholder="Check #, transfer ID, etc."
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`payment-method-${payment.id}`}>Method</Label>
-                <Input
-                  id={`payment-method-${payment.id}`}
-                  value={payment.method ?? ""}
-                  onChange={(e) =>
-                    handlePaymentChange(index, "method", e.target.value || null)
-                  }
-                  placeholder="Check, wire, card, cash"
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-
-        <button
-          type="button"
-          onClick={handleAddPayment}
-          className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
-        >
-          <Plus size={18} />
-          <span>Add Payment</span>
-        </button>
-      </div>
+      </SectionCard>
 
       {/* Notes */}
-      <div className="space-y-4">
-        <Label
-          htmlFor="invoice-notes"
-          className="font-medium text-foreground text-lg"
-        >
+      <SectionCard title="Notes">
+        <Label htmlFor="invoice-notes" className="sr-only">
           Notes
         </Label>
-
         <Textarea
           id="invoice-notes"
           value={invoice.notes ?? ""}
           onChange={(e) => handleChange("notes", e.target.value || null)}
           rows={3}
-          placeholder="Additional notes"
+          placeholder="Payment terms, thank-you note, or anything else for the client"
         />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end border-border border-t pt-4">
-        <button
-          type="button"
-          onClick={onSave}
-          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700"
-        >
-          Save
-        </button>
-      </div>
+      </SectionCard>
     </div>
   );
 };

@@ -3,12 +3,10 @@ import { useMemo } from "react";
 import { Toaster } from "sonner";
 
 import AppSidebar from "@/components/core/AppSidebar";
+import AppTopBar from "@/components/core/AppTopBar";
 import ErrorBoundary from "@/components/core/ErrorBoundary";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import MobileTabBar from "@/components/core/MobileTabBar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import WorkspaceProvider from "@/providers/WorkspaceProvider";
 import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
@@ -58,19 +56,23 @@ function WorkspaceLayout() {
   return (
     <WorkspaceProvider workspaces={organizations}>
       <SidebarProvider>
-        <div className="flex h-dvh w-full">
+        <div className="flex min-h-dvh w-full">
           <AppSidebar className="print:hidden" />
           <SidebarInset>
-            <div className="flex items-center p-2 md:hidden print:hidden">
-              <SidebarTrigger />
-            </div>
+            <AppTopBar />
             <ErrorBoundary>
               <Outlet />
             </ErrorBoundary>
           </SidebarInset>
         </div>
+        <MobileTabBar />
       </SidebarProvider>
-      <Toaster position="bottom-right" richColors />
+      <Toaster
+        position="bottom-right"
+        richColors
+        // Clear the phone tab bar
+        mobileOffset={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+      />
     </WorkspaceProvider>
   );
 }

@@ -37,7 +37,7 @@ const WorkspaceSwitcher = () => {
     from: "/_app/@{$workspaceSlug}",
   });
   const workspaceCtx = useWorkspace();
-  const { closeMobileSidebar } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   const workspaces: SwitchableWorkspace[] = (
     workspaceCtx?.workspaces ?? []
@@ -47,7 +47,8 @@ const WorkspaceSwitcher = () => {
     const slug = getWorkspaceSlugToOpen(workspaces, organizationId, id);
     if (!slug) return;
 
-    closeMobileSidebar();
+    // Close the mobile sheet so the new workspace is visible
+    if (isMobile) setOpenMobile(false);
     navigate({ to: "/@{$workspaceSlug}", params: { workspaceSlug: slug } });
   };
 
