@@ -3,6 +3,7 @@ import { getRequest, setCookie } from "@tanstack/react-start/server";
 
 import auth from "@/lib/auth/auth";
 import { authCache, oidc } from "@/lib/auth/authCache";
+import { toClientSession } from "@/lib/auth/clientSession";
 import { getAuth } from "@/lib/auth/getAuth";
 import { buildIdpLogoutUrl } from "@/lib/auth/idpLogout";
 import { withPersonalWorkspaceFallback } from "@/lib/auth/personalWorkspace";
@@ -19,15 +20,16 @@ export const fetchSession = createServerFn({ method: "POST" }).handler(
 
     const session = await getAuth(request);
 
-    if (session) {
-      session.organizations = await withPersonalWorkspaceFallback(
-        session.organizations,
-        session.user.identityProviderId,
-        PERSONAL_WORKSPACE_FALLBACK,
-      );
-    }
+    if (!session) return { session: null };
 
-    return { session };
+    session.organizations = await withPersonalWorkspaceFallback(
+      session.organizations,
+      session.user.identityProviderId,
+      PERSONAL_WORKSPACE_FALLBACK,
+    );
+
+    // The result reaches the browser, so send only whitelisted fields
+    return { session: toClientSession(session) };
   },
 );
 
