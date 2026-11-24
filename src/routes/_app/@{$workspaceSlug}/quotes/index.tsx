@@ -509,7 +509,7 @@ const QuotesListPage = () => {
           <EmptyState
             icon={FileTextIcon}
             title="No quotes yet"
-            description="Draft a quote with a live preview, then print it as a quote or a signed contract."
+            description="Draft a quote with a live preview, then print it as a quote or as a contract ready to sign."
             action={newQuoteLink}
           />
         ) : (

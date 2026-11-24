@@ -7,10 +7,10 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@omnidotdev/thornberry/menu";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   CopyIcon,
+  ExternalLinkIcon,
   FileQuestionIcon,
   LinkIcon,
   MoreHorizontalIcon,
@@ -36,18 +36,22 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import InvoiceCreditPanel from "@/features/invoices/components/InvoiceCreditPanel";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
+import useDeleteInvoice from "@/features/invoices/hooks/useDeleteInvoice";
 import {
   appliedCredit,
+  displayUrl,
   formatCurrency,
   formatShortDate,
   invoiceClientName,
+  isHttpsUrl,
   paidPercent,
   sumPayments,
   toDuplicateDraft,
 } from "@/features/invoices/types/invoice";
+import { findSourceQuote } from "@/features/quotes/lib/convertToInvoice";
 import {
   useAllInvoicesQuery,
-  useDeleteInvoiceMutation,
+  useAllQuotesQuery,
   useWorkspaceCreditsQuery,
 } from "@/generated/graphql";
 import { formatStatus } from "@/lib/utils";
@@ -61,7 +65,6 @@ const InvoicePreviewPage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug, invoiceId } = Route.useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -74,6 +77,21 @@ const InvoicePreviewPage = () => {
   const { data: creditsData } = useWorkspaceCreditsQuery(
     { organizationId: organizationId ?? "" },
     { enabled: !!organizationId },
+  );
+
+  // Quotes are only read to find the one this invoice was created from
+  const { data: quotesData } = useAllQuotesQuery(
+    { organizationId: organizationId ?? "" },
+    { enabled: !!organizationId },
+  );
+
+  const sourceQuote = useMemo(
+    () =>
+      findSourceQuote(
+        (quotesData?.quotes?.nodes ?? []).flatMap((q) => (q ? [q] : [])),
+        invoiceId,
+      ),
+    [quotesData, invoiceId],
   );
 
   const invoices = useMemo(
@@ -167,7 +185,9 @@ const InvoicePreviewPage = () => {
     [creditsData, invoiceId],
   );
 
-  const deleteMutation = useDeleteInvoiceMutation();
+  const { remove: deleteInvoice, deleting } = useDeleteInvoice(
+    organizationId ?? "",
+  );
 
   const handlePrint = () => {
     if (!invoice) return;
@@ -198,12 +218,7 @@ const InvoicePreviewPage = () => {
 
   const handleDelete = async () => {
     try {
-      await deleteMutation.mutateAsync({ input: { rowId: invoiceId } });
-      await queryClient.invalidateQueries({
-        queryKey: useAllInvoicesQuery.getKey({
-          organizationId: organizationId ?? "",
-        }),
-      });
+      await deleteInvoice(invoiceId);
       toast.success("Invoice deleted");
       navigate({
         to: "/@{$workspaceSlug}/invoices",
@@ -271,6 +286,9 @@ const InvoicePreviewPage = () => {
   const balance = Math.max(total - paid, 0);
   const percent = paidPercent(total, paid);
   const taxRate = Number.parseFloat(invoice.taxRate ?? "");
+  const paymentLink = isHttpsUrl(invoice.paymentLinkUrl)
+    ? (invoice.paymentLinkUrl?.trim() ?? null)
+    : null;
 
   return (
     <PageContainer>
@@ -411,6 +429,20 @@ const InvoicePreviewPage = () => {
 
           <SectionCard title="Details" flush>
             <dl className="grid gap-2.5 px-4 py-4 text-sm sm:px-5">
+              {sourceQuote && (
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">Created from</dt>
+                  <dd className="truncate text-right">
+                    <Link
+                      to="/@{$workspaceSlug}/quotes/$quoteId"
+                      params={{ workspaceSlug, quoteId: sourceQuote.rowId }}
+                      className="tabular font-medium text-primary underline-offset-2 hover:underline"
+                    >
+                      {sourceQuote.quoteNumber}
+                    </Link>
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between gap-3">
                 <dt className="text-muted-foreground">Client contact</dt>
                 <dd className="truncate text-right">
@@ -430,6 +462,26 @@ const InvoicePreviewPage = () => {
                 <dd className="tabular">
                   {Number.isFinite(taxRate) && taxRate > 0 ? (
                     `${taxRate}%`
+                  ) : (
+                    <EmptyValue />
+                  )}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="shrink-0 text-muted-foreground">Payment link</dt>
+                <dd className="min-w-0 text-right">
+                  {paymentLink ? (
+                    <a
+                      href={paymentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex max-w-full items-center gap-1 font-medium text-primary underline-offset-2 hover:underline"
+                    >
+                      <span className="truncate">
+                        {displayUrl(paymentLink)}
+                      </span>
+                      <ExternalLinkIcon className="size-3.5 shrink-0" />
+                    </a>
                   ) : (
                     <EmptyValue />
                   )}
@@ -498,11 +550,15 @@ const InvoicePreviewPage = () => {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title={`Delete invoice ${invoice.invoiceNumber}?`}
-        description="This permanently deletes the invoice. This cannot be undone."
+        description={
+          sourceQuote
+            ? `This permanently deletes the invoice and returns quote ${sourceQuote.quoteNumber} to accepted. This cannot be undone.`
+            : "This permanently deletes the invoice. This cannot be undone."
+        }
         confirmLabel="Delete invoice"
         loadingLabel="Deleting..."
         closeOnConfirm={false}
-        loading={deleteMutation.isPending}
+        loading={deleting}
         onConfirm={handleDelete}
       />
     </PageContainer>

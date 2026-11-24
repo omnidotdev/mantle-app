@@ -5,14 +5,17 @@ import {
   countByStatus,
   creditBalance,
   derivePaidFields,
+  displayUrl,
   formatCurrency,
   formatDate,
   formatShortDate,
   invoiceBalance,
   invoiceClientName,
+  isHttpsUrl,
   isPaidInFull,
   paidInFullDate,
   paidPercent,
+  paymentLinkError,
   sumCredits,
   sumPayments,
   toDuplicateDraft,
@@ -364,5 +367,54 @@ describe("toDuplicateDraft", () => {
         sortOrder: 0,
       },
     ]);
+  });
+});
+
+describe("isHttpsUrl", () => {
+  it("accepts absolute https URLs", () => {
+    expect(isHttpsUrl("https://pay.example.com/i/123")).toBe(true);
+    expect(isHttpsUrl("  https://example.com  ")).toBe(true);
+  });
+
+  it("rejects other schemes, relative paths, and blanks", () => {
+    expect(isHttpsUrl("http://example.com")).toBe(false);
+    expect(isHttpsUrl("javascript:alert(1)")).toBe(false);
+    expect(isHttpsUrl("example.com/pay")).toBe(false);
+    expect(isHttpsUrl("")).toBe(false);
+    expect(isHttpsUrl(null)).toBe(false);
+  });
+});
+
+describe("paymentLinkError", () => {
+  it("allows a blank link", () => {
+    expect(paymentLinkError("")).toBeNull();
+    expect(paymentLinkError(null)).toBeNull();
+    expect(paymentLinkError("   ")).toBeNull();
+  });
+
+  it("allows an https link", () => {
+    expect(paymentLinkError("https://pay.example.com/abc")).toBeNull();
+  });
+
+  it("explains a link that is not https", () => {
+    expect(paymentLinkError("http://pay.example.com")).toBe(
+      "Enter a full link starting with https://",
+    );
+    expect(paymentLinkError("pay.example.com")).toBe(
+      "Enter a full link starting with https://",
+    );
+  });
+});
+
+describe("displayUrl", () => {
+  it("drops the scheme and a bare trailing slash", () => {
+    expect(displayUrl("https://pay.example.com/")).toBe("pay.example.com");
+    expect(displayUrl("https://pay.example.com/i/123")).toBe(
+      "pay.example.com/i/123",
+    );
+  });
+
+  it("returns unparseable input unchanged", () => {
+    expect(displayUrl("not a url")).toBe("not a url");
   });
 });

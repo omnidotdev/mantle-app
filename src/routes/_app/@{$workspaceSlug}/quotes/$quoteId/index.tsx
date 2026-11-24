@@ -1,6 +1,11 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { FileTextIcon, PencilIcon, PrinterIcon } from "lucide-react";
+import {
+  FileTextIcon,
+  PencilIcon,
+  PrinterIcon,
+  ReceiptIcon,
+} from "lucide-react";
 import { useMemo } from "react";
 
 import BackLink from "@/components/core/BackLink";
@@ -15,6 +20,8 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { formatDate } from "@/features/invoices/types/invoice";
 import ContractPreview from "@/features/quotes/components/ContractPreview";
 import QuotePreview from "@/features/quotes/components/QuotePreview";
+import useConvertQuoteToInvoice from "@/features/quotes/hooks/useConvertQuoteToInvoice";
+import { canConvertQuote } from "@/features/quotes/lib/convertToInvoice";
 import { sortLineItemsByOrder } from "@/features/quotes/lib/lineItems";
 import {
   PREVIEW_TYPE_OPTIONS,
@@ -31,6 +38,10 @@ const QuotePreviewPage = () => {
   const { workspaceSlug, quoteId } = Route.useParams();
   const { previewType } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const { convert, converting } = useConvertQuoteToInvoice({
+    organizationId: organizationId ?? "",
+    workspaceSlug,
+  });
 
   const { data, isLoading } = useAllQuotesQuery(
     { organizationId: organizationId ?? "" },
@@ -186,6 +197,35 @@ const QuotePreviewPage = () => {
   const clientLabel = quote.company?.name || quote.clientName;
   const handlePrint = () => printQuoteDocument(previewType, quote.quoteNumber);
 
+  const invoiceAction = (className?: string) => {
+    if (quote.convertedInvoiceId) {
+      return (
+        <Link
+          to="/@{$workspaceSlug}/invoices/$invoiceId"
+          params={{ workspaceSlug, invoiceId: quote.convertedInvoiceId }}
+          className={cn(buttonVariants({ variant: "outline" }), className)}
+        >
+          <ReceiptIcon />
+          View invoice
+        </Link>
+      );
+    }
+
+    if (!canConvertQuote(quote)) return null;
+
+    return (
+      <Button
+        variant="outline"
+        className={className}
+        disabled={converting}
+        onClick={() => convert(quote, orderedLineItems)}
+      >
+        <ReceiptIcon />
+        {converting ? "Creating..." : "Create invoice"}
+      </Button>
+    );
+  };
+
   const editLink = (className?: string) => (
     <Link
       to="/@{$workspaceSlug}/quotes/$quoteId/edit"
@@ -214,6 +254,7 @@ const QuotePreviewPage = () => {
         }
         actions={
           <div className="hidden md:flex md:flex-wrap md:gap-2">
+            {invoiceAction()}
             {editLink()}
             <Button onClick={handlePrint}>
               <PrinterIcon />
@@ -246,6 +287,7 @@ const QuotePreviewPage = () => {
       )}
 
       <MobileActionBar>
+        {invoiceAction("flex-1")}
         {editLink("flex-1")}
         <Button className="flex-1" onClick={handlePrint}>
           <PrinterIcon />

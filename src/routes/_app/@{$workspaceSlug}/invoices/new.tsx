@@ -17,7 +17,10 @@ import { buttonVariants } from "@/components/ui/button";
 import InvoiceEditorLayout from "@/features/invoices/components/InvoiceEditorLayout";
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
-import { derivePaidFields } from "@/features/invoices/types/invoice";
+import {
+  derivePaidFields,
+  paymentLinkError,
+} from "@/features/invoices/types/invoice";
 import {
   useCreateInvoiceLineItemMutation,
   useCreateInvoiceMutation,
@@ -179,6 +182,12 @@ const NewInvoicePage = () => {
   };
 
   const handleSave = async () => {
+    const linkError = paymentLinkError(currentInvoice.paymentLinkUrl);
+    if (linkError) {
+      toast.error(`Payment link: ${linkError}`);
+      return;
+    }
+
     setSaving(true);
     try {
       const paid = derivePaidFields(
@@ -212,6 +221,7 @@ const NewInvoicePage = () => {
             total: currentInvoice.total,
             currency: currentInvoice.currency ?? "USD",
             paidAt: paid.paidAt ? new Date(paid.paidAt) : null,
+            paymentLinkUrl: currentInvoice.paymentLinkUrl?.trim() || null,
           },
         },
       });

@@ -7,7 +7,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@omnidotdev/thornberry/menu";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import {
@@ -36,6 +35,7 @@ import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { SearchInput } from "@/components/ui/search-input";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import useDeleteInvoice from "@/features/invoices/hooks/useDeleteInvoice";
 import { invoiceListSearchSchema } from "@/features/invoices/searchParams";
 import {
   INVOICE_STATUSES,
@@ -45,10 +45,7 @@ import {
   invoiceClientName,
   toDuplicateDraft,
 } from "@/features/invoices/types/invoice";
-import {
-  useAllInvoicesQuery,
-  useDeleteInvoiceMutation,
-} from "@/generated/graphql";
+import { useAllInvoicesQuery } from "@/generated/graphql";
 import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 import { formatStatus } from "@/lib/utils";
 
@@ -62,7 +59,6 @@ const InvoicesListPage = () => {
   const { workspaceSlug } = Route.useParams();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const queryClient = useQueryClient();
 
   const { search: searchTerm, status: statusFilter } = search;
 
@@ -184,21 +180,19 @@ const InvoicesListPage = () => {
     [filteredInvoices],
   );
 
-  const invalidateInvoices = () => {
-    queryClient.invalidateQueries({
-      queryKey: useAllInvoicesQuery.getKey({
-        organizationId: organizationId ?? "",
-      }),
-    });
-  };
+  const { remove: deleteInvoice, deleting } = useDeleteInvoice(
+    organizationId ?? "",
+  );
 
-  const deleteMutation = useDeleteInvoiceMutation({
-    onSuccess: () => {
-      invalidateInvoices();
+  const handleDelete = async () => {
+    try {
+      await deleteInvoice(deleteConfirm.id);
       toast.success("Invoice deleted");
-    },
-    onError: () => toast.error("Could not delete the invoice. Try again."),
-  });
+      setDeleteConfirm((prev) => ({ ...prev, open: false }));
+    } catch {
+      toast.error("Could not delete the invoice. Try again.");
+    }
+  };
 
   const openInvoice = (invoice: Row) =>
     navigate({
@@ -511,9 +505,10 @@ const InvoicesListPage = () => {
         title={`Delete invoice ${deleteConfirm.invoiceNumber}?`}
         description="This permanently deletes the invoice. This cannot be undone."
         confirmLabel="Delete invoice"
-        onConfirm={() =>
-          deleteMutation.mutate({ input: { rowId: deleteConfirm.id } })
-        }
+        loadingLabel="Deleting..."
+        closeOnConfirm={false}
+        loading={deleting}
+        onConfirm={handleDelete}
       />
     </PageContainer>
   );

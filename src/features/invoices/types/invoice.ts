@@ -332,3 +332,39 @@ export const toDuplicateDraft = (
     sortOrder: li.sortOrder,
   })),
 });
+
+/** Whether a value is an absolute https URL with a host */
+export const isHttpsUrl = (value: string | null | undefined): boolean => {
+  if (!value?.trim()) return false;
+
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" && !!url.hostname;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Validation message for the payment link field, or null when it is valid. A
+ * blank link is valid (the invoice simply has none)
+ */
+export const paymentLinkError = (
+  value: string | null | undefined,
+): string | null => {
+  if (!value?.trim()) return null;
+  if (isHttpsUrl(value)) return null;
+
+  return "Enter a full link starting with https://";
+};
+
+/** Short label for a link: its host plus path, without the scheme */
+export const displayUrl = (value: string): string => {
+  try {
+    const url = new URL(value);
+    const path = url.pathname === "/" ? "" : url.pathname;
+    return `${url.host}${path}`;
+  } catch {
+    return value;
+  }
+};

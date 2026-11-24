@@ -19,6 +19,7 @@ import {
   formatCurrency,
   invoiceBalance,
   isPaidInFull,
+  paymentLinkError,
 } from "@/features/invoices/types/invoice";
 import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
 import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
@@ -92,6 +93,8 @@ const InvoiceForm = ({
   const handleRemovePayment = (index: number) => {
     onPaymentsChange(payments.filter((_, i) => i !== index));
   };
+
+  const linkError = paymentLinkError(invoice.paymentLinkUrl);
 
   const recordedPayments = payments.map((payment) => ({
     amount: payment.amount ?? "0",
@@ -679,6 +682,33 @@ const InvoiceForm = ({
         }
       >
         <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="invoice-payment-link">Payment link</Label>
+            <Input
+              id="invoice-payment-link"
+              type="url"
+              inputMode="url"
+              autoComplete="off"
+              value={invoice.paymentLinkUrl ?? ""}
+              onChange={(e) =>
+                handleChange("paymentLinkUrl", e.target.value || null)
+              }
+              placeholder="https://"
+              aria-invalid={!!linkError}
+              aria-describedby="invoice-payment-link-hint"
+            />
+            <p
+              id="invoice-payment-link-hint"
+              className={cn(
+                "text-xs",
+                linkError ? "text-destructive" : "text-muted-foreground",
+              )}
+            >
+              {linkError ??
+                "Optional. Paste a checkout link from your payment provider, then copy it from the invoice page to share with your client."}
+            </p>
+          </div>
+
           {payments.length === 0 && (
             <p className="text-muted-foreground text-sm">
               No payments recorded yet.

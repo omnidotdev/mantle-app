@@ -58,19 +58,19 @@ const modules: { title: string; description: string; icon: LucideIcon }[] = [
   {
     title: "People",
     description:
-      "Contacts, companies, and how they connect, in one searchable place",
+      "Contacts, companies, and how they connect, with CSV import and export",
     icon: UsersIcon,
   },
   {
     title: "Invoices",
     description:
-      "Branded invoices with live previews, payment links, and partial payments",
+      "Live previews, partial payments, workspace credit, and numbering per client",
     icon: ReceiptIcon,
   },
   {
     title: "Quotes & Contracts",
     description:
-      "Draft a quote, get it signed, and turn it into an invoice in one click",
+      "Fixed, hourly, and royalty pricing, a printable contract, and one click to invoice",
     icon: FileTextIcon,
   },
   {
@@ -129,7 +129,7 @@ const previewInvoices = [
     client: "Cobalt & Pine",
     number: "INV-0045",
     amount: "$8,900.00",
-    status: "viewed",
+    status: "paid",
   },
 ];
 
@@ -247,8 +247,8 @@ function HomePage() {
           Four modules, one ledger
         </h2>
         <p className="mt-2 text-base text-muted-foreground">
-          Every record links to the others, so a contact, its quotes, and its
-          invoices stay in sync.
+          Quotes and invoices pick their client from your contacts, and an
+          accepted quote becomes an invoice without retyping a line.
         </p>
 
         <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
