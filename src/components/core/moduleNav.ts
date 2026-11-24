@@ -83,5 +83,5 @@ const isNavActive = (
     : pathname.startsWith(`${home}/${item.key}`);
 };
 
-export { dashboardNav, isNavActive, moduleNav };
 export type { ModuleNavItem };
+export { dashboardNav, isNavActive, moduleNav };

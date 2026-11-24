@@ -51,7 +51,7 @@ function PublicLayout() {
       }}
     >
       {/* Early access banner */}
-      <div className="border-primary/15 border-b bg-primary/10 px-4 py-2 text-center text-sm">
+      <div className="border-b border-primary/15 bg-primary/10 px-4 py-2 text-center text-sm">
         <span className="text-foreground/80">
           <strong className="font-semibold text-foreground">
             {appConfig.name} is in early access.
@@ -76,7 +76,7 @@ function PublicLayout() {
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
           <a
             href="/"
-            className="flex items-center gap-2 font-bold text-lg tracking-tight"
+            className="flex items-center gap-2 text-lg font-bold tracking-tight"
           >
             <span aria-hidden className="text-2xl">
               {appConfig.icon}
@@ -93,7 +93,7 @@ function PublicLayout() {
               href={appConfig.links.docs}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
+              className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               Docs
             </a>
@@ -148,7 +148,7 @@ function PublicLayout() {
               href={appConfig.links.docs}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-11 items-center rounded-xl px-3 font-medium text-sm transition-colors hover:bg-accent"
+              className="flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-colors hover:bg-accent"
             >
               Docs
             </a>
@@ -156,7 +156,7 @@ function PublicLayout() {
               href={appConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-11 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors hover:bg-accent"
+              className="flex h-11 items-center gap-2.5 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-accent"
             >
               <GithubIcon className="size-4" />
               GitHub
@@ -181,7 +181,7 @@ function PublicLayout() {
       </main>
 
       <AppFooter
-        className="border-border border-t bg-card/60 py-8"
+        className="border-t border-border bg-card/60 py-8"
         appSymbol={appConfig.icon}
         docsUrl={appConfig.links.docs}
         orgUrl={appConfig.organization.url}

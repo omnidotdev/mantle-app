@@ -58,7 +58,7 @@ const AppTopBar = () => {
         )}
         <span
           aria-current="page"
-          className="truncate font-semibold text-base md:font-medium md:text-sm"
+          className="truncate text-base font-semibold md:text-sm md:font-medium"
         >
           {title ?? workspaceName}
         </span>
@@ -67,7 +67,7 @@ const AppTopBar = () => {
       <button
         type="button"
         onClick={openCommandPalette}
-        className="ml-auto hidden h-9 w-72 items-center gap-2 rounded-full bg-card px-3.5 text-muted-foreground text-sm shadow-card transition-colors hover:text-foreground md:flex dark:border dark:border-border dark:shadow-none"
+        className="ml-auto hidden h-9 w-72 items-center gap-2 rounded-full bg-card px-3.5 text-sm text-muted-foreground shadow-card transition-colors hover:text-foreground md:flex dark:border dark:border-border dark:shadow-none"
       >
         <SearchIcon className="size-4" />
         <span>Search or jump to</span>

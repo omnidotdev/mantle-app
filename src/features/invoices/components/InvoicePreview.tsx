@@ -114,7 +114,7 @@ const InvoicePreview = ({
           </SwitchControl>
           <SwitchHiddenInput />
         </SwitchRoot>
-        <Label htmlFor="show-details" className="text-muted-foreground text-sm">
+        <Label htmlFor="show-details" className="text-sm text-muted-foreground">
           Show quantity and unit price
         </Label>
       </div>
@@ -133,7 +133,7 @@ const InvoicePreview = ({
               <DocumentBannerLogo logo={logo} />
               <div className="min-w-0">
                 {orgProfile?.companyName ? (
-                  <h3 className="font-bold text-white text-xl">
+                  <h3 className="text-xl font-bold text-white">
                     {orgProfile.companyName}
                   </h3>
                 ) : (
@@ -168,11 +168,11 @@ const InvoicePreview = ({
             </div>
             <div className="sm:text-right print:text-right">
               {/* Not an h1: the page header owns the only h1 */}
-              <h2 className="font-bold text-3xl text-white sm:text-4xl print:text-4xl">
+              <h2 className="text-3xl font-bold text-white sm:text-4xl print:text-4xl">
                 INVOICE
               </h2>
               {paidInFull && (
-                <span className="mt-2 inline-block rounded-md bg-white px-3 py-1 font-bold text-sm text-success uppercase tracking-wide dark:bg-success dark:text-base-1000">
+                <span className="mt-2 inline-block rounded-md bg-white px-3 py-1 text-sm font-bold tracking-wide text-success uppercase dark:bg-success dark:text-base-1000">
                   Paid
                 </span>
               )}
@@ -201,10 +201,10 @@ const InvoicePreview = ({
                   )}
                   <p className="text-base-900">{company.name}</p>
                   {company.email && (
-                    <p className="text-base-600 text-sm">{company.email}</p>
+                    <p className="text-sm text-base-600">{company.email}</p>
                   )}
                   {company.addressLine1 && (
-                    <p className="text-base-600 text-sm">
+                    <p className="text-sm text-base-600">
                       {[
                         company.addressLine1,
                         [
@@ -295,15 +295,15 @@ const InvoicePreview = ({
                     (item) =>
                       item.description && (
                         <tr key={item.id}>
-                          <td className="border-base-200 border-b px-4 py-3 text-base-900">
+                          <td className="border-b border-base-200 px-4 py-3 text-base-900">
                             {item.description}
                           </td>
                           {showDetails && (
                             <>
-                              <td className="border-base-200 border-b px-4 py-3 text-right text-base-900">
+                              <td className="border-b border-base-200 px-4 py-3 text-right text-base-900">
                                 {item.quantity}
                               </td>
-                              <td className="border-base-200 border-b px-4 py-3 text-right text-base-900">
+                              <td className="border-b border-base-200 px-4 py-3 text-right text-base-900">
                                 {formatCurrency(
                                   item.unitPrice || "0",
                                   currency,
@@ -311,7 +311,7 @@ const InvoicePreview = ({
                               </td>
                             </>
                           )}
-                          <td className="border-base-200 border-b px-4 py-3 text-right text-base-900">
+                          <td className="border-b border-base-200 px-4 py-3 text-right text-base-900">
                             {formatCurrency(item.amount || "0", currency)}
                           </td>
                         </tr>
@@ -373,10 +373,10 @@ const InvoicePreview = ({
                   <tbody>
                     {payments.map((payment) => (
                       <tr key={payment.id}>
-                        <td className="border-base-200 border-b px-4 py-2 text-base-900 text-sm">
+                        <td className="border-b border-base-200 px-4 py-2 text-sm text-base-900">
                           {payment.paidAt ? formatDate(payment.paidAt) : ""}
                         </td>
-                        <td className="border-base-200 border-b px-4 py-2 text-base-600 text-sm">
+                        <td className="border-b border-base-200 px-4 py-2 text-sm text-base-600">
                           {[
                             payment.method && formatStatus(payment.method),
                             payment.reference,
@@ -384,7 +384,7 @@ const InvoicePreview = ({
                             .filter(Boolean)
                             .join(" · ")}
                         </td>
-                        <td className="border-base-200 border-b px-4 py-2 text-right text-base-900 text-sm">
+                        <td className="border-b border-base-200 px-4 py-2 text-right text-sm text-base-900">
                           {formatCurrency(payment.amount || "0", currency)}
                         </td>
                       </tr>

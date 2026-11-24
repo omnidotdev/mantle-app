@@ -35,9 +35,9 @@ const ModulesCard = ({ workspaceSlug, summaries }: ModulesCardProps) => (
           >
             <IconChip icon={item.icon} tone={moduleTones[item.key]} />
             <span className="min-w-0 leading-tight">
-              <span className="block font-medium text-sm">{item.label}</span>
+              <span className="block text-sm font-medium">{item.label}</span>
               {summaries[item.key] && (
-                <span className="tabular mt-0.5 block text-muted-foreground text-xs">
+                <span className="tabular mt-0.5 block text-xs text-muted-foreground">
                   {summaries[item.key]}
                 </span>
               )}

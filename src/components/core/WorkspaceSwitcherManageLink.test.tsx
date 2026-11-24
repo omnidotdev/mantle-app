@@ -9,11 +9,14 @@ import type { WorkspaceSwitcherProps } from "@omnidotdev/thornberry/workspace-sw
 
 let switcherProps: WorkspaceSwitcherProps | undefined;
 
+// capture the props the real switcher would receive; defined at module level so React sees a stable component
+const FakeWorkspaceSwitcher = (props: WorkspaceSwitcherProps) => {
+  switcherProps = props;
+  return null;
+};
+
 mock.module("@omnidotdev/thornberry/workspace-switcher", () => ({
-  WorkspaceSwitcher: (props: WorkspaceSwitcherProps) => {
-    switcherProps = props;
-    return null;
-  },
+  WorkspaceSwitcher: FakeWorkspaceSwitcher,
 }));
 
 mock.module("@tanstack/react-router", () => ({

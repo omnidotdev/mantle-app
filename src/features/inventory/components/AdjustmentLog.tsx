@@ -69,17 +69,17 @@ const AdjustmentLog = ({ adjustments, onAdd }: AdjustmentLogProps) => {
       <div className="overflow-x-auto max-md:hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-border border-b">
-              <th className="px-4 py-3 pl-5 text-left font-medium text-muted-foreground text-xs">
+            <tr className="border-b border-border">
+              <th className="px-4 py-3 pl-5 text-left text-xs font-medium text-muted-foreground">
                 Date
               </th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground text-xs">
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">
                 Change
               </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground text-xs">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">
                 Reason
               </th>
-              <th className="px-4 py-3 pr-5 text-left font-medium text-muted-foreground text-xs">
+              <th className="px-4 py-3 pr-5 text-left text-xs font-medium text-muted-foreground">
                 Reference
               </th>
             </tr>
@@ -88,18 +88,18 @@ const AdjustmentLog = ({ adjustments, onAdd }: AdjustmentLogProps) => {
             {adjustments.map((adjustment) => (
               <tr
                 key={adjustment.id}
-                className="border-border border-b text-sm last:border-b-0"
+                className="border-b border-border text-sm last:border-b-0"
               >
-                <td className="h-12 whitespace-nowrap px-4 pl-5">
+                <td className="h-12 px-4 pl-5 whitespace-nowrap">
                   <AdjustmentDate timestamp={adjustment.createdAt} />
                 </td>
-                <td className="h-12 whitespace-nowrap px-4 text-right">
+                <td className="h-12 px-4 text-right whitespace-nowrap">
                   <QuantityChange value={adjustment.quantityChange} />
                 </td>
                 <td className="h-12 px-4">
                   {adjustment.reason || <EmptyValue>No reason</EmptyValue>}
                 </td>
-                <td className="h-12 whitespace-nowrap px-4 pr-5">
+                <td className="h-12 px-4 pr-5 whitespace-nowrap">
                   {adjustment.referenceId ?? <EmptyValue>None</EmptyValue>}
                 </td>
               </tr>
@@ -118,7 +118,7 @@ const AdjustmentLog = ({ adjustments, onAdd }: AdjustmentLogProps) => {
               <p className="truncate font-medium">
                 {adjustment.reason || <EmptyValue>No reason</EmptyValue>}
               </p>
-              <p className="mt-0.5 text-muted-foreground text-xs">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 <AdjustmentDate timestamp={adjustment.createdAt} />
                 {adjustment.referenceId && ` · ${adjustment.referenceId}`}
               </p>

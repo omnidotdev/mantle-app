@@ -62,7 +62,7 @@ const EmailAction = ({ emails, name }: { emails: string[]; name: string }) => {
       </MenuTrigger>
       <Portal>
         <MenuPositioner>
-          <MenuContent className="min-w-48 max-w-[calc(100vw-2rem)]">
+          <MenuContent className="max-w-[calc(100vw-2rem)] min-w-48">
             {emails.map((email) => (
               <MenuItem key={email} value={email} asChild>
                 <a href={mailtoHref(email, name)} className="truncate">

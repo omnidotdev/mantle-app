@@ -138,12 +138,12 @@ const WorkspacePlanCard = ({
       }
     >
       {isLoading ? (
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2Icon className="size-4 animate-spin" aria-hidden />
           Loading your plan
         </div>
       ) : isError || !plan ? (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Your plan details could not be loaded right now. Nothing you have
           saved is affected.
         </p>
@@ -157,7 +157,7 @@ const WorkspacePlanCard = ({
           )}
 
           {(plan.source === "cached" || plan.source === "unavailable") && (
-            <p className="rounded-lg bg-muted px-3 py-2 text-muted-foreground text-xs">
+            <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
               Billing is temporarily unreachable.{" "}
               {plan.source === "cached"
                 ? "Your last known plan applies until it is back."
@@ -183,7 +183,7 @@ const WorkspacePlanCard = ({
           </div>
 
           {!canManage && !isPaid && plan.source !== "bypass" && (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               A workspace owner or admin can upgrade the plan.
             </p>
           )}

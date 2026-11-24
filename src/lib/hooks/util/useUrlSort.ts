@@ -60,5 +60,5 @@ const useUrlSort = ({
   return [sorting, setSorting];
 };
 
-export { sortingFromSearch, searchFromSorting, useUrlSort };
 export type { SortSearch };
+export { searchFromSorting, sortingFromSearch, useUrlSort };

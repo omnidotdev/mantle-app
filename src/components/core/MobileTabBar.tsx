@@ -128,7 +128,7 @@ const MobileTabBar = () => {
     <>
       <nav
         aria-label="Modules"
-        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4rem+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-border border-t bg-card/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden print:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4rem+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-t border-border bg-card/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden print:hidden"
       >
         {[dashboardNav, ...moduleNav].map((item) => {
           const active = isNavActive(item, pathname, workspaceSlug);
@@ -141,7 +141,7 @@ const MobileTabBar = () => {
               params={{ workspaceSlug }}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 font-medium text-[0.6875rem]",
+                "flex flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium",
                 active ? "text-primary" : "text-muted-foreground",
               )}
             >

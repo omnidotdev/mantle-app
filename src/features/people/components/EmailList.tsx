@@ -64,7 +64,7 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           {emails.map((email, index) => (
             <span
               key={email}
-              className="inline-flex max-w-full items-center gap-1 rounded-full bg-foreground/6 px-2.5 py-0.5 font-medium text-foreground text-xs"
+              className="inline-flex max-w-full items-center gap-1 rounded-full bg-foreground/6 px-2.5 py-0.5 text-xs font-medium text-foreground"
             >
               <span className="truncate">{email}</span>
               <button

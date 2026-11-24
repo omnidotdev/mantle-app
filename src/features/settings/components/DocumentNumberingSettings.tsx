@@ -229,7 +229,7 @@ const DocumentNumberingForm = ({
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">
-          <span className="block font-medium text-sm leading-none">
+          <span className="block text-sm leading-none font-medium">
             ID strategy
           </span>
           <SegmentedControl
@@ -279,10 +279,10 @@ const DocumentNumberingForm = ({
 
         {form.idStrategy === "timestamp" && (
           <div className="space-y-1.5">
-            <span className="block font-medium text-sm leading-none">
+            <span className="block text-sm leading-none font-medium">
               Timestamp
             </span>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Uses the date and time each number is generated, e.g. 20260203
               {form.separator}115447.
             </p>
@@ -292,16 +292,16 @@ const DocumentNumberingForm = ({
 
       {/* Live preview */}
       <div className="space-y-1.5">
-        <span className="block font-medium text-sm leading-none">Preview</span>
+        <span className="block text-sm leading-none font-medium">Preview</span>
         <output
           aria-live="polite"
           className="block rounded-lg bg-muted px-4 py-3"
         >
-          <code className="break-all font-mono text-sm">{preview}</code>
+          <code className="font-mono text-sm break-all">{preview}</code>
         </output>
       </div>
 
-      <div className="flex justify-end border-border border-t pt-4">
+      <div className="flex justify-end border-t border-border pt-4">
         <Button
           onClick={handleSave}
           disabled={isSaving}
@@ -331,7 +331,7 @@ const DocumentNumberingSettings = ({
 
   return (
     <SectionCard title="Document numbering">
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Choose how new quote and invoice numbers are built.
       </p>
 

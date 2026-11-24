@@ -54,7 +54,7 @@ const TagList = ({ tags, onChange }: TagListProps) => {
               onClick={() => togglePreset(tag)}
               aria-pressed={isActive}
               className={cn(
-                "inline-flex h-7 select-none items-center rounded-full border px-3 font-medium text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "inline-flex h-7 items-center rounded-full border px-3 text-xs font-medium transition-colors select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
                   ? cn("border-transparent", getTagChipClass(tag))
                   : "border-input bg-card text-muted-foreground hover:bg-accent hover:text-foreground",

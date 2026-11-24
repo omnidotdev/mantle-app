@@ -107,12 +107,12 @@ const QuoteEditorLayout = ({
 
         <div
           className={cn(
-            "print:block! min-w-0",
+            "min-w-0 print:block!",
             pane !== "preview" && "max-xl:hidden",
           )}
         >
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2 print:hidden">
-            <h2 className="font-semibold text-sm">Preview</h2>
+            <h2 className="text-sm font-semibold">Preview</h2>
             <SegmentedControl
               label="Document"
               options={PREVIEW_TYPE_OPTIONS}

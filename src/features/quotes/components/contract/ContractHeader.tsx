@@ -32,7 +32,7 @@ const ContractHeader = ({
       <div className="flex min-w-0 items-center gap-3">
         <DocumentBannerLogo logo={logo} />
         <div className="min-w-0">
-          <h1 className="font-bold text-2xl">Service agreement</h1>
+          <h1 className="text-2xl font-bold">Service agreement</h1>
           <p style={{ color: accent.subtleText }}>
             Professional services contract
           </p>

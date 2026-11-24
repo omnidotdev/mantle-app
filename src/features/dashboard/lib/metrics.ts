@@ -326,6 +326,13 @@ const primaryCurrency = (currencies: (string | null | undefined)[]): string => {
 const pluralize = (count: number, singular: string, plural?: string): string =>
   `${count} ${count === 1 ? singular : (plural ?? `${singular}s`)}`;
 
+export type {
+  DashboardInvoice,
+  DashboardPayment,
+  DashboardProduct,
+  DashboardQuote,
+  MonthBucket,
+};
 export {
   addDays,
   addMonths,
@@ -348,11 +355,4 @@ export {
   pluralize,
   primaryCurrency,
   toDateKey,
-};
-export type {
-  DashboardInvoice,
-  DashboardPayment,
-  DashboardProduct,
-  DashboardQuote,
-  MonthBucket,
 };

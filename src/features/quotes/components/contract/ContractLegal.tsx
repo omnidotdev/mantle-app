@@ -17,7 +17,7 @@ const ContractLegal = ({
     <div className="space-y-4 text-sm">
       {/* Section 10: Liability */}
       <div>
-        <h3 className="font-semibold text-lg">10. Limitation of liability</h3>
+        <h3 className="text-lg font-semibold">10. Limitation of liability</h3>
         <p>
           The Developer&apos;s total liability under this Agreement shall not
           exceed the total amount paid by the Client for services. Neither party
@@ -27,7 +27,7 @@ const ContractLegal = ({
 
       {/* Section 11: Compliance */}
       <div>
-        <h3 className="font-semibold text-lg">11. Compliance disclaimer</h3>
+        <h3 className="text-lg font-semibold">11. Compliance disclaimer</h3>
         <p>
           The Developer makes no guarantees regarding regulatory compliance
           (e.g. HIPAA, GDPR, PCI-DSS). The Client is responsible for ensuring
@@ -37,7 +37,7 @@ const ContractLegal = ({
 
       {/* Section 12: Termination */}
       <div>
-        <h3 className="font-semibold text-lg">
+        <h3 className="text-lg font-semibold">
           12. Termination and refund policy
         </h3>
         <p>
@@ -49,7 +49,7 @@ const ContractLegal = ({
 
       {/* Section 13: Governing law */}
       <div>
-        <h3 className="font-semibold text-lg">
+        <h3 className="text-lg font-semibold">
           13. Governing law and dispute resolution
         </h3>
         {governingState ? (
@@ -74,7 +74,7 @@ const ContractLegal = ({
 
       {/* Section 14: Miscellaneous */}
       <div>
-        <h3 className="font-semibold text-lg">14. Miscellaneous</h3>
+        <h3 className="text-lg font-semibold">14. Miscellaneous</h3>
         <p>
           This Agreement constitutes the entire agreement between the parties.
           Any amendments must be in writing and signed by both parties. If any
@@ -86,7 +86,7 @@ const ContractLegal = ({
       {/* Section 15: Additional terms */}
       {additionalTerms && additionalTerms.length > 0 && (
         <div>
-          <h3 className="font-semibold text-lg">15. Additional terms</h3>
+          <h3 className="text-lg font-semibold">15. Additional terms</h3>
           <ul className="list-disc space-y-1 pl-5">
             {additionalTerms.map((term) => (
               <li key={term}>{term}</li>

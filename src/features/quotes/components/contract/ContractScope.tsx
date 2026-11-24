@@ -21,7 +21,7 @@ const ContractScope = ({
 
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold text-lg">1. Scope of work</h3>
+      <h3 className="text-lg font-semibold">1. Scope of work</h3>
 
       <div className="space-y-2 text-sm">
         <p>
@@ -46,7 +46,7 @@ const ContractScope = ({
 
                 {item.deliverables && item.deliverables.length > 0 && (
                   <div className="mt-2">
-                    <p className="font-medium text-xs">Deliverables:</p>
+                    <p className="text-xs font-medium">Deliverables:</p>
                     <ul className="list-disc space-y-0.5 pl-5 text-sm">
                       {item.deliverables.map((d) => (
                         <li key={d}>{d}</li>
@@ -58,7 +58,7 @@ const ContractScope = ({
                 {item.acceptanceCriteria &&
                   item.acceptanceCriteria.length > 0 && (
                     <div className="mt-2">
-                      <p className="font-medium text-xs">
+                      <p className="text-xs font-medium">
                         Acceptance criteria:
                       </p>
                       <ul className="list-disc space-y-0.5 pl-5 text-sm">
@@ -73,7 +73,7 @@ const ContractScope = ({
           </div>
         )}
 
-        <p className="text-base-500 text-xs italic">
+        <p className="text-xs text-base-500 italic">
           Any modifications outside the defined scope will require a separate
           agreement or amendment to this contract.
         </p>

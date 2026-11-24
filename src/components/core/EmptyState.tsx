@@ -34,9 +34,9 @@ const EmptyState = ({
         <Icon className="size-6" />
       </div>
     )}
-    <p className="font-semibold text-base">{title}</p>
+    <p className="text-base font-semibold">{title}</p>
     {description && (
-      <p className="mt-1 max-w-sm text-muted-foreground text-sm">
+      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
         {description}
       </p>
     )}

@@ -32,5 +32,5 @@ const resolveDocumentLogo = (
   };
 };
 
-export { DEFAULT_LOGO_SRC, resolveDocumentLogo };
 export type { DocumentLogo };
+export { DEFAULT_LOGO_SRC, resolveDocumentLogo };

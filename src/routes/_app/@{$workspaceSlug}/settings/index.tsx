@@ -52,7 +52,7 @@ const Field = ({
 
 /** Small heading that splits the profile card into groups */
 const GroupHeading = ({ children }: { children: ReactNode }) => (
-  <h3 className="font-semibold text-sm">{children}</h3>
+  <h3 className="text-sm font-semibold">{children}</h3>
 );
 
 /** Preview of the logo URL, hidden until the image actually loads */
@@ -64,7 +64,7 @@ const LogoPreview = ({ url }: { url: string }) => {
 
   if (failed) {
     return (
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         This image could not be loaded. Check the URL.
       </p>
     );
@@ -78,7 +78,7 @@ const LogoPreview = ({ url }: { url: string }) => {
         onError={() => setFailed(true)}
         className="h-12 max-w-40 rounded-lg bg-muted object-contain p-1.5"
       />
-      <span className="text-muted-foreground text-xs">Preview</span>
+      <span className="text-xs text-muted-foreground">Preview</span>
     </div>
   );
 };
@@ -197,7 +197,7 @@ const SettingsPage = () => {
             }}
           >
             {!canEdit && (
-              <p className="rounded-lg bg-muted px-3 py-2 text-muted-foreground text-sm">
+              <p className="rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
                 Only workspace owners and admins can change the workspace
                 profile.
               </p>
@@ -383,9 +383,9 @@ const SettingsPage = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse items-stretch gap-3 border-border border-t pt-4 sm:flex-row sm:items-center sm:justify-end">
+              <div className="flex flex-col-reverse items-stretch gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-end">
                 {!isValid && (
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Company name, contact name, and email are required.
                   </p>
                 )}

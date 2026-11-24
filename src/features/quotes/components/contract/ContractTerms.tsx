@@ -16,7 +16,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
     <div className="space-y-4 text-sm">
       {/* Section 3: Timeline */}
       <div>
-        <h3 className="font-semibold text-lg">3. Timeline</h3>
+        <h3 className="text-lg font-semibold">3. Timeline</h3>
         <p>
           {timeRange
             ? `The estimated project timeline is ${timeRange}.`
@@ -27,7 +27,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
 
       {/* Section 4: Ownership */}
       <div>
-        <h3 className="font-semibold text-lg">4. Ownership and licensing</h3>
+        <h3 className="text-lg font-semibold">4. Ownership and licensing</h3>
         <p>
           Upon full payment, the Client receives a perpetual, non-exclusive
           license to use all deliverables. The Developer retains ownership of
@@ -38,7 +38,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
 
       {/* Section 5: Portfolio */}
       <div>
-        <h3 className="font-semibold text-lg">
+        <h3 className="text-lg font-semibold">
           5. Portfolio and marketing rights
         </h3>
         <p>
@@ -50,7 +50,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
 
       {/* Section 6: Confidentiality */}
       <div>
-        <h3 className="font-semibold text-lg">6. Confidentiality</h3>
+        <h3 className="text-lg font-semibold">6. Confidentiality</h3>
         <p>
           Both parties agree to keep confidential any proprietary information
           shared during the course of this engagement. This obligation survives
@@ -60,7 +60,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
 
       {/* Section 7: Maintenance */}
       <div>
-        <h3 className="font-semibold text-lg">7. Maintenance and support</h3>
+        <h3 className="text-lg font-semibold">7. Maintenance and support</h3>
         <p>
           A 30-day warranty period for bug fixes begins upon delivery of each
           milestone.
@@ -77,7 +77,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
 
       {/* Section 8: Change requests */}
       <div>
-        <h3 className="font-semibold text-lg">
+        <h3 className="text-lg font-semibold">
           8. Change requests and scope creep
         </h3>
         <p>
@@ -103,7 +103,7 @@ const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
 
       {/* Section 9: External costs */}
       <div>
-        <h3 className="font-semibold text-lg">9. External provider costs</h3>
+        <h3 className="text-lg font-semibold">9. External provider costs</h3>
         <p>
           Any third-party services, APIs, hosting, or tools required for the
           project are the Client&apos;s financial responsibility unless

@@ -9,7 +9,7 @@ export const getLastOrgCookie = createServerFn({ method: "POST" }).handler(
 );
 
 export const setLastOrgCookie = createServerFn({ method: "POST" })
-  .inputValidator((data: string) => data)
+  .validator((data: string) => data)
   .handler(async ({ data: slug }) => {
     setCookie(COOKIE_NAME, slug, {
       maxAge: COOKIE_TTL,

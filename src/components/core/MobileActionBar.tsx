@@ -16,7 +16,7 @@ const MobileActionBar = ({
 }) => (
   <div
     className={cn(
-      "fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 flex items-center gap-2 border-border border-t bg-card/90 px-4 py-2.5 backdrop-blur-md md:hidden print:hidden",
+      "fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 flex items-center gap-2 border-t border-border bg-card/90 px-4 py-2.5 backdrop-blur-md md:hidden print:hidden",
       className,
     )}
   >

@@ -25,10 +25,10 @@ const InvoicedChart = ({ months, currency }: InvoicedChartProps) => {
   return (
     <div>
       <p className="flex flex-wrap items-baseline gap-x-2.5">
-        <span className="tabular font-bold text-xl tracking-tight sm:text-2xl">
+        <span className="tabular text-xl font-bold tracking-tight sm:text-2xl">
           {formatWholeCurrency(total, currency)}
         </span>
-        <span className="text-muted-foreground text-sm">
+        <span className="text-sm text-muted-foreground">
           last {months.length} months
         </span>
       </p>
@@ -36,7 +36,7 @@ const InvoicedChart = ({ months, currency }: InvoicedChartProps) => {
       <div
         role="img"
         aria-label={`Invoiced per month, ${rangeLabel}, ${formatWholeCurrency(total, currency)} in total`}
-        className="mt-4 grid h-40 items-end gap-2.5 border-border border-b pt-8"
+        className="mt-4 grid h-40 items-end gap-2.5 border-b border-border pt-8"
         style={{ gridTemplateColumns: `repeat(${months.length}, 1fr)` }}
       >
         {months.map((month, index) => {
@@ -58,7 +58,7 @@ const InvoicedChart = ({ months, currency }: InvoicedChartProps) => {
                   minHeight: month.total > 0 ? 2 : 0,
                 }}
               >
-                <span className="tabular pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-background text-xs opacity-0 shadow-raised transition-opacity group-hover:opacity-100">
+                <span className="tabular pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-md bg-foreground px-2 py-1 text-xs whitespace-nowrap text-background opacity-0 shadow-raised transition-opacity group-hover:opacity-100">
                   {month.label}: {formatWholeCurrency(month.total, currency)}
                 </span>
               </div>
@@ -69,7 +69,7 @@ const InvoicedChart = ({ months, currency }: InvoicedChartProps) => {
 
       <div
         aria-hidden
-        className="mt-1.5 grid gap-2.5 text-center text-muted-foreground text-xs"
+        className="mt-1.5 grid gap-2.5 text-center text-xs text-muted-foreground"
         style={{ gridTemplateColumns: `repeat(${months.length}, 1fr)` }}
       >
         {months.map((month) => (

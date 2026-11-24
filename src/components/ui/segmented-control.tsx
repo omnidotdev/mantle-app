@@ -49,7 +49,7 @@ const SegmentedControl = <T extends string>({
           aria-checked={selected}
           onClick={() => onValueChange(option.value)}
           className={cn(
-            "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "inline-flex shrink-0 items-center gap-1.5 rounded-full font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
             size === "sm" ? "h-7 px-3 text-xs" : "h-8 px-3.5 text-sm",
             selected
               ? "bg-card text-foreground shadow-raised"
@@ -58,7 +58,7 @@ const SegmentedControl = <T extends string>({
         >
           {option.label}
           {option.count !== undefined && (
-            <span className="tabular text-muted-foreground text-xs">
+            <span className="tabular text-xs text-muted-foreground">
               {option.count}
             </span>
           )}
@@ -68,5 +68,5 @@ const SegmentedControl = <T extends string>({
   </div>
 );
 
-export { SegmentedControl };
 export type { SegmentedOption };
+export { SegmentedControl };

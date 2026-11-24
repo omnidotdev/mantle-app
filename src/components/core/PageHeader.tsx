@@ -33,13 +33,13 @@ const PageHeader = ({
     <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <h1 className="font-bold text-2xl tracking-tight md:text-[1.75rem] md:leading-9">
+          <h1 className="text-2xl font-bold tracking-tight md:text-[1.75rem] md:leading-9">
             {title}
           </h1>
           {badge}
         </div>
         {description && (
-          <p className="mt-1 text-muted-foreground text-sm">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}
       </div>
       {actions && (

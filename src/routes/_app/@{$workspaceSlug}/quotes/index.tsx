@@ -47,7 +47,8 @@ import {
 import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 import cn, { formatStatus } from "@/lib/utils";
 
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
 
 const DEFAULT_SORTING: SortingState = [{ id: "validUntil", desc: true }];
@@ -308,7 +309,7 @@ const QuotesListPage = () => {
       },
     });
 
-  const columns = useMemo<ColumnDef<(typeof quotes)[number]>[]>(
+  const columns = useMemo<DataTableColumnDef<(typeof quotes)[number]>[]>(
     () => [
       {
         id: "quoteNumber",
@@ -554,7 +555,7 @@ const QuotesListPage = () => {
                     <span className="tabular font-semibold">
                       {formatCurrency(quote.total, quote.currency)}
                     </span>
-                    <span className="truncate text-muted-foreground text-sm">
+                    <span className="truncate text-sm text-muted-foreground">
                       <span className="tabular">{quote.quoteNumber}</span>
                       {" · "}
                       {companyName ?? "No client yet"}

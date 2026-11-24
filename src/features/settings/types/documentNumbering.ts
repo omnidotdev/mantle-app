@@ -52,6 +52,5 @@ const formatPreview = (config: DocumentNumberingPreview): string => {
   return parts.join(config.separator);
 };
 
-export { formatPreview };
-
 export type { DocumentNumberingPreview };
+export { formatPreview };

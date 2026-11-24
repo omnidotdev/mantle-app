@@ -257,7 +257,7 @@ const QuoteForm = ({
     <div className="space-y-5">
       {/* Accent color */}
       <SectionCard title="Theme">
-        <p className="mb-3 text-muted-foreground text-sm">
+        <p className="mb-3 text-sm text-muted-foreground">
           Accent color for quotes and contracts in this workspace
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -270,7 +270,7 @@ const QuoteForm = ({
                 type="button"
                 onClick={() => handleProfileChange("accentColor", preset.value)}
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-full transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+                  "flex size-8 items-center justify-center rounded-full transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none",
                   isActive &&
                     "ring-2 ring-foreground ring-offset-2 ring-offset-card",
                 )}
@@ -294,7 +294,7 @@ const QuoteForm = ({
               aria-label="Custom accent color"
               title="Custom color"
             />
-            <span className="font-mono text-muted-foreground text-xs">
+            <span className="font-mono text-xs text-muted-foreground">
               {activeAccent}
             </span>
           </div>
@@ -528,7 +528,7 @@ const QuoteForm = ({
             renderItem={(item, index) => (
               <div className="space-y-3 rounded-xl border border-border bg-card p-4">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-sm">
+                  <span className="text-sm font-medium">
                     {index === 0
                       ? "Base development cost"
                       : `Item ${index + 1}`}
@@ -888,7 +888,7 @@ const QuoteForm = ({
 
                 {/* Scope of work */}
                 <details className="group rounded-lg bg-muted/60 px-3 py-2">
-                  <summary className="cursor-pointer font-medium text-muted-foreground text-sm hover:text-foreground">
+                  <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
                     Scope of work (
                     <span className="tabular">
                       {(item.deliverables?.length ?? 0) +

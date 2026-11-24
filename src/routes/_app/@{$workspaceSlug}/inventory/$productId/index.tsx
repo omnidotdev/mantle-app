@@ -260,7 +260,7 @@ const ProductDetailPage = () => {
 
       {product.description && (
         <SectionCard title="Description" className="mt-6">
-          <p className="whitespace-pre-line text-sm">{product.description}</p>
+          <p className="text-sm whitespace-pre-line">{product.description}</p>
         </SectionCard>
       )}
 
@@ -269,8 +269,8 @@ const ProductDetailPage = () => {
         aria-labelledby="adjustment-history-heading"
         className="mt-6 min-w-0 scroll-mt-20 overflow-hidden rounded-2xl bg-card text-card-foreground shadow-card dark:border dark:border-border/60 dark:shadow-none"
       >
-        <div className="flex min-h-13 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-border border-b px-4 py-3 sm:px-5">
-          <h2 id="adjustment-history-heading" className="font-semibold text-sm">
+        <div className="flex min-h-13 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border px-4 py-3 sm:px-5">
+          <h2 id="adjustment-history-heading" className="text-sm font-semibold">
             Adjustment history
           </h2>
           {adjustments.length > 0 && (
@@ -294,7 +294,7 @@ const ProductDetailPage = () => {
           <form
             method="post"
             onSubmit={handleAddAdjustment}
-            className="grid grid-cols-1 gap-4 border-border border-b bg-muted/60 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto] lg:items-end"
+            className="grid grid-cols-1 gap-4 border-b border-border bg-muted/60 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto] lg:items-end"
           >
             <div className="space-y-1.5">
               <Label htmlFor="adjustment-reason">Reason</Label>

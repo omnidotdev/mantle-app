@@ -14,5 +14,5 @@ const inventoryListSearchSchema = z.object({
   ),
 });
 
-export { INVENTORY_FILTERS, inventoryListSearchSchema };
 export type { InventoryFilter };
+export { INVENTORY_FILTERS, inventoryListSearchSchema };

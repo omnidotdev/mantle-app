@@ -1,8 +1,16 @@
 import {
+  createSortedRowModel,
   flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
+  metaHelper,
+  rowSortingFeature,
+  sortFn_alphanumeric,
+  sortFn_alphanumericCaseSensitive,
+  sortFn_basic,
+  sortFn_datetime,
+  sortFn_text,
+  sortFn_textCaseSensitive,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 
@@ -12,13 +20,43 @@ import type {
   ColumnDef,
   OnChangeFn,
   Row,
+  RowData,
   SortingState,
 } from "@tanstack/react-table";
 import type { KeyboardEvent, ReactNode } from "react";
 
-type DataTableProps<TData> = {
+type DataTableColumnMeta = {
+  /** Horizontal alignment of the header and cells */
+  align?: "left" | "right";
+};
+
+/**
+ * Table features every `DataTable` is built with: client-side sorting and typed
+ * column meta. Every built-in sort function is registered so `sortFn: "auto"`
+ * keeps picking text, datetime, alphanumeric, or basic sorting per column
+ */
+const dataTableFeatures = tableFeatures({
+  rowSortingFeature,
+  sortedRowModel: createSortedRowModel(),
+  sortFns: {
+    alphanumeric: sortFn_alphanumeric,
+    alphanumericCaseSensitive: sortFn_alphanumericCaseSensitive,
+    basic: sortFn_basic,
+    datetime: sortFn_datetime,
+    text: sortFn_text,
+    textCaseSensitive: sortFn_textCaseSensitive,
+  },
+  columnMeta: metaHelper<DataTableColumnMeta>(),
+});
+
+type DataTableColumnDef<TData extends RowData> = ColumnDef<
+  typeof dataTableFeatures,
+  TData
+>;
+
+type DataTableProps<TData extends RowData> = {
   data: TData[];
-  columns: ColumnDef<TData>[];
+  columns: DataTableColumnDef<TData>[];
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
   /** Minimum table width before it scrolls sideways (desktop table only) */
@@ -42,7 +80,7 @@ type DataTableProps<TData> = {
  * `renderMobileRow` is given). Rows are clickable and keyboard reachable when
  * `onRowClick` is set. Meant to sit flush inside a `SectionCard`
  */
-const DataTable = <TData,>({
+const DataTable = <TData extends RowData>({
   data,
   columns,
   sorting,
@@ -53,13 +91,12 @@ const DataTable = <TData,>({
   rowLabel,
   renderMobileRow,
 }: DataTableProps<TData>) => {
-  const table = useReactTable({
+  const table = useTable({
+    features: dataTableFeatures,
     data,
     columns,
     state: { sorting },
     onSortingChange,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   if (data.length === 0 && emptyState) return <>{emptyState}</>;
@@ -74,16 +111,11 @@ const DataTable = <TData,>({
         <table className="w-full" style={minWidth ? { minWidth } : undefined}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-border border-b">
+              <tr key={headerGroup.id} className="border-b border-border">
                 {headerGroup.headers.map((header) => {
                   const canSort = header.column.getCanSort();
                   const sortDir = header.column.getIsSorted();
-                  const align =
-                    (
-                      header.column.columnDef.meta as {
-                        align?: "left" | "right";
-                      }
-                    )?.align ?? "left";
+                  const align = header.column.columnDef.meta?.align ?? "left";
 
                   const label = header.isPlaceholder
                     ? null
@@ -105,7 +137,7 @@ const DataTable = <TData,>({
                               : undefined
                       }
                       className={cn(
-                        "whitespace-nowrap px-4 py-3 font-medium text-muted-foreground text-xs first:pl-5 last:pr-5",
+                        "px-4 py-3 text-xs font-medium whitespace-nowrap text-muted-foreground first:pl-5 last:pr-5",
                         align === "right" ? "text-right" : "text-left",
                       )}
                     >
@@ -174,12 +206,12 @@ const SortIcon = ({ dir }: { dir: false | "asc" | "desc" }) => {
   return <ChevronsUpDown size={14} className="opacity-50" />;
 };
 
-const DataRow = <TData,>({
+const DataRow = <TData extends RowData>({
   row,
   onRowClick,
   rowLabel,
 }: {
-  row: Row<TData>;
+  row: Row<typeof dataTableFeatures, TData>;
   onRowClick?: (row: TData) => void;
   rowLabel?: (row: TData) => string;
 }) => {
@@ -194,7 +226,7 @@ const DataRow = <TData,>({
   return (
     <tr
       className={cn(
-        "group/row border-border border-b transition-colors last:border-b-0",
+        "group/row border-b border-border transition-colors last:border-b-0",
         onRowClick &&
           "cursor-pointer hover:bg-accent/60 focus-visible:bg-accent/60 focus-visible:outline-none",
       )}
@@ -203,16 +235,14 @@ const DataRow = <TData,>({
       tabIndex={onRowClick ? 0 : undefined}
       aria-label={onRowClick ? rowLabel?.(row.original) : undefined}
     >
-      {row.getVisibleCells().map((cell) => {
-        const align =
-          (cell.column.columnDef.meta as { align?: "left" | "right" })?.align ??
-          "left";
+      {row.getAllCells().map((cell) => {
+        const align = cell.column.columnDef.meta?.align ?? "left";
 
         return (
           <td
             key={cell.id}
             className={cn(
-              "h-14 whitespace-nowrap px-4 text-sm first:pl-5 last:pr-5",
+              "h-14 px-4 text-sm whitespace-nowrap first:pl-5 last:pr-5",
               align === "right" && "text-right",
             )}
           >
@@ -224,5 +254,5 @@ const DataRow = <TData,>({
   );
 };
 
+export type { DataTableColumnDef, DataTableProps };
 export { DataTable };
-export type { DataTableProps };
