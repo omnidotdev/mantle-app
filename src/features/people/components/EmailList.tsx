@@ -64,16 +64,16 @@ const EmailList = ({ emails, onChange }: EmailListProps) => {
           {emails.map((email, index) => (
             <span
               key={email}
-              className="inline-flex max-w-full items-center gap-1 rounded-full bg-foreground/6 px-3 py-1 text-foreground text-sm"
+              className="inline-flex max-w-full items-center gap-1 rounded-full bg-foreground/6 px-2.5 py-0.5 font-medium text-foreground text-xs"
             >
               <span className="truncate">{email}</span>
               <button
                 type="button"
                 onClick={() => removeEmail(index)}
-                className="text-muted-foreground hover:text-foreground"
+                className="-mr-1 rounded-full p-0.5 opacity-70 hover:opacity-100"
                 aria-label={`Remove ${email}`}
               >
-                <X size={14} />
+                <X size={12} />
               </button>
             </span>
           ))}
