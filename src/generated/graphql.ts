@@ -138,6 +138,17 @@ export type CreateInvoiceLineItemInput = {
   invoiceLineItem: InvoiceLineItemInput;
 };
 
+/** All input for the create `OrganizationSetting` mutation. */
+export type CreateOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `OrganizationSetting` to be created by this mutation. */
+  organizationSetting: OrganizationSettingInput;
+};
+
 /** All input for the create `Payment` mutation. */
 export type CreatePaymentInput = {
   /**
@@ -406,6 +417,52 @@ export type InvoicePatch = {
   updatedAt?: Date | null | undefined;
 };
 
+/** An input for mutations affecting `OrganizationSetting` */
+export type OrganizationSettingInput = {
+  accentColor?: string | null | undefined;
+  addressLine1?: string | null | undefined;
+  addressLine2?: string | null | undefined;
+  city?: string | null | undefined;
+  companyName?: string | null | undefined;
+  contactName?: string | null | undefined;
+  contactTitle?: string | null | undefined;
+  country?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  email?: string | null | undefined;
+  logoUrl?: string | null | undefined;
+  organizationId: string;
+  phone?: string | null | undefined;
+  postalCode?: string | null | undefined;
+  registrationState?: string | null | undefined;
+  rowId?: string | null | undefined;
+  state?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  website?: string | null | undefined;
+};
+
+/** Represents an update to a `OrganizationSetting`. Fields that are set will be updated. */
+export type OrganizationSettingPatch = {
+  accentColor?: string | null | undefined;
+  addressLine1?: string | null | undefined;
+  addressLine2?: string | null | undefined;
+  city?: string | null | undefined;
+  companyName?: string | null | undefined;
+  contactName?: string | null | undefined;
+  contactTitle?: string | null | undefined;
+  country?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  email?: string | null | undefined;
+  logoUrl?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  phone?: string | null | undefined;
+  postalCode?: string | null | undefined;
+  registrationState?: string | null | undefined;
+  rowId?: string | null | undefined;
+  state?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  website?: string | null | undefined;
+};
+
 /** An input for mutations affecting `Payment` */
 export type PaymentInput = {
   amount: string;
@@ -638,6 +695,18 @@ export type UpdateInvoiceInput = {
   clientMutationId?: string | null | undefined;
   /** An object where the defined keys will be set on the `Invoice` being updated. */
   patch: InvoicePatch;
+  rowId: string;
+};
+
+/** All input for the `updateOrganizationSetting` mutation. */
+export type UpdateOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `OrganizationSetting` being updated. */
+  patch: OrganizationSettingPatch;
   rowId: string;
 };
 
@@ -957,6 +1026,36 @@ export type DeleteQuoteLineItemMutationVariables = Exact<{
 
 export type DeleteQuoteLineItemMutation = { deleteQuoteLineItem: { deletedQuoteLineItemId: string | null } | null };
 
+export type WorkspaceProfileFieldsFragment = { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null };
+
+export type WorkspaceProfileQueryVariables = Exact<{
+  organizationId: string;
+}>;
+
+
+export type WorkspaceProfileQuery = { organizationSettings: { nodes: Array<{ rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
+
+export type CreateWorkspaceProfileMutationVariables = Exact<{
+  input: CreateOrganizationSettingInput;
+}>;
+
+
+export type CreateWorkspaceProfileMutation = { createOrganizationSetting: { organizationSetting: { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null } | null } | null };
+
+export type UpdateWorkspaceProfileMutationVariables = Exact<{
+  input: UpdateOrganizationSettingInput;
+}>;
+
+
+export type UpdateWorkspaceProfileMutation = { updateOrganizationSetting: { organizationSetting: { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null } | null } | null };
+
+export type WorkspacePlanQueryVariables = Exact<{
+  organizationId: string;
+}>;
+
+
+export type WorkspacePlanQuery = { workspacePlan: { tier: string, source: string, limits: Array<{ key: string, limit: number, used: number | null }> } | null };
+
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -976,7 +1075,29 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
-
+export const WorkspaceProfileFieldsFragmentDoc = new TypedDocumentString(`
+    fragment WorkspaceProfileFields on OrganizationSetting {
+  rowId
+  organizationId
+  accentColor
+  companyName
+  contactName
+  contactTitle
+  email
+  phone
+  website
+  addressLine1
+  addressLine2
+  city
+  state
+  postalCode
+  country
+  logoUrl
+  registrationState
+  createdAt
+  updatedAt
+}
+    `, {"fragmentName":"WorkspaceProfileFields"});
 export const AllCompaniesDocument = new TypedDocumentString(`
     query AllCompanies($organizationId: String!) {
   companies(condition: {organizationId: $organizationId}) {
@@ -2927,3 +3048,305 @@ useDeleteQuoteLineItemMutation.getKey = () => ['DeleteQuoteLineItem'];
 
 
 useDeleteQuoteLineItemMutation.fetcher = (variables: DeleteQuoteLineItemMutationVariables, options?: RequestInit['headers']) => graphqlFetch<DeleteQuoteLineItemMutation, DeleteQuoteLineItemMutationVariables>(DeleteQuoteLineItemDocument, variables, options);
+
+export const WorkspaceProfileDocument = new TypedDocumentString(`
+    query WorkspaceProfile($organizationId: String!) {
+  organizationSettings(condition: {organizationId: $organizationId}, first: 1) {
+    nodes {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+    fragment WorkspaceProfileFields on OrganizationSetting {
+  rowId
+  organizationId
+  accentColor
+  companyName
+  contactName
+  contactTitle
+  email
+  phone
+  website
+  addressLine1
+  addressLine2
+  city
+  state
+  postalCode
+  country
+  logoUrl
+  registrationState
+  createdAt
+  updatedAt
+}`);
+
+export const useWorkspaceProfileQuery = <
+      TData = WorkspaceProfileQuery,
+      TError = unknown
+    >(
+      variables: WorkspaceProfileQueryVariables,
+      options?: Omit<UseQueryOptions<WorkspaceProfileQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<WorkspaceProfileQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<WorkspaceProfileQuery, TError, TData>(
+      {
+    queryKey: ['WorkspaceProfile', variables],
+    queryFn: graphqlFetch<WorkspaceProfileQuery, WorkspaceProfileQueryVariables>(WorkspaceProfileDocument, variables),
+    ...options
+  }
+    )};
+
+useWorkspaceProfileQuery.getKey = (variables: WorkspaceProfileQueryVariables) => ['WorkspaceProfile', variables];
+
+export const useSuspenseWorkspaceProfileQuery = <
+      TData = WorkspaceProfileQuery,
+      TError = unknown
+    >(
+      variables: WorkspaceProfileQueryVariables,
+      options?: Omit<UseSuspenseQueryOptions<WorkspaceProfileQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<WorkspaceProfileQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseQuery<WorkspaceProfileQuery, TError, TData>(
+      {
+    queryKey: ['WorkspaceProfile', variables],
+    queryFn: graphqlFetch<WorkspaceProfileQuery, WorkspaceProfileQueryVariables>(WorkspaceProfileDocument, variables),
+    ...options
+  }
+    )};
+
+useSuspenseWorkspaceProfileQuery.getKey = (variables: WorkspaceProfileQueryVariables) => ['WorkspaceProfile', variables];
+
+export const useInfiniteWorkspaceProfileQuery = <
+      TData = InfiniteData<WorkspaceProfileQuery>,
+      TError = unknown
+    >(
+      variables: WorkspaceProfileQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<WorkspaceProfileQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<WorkspaceProfileQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<WorkspaceProfileQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['WorkspaceProfile.infinite', variables],
+      queryFn: (metaData) => graphqlFetch<WorkspaceProfileQuery, WorkspaceProfileQueryVariables>(WorkspaceProfileDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteWorkspaceProfileQuery.getKey = (variables: WorkspaceProfileQueryVariables) => ['WorkspaceProfile.infinite', variables];
+
+export const useSuspenseInfiniteWorkspaceProfileQuery = <
+      TData = InfiniteData<WorkspaceProfileQuery>,
+      TError = unknown
+    >(
+      variables: WorkspaceProfileQueryVariables,
+      options: Omit<UseSuspenseInfiniteQueryOptions<WorkspaceProfileQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseInfiniteQueryOptions<WorkspaceProfileQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseInfiniteQuery<WorkspaceProfileQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['WorkspaceProfile.infinite', variables],
+      queryFn: (metaData) => graphqlFetch<WorkspaceProfileQuery, WorkspaceProfileQueryVariables>(WorkspaceProfileDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useSuspenseInfiniteWorkspaceProfileQuery.getKey = (variables: WorkspaceProfileQueryVariables) => ['WorkspaceProfile.infinite', variables];
+
+
+useWorkspaceProfileQuery.fetcher = (variables: WorkspaceProfileQueryVariables, options?: RequestInit['headers']) => graphqlFetch<WorkspaceProfileQuery, WorkspaceProfileQueryVariables>(WorkspaceProfileDocument, variables, options);
+
+export const CreateWorkspaceProfileDocument = new TypedDocumentString(`
+    mutation CreateWorkspaceProfile($input: CreateOrganizationSettingInput!) {
+  createOrganizationSetting(input: $input) {
+    organizationSetting {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+    fragment WorkspaceProfileFields on OrganizationSetting {
+  rowId
+  organizationId
+  accentColor
+  companyName
+  contactName
+  contactTitle
+  email
+  phone
+  website
+  addressLine1
+  addressLine2
+  city
+  state
+  postalCode
+  country
+  logoUrl
+  registrationState
+  createdAt
+  updatedAt
+}`);
+
+export const useCreateWorkspaceProfileMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<CreateWorkspaceProfileMutation, TError, CreateWorkspaceProfileMutationVariables, TContext>) => {
+    
+    return useMutation<CreateWorkspaceProfileMutation, TError, CreateWorkspaceProfileMutationVariables, TContext>(
+      {
+    mutationKey: ['CreateWorkspaceProfile'],
+    mutationFn: (variables?: CreateWorkspaceProfileMutationVariables) => graphqlFetch<CreateWorkspaceProfileMutation, CreateWorkspaceProfileMutationVariables>(CreateWorkspaceProfileDocument, variables)(),
+    ...options
+  }
+    )};
+
+useCreateWorkspaceProfileMutation.getKey = () => ['CreateWorkspaceProfile'];
+
+
+useCreateWorkspaceProfileMutation.fetcher = (variables: CreateWorkspaceProfileMutationVariables, options?: RequestInit['headers']) => graphqlFetch<CreateWorkspaceProfileMutation, CreateWorkspaceProfileMutationVariables>(CreateWorkspaceProfileDocument, variables, options);
+
+export const UpdateWorkspaceProfileDocument = new TypedDocumentString(`
+    mutation UpdateWorkspaceProfile($input: UpdateOrganizationSettingInput!) {
+  updateOrganizationSetting(input: $input) {
+    organizationSetting {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+    fragment WorkspaceProfileFields on OrganizationSetting {
+  rowId
+  organizationId
+  accentColor
+  companyName
+  contactName
+  contactTitle
+  email
+  phone
+  website
+  addressLine1
+  addressLine2
+  city
+  state
+  postalCode
+  country
+  logoUrl
+  registrationState
+  createdAt
+  updatedAt
+}`);
+
+export const useUpdateWorkspaceProfileMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<UpdateWorkspaceProfileMutation, TError, UpdateWorkspaceProfileMutationVariables, TContext>) => {
+    
+    return useMutation<UpdateWorkspaceProfileMutation, TError, UpdateWorkspaceProfileMutationVariables, TContext>(
+      {
+    mutationKey: ['UpdateWorkspaceProfile'],
+    mutationFn: (variables?: UpdateWorkspaceProfileMutationVariables) => graphqlFetch<UpdateWorkspaceProfileMutation, UpdateWorkspaceProfileMutationVariables>(UpdateWorkspaceProfileDocument, variables)(),
+    ...options
+  }
+    )};
+
+useUpdateWorkspaceProfileMutation.getKey = () => ['UpdateWorkspaceProfile'];
+
+
+useUpdateWorkspaceProfileMutation.fetcher = (variables: UpdateWorkspaceProfileMutationVariables, options?: RequestInit['headers']) => graphqlFetch<UpdateWorkspaceProfileMutation, UpdateWorkspaceProfileMutationVariables>(UpdateWorkspaceProfileDocument, variables, options);
+
+export const WorkspacePlanDocument = new TypedDocumentString(`
+    query WorkspacePlan($organizationId: String!) {
+  workspacePlan(organizationId: $organizationId) {
+    tier
+    source
+    limits {
+      key
+      limit
+      used
+    }
+  }
+}
+    `);
+
+export const useWorkspacePlanQuery = <
+      TData = WorkspacePlanQuery,
+      TError = unknown
+    >(
+      variables: WorkspacePlanQueryVariables,
+      options?: Omit<UseQueryOptions<WorkspacePlanQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<WorkspacePlanQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<WorkspacePlanQuery, TError, TData>(
+      {
+    queryKey: ['WorkspacePlan', variables],
+    queryFn: graphqlFetch<WorkspacePlanQuery, WorkspacePlanQueryVariables>(WorkspacePlanDocument, variables),
+    ...options
+  }
+    )};
+
+useWorkspacePlanQuery.getKey = (variables: WorkspacePlanQueryVariables) => ['WorkspacePlan', variables];
+
+export const useSuspenseWorkspacePlanQuery = <
+      TData = WorkspacePlanQuery,
+      TError = unknown
+    >(
+      variables: WorkspacePlanQueryVariables,
+      options?: Omit<UseSuspenseQueryOptions<WorkspacePlanQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<WorkspacePlanQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseQuery<WorkspacePlanQuery, TError, TData>(
+      {
+    queryKey: ['WorkspacePlan', variables],
+    queryFn: graphqlFetch<WorkspacePlanQuery, WorkspacePlanQueryVariables>(WorkspacePlanDocument, variables),
+    ...options
+  }
+    )};
+
+useSuspenseWorkspacePlanQuery.getKey = (variables: WorkspacePlanQueryVariables) => ['WorkspacePlan', variables];
+
+export const useInfiniteWorkspacePlanQuery = <
+      TData = InfiniteData<WorkspacePlanQuery>,
+      TError = unknown
+    >(
+      variables: WorkspacePlanQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<WorkspacePlanQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<WorkspacePlanQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<WorkspacePlanQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['WorkspacePlan.infinite', variables],
+      queryFn: (metaData) => graphqlFetch<WorkspacePlanQuery, WorkspacePlanQueryVariables>(WorkspacePlanDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteWorkspacePlanQuery.getKey = (variables: WorkspacePlanQueryVariables) => ['WorkspacePlan.infinite', variables];
+
+export const useSuspenseInfiniteWorkspacePlanQuery = <
+      TData = InfiniteData<WorkspacePlanQuery>,
+      TError = unknown
+    >(
+      variables: WorkspacePlanQueryVariables,
+      options: Omit<UseSuspenseInfiniteQueryOptions<WorkspacePlanQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseInfiniteQueryOptions<WorkspacePlanQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseInfiniteQuery<WorkspacePlanQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['WorkspacePlan.infinite', variables],
+      queryFn: (metaData) => graphqlFetch<WorkspacePlanQuery, WorkspacePlanQueryVariables>(WorkspacePlanDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useSuspenseInfiniteWorkspacePlanQuery.getKey = (variables: WorkspacePlanQueryVariables) => ['WorkspacePlan.infinite', variables];
+
+
+useWorkspacePlanQuery.fetcher = (variables: WorkspacePlanQueryVariables, options?: RequestInit['headers']) => graphqlFetch<WorkspacePlanQuery, WorkspacePlanQueryVariables>(WorkspacePlanDocument, variables, options);

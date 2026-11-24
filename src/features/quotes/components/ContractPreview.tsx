@@ -4,7 +4,7 @@ import {
   DEFAULT_ACCENT,
   getAccentVariants,
 } from "@/features/invoices/types/accentColor";
-import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import ContractHeader from "./contract/ContractHeader";
 import ContractLegal from "./contract/ContractLegal";
@@ -31,10 +31,7 @@ const ContractPreview = ({
   lineItems,
   organizationId,
 }: ContractPreviewProps) => {
-  const { getProfileForOrg } = useSettingsStore();
-  const orgProfile = organizationId
-    ? getProfileForOrg(organizationId)
-    : undefined;
+  const { profile: orgProfile } = useWorkspaceProfile(organizationId);
   const currency = quote.currency || "USD";
   const date = quote.validUntil || new Date().toISOString().split("T")[0];
 

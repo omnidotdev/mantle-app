@@ -7,7 +7,7 @@ import {
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLogo";
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
-import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import cn from "@/lib/utils";
 import { formatProjectType } from "../lib/projectType";
@@ -64,10 +64,7 @@ const QuotePreview = ({
   lineItems,
   organizationId,
 }: QuotePreviewProps) => {
-  const { getProfileForOrg } = useSettingsStore();
-  const orgProfile = organizationId
-    ? getProfileForOrg(organizationId)
-    : undefined;
+  const { profile: orgProfile } = useWorkspaceProfile(organizationId);
   const logo = resolveDocumentLogo(orgProfile);
 
   const accent = useMemo(

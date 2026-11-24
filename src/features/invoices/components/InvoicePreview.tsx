@@ -21,7 +21,7 @@ import {
 } from "@/features/invoices/types/invoice";
 import DocumentBannerLogo from "@/features/settings/components/DocumentBannerLogo";
 import { resolveDocumentLogo } from "@/features/settings/documentBranding";
-import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
 import { useAllCompaniesQuery, useAllPeopleQuery } from "@/generated/graphql";
 import cn, { formatStatus } from "@/lib/utils";
 
@@ -46,10 +46,7 @@ const InvoicePreview = ({
 }: InvoicePreviewProps) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  const { getProfileForOrg } = useSettingsStore();
-  const orgProfile = organizationId
-    ? getProfileForOrg(organizationId)
-    : undefined;
+  const { profile: orgProfile } = useWorkspaceProfile(organizationId);
   const logo = resolveDocumentLogo(orgProfile);
 
   const accent = useMemo(

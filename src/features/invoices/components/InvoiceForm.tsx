@@ -3,6 +3,7 @@ import { Label } from "@omnidotdev/thornberry/label";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { Textarea } from "@omnidotdev/thornberry/textarea";
 import { CheckIcon, PlusIcon, RefreshCwIcon, Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 import PopulateButton from "@/components/core/PopulateButton";
 import SectionCard from "@/components/core/SectionCard";
@@ -20,8 +21,9 @@ import {
   isPaidInFull,
   paymentLinkError,
 } from "@/features/invoices/types/invoice";
-import { useSettingsStore } from "@/features/settings/store/settingsStore";
+import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
 import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
+import { profileSaveErrorMessage } from "@/lib/graphql/errors";
 import { resolveRegion } from "@/lib/phone";
 import cn, { formatStatus } from "@/lib/utils";
 
@@ -205,37 +207,18 @@ const InvoiceForm = ({
     0,
   );
 
-  const { getProfileForOrg, createProfile, updateProfile } = useSettingsStore();
-  const orgProfile = organizationId
-    ? getProfileForOrg(organizationId)
-    : undefined;
+  const { profile: orgProfile, updateField } =
+    useWorkspaceProfile(organizationId);
 
-  const handleProfileChange = (field: string, value: string | null) => {
-    if (!organizationId) return;
-
-    if (orgProfile) {
-      updateProfile(orgProfile.id, { [field]: value });
-    } else {
-      createProfile({
-        organizationId,
-        companyName: field === "companyName" ? (value ?? "") : "",
-        contactName: field === "contactName" ? (value ?? "") : "",
-        contactTitle: field === "contactTitle" ? value : null,
-        email: field === "email" ? (value ?? "") : "",
-        phone: field === "phone" ? value : null,
-        website: null,
-        addressLine1: field === "addressLine1" ? value : null,
-        addressLine2: null,
-        city: field === "city" ? value : null,
-        state: field === "state" ? value : null,
-        postalCode: field === "postalCode" ? value : null,
-        country: null,
-        logoUrl: null,
-        registrationState: null,
-        accentColor: null,
-      });
-    }
-  };
+  // The profile is the workspace's own, shared with Settings: edits here save
+  // to it after a short pause
+  const handleProfileChange = (
+    field: Parameters<typeof updateField>[0],
+    value: string | null,
+  ) =>
+    updateField(field, value, (err) =>
+      toast.error(profileSaveErrorMessage(err), { id: "workspace-profile" }),
+    );
 
   const balanceLabel = isPaidInFull(invoice.total ?? "0", recordedPayments)
     ? "Paid in full"
