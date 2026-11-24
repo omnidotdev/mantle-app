@@ -2,12 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest, setCookie } from "@tanstack/react-start/server";
 
 import auth from "@/lib/auth/auth";
-import { authCache } from "@/lib/auth/authCache";
+import { authCache, oidc } from "@/lib/auth/authCache";
 import { getAuth } from "@/lib/auth/getAuth";
+import { buildIdpLogoutUrl } from "@/lib/auth/idpLogout";
+import { withPersonalWorkspaceFallback } from "@/lib/auth/personalWorkspace";
 import {
   AUTH_BASE_URL,
   AUTH_CLIENT_ID,
   BASE_URL,
+  PERSONAL_WORKSPACE_FALLBACK,
 } from "@/lib/config/env.config";
 
 export const fetchSession = createServerFn({ method: "POST" }).handler(
@@ -15,6 +18,14 @@ export const fetchSession = createServerFn({ method: "POST" }).handler(
     const request = getRequest();
 
     const session = await getAuth(request);
+
+    if (session) {
+      session.organizations = await withPersonalWorkspaceFallback(
+        session.organizations,
+        session.user.identityProviderId,
+        PERSONAL_WORKSPACE_FALLBACK,
+      );
+    }
 
     return { session };
   },
@@ -25,19 +36,21 @@ const clearAuthCacheCookie = () => {
 };
 
 /**
- * Build the IDP end_session URL for federated logout
+ * The provider's end-session endpoint from its discovery document. Falls back
+ * to Omni Gatekeeper's path if discovery is unreachable, and resolves null when
+ * the provider advertises none (sign-out is then local only)
  */
-export function getIdpLogoutUrl(idTokenHint?: string): string | null {
-  if (!AUTH_BASE_URL || !AUTH_CLIENT_ID || !BASE_URL || !idTokenHint)
-    return null;
+const resolveEndSessionEndpoint = async (): Promise<string | null> => {
+  try {
+    const discovery = (await oidc.getDiscovery()) as {
+      end_session_endpoint?: string;
+    };
 
-  const endSessionUrl = new URL(`${AUTH_BASE_URL}/oauth2/end-session`);
-  endSessionUrl.searchParams.set("client_id", AUTH_CLIENT_ID);
-  endSessionUrl.searchParams.set("post_logout_redirect_uri", BASE_URL);
-  endSessionUrl.searchParams.set("id_token_hint", idTokenHint);
-
-  return endSessionUrl.toString();
-}
+    return discovery.end_session_endpoint ?? null;
+  } catch {
+    return AUTH_BASE_URL ? `${AUTH_BASE_URL}/oauth2/end-session` : null;
+  }
+};
 
 /**
  * Sign out from the local session (server-side)
@@ -65,6 +78,15 @@ export const signOutLocal = createServerFn({ method: "POST" }).handler(
     await auth.api.signOut({ headers });
     clearAuthCacheCookie();
 
-    return { idpLogoutUrl: getIdpLogoutUrl(idToken) };
+    const idpLogoutUrl = idToken
+      ? buildIdpLogoutUrl({
+          endSessionEndpoint: await resolveEndSessionEndpoint(),
+          clientId: AUTH_CLIENT_ID,
+          postLogoutRedirectUri: BASE_URL,
+          idTokenHint: idToken,
+        })
+      : null;
+
+    return { idpLogoutUrl };
   },
 );

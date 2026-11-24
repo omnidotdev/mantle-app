@@ -1,0 +1,84 @@
+name: Image 🐳
+
+# Build and publish the mantle-app container image for self-hosters to the Manifold
+# registry (api.manifold.omni.dev/omnidotdev/mantle-app). Called by the release
+# workflow when Changesets publishes a version (a tag pushed with GITHUB_TOKEN
+# cannot trigger a workflow itself), or run by hand. Production does not use
+# this image: Fractal builds and deploys every merge to master in-cluster.
+#
+# No stored secret: the push token is minted per run from GitHub Actions OIDC
+# (trusted publishing), authorized by the `manifold:oidcTrustedPublishers`
+# binding in infra for this repo's master ref on the `omnidotdev` namespace
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version tag to publish (e.g. v1.2.3)
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version tag to publish (e.g. v1.2.3)
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  REGISTRY: api.manifold.omni.dev
+  IMAGE: api.manifold.omni.dev/omnidotdev/mantle-app
+
+jobs:
+  image:
+    name: Build and push 📦
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Resolve version
+        id: version
+        env:
+          REF: ${{ inputs.version }}
+        run: echo "version=${REF#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Mint Manifold push token
+        id: token
+        run: |
+          set -euo pipefail
+          oidc_jwt="$(curl -fsS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=manifold" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r .value)"
+          mf_token="$(curl -fsS -X POST "https://${REGISTRY}/api/oidc/token" \
+            -H "authorization: Bearer ${oidc_jwt}" \
+            -H "content-type: application/json" \
+            -d '{"namespace":"omnidotdev","scope":"write"}' | jq -r .plaintextToken)"
+          if [ -z "${mf_token}" ] || [ "${mf_token}" = "null" ]; then
+            echo "failed to mint Manifold OIDC push token" >&2
+            exit 1
+          fi
+          echo "::add-mask::${mf_token}"
+          echo "token=${mf_token}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Manifold
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: oidc
+          password: ${{ steps.token.outputs.token }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: GIT_SHA=${{ github.sha }}
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.version.outputs.version }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

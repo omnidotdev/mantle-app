@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "bun@1.4.4",
   "scripts": {
     "release": "changeset publish",
     "dev": "concurrently --kill-others --names \"GRAPHQL-CODEGEN,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run graphql:generate:watch\" \"bun dev:vite\"",

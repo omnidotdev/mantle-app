@@ -1,14 +1,22 @@
 /**
  * Environment configuration.
- * Client-safe vars use VITE_ prefix (build-time via import.meta.env).
- * Server-only vars (auth secrets) use process.env (runtime).
+ * Public vars use the VITE_ prefix; server-only vars (auth secrets) do not.
  */
+declare global {
+  interface Window {
+    /** Public runtime config injected by the root route (see server/functions/env) */
+    __ENV__?: Record<string, string>;
+  }
+}
 
-// Build-time vars take precedence to prevent SSR hydration mismatch
+// The runtime environment wins over values inlined at build time, so one image
+// serves any deployment (a self-hosted instance included). On the server that
+// is the live `process.env`; on the client it is `window.__ENV__`, which the
+// root route injects from the same server env, so hydrated values match
 const env =
   typeof window === "undefined"
-    ? { ...process.env, ...import.meta.env }
-    : import.meta.env;
+    ? { ...import.meta.env, ...process.env }
+    : { ...import.meta.env, ...(window.__ENV__ ?? {}) };
 
 export const API_URL = env.VITE_API_URL ?? "https://localhost:4000";
 export const API_GRAPHQL_URL = `${API_URL}/graphql`;
@@ -30,3 +38,12 @@ export const AUTH_INTERNAL_URL =
   typeof window === "undefined"
     ? process.env.AUTH_INTERNAL_URL || AUTH_BASE_URL
     : AUTH_BASE_URL;
+
+/**
+ * Self-host with an OpenID Connect provider other than Omni Gatekeeper: give a
+ * signed-in user without workspace claims a personal workspace. Server-only;
+ * mantle-api needs the same setting
+ */
+export const PERSONAL_WORKSPACE_FALLBACK =
+  typeof window === "undefined" &&
+  process.env.PERSONAL_WORKSPACE_FALLBACK === "true";
