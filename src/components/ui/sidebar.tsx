@@ -1,4 +1,5 @@
 import { ark } from "@ark-ui/react";
+import { GLOBAL_HOTKEYS, useHotkeys } from "@omnidotdev/thornberry/use-hotkeys";
 import { useLocation } from "@tanstack/react-router";
 import { MenuIcon } from "lucide-react";
 import {
@@ -102,6 +103,9 @@ const SidebarProvider = ({
       setOpenMobile(false);
     }
   }, [isMobile]);
+
+  // Shared Omni shortcut (listed in the shortcuts dialog); ignored while typing
+  useHotkeys(GLOBAL_HOTKEYS.toggleSidebar, toggleSidebar);
 
   // Close the phone drawer whenever the route changes (a nav link was tapped)
   const { pathname } = useLocation();
@@ -342,7 +346,7 @@ const SidebarContent = ({ className, ...rest }: ComponentProps<"div">) => {
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
-        "custom-scrollbar mb-2 flex min-h-0 flex-1 flex-col gap-4 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "mb-2 flex min-h-0 flex-1 flex-col gap-4 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
         className,
       )}
       {...rest}

@@ -115,7 +115,6 @@ const QuoteEditorLayout = ({
             <h2 className="font-semibold text-sm">Preview</h2>
             <SegmentedControl
               label="Document"
-              size="sm"
               options={PREVIEW_TYPE_OPTIONS}
               value={previewType}
               onValueChange={setPreviewType}

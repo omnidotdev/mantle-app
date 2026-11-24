@@ -1,8 +1,8 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import { PlusIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 import type { KeyboardEvent } from "react";
 

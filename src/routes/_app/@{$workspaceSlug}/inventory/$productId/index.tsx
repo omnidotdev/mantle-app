@@ -1,3 +1,5 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
@@ -23,8 +25,6 @@ import SectionCard from "@/components/core/SectionCard";
 import StatCard from "@/components/core/StatCard";
 import StatusBadge from "@/components/core/StatusBadge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import AdjustmentLog from "@/features/inventory/components/AdjustmentLog";
 import StockBadge from "@/features/inventory/components/StockBadge";
 import {

@@ -1,8 +1,8 @@
+import { Input } from "@omnidotdev/thornberry/input";
 import * as Flags from "country-flag-icons/react/3x2";
 import { AsYouType } from "libphonenumber-js";
 import { useEffect, useRef, useState } from "react";
 
-import { Input } from "@/components/ui/input";
 import { DEFAULT_REGION, getPhoneCountry, toE164 } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 

@@ -1,8 +1,14 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
+import { Textarea } from "@omnidotdev/thornberry/textarea";
+
 import SectionCard from "@/components/core/SectionCard";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 
 import type { FormEvent } from "react";
 import type { Product } from "@/features/inventory/types/product";
@@ -150,11 +156,18 @@ const ProductForm = ({
               in your records
             </p>
           </div>
-          <Switch
+          <SwitchRoot
             ids={{ hiddenInput: "product-active" }}
             checked={product.isActive ?? true}
-            onCheckedChange={(checked) => handleChange("isActive", checked)}
-          />
+            onCheckedChange={(details) =>
+              handleChange("isActive", details.checked)
+            }
+          >
+            <SwitchControl>
+              <SwitchThumb />
+            </SwitchControl>
+            <SwitchHiddenInput />
+          </SwitchRoot>
         </div>
       </SectionCard>
     </form>

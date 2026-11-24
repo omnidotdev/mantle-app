@@ -1,19 +1,13 @@
+import { Input } from "@omnidotdev/thornberry/input";
+import { Label } from "@omnidotdev/thornberry/label";
+import { OptionsSelect } from "@omnidotdev/thornberry/select";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import SectionCard from "@/components/core/SectionCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formatPreview } from "@/features/settings/types/documentNumbering";
 import {
   useCreateDocumentNumberingConfigMutation,
@@ -58,10 +52,13 @@ const defaultConfig: Record<DocumentType, FormState> = {
   },
 };
 
+// The select can't hold an empty value, so "no separator" uses a sentinel
+const NO_SEPARATOR = "none";
+
 const separatorOptions = [
   { label: "Dash (-)", value: "-" },
   { label: "Slash (/)", value: "/" },
-  { label: "None", value: "" },
+  { label: "None", value: NO_SEPARATOR },
 ];
 
 const dateFormatOptions = [
@@ -207,48 +204,28 @@ const DocumentNumberingForm = ({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-separator`}>Separator</Label>
-          <Select
-            items={separatorOptions}
-            value={form.separator}
-            onValueChange={(v) => handleChange("separator", v)}
-            itemToString={(item) => item.label}
-            itemToValue={(item) => item.value}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select separator" />
-            </SelectTrigger>
-            <SelectContent>
-              {separatorOptions.map((opt) => (
-                <SelectItem key={opt.value || "none"} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <OptionsSelect
+            id={`${documentType}-separator`}
+            value={form.separator || NO_SEPARATOR}
+            options={separatorOptions}
+            onValueChange={(v) =>
+              handleChange("separator", v === NO_SEPARATOR ? "" : v)
+            }
+            placeholder="Select separator"
+          />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor={`${documentType}-date-format`}>Date segment</Label>
-          <Select
-            items={dateFormatOptions}
+          <OptionsSelect
+            id={`${documentType}-date-format`}
             value={form.dateFormat ?? "none"}
+            options={dateFormatOptions}
             onValueChange={(v) =>
               handleChange("dateFormat", v === "none" ? null : v)
             }
-            itemToString={(item) => item.label}
-            itemToValue={(item) => item.value}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select date format" />
-            </SelectTrigger>
-            <SelectContent>
-              {dateFormatOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Select date format"
+          />
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">

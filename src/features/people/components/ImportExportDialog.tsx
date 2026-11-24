@@ -1,15 +1,18 @@
+import {
+  DialogBackdrop,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogPortal,
+  DialogPositioner,
+  DialogRoot,
+  DialogTitle,
+} from "@omnidotdev/thornberry/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import Papa from "papaparse";
 import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   useAllCompaniesQuery,
@@ -239,66 +242,75 @@ const ImportExportDialog = ({
       : `${count} ${count === 1 ? "company" : "companies"}`;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh]">
-        <DialogHeader>
-          <DialogTitle>Import or export {noun}</DialogTitle>
-        </DialogHeader>
+    <DialogRoot
+      open={open}
+      onOpenChange={(details) => onOpenChange(details.open)}
+      lazyMount
+      unmountOnExit
+    >
+      <DialogPortal>
+        <DialogBackdrop />
+        <DialogPositioner>
+          <DialogContent>
+            <DialogTitle>Import or export {noun}</DialogTitle>
 
-        <SegmentedControl
-          label="Import or export"
-          value={mode}
-          onValueChange={setMode}
-          options={[
-            { value: "export", label: "Export" },
-            { value: "import", label: "Import" },
-          ]}
-          className="w-fit"
-        />
-
-        {mode === "export" ? (
-          <div className="space-y-3">
-            <p className="text-muted-foreground text-sm">
-              Download all <span className="tabular">{countLabel}</span> as a
-              file.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={exportJSON}>
-                <Download />
-                Export JSON
-              </Button>
-              <Button variant="outline" onClick={exportCSV}>
-                <Download />
-                Export CSV
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-muted-foreground text-sm">
-              Import {noun} from a JSON or CSV file.
-            </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json,.csv"
-              aria-label="Choose file to import"
-              onChange={handleImport}
-              disabled={importing}
-              className="block w-full text-muted-foreground text-sm file:mr-4 file:h-9 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:font-medium file:text-primary-600 file:text-sm hover:file:bg-primary/15 dark:file:text-primary-300"
+            <SegmentedControl
+              label="Import or export"
+              value={mode}
+              onValueChange={setMode}
+              options={[
+                { value: "export", label: "Export" },
+                { value: "import", label: "Import" },
+              ]}
+              className="w-fit"
             />
-            {importing && (
-              <p className="text-muted-foreground text-sm">Importing...</p>
+
+            {mode === "export" ? (
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  Download all <span className="tabular">{countLabel}</span> as
+                  a file.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" onClick={exportJSON}>
+                    <Download />
+                    Export JSON
+                  </Button>
+                  <Button variant="outline" onClick={exportCSV}>
+                    <Download />
+                    Export CSV
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  Import {noun} from a JSON or CSV file.
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,.csv"
+                  aria-label="Choose file to import"
+                  onChange={handleImport}
+                  disabled={importing}
+                  className="block w-full text-muted-foreground text-sm file:mr-4 file:h-9 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:font-medium file:text-primary-600 file:text-sm hover:file:bg-primary/15 dark:file:text-primary-300"
+                />
+                {importing && (
+                  <p className="text-muted-foreground text-sm">Importing...</p>
+                )}
+                {importError && (
+                  <p className="rounded-xl bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                    {importError}
+                  </p>
+                )}
+              </div>
             )}
-            {importError && (
-              <p className="rounded-xl bg-destructive/10 px-3 py-2 text-destructive text-sm">
-                {importError}
-              </p>
-            )}
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+            <DialogCloseTrigger />
+          </DialogContent>
+        </DialogPositioner>
+      </DialogPortal>
+    </DialogRoot>
   );
 };
 

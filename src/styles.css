@@ -225,11 +225,6 @@
 }
 
 @layer utilities {
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
   /* tabular figures for money and counts */
   .tabular {
     font-variant-numeric: tabular-nums;
