@@ -1,19 +1,22 @@
 import app from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
 
-// TODO JSDoc
 interface Params {
+  /** Page title, suffixed with the app name */
   title?: string;
+  /** Page description, defaults to the app description */
   description?: string;
+  /** Absolute URL of a 1200x630 social preview image */
   image?: string;
+  /** Comma-separated keywords */
   keywords?: string;
+  /** Canonical page URL, defaults to the app base URL */
   url?: string;
 }
 
-// TODO improve type safety
-
 /**
- * Create meta tags.
+ * Create meta tags. A social preview image is only emitted when one is passed,
+ * so links unfurl as a text card until a final preview image exists
  */
 const createMetaTags = ({
   title: _title,
@@ -55,14 +58,7 @@ const createMetaTags = ({
           { property: "og:image:width", content: "1200" },
           { property: "og:image:height", content: "630" },
         ]
-      : [
-          // TODO dynamic OG/static improve
-          { name: "twitter:image", content: `${BASE_URL}/og.png` },
-          { name: "twitter:card", content: "summary_large_image" },
-          { property: "og:image", content: `${BASE_URL}/og.png` },
-          { property: "og:image:width", content: "1200" },
-          { property: "og:image:height", content: "630" },
-        ]),
+      : [{ name: "twitter:card", content: "summary" }]),
   ];
 
   return tags;

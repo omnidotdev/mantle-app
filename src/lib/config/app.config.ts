@@ -1,11 +1,8 @@
 /**
  * Application configuration.
- *
- * To rename this app, update the `name` field below.
- * All other references use this config, so renaming is a single change.
  */
 const app = {
-  /** App name - change this to rename the product */
+  /** App name */
   name: "Mantle",
   /** Product symbol (mirrors the Omni product catalog SSOT) */
   icon: "🌋",

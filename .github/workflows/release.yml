@@ -4,8 +4,9 @@ name: Release 🏗️
 # push to master opens or updates the "version packages" PR from pending
 # changesets; merging it runs `bun release` (changeset publish), which tags the
 # private package (privatePackages.tag in .changeset/config.json) and creates
-# the GitHub Release with its notes. Nothing is published to a registry. Never
-# release by hand-editing the version or tagging
+# the GitHub Release with its notes. A published version then builds the
+# self-host container image (image.yml). Never release by hand-editing the
+# version or tagging
 on:
   push:
     branches: [master]
@@ -15,17 +16,25 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release:
     name: Handle release 🦋
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          # follow the packageManager pin so the toolchain does not drift
+          bun-version-file: package.json
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Create release PR or tag release
+        id: changesets
         uses: changesets/action@v2
         with:
           publish-script: bun release
@@ -33,3 +42,15 @@ jobs:
           commit-message: "ci(changesets): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read released version
+        id: version
+        if: steps.changesets.outputs.published == 'true'
+        run: echo "version=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+
+  image:
+    name: Publish image 🐳
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    uses: ./.github/workflows/image.yml
+    with:
+      version: ${{ needs.release.outputs.version }}

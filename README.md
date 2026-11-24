@@ -1,78 +1,51 @@
-# Mantle App
+# 🌋 Mantle App
 
-Frontend web application for [Mantle](https://mantle.omni.dev), powered by [TanStack Start](https://tanstack.com/start).
+Web app for [Mantle](https://mantle.omni.dev), the Omni business operations suite: people, invoices, quotes and contracts, and inventory. Built with [TanStack Start](https://tanstack.com/start).
 
-## Features
+Product documentation lives at [docs.omni.dev](https://docs.omni.dev/products/mantle). To run the whole stack (database, API, and app) together, see the [Mantle metarepo](https://github.com/omnidotdev/mantle-stack).
 
-- **Modern React Stack**: Built with [TanStack Start](https://tanstack.com/start) and TypeScript for optimal developer experience and performance
-- **Authentication & Authorization**:
-  - [Better Auth](https://www.better-auth.com) integration with OAuth2/OpenID Connect support
-  - JWT-based authentication with remote JWKS validation via [jose](https://github.com/panva/jose)
-  - Protected routes with automatic redirects
-  - Server-side authentication middleware
-- **UI/UX**:
-  - Modern component library with [Ark UI](https://ark-ui.com) and [shadcn/ui](https://ui.shadcn.com) patterns
-  - [Tailwind CSS](https://tailwindcss.com) v4 with optimized class sorting
-  - [tw-animate-css](https://github.com/Wombosvideo/tw-animate-css) for Tailwind-powered animations
-  - Dark/light theme support with persistent preferences
-  - Responsive design with mobile-first approach
-  - Toast notifications with [Sonner](https://sonner.emilkowal.ski)
-  - [Lucide React](https://lucide.dev) for iconography
-- **Data Management**:
-  - [TanStack Query](https://tanstack.com/query) for server state management
-  - [TanStack Table](https://tanstack.com/table) for data visualization
-  - [TanStack React Form](https://tanstack.com/form) with [Zod](https://zod.dev) validation
-  - [Zustand](https://zustand.docs.pmnd.rs) for client state management
-  - GraphQL integration with code generation
-  - Type-safe API calls with [GraphQL Request](https://github.com/jasonkuhrt/graphql-request)
-- **GraphQL Integration**:
-  - [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) for type-safe queries
-  - React Query hooks generation
-  - TypeScript SDK generation
-  - Watch mode for automatic regeneration
-- **Feature Modules**:
-  - People & contacts management
-  - Invoicing
-  - Quotes & contracts
-  - Inventory tracking
-  - Configurable module toggles
-- **Developer Experience**:
-  - Hot module replacement during development
-  - [TanStack Devtools](https://tanstack.com/devtools) for Query, Router, and React debugging
-  - Code quality with [Biome](https://biomejs.dev) for linting and formatting
-  - Git hooks with [Husky](https://typicode.github.io/husky)
-  - TypeScript strict mode with comprehensive type safety
-  - [Knip](https://knip.dev) for unused dependency detection
-  - Automated updates with [Renovate](https://docs.renovatebot.com)
-  - Easy spin up with [Tilt](https://tilt.dev)
-- **Production Ready**:
-  - Server-side rendering (SSR) support
-  - Environment-specific configurations
-  - TLS/HTTPS support with [mkcert](https://github.com/FiloSottile/mkcert)
-  - Optimized build process with Vite
-  - Route-based code splitting
-  - [Unleash](https://www.getunleash.io) feature flags
-  - Maintenance mode support
+## Prerequisites
+
+- [Bun](https://bun.sh)
+- A running [Mantle API](https://github.com/omnidotdev/mantle-api)
+- An OpenID Connect provider for sign-in (Omni Gatekeeper, or any standard provider)
 
 ## Local Development
 
-First, `cp .env.local.template .env.local` and fill in the values.
+1. Copy the environment template and fill in the values:
 
-### Building and Running
+   ```sh
+   cp .env.local.template .env.local
+   ```
 
-Run `tilt up`, or:
+   `VITE_API_URL` points at the API. `AUTH_BASE_URL`, `AUTH_CLIENT_ID`, and `AUTH_CLIENT_SECRET` configure sign-in against the OpenID Connect provider. `.env.development` holds the shared local defaults; `.env.local` overrides them.
 
-```sh
-bun i
-```
+2. Install dependencies and start the dev server (or run `tilt up`):
 
-```sh
-bun dev
-```
+   ```sh
+   bun install
+   bun dev
+   ```
+
+The dev server serves HTTPS at `https://localhost:3000` with a locally trusted certificate and regenerates the GraphQL client as `.graphql` documents change.
+
+## Diagnostics
+
+- Sign-in problems: check that `AUTH_BASE_URL` serves `/.well-known/openid-configuration` and that the provider allows `<VITE_BASE_URL>/api/auth/callback/omni` as a redirect URI
+- Empty data after sign-in: check that the API's `AUTH_JWKS_URL` matches the provider that issued the token
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `bun dev` | Start the dev server and GraphQL codegen in watch mode |
+| `bun test` | Run the unit tests |
+| `bun check` | Lint and format check with Biome |
+| `bun knip` | Find unused files, exports, and dependencies |
+| `bun graphql:generate` | Regenerate the typed GraphQL client from the API schema |
+| `bun run build` | Type check and build for production |
 
 ## Docker
-
-Build and run with Docker:
 
 ```sh
 docker build -t mantle-app .
