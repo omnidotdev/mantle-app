@@ -381,7 +381,9 @@ const InvoiceForm = ({
       {/* Invoice details */}
       <SectionCard title="Invoice details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
+          {/* full row: beside the Generate button a half-width field cuts the
+              number off (INV-0049 showed as INV-004) */}
+          <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="invoice-number">Invoice number</Label>
             <div className="flex gap-2">
               <Input
@@ -389,7 +391,7 @@ const InvoiceForm = ({
                 value={invoice.invoiceNumber ?? ""}
                 onChange={(e) => handleChange("invoiceNumber", e.target.value)}
                 placeholder="e.g. INV-0001"
-                className="tabular"
+                className="tabular min-w-0 flex-1"
               />
               <Button
                 variant="outline"
@@ -408,7 +410,7 @@ const InvoiceForm = ({
             </div>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="invoice-status">Status</Label>
             <NativeSelect
               id="invoice-status"
