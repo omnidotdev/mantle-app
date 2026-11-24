@@ -1,9 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Loader2, Printer } from "lucide-react";
+import { FileQuestionIcon, ReceiptIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import PageContainer from "@/components/core/PageContainer";
+import { buttonVariants } from "@/components/ui/button";
+import InvoiceEditorLayout from "@/features/invoices/components/InvoiceEditorLayout";
 import InvoiceForm from "@/features/invoices/components/InvoiceForm";
 import InvoicePreview from "@/features/invoices/components/InvoicePreview";
 import { derivePaidFields } from "@/features/invoices/types/invoice";
@@ -266,10 +272,8 @@ const EditInvoicePage = () => {
 
       invalidateInvoices();
       toast.success("Invoice saved");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to save invoice";
-      toast.error(message);
+    } catch {
+      toast.error("Could not save the invoice. Try again.");
     } finally {
       setSaving(false);
     }
@@ -277,103 +281,92 @@ const EditInvoicePage = () => {
 
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to edit invoices
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={ReceiptIcon}
+          title="No workspace selected"
+          description="Select a workspace to edit invoices."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading invoice"
-        />
-      </div>
+      <PageContainer>
+        <LoadingState label="Loading invoice" />
+      </PageContainer>
     );
   }
 
   if (!invoice) {
     return (
-      <div className="p-6">
-        <Link
-          to="/@{$workspaceSlug}/invoices"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">Invoice not found</p>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileQuestionIcon}
+          title="Invoice not found"
+          description="It may have been deleted, or the link is out of date."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/invoices"
+              params={{ workspaceSlug }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Back to invoices
+            </Link>
+          }
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6 print:p-0">
-      <div className="print-hide sticky top-0 z-10 mb-6 flex items-center justify-between bg-background py-4">
-        <Link
-          to="/@{$workspaceSlug}/invoices"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
+    <InvoiceEditorLayout
+      title={
+        <>
+          Edit <span className="tabular">{invoice.invoiceNumber}</span>
+        </>
+      }
+      back={
+        <BackLink
+          to="/@{$workspaceSlug}/invoices/$invoiceId"
+          params={{ workspaceSlug, invoiceId }}
         >
-          &larr; Back to list
+          {invoice.invoiceNumber}
+        </BackLink>
+      }
+      renderCancel={(className) => (
+        <Link
+          to="/@{$workspaceSlug}/invoices/$invoiceId"
+          params={{ workspaceSlug, invoiceId }}
+          className={buttonVariants({ variant: "outline", className })}
+        >
+          Cancel
         </Link>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              const originalTitle = document.title;
-              document.title = `invoice_${currentInvoice.invoiceNumber}`;
-              window.print();
-              document.title = originalTitle;
-            }}
-            className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            <Printer size={14} />
-            Print
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 print:block">
-        <div className="rounded-lg border border-border bg-card p-6 print:hidden">
-          <h2 className="mb-4 font-semibold text-lg">Edit Invoice</h2>
-          <InvoiceForm
-            invoice={currentInvoice}
-            onInvoiceChange={setCurrentInvoice}
-            lineItems={currentLineItems}
-            onLineItemsChange={setCurrentLineItems}
-            payments={currentPayments}
-            onPaymentsChange={setCurrentPayments}
-            onSave={handleSave}
-            organizationId={organizationId}
-          />
-        </div>
-
-        <div>
-          <h2 className="mb-4 font-semibold text-lg print:hidden">Preview</h2>
-          <InvoicePreview
-            invoice={currentInvoice}
-            lineItems={currentLineItems}
-            payments={currentPayments}
-            organizationId={organizationId}
-          />
-        </div>
-      </div>
-    </div>
+      )}
+      onSave={handleSave}
+      saving={saving}
+      printTitle={`invoice_${currentInvoice.invoiceNumber}`}
+      form={
+        <InvoiceForm
+          invoice={currentInvoice}
+          onInvoiceChange={setCurrentInvoice}
+          lineItems={currentLineItems}
+          onLineItemsChange={setCurrentLineItems}
+          payments={currentPayments}
+          onPaymentsChange={setCurrentPayments}
+          organizationId={organizationId}
+        />
+      }
+      preview={
+        <InvoicePreview
+          invoice={currentInvoice}
+          lineItems={currentLineItems}
+          payments={currentPayments}
+          organizationId={organizationId}
+        />
+      }
+    />
   );
 };
 
@@ -381,4 +374,5 @@ export const Route = createFileRoute(
   "/_app/@{$workspaceSlug}/invoices/$invoiceId/edit",
 )({
   component: EditInvoicePage,
+  staticData: { title: "Edit invoice" },
 });

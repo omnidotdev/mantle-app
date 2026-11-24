@@ -1,5 +1,6 @@
 import * as Flags from "country-flag-icons/react/3x2";
 
+import EmptyValue from "@/components/core/EmptyValue";
 import { formatPhone, getPhoneCountry } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,7 @@ interface PhoneDisplayProps {
  * country resolves without a region hint; unparseable values render as-is.
  */
 const PhoneDisplay = ({ value, className }: PhoneDisplayProps) => {
-  if (!value) return <>—</>;
+  if (!value) return <EmptyValue />;
 
   const country = getPhoneCountry(value);
   // biome-ignore lint/performance/noDynamicNamespaceImportAccess: the flag is chosen at runtime by country code; the full set is intentionally bundled
@@ -26,7 +27,7 @@ const PhoneDisplay = ({ value, className }: PhoneDisplayProps) => {
       {Flag ? (
         <Flag
           title={country ?? undefined}
-          className="h-3 w-[18px] shrink-0 rounded-[2px] ring-1 ring-black/10"
+          className="h-3 w-[18px] shrink-0 rounded-[2px] ring-1 ring-foreground/10"
         />
       ) : null}
       <span>{formatPhone(value)}</span>

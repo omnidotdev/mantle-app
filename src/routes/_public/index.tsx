@@ -1,25 +1,25 @@
-import { Badge } from "@omnidotdev/thornberry/badge";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
   BoxesIcon,
-  CheckCircle2Icon,
-  ClipboardListIcon,
   FileTextIcon,
+  LayoutGridIcon,
   LogInIcon,
+  ReceiptIcon,
   RocketIcon,
   UsersIcon,
-  ZapIcon,
 } from "lucide-react";
 import { LuGithub as GithubIcon } from "react-icons/lu";
 
-import VolcanicCard from "@/components/core/VolcanicCard";
-import { Button } from "@/components/ui/button";
+import StatusBadge from "@/components/core/StatusBadge";
+import { Button, buttonVariants } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import appConfig from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
 import { signOutLocal } from "@/server/functions/auth";
 import { getLastOrgCookie } from "@/server/functions/lastWorkspace";
+
+import type { LucideIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_public/")({
   beforeLoad: async ({ context: { session } }) => {
@@ -54,244 +54,294 @@ export const Route = createFileRoute("/_public/")({
   component: HomePage,
 });
 
-const modules = [
+const modules: { title: string; description: string; icon: LucideIcon }[] = [
   {
     title: "People",
-    description: "Manage contacts, companies, and relationships in one place",
-    icon: <UsersIcon size={28} />,
+    description:
+      "Contacts, companies, and how they connect, in one searchable place",
+    icon: UsersIcon,
   },
   {
     title: "Invoices",
-    description: "Create, track, and manage invoices with real-time previews",
-    icon: <FileTextIcon size={28} />,
+    description:
+      "Branded invoices with live previews, payment links, and partial payments",
+    icon: ReceiptIcon,
   },
   {
     title: "Quotes & Contracts",
-    description: "Draft quotes, convert to invoices, and close deals faster",
-    icon: <ClipboardListIcon size={28} />,
+    description:
+      "Draft a quote, get it signed, and turn it into an invoice in one click",
+    icon: FileTextIcon,
   },
   {
     title: "Inventory",
-    description: "Track products, stock levels, and adjustment history",
-    icon: <BoxesIcon size={28} />,
+    description:
+      "Products, stock levels, and a full history of every adjustment",
+    icon: BoxesIcon,
   },
 ];
 
-const steps = [
+const steps: { title: string; description: string; icon: LucideIcon }[] = [
   {
-    number: "01",
-    title: "Sign In",
-    description: "Authenticate with your Omni account to get started instantly",
-    icon: <LogInIcon size={24} />,
+    title: "Sign in",
+    description: "Use your Omni account. There is nothing to install.",
+    icon: LogInIcon,
   },
   {
-    number: "02",
-    title: "Pick a Module",
-    description: "Choose from People, Invoices, Quotes, or Inventory",
-    icon: <ZapIcon size={24} />,
+    title: "Pick a module",
+    description: "Start with people, invoices, quotes, or inventory.",
+    icon: LayoutGridIcon,
   },
   {
-    number: "03",
-    title: "Get to Work",
-    description: "Start managing your business operations right away",
-    icon: <RocketIcon size={24} />,
+    title: "Get to work",
+    description: "Add your first records and run your operations from day one.",
+    icon: RocketIcon,
   },
 ];
+
+/** Sample figures for the static product shot */
+const previewStats = [
+  { label: "Outstanding", value: "$18,420" },
+  { label: "Overdue", value: "$4,950" },
+  { label: "Paid this month", value: "$32,180" },
+];
+
+const previewInvoices = [
+  {
+    client: "Northwind Traders",
+    number: "INV-0048",
+    amount: "$4,200.00",
+    status: "sent",
+  },
+  {
+    client: "Halcyon Labs",
+    number: "INV-0047",
+    amount: "$12,750.00",
+    status: "draft",
+  },
+  {
+    client: "Brightline Studio",
+    number: "INV-0046",
+    amount: "$2,450.00",
+    status: "overdue",
+  },
+  {
+    client: "Cobalt & Pine",
+    number: "INV-0045",
+    amount: "$8,900.00",
+    status: "viewed",
+  },
+];
+
+const startSignIn = () =>
+  signIn({
+    redirectUrl: BASE_URL,
+    providerId: "omni",
+  });
+
+/** Static, non-interactive mini dashboard shown beside the hero copy */
+const ProductShot = () => (
+  <div
+    aria-hidden
+    className="pointer-events-none select-none overflow-hidden rounded-2xl bg-card shadow-2xl shadow-primary-900/15 dark:border dark:border-border/60 dark:shadow-none"
+  >
+    <div className="flex h-8 items-center gap-1.5 border-border border-b bg-muted px-3">
+      <span className="size-2.5 rounded-full bg-input" />
+      <span className="size-2.5 rounded-full bg-input" />
+      <span className="size-2.5 rounded-full bg-input" />
+    </div>
+
+    <div className="grid gap-3 p-3 sm:p-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
+        {previewStats.map((stat) => (
+          <div
+            key={stat.label}
+            className="min-w-0 rounded-xl border border-border px-2.5 py-2 sm:px-3 sm:py-2.5"
+          >
+            <p className="text-muted-foreground text-xs leading-tight">
+              {stat.label}
+            </p>
+            <p className="tabular mt-0.5 font-bold text-base tracking-tight sm:text-lg">
+              {stat.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border">
+        {previewInvoices.map((invoice) => (
+          <li
+            key={invoice.number}
+            className="flex min-h-12 items-center gap-3 px-3 py-2 sm:px-4"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium text-sm">{invoice.client}</p>
+              <p className="tabular text-muted-foreground text-xs">
+                {invoice.number}
+              </p>
+            </div>
+            <span className="tabular font-medium text-sm">
+              {invoice.amount}
+            </span>
+            <StatusBadge status={invoice.status} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+);
 
 function HomePage() {
   return (
-    <div>
+    <>
       {/* Hero */}
-      <section className="relative px-4 pt-20 pb-32 sm:px-6 md:pt-32 md:pb-40 lg:px-8">
-        {/* Decorative glow behind headline */}
-        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="h-[400px] w-[600px] rounded-full bg-primary-500/5 blur-[100px]" />
-        </div>
-
-        <div className="relative mx-auto max-w-4xl text-center">
-          <div className="mb-8 flex justify-center">
-            <Badge className="gap-2 px-4 py-2">{appConfig.tagline}</Badge>
-          </div>
-
-          <h1 className="mb-6 font-extrabold text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block">Business operations,</span>
-            <span className="mt-2 block text-shimmer">
-              forged under pressure
-            </span>
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-10 pb-10 sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 lg:pt-20">
+        <div>
+          <h1 className="font-bold text-4xl leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+            Business operations,{" "}
+            <span className="text-primary">forged under pressure</span>
           </h1>
 
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
-            People, invoices, quotes, and inventory — unified in a single
-            bedrock platform. {appConfig.name} is the operations suite refined
-            from the core. Free and open source.
+          <p className="mt-5 max-w-xl text-lg text-muted-foreground leading-relaxed">
+            People, invoices, quotes, and inventory in one bedrock platform.
+            Free and open source, with your records in one place instead of four
+            tools.
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
-              className="group h-12 gap-2 px-8 font-semibold shadow-lg"
-              onClick={() =>
-                signIn({
-                  redirectUrl: BASE_URL,
-                  providerId: "omni",
-                })
-              }
-            >
-              Get Started Free
-              <ArrowRightIcon
-                size={18}
-                className="transition-transform group-hover:translate-x-1"
-              />
+          <div className="mt-7 flex flex-wrap gap-2.5">
+            <Button size="lg" className="group" onClick={startSignIn}>
+              Get started free
+              <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </Button>
-
             <a
               href={appConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
             >
-              <Button variant="outline" size="lg" className="h-12 gap-2 px-8">
-                <GithubIcon size={18} />
-                View on GitHub
-              </Button>
+              <GithubIcon />
+              View on GitHub
+            </a>
+          </div>
+
+          <p className="mt-5 text-muted-foreground text-sm">
+            Early access. Join the{" "}
+            <a
+              href={appConfig.organization.discord}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground underline-offset-2 hover:underline"
+            >
+              Discord
+            </a>{" "}
+            to help shape it.
+          </p>
+        </div>
+
+        <ProductShot />
+      </section>
+
+      {/* Modules */}
+      <section className="mx-auto max-w-6xl px-4 pt-14 pb-16 sm:px-6 md:pb-20">
+        <h2 className="font-bold text-2xl tracking-tight sm:text-3xl">
+          Four modules, one ledger
+        </h2>
+        <p className="mt-2 text-base text-muted-foreground">
+          Every record links to the others, so a contact, its quotes, and its
+          invoices stay in sync.
+        </p>
+
+        <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {modules.map(({ title, description, icon: Icon }) => (
+            <div
+              key={title}
+              className="rounded-2xl bg-card p-5 shadow-card dark:border dark:border-border/60 dark:shadow-none"
+            >
+              <span className="mb-3.5 flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary-600 dark:text-primary-300">
+                <Icon className="size-4.5" />
+              </span>
+              <h3 className="font-semibold text-base">{title}</h3>
+              <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+                {description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 md:pb-20">
+        <h2 className="font-bold text-2xl tracking-tight sm:text-3xl">
+          Up and running in minutes
+        </h2>
+        <p className="mt-2 text-base text-muted-foreground">
+          No setup project, no migration. Sign in and start.
+        </p>
+
+        <ol className="mt-7 grid gap-4 md:grid-cols-3">
+          {steps.map(({ title, description, icon: Icon }, index) => (
+            <li
+              key={title}
+              className="flex gap-4 rounded-2xl bg-card p-5 shadow-card dark:border dark:border-border/60 dark:shadow-none"
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-600 dark:text-primary-300">
+                <Icon className="size-4.5" />
+              </span>
+              <div>
+                <h3 className="font-semibold text-base">
+                  <span className="tabular text-muted-foreground">
+                    {index + 1}.
+                  </span>{" "}
+                  {title}
+                </h3>
+                <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+                  {description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Open source + final CTA */}
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 md:pb-24">
+        <div className="flex flex-col items-start gap-8 rounded-3xl bg-card p-6 shadow-card sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:p-12 dark:border dark:border-border/60 dark:shadow-none">
+          <div className="max-w-xl">
+            <h2 className="font-bold text-2xl tracking-tight sm:text-3xl">
+              Ready to build on bedrock?
+            </h2>
+            <p className="mt-3 text-base text-muted-foreground leading-relaxed">
+              {appConfig.name} is open source. Inspect the code, contribute
+              features, or self-host it on your own infrastructure. No credit
+              card required.
+            </p>
+          </div>
+
+          <div className="flex w-full flex-wrap gap-2.5 sm:w-auto">
+            <Button
+              size="lg"
+              className="group max-sm:flex-1"
+              onClick={startSignIn}
+            >
+              Get started free
+              <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
+            </Button>
+            <a
+              href={appConfig.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants({
+                variant: "outline",
+                size: "lg",
+                className: "max-sm:flex-1",
+              })}
+            >
+              <GithubIcon />
+              View on GitHub
             </a>
           </div>
         </div>
       </section>
-
-      {/* Module Showcase */}
-      <section className="px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mx-auto mb-16 max-w-2xl text-center">
-            <Badge className="mb-4">Modules</Badge>
-            <h2 className="mb-4 font-bold text-3xl sm:text-4xl">
-              Core modules, crystallized
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Four essential modules forged into a unified operations layer
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            {modules.map((mod) => (
-              <VolcanicCard key={mod.title}>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary dark:bg-primary-950">
-                  {mod.icon}
-                </div>
-                <h3 className="mb-2 font-semibold text-lg">{mod.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {mod.description}
-                </p>
-              </VolcanicCard>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mx-auto mb-16 max-w-2xl text-center">
-            <Badge className="mb-4">How It Works</Badge>
-            <h2 className="mb-4 font-bold text-3xl sm:text-4xl">
-              Surface in minutes
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              No friction. Just solid ground.
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-3">
-            {steps.map((step) => (
-              <div
-                key={step.title}
-                className="flex flex-col items-center rounded-2xl border border-base-200 bg-card p-8 text-center shadow-sm dark:border-base-800"
-              >
-                <div className="relative mb-6">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-base-200 bg-card shadow-md dark:border-base-800">
-                    <div className="text-primary">{step.icon}</div>
-                  </div>
-                  <div className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
-                    {step.number}
-                  </div>
-                </div>
-                <h3 className="mb-2 font-semibold text-xl">{step.title}</h3>
-                <p className="max-w-xs text-muted-foreground">
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Open Source */}
-      <section className="px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="rounded-3xl border border-base-200 bg-linear-to-br from-primary-50/50 to-background p-8 sm:p-12 lg:p-16 dark:border-base-800 dark:from-primary-950/30">
-            <div className="flex flex-col items-center gap-8 lg:flex-row lg:justify-between">
-              <div className="max-w-xl text-center lg:text-left">
-                <Badge className="mb-4">
-                  <CheckCircle2Icon size={14} className="mr-1" />
-                  Open Source
-                </Badge>
-                <h2 className="mb-4 font-bold text-3xl sm:text-4xl">
-                  Forged in the open
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  {appConfig.name} is completely open source. Inspect the code,
-                  contribute features, or self-host on your own infrastructure.
-                  Your data, your foundation.
-                </p>
-              </div>
-
-              <a
-                href={appConfig.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" size="lg" className="h-12 gap-2 px-6">
-                  <GithubIcon size={20} />
-                  View on GitHub
-                </Button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="px-4 py-32 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-6 font-bold text-4xl sm:text-5xl">
-            Ready to build on <span className="text-shimmer">bedrock?</span>
-          </h2>
-          <p className="mx-auto mb-10 max-w-xl text-lg text-muted-foreground">
-            Stop shifting between tools. Build on a foundation that holds. Free
-            and open source, forever.
-          </p>
-
-          <Button
-            size="lg"
-            className="group h-14 gap-2 px-10 font-semibold text-lg shadow-lg"
-            onClick={() =>
-              signIn({
-                redirectUrl: BASE_URL,
-                providerId: "omni",
-              })
-            }
-          >
-            Get Started for Free
-            <ArrowRightIcon
-              size={20}
-              className="transition-transform group-hover:translate-x-1"
-            />
-          </Button>
-
-          <p className="mt-6 text-muted-foreground text-sm">
-            No credit card required. Free and open source.
-          </p>
-        </div>
-      </section>
-    </div>
+    </>
   );
 }

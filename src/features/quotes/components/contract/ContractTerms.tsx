@@ -2,15 +2,10 @@ import type { QuoteLineItem } from "@/features/quotes/types/quote";
 
 interface ContractTermsProps {
   timeRange: string | null;
-  additionalTerms: string[] | null;
   lineItems: Partial<QuoteLineItem>[];
 }
 
-const ContractTerms = ({
-  timeRange,
-  additionalTerms,
-  lineItems,
-}: ContractTermsProps) => {
+const ContractTerms = ({ timeRange, lineItems }: ContractTermsProps) => {
   const hasRoyalty = lineItems.some((li) => li.pricingType === "royalty");
   const hasHourly = lineItems.some((li) => li.pricingType === "hourly");
   const hasMinBilling = lineItems.some(
@@ -18,10 +13,10 @@ const ContractTerms = ({
   );
 
   return (
-    <div className="space-y-4 text-foreground text-sm">
+    <div className="space-y-4 text-sm">
       {/* Section 3: Timeline */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">3. Timeline</h3>
+        <h3 className="font-semibold text-lg">3. Timeline</h3>
         <p>
           {timeRange
             ? `The estimated project timeline is ${timeRange}.`
@@ -32,9 +27,7 @@ const ContractTerms = ({
 
       {/* Section 4: Ownership */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          4. Ownership & Licensing
-        </h3>
+        <h3 className="font-semibold text-lg">4. Ownership and licensing</h3>
         <p>
           Upon full payment, the Client receives a perpetual, non-exclusive
           license to use all deliverables. The Developer retains ownership of
@@ -45,8 +38,8 @@ const ContractTerms = ({
 
       {/* Section 5: Portfolio */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          5. Portfolio & Marketing Rights
+        <h3 className="font-semibold text-lg">
+          5. Portfolio and marketing rights
         </h3>
         <p>
           The Developer may reference this project in portfolios and marketing
@@ -57,9 +50,7 @@ const ContractTerms = ({
 
       {/* Section 6: Confidentiality */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          6. Confidentiality
-        </h3>
+        <h3 className="font-semibold text-lg">6. Confidentiality</h3>
         <p>
           Both parties agree to keep confidential any proprietary information
           shared during the course of this engagement. This obligation survives
@@ -69,9 +60,7 @@ const ContractTerms = ({
 
       {/* Section 7: Maintenance */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          7. Maintenance & Support
-        </h3>
+        <h3 className="font-semibold text-lg">7. Maintenance and support</h3>
         <p>
           A 30-day warranty period for bug fixes begins upon delivery of each
           milestone.
@@ -88,8 +77,8 @@ const ContractTerms = ({
 
       {/* Section 8: Change requests */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          8. Change Requests & Scope Creep
+        <h3 className="font-semibold text-lg">
+          8. Change requests and scope creep
         </h3>
         <p>
           Changes outside the original scope require a written change request.
@@ -114,29 +103,13 @@ const ContractTerms = ({
 
       {/* Section 9: External costs */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          9. External Provider Costs
-        </h3>
+        <h3 className="font-semibold text-lg">9. External provider costs</h3>
         <p>
           Any third-party services, APIs, hosting, or tools required for the
           project are the Client&apos;s financial responsibility unless
           explicitly included in this Agreement.
         </p>
       </div>
-
-      {/* Section 15: Additional terms */}
-      {additionalTerms && additionalTerms.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-foreground text-lg">
-            15. Additional Terms
-          </h3>
-          <ul className="list-disc space-y-1 pl-5">
-            {additionalTerms.map((term) => (
-              <li key={term}>{term}</li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };

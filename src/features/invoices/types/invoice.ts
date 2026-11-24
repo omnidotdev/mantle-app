@@ -238,3 +238,97 @@ export const derivePaidFields = (
 
   return { status: status === "paid" ? "sent" : status, paidAt: null };
 };
+
+/** Format an ISO date as a short "Mon Day, Year" (e.g. "Feb 3, 2026") for dense lists */
+export const formatShortDate = (iso: string): string =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+interface ClientFields {
+  company?: { name: string } | null;
+  contact?: { firstName?: string | null; lastName?: string | null } | null;
+  billTo?: string | null;
+}
+
+/**
+ * Display name for an invoice's client: the company, else the contact, else
+ * the first line of the free-form bill-to block. Null when none is set
+ */
+export const invoiceClientName = ({
+  company,
+  contact,
+  billTo,
+}: ClientFields): string | null => {
+  if (company?.name?.trim()) return company.name.trim();
+
+  const contactName = [contact?.firstName, contact?.lastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  if (contactName) return contactName;
+
+  const firstLine = billTo
+    ?.split("\n")
+    .map((line) => line.trim())
+    .find(Boolean);
+
+  return firstLine ?? null;
+};
+
+/** Number of invoices per status, plus an `all` total */
+export const countByStatus = (
+  invoices: Pick<Invoice, "status">[],
+): Record<InvoiceStatus | "all", number> => {
+  const counts = Object.fromEntries(
+    INVOICE_STATUSES.map((status) => [status, 0]),
+  ) as Record<InvoiceStatus, number>;
+
+  for (const invoice of invoices) {
+    if (invoice.status in counts) counts[invoice.status] += 1;
+  }
+
+  return { all: invoices.length, ...counts };
+};
+
+/**
+ * Share of an invoice total that has been paid, as a whole percent clamped to
+ * 0-100 (a zero total reads as 0)
+ */
+export const paidPercent = (total: number, paid: number): number => {
+  if (total <= 0) return 0;
+
+  return Math.min(100, Math.max(0, Math.round((paid / total) * 100)));
+};
+
+/**
+ * Draft seeded from an existing invoice for "Duplicate": keeps the client,
+ * terms, and line items, and drops identity, dates, status, and payments
+ */
+export const toDuplicateDraft = (
+  invoice: Pick<
+    Invoice,
+    "companyId" | "contactId" | "billTo" | "notes" | "taxRate" | "currency"
+  > & { invoiceLineItems?: InvoiceLineItem[] },
+): {
+  invoice: Partial<Invoice>;
+  lineItems: Partial<InvoiceLineItem>[];
+} => ({
+  invoice: {
+    companyId: invoice.companyId,
+    contactId: invoice.contactId,
+    billTo: invoice.billTo,
+    notes: invoice.notes,
+    taxRate: invoice.taxRate,
+    currency: invoice.currency,
+  },
+  lineItems: (invoice.invoiceLineItems ?? []).map((li) => ({
+    description: li.description,
+    quantity: li.quantity,
+    unitPrice: li.unitPrice,
+    amount: li.amount,
+    sortOrder: li.sortOrder,
+  })),
+});

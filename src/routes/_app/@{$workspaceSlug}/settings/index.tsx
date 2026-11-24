@@ -1,16 +1,85 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { SettingsIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
+import EmptyState from "@/components/core/EmptyState";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import SectionCard from "@/components/core/SectionCard";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { resolveRegion } from "@/lib/phone";
+import cn from "@/lib/utils";
 
+import type { ReactNode } from "react";
 import type { OrganizationProfile } from "@/features/settings/types";
 
 type FormState = Omit<OrganizationProfile, "id" | "createdAt" | "updatedAt">;
+
+/** Label above a control, with an optional wide (two-column) span */
+const Field = ({
+  id,
+  label,
+  required,
+  wide,
+  children,
+}: {
+  id: string;
+  label: string;
+  required?: boolean;
+  wide?: boolean;
+  children: ReactNode;
+}) => (
+  <div className={cn("space-y-1.5", wide && "sm:col-span-2")}>
+    <Label htmlFor={id}>
+      {label}
+      {required && (
+        <span aria-hidden className="ml-0.5 text-muted-foreground">
+          *
+        </span>
+      )}
+    </Label>
+    {children}
+  </div>
+);
+
+/** Small heading that splits the profile card into groups */
+const GroupHeading = ({ children }: { children: ReactNode }) => (
+  <h3 className="font-semibold text-sm">{children}</h3>
+);
+
+/** Preview of the logo URL, hidden until the image actually loads */
+const LogoPreview = ({ url }: { url: string }) => {
+  const [failed, setFailed] = useState(false);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset when the URL changes
+  useEffect(() => setFailed(false), [url]);
+
+  if (failed) {
+    return (
+      <p className="text-muted-foreground text-xs">
+        This image could not be loaded. Check the URL.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <img
+        src={url}
+        alt="Logo preview"
+        onError={() => setFailed(true)}
+        className="h-12 max-w-40 rounded-lg bg-muted object-contain p-1.5"
+      />
+      <span className="text-muted-foreground text-xs">Preview</span>
+    </div>
+  );
+};
 
 const SettingsPage = () => {
   const { organizationId } = Route.useRouteContext();
@@ -43,7 +112,6 @@ const SettingsPage = () => {
   };
 
   const [form, setForm] = useState<FormState>(defaultForm);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (existing) {
@@ -70,7 +138,6 @@ const SettingsPage = () => {
 
   const handleChange = (field: keyof FormState, value: string | null) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    setSaved(false);
   };
 
   const handleSave = () => {
@@ -79,7 +146,8 @@ const SettingsPage = () => {
     } else {
       createProfile(form);
     }
-    setSaved(true);
+
+    toast.success("Workspace profile saved");
   };
 
   const isValid =
@@ -87,237 +155,235 @@ const SettingsPage = () => {
 
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to view settings
-        </p>
-      </div>
+      <PageContainer width="narrow">
+        <PageHeader title="Settings" />
+        <SectionCard>
+          <EmptyState
+            icon={SettingsIcon}
+            title="No workspace selected"
+            description="Pick a workspace to edit its settings."
+            action={
+              <Link to="/" className={buttonVariants({ variant: "solid" })}>
+                Go home
+              </Link>
+            }
+          />
+        </SectionCard>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold text-xl">Workspace Profile</h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Configure your company details for auto-filling invoices and
-            contracts
-          </p>
-        </div>
-      </div>
+    <PageContainer width="narrow">
+      <PageHeader
+        title="Settings"
+        description="Company details that fill in your invoices and contracts, and how documents are numbered"
+      />
 
-      <div className="space-y-6 rounded-lg border border-border bg-card p-6">
-        {/* Company info */}
-        <div className="space-y-4">
-          <h3 className="font-medium text-foreground text-lg">
-            Company Information
-          </h3>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="org-company-name">Company Name *</Label>
-              <Input
-                id="org-company-name"
-                value={form.companyName}
-                onChange={(e) => handleChange("companyName", e.target.value)}
-                placeholder="Your company name"
-                required
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-website">Website</Label>
-              <Input
-                id="org-website"
-                value={form.website ?? ""}
-                onChange={(e) =>
-                  handleChange("website", e.target.value || null)
-                }
-                placeholder="https://example.com"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-logo-url">Logo URL</Label>
-              <Input
-                id="org-logo-url"
-                value={form.logoUrl ?? ""}
-                onChange={(e) =>
-                  handleChange("logoUrl", e.target.value || null)
-                }
-                placeholder="https://example.com/logo.svg"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-registration-state">Registration State</Label>
-              <Input
-                id="org-registration-state"
-                value={form.registrationState ?? ""}
-                onChange={(e) =>
-                  handleChange("registrationState", e.target.value || null)
-                }
-                placeholder="e.g. Minnesota"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Contact info */}
-        <div className="space-y-4">
-          <h3 className="font-medium text-foreground text-lg">
-            Primary Contact
-          </h3>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="org-contact-name">Contact Name *</Label>
-              <Input
-                id="org-contact-name"
-                value={form.contactName}
-                onChange={(e) => handleChange("contactName", e.target.value)}
-                placeholder="Full name"
-                required
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-contact-title">Title</Label>
-              <Input
-                id="org-contact-title"
-                value={form.contactTitle ?? ""}
-                onChange={(e) =>
-                  handleChange("contactTitle", e.target.value || null)
-                }
-                placeholder="e.g. CEO"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-email">Email *</Label>
-              <Input
-                id="org-email"
-                type="email"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                placeholder="contact@company.com"
-                required
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-phone">Phone</Label>
-              <PhoneInput
-                id="org-phone"
-                value={form.phone ?? null}
-                onChange={(phone) => handleChange("phone", phone)}
-                region={resolveRegion(form.country)}
-                placeholder="(555) 555-5555"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Address */}
-        <div className="space-y-4">
-          <h3 className="font-medium text-foreground text-lg">Address</h3>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="org-address1">Address Line 1</Label>
-              <Input
-                id="org-address1"
-                value={form.addressLine1 ?? ""}
-                onChange={(e) =>
-                  handleChange("addressLine1", e.target.value || null)
-                }
-                placeholder="Street address"
-              />
-            </div>
-
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="org-address2">Address Line 2</Label>
-              <Input
-                id="org-address2"
-                value={form.addressLine2 ?? ""}
-                onChange={(e) =>
-                  handleChange("addressLine2", e.target.value || null)
-                }
-                placeholder="Suite, unit, etc."
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-city">City</Label>
-              <Input
-                id="org-city"
-                value={form.city ?? ""}
-                onChange={(e) => handleChange("city", e.target.value || null)}
-                placeholder="City"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-state">State</Label>
-              <Input
-                id="org-state"
-                value={form.state ?? ""}
-                onChange={(e) => handleChange("state", e.target.value || null)}
-                placeholder="State"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-postal">Postal Code</Label>
-              <Input
-                id="org-postal"
-                value={form.postalCode ?? ""}
-                onChange={(e) =>
-                  handleChange("postalCode", e.target.value || null)
-                }
-                placeholder="12345"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="org-country">Country</Label>
-              <Input
-                id="org-country"
-                value={form.country ?? ""}
-                onChange={(e) =>
-                  handleChange("country", e.target.value || null)
-                }
-                placeholder="Country"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-3 border-border border-t pt-4">
-          {saved && (
-            <span className="text-emerald-600 text-sm dark:text-emerald-400">
-              Saved successfully
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={!isValid}
-            className="rounded-md bg-primary px-4 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+      <div className="grid gap-4 md:gap-6">
+        <SectionCard title="Workspace profile">
+          <form
+            method="post"
+            className="space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (isValid) handleSave();
+            }}
           >
-            Save Profile
-          </button>
-        </div>
-      </div>
+            <div className="space-y-4">
+              <GroupHeading>Company</GroupHeading>
 
-      {/* Document Numbering */}
-      <DocumentNumberingSettings organizationId={organizationId} />
-    </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field id="org-company-name" label="Company name" required>
+                  <Input
+                    id="org-company-name"
+                    value={form.companyName}
+                    onChange={(e) =>
+                      handleChange("companyName", e.target.value)
+                    }
+                    placeholder="Your company name"
+                    required
+                  />
+                </Field>
+
+                <Field id="org-website" label="Website">
+                  <Input
+                    id="org-website"
+                    value={form.website ?? ""}
+                    onChange={(e) =>
+                      handleChange("website", e.target.value || null)
+                    }
+                    placeholder="https://example.com"
+                  />
+                </Field>
+
+                <Field id="org-logo-url" label="Logo URL" wide>
+                  <Input
+                    id="org-logo-url"
+                    value={form.logoUrl ?? ""}
+                    onChange={(e) =>
+                      handleChange("logoUrl", e.target.value || null)
+                    }
+                    placeholder="https://example.com/logo.svg"
+                  />
+                  {form.logoUrl && <LogoPreview url={form.logoUrl} />}
+                </Field>
+
+                <Field id="org-registration-state" label="Registration state">
+                  <Input
+                    id="org-registration-state"
+                    value={form.registrationState ?? ""}
+                    onChange={(e) =>
+                      handleChange("registrationState", e.target.value || null)
+                    }
+                    placeholder="e.g. Minnesota"
+                  />
+                </Field>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <GroupHeading>Primary contact</GroupHeading>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field id="org-contact-name" label="Contact name" required>
+                  <Input
+                    id="org-contact-name"
+                    value={form.contactName}
+                    onChange={(e) =>
+                      handleChange("contactName", e.target.value)
+                    }
+                    placeholder="Full name"
+                    required
+                  />
+                </Field>
+
+                <Field id="org-contact-title" label="Title">
+                  <Input
+                    id="org-contact-title"
+                    value={form.contactTitle ?? ""}
+                    onChange={(e) =>
+                      handleChange("contactTitle", e.target.value || null)
+                    }
+                    placeholder="e.g. CEO"
+                  />
+                </Field>
+
+                <Field id="org-email" label="Email" required>
+                  <Input
+                    id="org-email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    placeholder="contact@company.com"
+                    required
+                  />
+                </Field>
+
+                <Field id="org-phone" label="Phone">
+                  <PhoneInput
+                    id="org-phone"
+                    value={form.phone ?? null}
+                    onChange={(phone) => handleChange("phone", phone)}
+                    region={resolveRegion(form.country)}
+                    placeholder="(555) 555-5555"
+                  />
+                </Field>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <GroupHeading>Address</GroupHeading>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field id="org-address1" label="Address line 1" wide>
+                  <Input
+                    id="org-address1"
+                    value={form.addressLine1 ?? ""}
+                    onChange={(e) =>
+                      handleChange("addressLine1", e.target.value || null)
+                    }
+                    placeholder="Street address"
+                  />
+                </Field>
+
+                <Field id="org-address2" label="Address line 2" wide>
+                  <Input
+                    id="org-address2"
+                    value={form.addressLine2 ?? ""}
+                    onChange={(e) =>
+                      handleChange("addressLine2", e.target.value || null)
+                    }
+                    placeholder="Suite, unit, etc."
+                  />
+                </Field>
+
+                <Field id="org-city" label="City">
+                  <Input
+                    id="org-city"
+                    value={form.city ?? ""}
+                    onChange={(e) =>
+                      handleChange("city", e.target.value || null)
+                    }
+                    placeholder="City"
+                  />
+                </Field>
+
+                <Field id="org-state" label="State">
+                  <Input
+                    id="org-state"
+                    value={form.state ?? ""}
+                    onChange={(e) =>
+                      handleChange("state", e.target.value || null)
+                    }
+                    placeholder="State"
+                  />
+                </Field>
+
+                <Field id="org-postal" label="Postal code">
+                  <Input
+                    id="org-postal"
+                    value={form.postalCode ?? ""}
+                    onChange={(e) =>
+                      handleChange("postalCode", e.target.value || null)
+                    }
+                    placeholder="12345"
+                  />
+                </Field>
+
+                <Field id="org-country" label="Country">
+                  <Input
+                    id="org-country"
+                    value={form.country ?? ""}
+                    onChange={(e) =>
+                      handleChange("country", e.target.value || null)
+                    }
+                    placeholder="Country"
+                  />
+                </Field>
+              </div>
+            </div>
+
+            <div className="flex flex-col-reverse items-stretch gap-3 border-border border-t pt-4 sm:flex-row sm:items-center sm:justify-end">
+              {!isValid && (
+                <p className="text-muted-foreground text-xs">
+                  Company name, contact name, and email are required.
+                </p>
+              )}
+              <Button type="submit" disabled={!isValid}>
+                Save profile
+              </Button>
+            </div>
+          </form>
+        </SectionCard>
+
+        <DocumentNumberingSettings organizationId={organizationId} />
+      </div>
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/settings/")({
+  staticData: { title: "Settings" },
   component: SettingsPage,
 });

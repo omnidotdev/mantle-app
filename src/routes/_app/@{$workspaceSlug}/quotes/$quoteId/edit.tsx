@@ -1,12 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Loader2, Printer } from "lucide-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { FileTextIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import ContractPreview from "@/features/quotes/components/ContractPreview";
-import QuoteForm from "@/features/quotes/components/QuoteForm";
-import QuotePreview from "@/features/quotes/components/QuotePreview";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import PageContainer from "@/components/core/PageContainer";
+import { buttonVariants } from "@/components/ui/button";
+import QuoteEditorLayout from "@/features/quotes/components/QuoteEditorLayout";
 import {
   buildQuoteLineItemInput,
   sortLineItemsByOrder,
@@ -20,8 +22,6 @@ import {
 } from "@/generated/graphql";
 
 import type { Quote, QuoteLineItem } from "@/features/quotes/types/quote";
-
-type PreviewType = "quote" | "contract";
 
 const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   description: "",
@@ -46,49 +46,12 @@ const defaultLineItem: Omit<Partial<QuoteLineItem>, "id"> = {
   acceptanceCriteria: ["Client review and sign-off"],
 };
 
-const PreviewToggle = ({
-  value,
-  onChange,
-}: {
-  value: PreviewType;
-  onChange: (v: PreviewType) => void;
-}) => (
-  <div className="mb-4 inline-flex rounded-lg border border-border bg-muted p-1">
-    <button
-      type="button"
-      onClick={() => onChange("quote")}
-      aria-pressed={value === "quote"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "quote"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Quote
-    </button>
-    <button
-      type="button"
-      onClick={() => onChange("contract")}
-      aria-pressed={value === "contract"}
-      className={`rounded-md px-3 py-1.5 font-medium text-sm transition-colors ${
-        value === "contract"
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Contract
-    </button>
-  </div>
-);
-
 const EditQuotePage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug, quoteId } = Route.useParams();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [saving, setSaving] = useState(false);
-  const [previewType, setPreviewType] = useState<PreviewType>("quote");
   const [currentQuote, setCurrentQuote] = useState<Partial<Quote>>({});
   const [currentLineItems, setCurrentLineItems] = useState<
     Partial<QuoteLineItem>[]
@@ -340,135 +303,72 @@ const EditQuotePage = () => {
       invalidateQuotes();
       toast.success("Quote saved");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save quote");
+      console.error("Failed to save quote", err);
+      toast.error("Could not save the quote. Try again.");
     } finally {
       setSaving(false);
     }
   };
 
-  const renderPreview = () => {
-    if (previewType === "contract") {
-      return (
-        <ContractPreview
-          quote={currentQuote}
-          lineItems={currentLineItems}
-          organizationId={organizationId}
-        />
-      );
-    }
-    return (
-      <QuotePreview
-        quote={currentQuote}
-        lineItems={currentLineItems}
-        organizationId={organizationId}
-      />
-    );
-  };
-
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to edit quotes
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileTextIcon}
+          title="No workspace selected"
+          description="Select a workspace from the sidebar to edit quotes."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading quote"
-        />
-      </div>
+      <PageContainer>
+        <LoadingState label="Loading quote" />
+      </PageContainer>
     );
   }
 
   if (!quote) {
     return (
-      <div className="p-6">
-        <Link
-          to="/@{$workspaceSlug}/quotes"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">Quote not found</p>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={FileTextIcon}
+          title="Quote not found"
+          description="It may have been deleted, or the link is out of date."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/quotes"
+              params={{ workspaceSlug }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Back to quotes
+            </Link>
+          }
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6 print:p-0">
-      <div className="print-hide sticky top-0 z-10 mb-6 flex items-center justify-between bg-background py-4">
-        <Link
-          to="/@{$workspaceSlug}/quotes"
-          params={{ workspaceSlug }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              const originalTitle = document.title;
-              const prefix = previewType === "contract" ? "contract" : "quote";
-              document.title = `${prefix}_${currentQuote.quoteNumber}`;
-              window.print();
-              document.title = originalTitle;
-            }}
-            className="flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-          >
-            <Printer size={14} />
-            Print
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2 print:block">
-        <div className="rounded-lg border border-border bg-card p-6 print:hidden">
-          <h2 className="mb-4 font-semibold text-lg">Edit Quote</h2>
-          <QuoteForm
-            quote={currentQuote}
-            onQuoteChange={setCurrentQuote}
-            lineItems={currentLineItems}
-            onLineItemsChange={setCurrentLineItems}
-            onSave={handleSave}
-            onCancel={() =>
-              navigate({
-                to: "/@{$workspaceSlug}/quotes",
-                params: { workspaceSlug },
-              })
-            }
-            organizationId={organizationId}
-            onRegenerateNumber={handleRegenerateNumber}
-            isRegenerating={regenerating}
-          />
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between print:hidden">
-            <h2 className="mb-4 font-semibold text-lg">Preview</h2>
-            <PreviewToggle value={previewType} onChange={setPreviewType} />
-          </div>
-          {renderPreview()}
-        </div>
-      </div>
-    </div>
+    <QuoteEditorLayout
+      title={
+        <>
+          Edit <span className="tabular">{quote.quoteNumber}</span>
+        </>
+      }
+      workspaceSlug={workspaceSlug}
+      organizationId={organizationId}
+      onSave={handleSave}
+      saving={saving}
+      quote={currentQuote}
+      onQuoteChange={setCurrentQuote}
+      lineItems={currentLineItems}
+      onLineItemsChange={setCurrentLineItems}
+      onRegenerateNumber={handleRegenerateNumber}
+      isRegenerating={regenerating}
+    />
   );
 };
 
@@ -476,4 +376,5 @@ export const Route = createFileRoute(
   "/_app/@{$workspaceSlug}/quotes/$quoteId/edit",
 )({
   component: EditQuotePage,
+  staticData: { title: "Edit quote" },
 });

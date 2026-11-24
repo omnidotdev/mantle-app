@@ -2,15 +2,20 @@ import { describe, expect, it } from "bun:test";
 
 import {
   appliedCredit,
+  countByStatus,
   creditBalance,
   derivePaidFields,
   formatCurrency,
   formatDate,
+  formatShortDate,
   invoiceBalance,
+  invoiceClientName,
   isPaidInFull,
   paidInFullDate,
+  paidPercent,
   sumCredits,
   sumPayments,
+  toDuplicateDraft,
   toPaidAtTimestamp,
 } from "./invoice";
 
@@ -245,5 +250,119 @@ describe("derivePaidFields", () => {
       status: "paid",
       paidAt: null,
     });
+  });
+});
+
+describe("formatShortDate", () => {
+  it("should format an ISO date with a short month", () => {
+    expect(formatShortDate("2026-12-18")).toBe("Dec 18, 2026");
+  });
+});
+
+describe("invoiceClientName", () => {
+  it("should prefer the company name", () => {
+    expect(
+      invoiceClientName({
+        company: { name: "Cobalt & Pine" },
+        contact: { firstName: "Dana", lastName: "Whitfield" },
+        billTo: "Someone else",
+      }),
+    ).toBe("Cobalt & Pine");
+  });
+
+  it("should fall back to the contact name", () => {
+    expect(
+      invoiceClientName({
+        company: null,
+        contact: { firstName: "Dana", lastName: null },
+      }),
+    ).toBe("Dana");
+  });
+
+  it("should fall back to the first non-empty bill-to line", () => {
+    expect(invoiceClientName({ billTo: "\n  Halcyon Labs \n12 Main St" })).toBe(
+      "Halcyon Labs",
+    );
+  });
+
+  it("should return null when no client is set", () => {
+    expect(invoiceClientName({ company: null, billTo: "  " })).toBeNull();
+  });
+});
+
+describe("countByStatus", () => {
+  it("should count every status and the total", () => {
+    expect(
+      countByStatus([
+        { status: "paid" },
+        { status: "paid" },
+        { status: "draft" },
+      ]),
+    ).toEqual({
+      all: 3,
+      draft: 1,
+      sent: 0,
+      viewed: 0,
+      paid: 2,
+      overdue: 0,
+      void: 0,
+    });
+  });
+});
+
+describe("paidPercent", () => {
+  it("should round to a whole percent", () => {
+    expect(paidPercent(8900, 3000)).toBe(34);
+  });
+
+  it("should clamp overpayment to 100", () => {
+    expect(paidPercent(100, 150)).toBe(100);
+  });
+
+  it("should read a zero total as 0", () => {
+    expect(paidPercent(0, 50)).toBe(0);
+  });
+});
+
+describe("toDuplicateDraft", () => {
+  it("should keep client, terms, and line items but drop identity", () => {
+    const draft = toDuplicateDraft({
+      companyId: "c1",
+      contactId: null,
+      billTo: "Acme",
+      notes: "Thanks",
+      taxRate: "8",
+      currency: "USD",
+      invoiceLineItems: [
+        {
+          id: "li1",
+          invoiceId: "inv1",
+          productId: null,
+          description: "Design",
+          quantity: "2",
+          unitPrice: "50",
+          amount: "100",
+          sortOrder: 0,
+        },
+      ],
+    });
+
+    expect(draft.invoice).toEqual({
+      companyId: "c1",
+      contactId: null,
+      billTo: "Acme",
+      notes: "Thanks",
+      taxRate: "8",
+      currency: "USD",
+    });
+    expect(draft.lineItems).toEqual([
+      {
+        description: "Design",
+        quantity: "2",
+        unitPrice: "50",
+        amount: "100",
+        sortOrder: 0,
+      },
+    ]);
   });
 });
