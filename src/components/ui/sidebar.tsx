@@ -395,7 +395,7 @@ const SidebarGroupLabel = ({
       data-slot="sidebar-group-label"
       data-sidebar="group-label"
       className={cn(
-        "flex shrink-0 items-center rounded-md py-1 font-medium text-sidebar-foreground/70 text-xs outline-hidden ring-sidebar-ring transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "flex shrink-0 items-center rounded-md py-1 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0",
         className,
       )}
@@ -457,7 +457,7 @@ const SidebarMenuButton = ({
         // Hover styles
         "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         // Focus styles
-        "outline-hidden focus-visible:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring! focus-visible:ring-offset-2! focus-visible:ring-offset-background",
+        "outline-hidden focus-visible:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring! focus-visible:ring-offset-2! focus-visible:ring-offset-background focus-visible:outline-none",
         // Active styles
         "active:text-sidebar-accent-foreground",
         // Disabled and aria-disabled styles

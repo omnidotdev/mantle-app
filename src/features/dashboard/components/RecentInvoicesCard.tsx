@@ -91,7 +91,7 @@ const RecentInvoicesCard = ({
                 }
               />
               <span className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
-                <span className="tabular font-medium text-sm">
+                <span className="tabular text-sm font-medium">
                   {formatCurrency(invoice.total, invoice.currency)}
                 </span>
                 <StatusBadge status={invoice.status} />

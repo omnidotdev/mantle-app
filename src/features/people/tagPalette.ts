@@ -83,6 +83,7 @@ const getPeopleTone = (tags: string[] | null): TagTone => {
 
 const getTagChipClass = (tag: string) => TONE_CHIP_CLASSES[getTagTone(tag)];
 
+export type { TagTone };
 export {
   TAG_LEGEND,
   TONE_CSS_VARS,
@@ -91,4 +92,3 @@ export {
   getTagChipClass,
   getTagTone,
 };
-export type { TagTone };

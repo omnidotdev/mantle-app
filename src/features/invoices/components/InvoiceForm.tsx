@@ -345,7 +345,7 @@ const InvoiceForm = ({
                 type="button"
                 onClick={() => handleProfileChange("accentColor", preset.value)}
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-full ring-offset-2 ring-offset-card transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "flex size-8 items-center justify-center rounded-full ring-offset-2 ring-offset-card transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   isActive && "ring-2 ring-foreground",
                 )}
                 // User-chosen brand colors, not UI tokens
@@ -368,10 +368,10 @@ const InvoiceForm = ({
               onChange={(e) =>
                 handleProfileChange("accentColor", e.target.value)
               }
-              className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-full [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
+              className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-full [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
               aria-label="Custom accent color"
             />
-            <span className="font-mono text-muted-foreground text-xs uppercase">
+            <span className="font-mono text-xs text-muted-foreground uppercase">
               {activeAccent}
             </span>
           </label>
@@ -427,7 +427,7 @@ const InvoiceForm = ({
               ))}
               {invoice.status === "paid" && <option value="paid">Paid</option>}
             </NativeSelect>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {invoice.status === "paid"
                 ? "Set automatically once payments cover the total. Remove a payment to change it."
                 : '"Paid" is set automatically once payments cover the total. Record one in Payments below.'}
@@ -516,7 +516,7 @@ const InvoiceForm = ({
       <SectionCard
         title="Line items"
         action={
-          <span className="tabular text-muted-foreground text-sm">
+          <span className="tabular text-sm text-muted-foreground">
             {formatCurrency(String(subtotal), invoice.currency)}
           </span>
         }
@@ -528,7 +528,7 @@ const InvoiceForm = ({
             renderItem={(item, index) => (
               <div className="space-y-3 rounded-xl border border-border p-3 sm:p-4">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-sm">Item {index + 1}</span>
+                  <span className="text-sm font-medium">Item {index + 1}</span>
                   {lineItems.length > 1 && (
                     <Button
                       variant="ghost"
@@ -676,7 +676,7 @@ const InvoiceForm = ({
       <SectionCard
         title="Payments"
         action={
-          <span className="tabular text-muted-foreground text-sm">
+          <span className="tabular text-sm text-muted-foreground">
             {balanceLabel}
           </span>
         }
@@ -710,7 +710,7 @@ const InvoiceForm = ({
           </div>
 
           {payments.length === 0 && (
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               No payments recorded yet.
             </p>
           )}
@@ -721,7 +721,7 @@ const InvoiceForm = ({
               className="space-y-3 rounded-xl border border-border p-3 sm:p-4"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="font-medium text-sm">Payment {index + 1}</span>
+                <span className="text-sm font-medium">Payment {index + 1}</span>
                 <Button
                   variant="ghost"
                   size="icon-sm"

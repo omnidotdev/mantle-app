@@ -37,7 +37,8 @@ import {
 import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { ActiveTab } from "@/features/people/store/peopleStore";
 import type { Company, Person } from "@/features/people/types";
 
@@ -367,7 +368,7 @@ const CompaniesTable = ({
     [navigate, workspaceSlug],
   );
 
-  const columns = useMemo<ColumnDef<Company>[]>(
+  const columns = useMemo<DataTableColumnDef<Company>[]>(
     () => [
       {
         id: "name",
@@ -462,8 +463,8 @@ const CompaniesTable = ({
         rowLabel={(company) => `Open company ${company.name}`}
         renderMobileRow={(company) => (
           <div className="min-w-0">
-            <p className="truncate font-medium text-sm">{company.name}</p>
-            <p className="mt-0.5 truncate text-muted-foreground text-xs">
+            <p className="truncate text-sm font-medium">{company.name}</p>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">
               {[company.industry, company.email].filter(Boolean).join(" · ") ||
                 "No details yet"}
             </p>
@@ -547,7 +548,7 @@ const ContactsTable = ({
     [navigate, workspaceSlug],
   );
 
-  const columns = useMemo<ColumnDef<Person>[]>(
+  const columns = useMemo<DataTableColumnDef<Person>[]>(
     () => [
       {
         id: "lastName",
@@ -688,8 +689,8 @@ const ContactsTable = ({
         renderMobileRow={(person) => (
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate font-medium text-sm">{fullName(person)}</p>
-              <p className="mt-0.5 truncate text-muted-foreground text-xs">
+              <p className="truncate text-sm font-medium">{fullName(person)}</p>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {person.emails[0] ?? "No email yet"}
               </p>
             </div>
@@ -700,7 +701,7 @@ const ContactsTable = ({
                     <TagChip key={tag} tag={tag} />
                   ))}
                   {person.tags.length > 2 && (
-                    <span className="tabular self-center text-muted-foreground text-xs">
+                    <span className="tabular self-center text-xs text-muted-foreground">
                       +{person.tags.length - 2}
                     </span>
                   )}

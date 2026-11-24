@@ -99,7 +99,7 @@ const PopulateButton = ({
       <Portal>
         <PopoverPositioner>
           <PopoverContent className="w-[min(20rem,calc(100vw-2rem))] rounded-2xl bg-card p-4 shadow-raised">
-            <PopoverTitle className="mb-3 flex items-center gap-1.5 font-semibold text-sm">
+            <PopoverTitle className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
               <Building2 className="size-4 text-muted-foreground" />
               Client
             </PopoverTitle>

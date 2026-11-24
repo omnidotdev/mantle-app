@@ -9,14 +9,14 @@ interface ContractSignaturesProps {
 
 /** Blank line to sign or write on by hand */
 const SignLine = ({ tall }: { tall?: boolean }) => (
-  <div className={`mb-1 border-base-300 border-b ${tall ? "pb-6" : "pb-4"}`} />
+  <div className={`mb-1 border-b border-base-300 ${tall ? "pb-6" : "pb-4"}`} />
 );
 
 /** A filled-in value, or a blank line to write it in by hand when unknown */
 const Field = ({ value, label }: { value?: string | null; label: string }) => (
   <div>
     {value ? <p className="text-sm">{value}</p> : <SignLine />}
-    <p className="text-base-500 text-xs">{label}</p>
+    <p className="text-xs text-base-500">{label}</p>
   </div>
 );
 
@@ -27,7 +27,7 @@ const ContractSignatures = ({
 }: ContractSignaturesProps) => {
   return (
     <div className="mt-8 break-inside-avoid space-y-4">
-      <h3 className="font-semibold text-lg">Signatures</h3>
+      <h3 className="text-lg font-semibold">Signatures</h3>
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 print:grid-cols-2">
         {/* Developer signature */}
@@ -38,7 +38,7 @@ const ContractSignatures = ({
           <div className="space-y-3">
             <div>
               <SignLine tall />
-              <p className="text-base-500 text-xs">Signature</p>
+              <p className="text-xs text-base-500">Signature</p>
             </div>
             <Field value={orgProfile?.contactName} label="Name" />
             <Field value={orgProfile?.contactTitle} label="Title" />
@@ -54,7 +54,7 @@ const ContractSignatures = ({
           <div className="space-y-3">
             <div>
               <SignLine tall />
-              <p className="text-base-500 text-xs">Signature</p>
+              <p className="text-xs text-base-500">Signature</p>
             </div>
             <Field value={clientName} label="Name" />
             <Field label="Title" />

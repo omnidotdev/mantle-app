@@ -11,10 +11,10 @@ const AppSidebarHeader = () => (
       <span className="text-lg" aria-hidden>
         {app.icon}
       </span>
-      <span className="truncate font-bold text-[0.9375rem] tracking-tight group-data-[collapsible=icon]:hidden">
+      <span className="truncate text-[0.9375rem] font-bold tracking-tight group-data-[collapsible=icon]:hidden">
         {app.name}
       </span>
-      <Badge className="border-primary/20 bg-primary/10 text-primary-600 text-xs group-data-[collapsible=icon]:hidden dark:text-primary-300">
+      <Badge className="border-primary/20 bg-primary/10 text-xs text-primary-600 group-data-[collapsible=icon]:hidden dark:text-primary-300">
         Early access
       </Badge>
     </div>

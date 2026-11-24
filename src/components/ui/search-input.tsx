@@ -28,7 +28,7 @@ const SearchInput = ({
       aria-label={label}
       placeholder={placeholder ?? label}
       className={cn(
-        "h-9 w-full rounded-full border border-input bg-card pr-4 pl-10 text-base placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:text-sm",
+        "h-9 w-full rounded-full border border-input bg-card pr-4 pl-10 text-base placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:outline-none md:text-sm",
         className,
       )}
       {...rest}

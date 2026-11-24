@@ -143,9 +143,9 @@ const startSignIn = () =>
 const ProductShot = () => (
   <div
     aria-hidden
-    className="pointer-events-none select-none overflow-hidden rounded-2xl bg-card shadow-2xl shadow-primary-900/15 dark:border dark:border-border/60 dark:shadow-none"
+    className="pointer-events-none overflow-hidden rounded-2xl bg-card shadow-2xl shadow-primary-900/15 select-none dark:border dark:border-border/60 dark:shadow-none"
   >
-    <div className="flex h-8 items-center gap-1.5 border-border border-b bg-muted px-3">
+    <div className="flex h-8 items-center gap-1.5 border-b border-border bg-muted px-3">
       <span className="size-2.5 rounded-full bg-input" />
       <span className="size-2.5 rounded-full bg-input" />
       <span className="size-2.5 rounded-full bg-input" />
@@ -158,10 +158,10 @@ const ProductShot = () => (
             key={stat.label}
             className="min-w-0 rounded-xl border border-border px-2.5 py-2 sm:px-3 sm:py-2.5"
           >
-            <p className="text-muted-foreground text-xs leading-tight">
+            <p className="text-xs leading-tight text-muted-foreground">
               {stat.label}
             </p>
-            <p className="tabular mt-0.5 font-bold text-base tracking-tight sm:text-lg">
+            <p className="tabular mt-0.5 text-base font-bold tracking-tight sm:text-lg">
               {stat.value}
             </p>
           </div>
@@ -175,12 +175,12 @@ const ProductShot = () => (
             className="flex min-h-12 items-center gap-3 px-3 py-2 sm:px-4"
           >
             <div className="min-w-0 flex-1">
-              <p className="truncate font-medium text-sm">{invoice.client}</p>
-              <p className="tabular text-muted-foreground text-xs">
+              <p className="truncate text-sm font-medium">{invoice.client}</p>
+              <p className="tabular text-xs text-muted-foreground">
                 {invoice.number}
               </p>
             </div>
-            <span className="tabular font-medium text-sm">
+            <span className="tabular text-sm font-medium">
               {invoice.amount}
             </span>
             <StatusBadge status={invoice.status} />
@@ -197,12 +197,12 @@ function HomePage() {
       {/* Hero */}
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-10 pb-10 sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 lg:pt-20">
         <div>
-          <h1 className="font-bold text-4xl leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl leading-[1.05] font-bold tracking-tight sm:text-5xl lg:text-6xl">
             Business operations,{" "}
             <span className="text-primary">forged under pressure</span>
           </h1>
 
-          <p className="mt-5 max-w-xl text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
             People, invoices, quotes, and inventory in one bedrock platform.
             Free and open source, with your records in one place instead of four
             tools.
@@ -224,7 +224,7 @@ function HomePage() {
             </a>
           </div>
 
-          <p className="mt-5 text-muted-foreground text-sm">
+          <p className="mt-5 text-sm text-muted-foreground">
             Early access. Join the{" "}
             <a
               href={appConfig.organization.discord}
@@ -243,7 +243,7 @@ function HomePage() {
 
       {/* Modules */}
       <section className="mx-auto max-w-6xl px-4 pt-14 pb-16 sm:px-6 md:pb-20">
-        <h2 className="font-bold text-2xl tracking-tight sm:text-3xl">
+        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
           Four modules, one ledger
         </h2>
         <p className="mt-2 text-base text-muted-foreground">
@@ -260,8 +260,8 @@ function HomePage() {
               <span className="mb-3.5 flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary-600 dark:text-primary-300">
                 <Icon className="size-4.5" />
               </span>
-              <h3 className="font-semibold text-base">{title}</h3>
-              <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+              <h3 className="text-base font-semibold">{title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 {description}
               </p>
             </div>
@@ -271,7 +271,7 @@ function HomePage() {
 
       {/* How it works */}
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 md:pb-20">
-        <h2 className="font-bold text-2xl tracking-tight sm:text-3xl">
+        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
           Up and running in minutes
         </h2>
         <p className="mt-2 text-base text-muted-foreground">
@@ -288,13 +288,13 @@ function HomePage() {
                 <Icon className="size-4.5" />
               </span>
               <div>
-                <h3 className="font-semibold text-base">
+                <h3 className="text-base font-semibold">
                   <span className="tabular text-muted-foreground">
                     {index + 1}.
                   </span>{" "}
                   {title}
                 </h3>
-                <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                   {description}
                 </p>
               </div>
@@ -307,10 +307,10 @@ function HomePage() {
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 md:pb-24">
         <div className="flex flex-col items-start gap-8 rounded-3xl bg-card p-6 shadow-card sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:p-12 dark:border dark:border-border/60 dark:shadow-none">
           <div className="max-w-xl">
-            <h2 className="font-bold text-2xl tracking-tight sm:text-3xl">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Ready to build on bedrock?
             </h2>
-            <p className="mt-3 text-base text-muted-foreground leading-relaxed">
+            <p className="mt-3 text-base leading-relaxed text-muted-foreground">
               {appConfig.name} is open source. Inspect the code, contribute
               features, or self-host it on your own infrastructure. No credit
               card required.

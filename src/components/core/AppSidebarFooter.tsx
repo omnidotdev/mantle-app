@@ -42,15 +42,15 @@ const AppSidebarFooter = () => {
               className="h-7 w-7 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/12 font-medium text-primary-600 text-xs dark:text-primary-300">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/12 text-xs font-medium text-primary-600 dark:text-primary-300">
               {(user.name?.[0] || user.email?.[0] || "?").toUpperCase()}
             </div>
           )}
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="truncate font-medium text-sm leading-tight">
+            <p className="truncate text-sm leading-tight font-medium">
               {user.name || user.username}
             </p>
-            <p className="truncate text-muted-foreground text-xs">
+            <p className="truncate text-xs text-muted-foreground">
               {user.email}
             </p>
           </div>

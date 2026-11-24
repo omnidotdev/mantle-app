@@ -51,7 +51,7 @@ interface StatusBadgeProps {
 const StatusBadge = ({ status, label, tone, className }: StatusBadgeProps) => (
   <span
     className={cn(
-      "inline-flex h-6 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 font-medium text-xs",
+      "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium whitespace-nowrap",
       tones[tone ?? statusTones[status] ?? "neutral"],
       className,
     )}

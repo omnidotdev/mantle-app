@@ -272,7 +272,7 @@ const ImportExportDialog = ({
 
             {mode === "export" ? (
               <div className="space-y-3">
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Download all <span className="tabular">{countLabel}</span> as
                   a file.
                 </p>
@@ -289,7 +289,7 @@ const ImportExportDialog = ({
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Import {noun} from a JSON or CSV file.
                 </p>
                 <input
@@ -299,13 +299,13 @@ const ImportExportDialog = ({
                   aria-label="Choose file to import"
                   onChange={handleImport}
                   disabled={importing}
-                  className="block w-full text-muted-foreground text-sm file:mr-4 file:h-9 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:font-medium file:text-primary-600 file:text-sm hover:file:bg-primary/15 dark:file:text-primary-300"
+                  className="block w-full text-sm text-muted-foreground file:mr-4 file:h-9 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:text-sm file:font-medium file:text-primary-600 hover:file:bg-primary/15 dark:file:text-primary-300"
                 />
                 {importing && (
-                  <p className="text-muted-foreground text-sm">Importing...</p>
+                  <p className="text-sm text-muted-foreground">Importing...</p>
                 )}
                 {importError && (
-                  <p className="rounded-xl bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                  <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
                     {importError}
                   </p>
                 )}

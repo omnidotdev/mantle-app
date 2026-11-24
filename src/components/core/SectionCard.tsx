@@ -33,8 +33,8 @@ const SectionCard = ({
     )}
   >
     {(title || action) && (
-      <div className="flex min-h-13 flex-wrap items-center gap-x-3 gap-y-2 border-border border-b px-4 py-3 sm:px-5">
-        {title && <h2 className="font-semibold text-sm">{title}</h2>}
+      <div className="flex min-h-13 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border px-4 py-3 sm:px-5">
+        {title && <h2 className="text-sm font-semibold">{title}</h2>}
         {action && (
           <div className="ml-auto flex items-center gap-2">{action}</div>
         )}

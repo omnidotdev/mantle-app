@@ -33,7 +33,8 @@ import {
 import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { ProductRowAction } from "@/features/inventory/components/ProductRowMenu";
 import type { InventoryFilter } from "@/features/inventory/searchParams";
 import type { Product } from "@/features/inventory/types/product";
@@ -291,7 +292,7 @@ const ProductsTable = ({
   onAction: (product: Product, action: ProductRowAction) => void;
   onClearFilters: () => void;
 }) => {
-  const columns = useMemo<ColumnDef<Product>[]>(
+  const columns = useMemo<DataTableColumnDef<Product>[]>(
     () => [
       {
         id: "name",
@@ -300,7 +301,7 @@ const ProductsTable = ({
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.name}</p>
-            <p className="truncate text-muted-foreground text-xs">
+            <p className="truncate text-xs text-muted-foreground">
               {row.original.sku ?? <EmptyValue>No SKU</EmptyValue>}
             </p>
           </div>
@@ -373,13 +374,13 @@ const ProductsTable = ({
             <span className="truncate font-medium">{product.name}</span>
             <span className="tabular shrink-0 font-semibold">
               {product.currentQuantity}
-              <span className="font-normal text-muted-foreground text-xs">
+              <span className="text-xs font-normal text-muted-foreground">
                 {" "}
                 in stock
               </span>
             </span>
           </span>
-          <span className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
+          <span className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
             <span className="truncate">
               {product.sku ?? "No SKU"}
               {product.unitPrice && ` · ${formatCurrency(product.unitPrice)}`}

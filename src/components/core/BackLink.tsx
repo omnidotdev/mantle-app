@@ -14,7 +14,7 @@ const BackLink = ({
 }: Omit<LinkComponentProps, "children"> & { children: ReactNode }) => (
   <Link
     {...rest}
-    className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
   >
     <ArrowLeftIcon className="size-4" />
     {children}

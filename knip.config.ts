@@ -7,7 +7,6 @@ import type { KnipConfig } from "knip";
 const knipConfig: KnipConfig = {
   entry: [
     "src/routes/**/*.{ts,tsx}",
-    "src/router.tsx",
     "src/lib/graphql/graphqlFetch.ts",
     // UI components and utilities prepared for use
     "src/components/**/*.{ts,tsx}",
@@ -24,8 +23,6 @@ const knipConfig: KnipConfig = {
   ignoreExportsUsedInFile: true,
   ignore: ["src/generated/**"],
   ignoreDependencies: [
-    // used by GraphQL Code Generator scripts
-    "dotenv",
     // UI libraries (some not yet used)
     "@internationalized/date",
     "jose",

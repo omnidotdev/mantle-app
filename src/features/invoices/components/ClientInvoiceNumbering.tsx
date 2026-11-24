@@ -147,7 +147,7 @@ const ClientInvoiceNumbering = ({
   return (
     <SectionCard title="Invoice numbering" className="mt-6">
       <div className="space-y-5">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           By default this client uses your workspace invoice numbering. Turn on
           a custom prefix and format to give this client its own invoice
           sequence.
@@ -183,7 +183,7 @@ const ClientInvoiceNumbering = ({
               </div>
 
               <div className="space-y-1.5">
-                <span className="block font-medium text-sm">Format</span>
+                <span className="block text-sm font-medium">Format</span>
                 <SegmentedControl
                   label="Invoice number format"
                   options={STRATEGIES.map((strategy) => ({
@@ -197,9 +197,9 @@ const ClientInvoiceNumbering = ({
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">
-                <span className="block font-medium text-sm">Preview</span>
+                <span className="block text-sm font-medium">Preview</span>
                 <div className="rounded-lg bg-muted px-4 py-2">
-                  <code className="tabular break-all font-mono text-sm">
+                  <code className="tabular font-mono text-sm break-all">
                     {preview}
                   </code>
                 </div>

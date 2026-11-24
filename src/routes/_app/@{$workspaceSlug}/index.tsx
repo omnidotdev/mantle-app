@@ -379,7 +379,7 @@ const DashboardPage = () => {
       </div>
 
       {hasOtherCurrencies && (
-        <p className="mt-2 text-muted-foreground text-xs">
+        <p className="mt-2 text-xs text-muted-foreground">
           Totals include {currency} amounts only.
         </p>
       )}

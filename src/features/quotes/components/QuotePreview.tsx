@@ -223,7 +223,7 @@ const QuotePreview = ({
           };
 
     const badgeClass = cn(
-      "inline-block whitespace-nowrap rounded-full border px-3 py-0.5 font-medium text-xs",
+      "inline-block rounded-full border px-3 py-0.5 text-xs font-medium whitespace-nowrap",
       isComplimentary &&
         "border-success/30 bg-success/12 text-success dark:text-base-800",
       isIncluded && "border-base-200 bg-base-50 text-base-600",
@@ -235,7 +235,7 @@ const QuotePreview = ({
         className="break-inside-avoid rounded-xl border border-base-200 bg-white p-4 sm:p-5 print:p-5"
       >
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4 print:flex-row print:items-start print:justify-between print:gap-4">
-          <p className="min-w-0 flex-1 font-medium text-lg">
+          <p className="min-w-0 flex-1 text-lg font-medium">
             {item.description}
           </p>
           <div className="flex shrink-0 flex-wrap items-center gap-3">
@@ -243,24 +243,24 @@ const QuotePreview = ({
               {pricingLabels[item.pricingType || "fixed"]}
             </span>
             {priceDisplay && (
-              <span className="tabular font-semibold text-xl">
+              <span className="tabular text-xl font-semibold">
                 {priceDisplay}
               </span>
             )}
           </div>
         </div>
         {item.subtitle && (
-          <p className="mt-2 text-base-600 text-sm italic">{item.subtitle}</p>
+          <p className="mt-2 text-sm text-base-600 italic">{item.subtitle}</p>
         )}
         {autoSubDescription && (
-          <p className="mt-1 text-base-600 text-sm">{autoSubDescription}</p>
+          <p className="mt-1 text-sm text-base-600">{autoSubDescription}</p>
         )}
         {item.deliverables && item.deliverables.length > 0 && (
           <details className="group mt-2">
-            <summary className="cursor-pointer text-base-500 text-xs hover:text-base-900">
+            <summary className="cursor-pointer text-xs text-base-500 hover:text-base-900">
               Deliverables ({item.deliverables.length})
             </summary>
-            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-base-600 text-xs">
+            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-base-600">
               {item.deliverables.map((d) => (
                 <li key={d}>{d}</li>
               ))}
@@ -294,7 +294,7 @@ const QuotePreview = ({
       >
         <div className="flex min-w-0 items-center gap-4">
           <DocumentBannerLogo logo={logo} size="h-10 w-10" />
-          <h1 className="min-w-0 break-words font-bold text-xl leading-tight">
+          <h1 className="min-w-0 text-xl leading-tight font-bold break-words">
             {quote.title?.trim() || "Quote"}
           </h1>
         </div>
@@ -316,7 +316,7 @@ const QuotePreview = ({
         {/* Prepared by / prepared for */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-12 print:grid-cols-2 print:gap-12">
           <div>
-            <p className="mb-1 text-base-500 text-sm">Prepared by</p>
+            <p className="mb-1 text-sm text-base-500">Prepared by</p>
             <p className="font-semibold">
               {orgProfile?.contactName || (
                 <DocumentHint>Add your name in settings</DocumentHint>
@@ -332,7 +332,7 @@ const QuotePreview = ({
             {orgProfile?.email && <p className="text-sm">{orgProfile.email}</p>}
           </div>
           <div>
-            <p className="mb-1 text-base-500 text-sm">Prepared for</p>
+            <p className="mb-1 text-sm text-base-500">Prepared for</p>
             <p className="font-semibold">
               {clientDisplayName || <DocumentHint>No client yet</DocumentHint>}
             </p>
@@ -351,20 +351,20 @@ const QuotePreview = ({
         {/* Project overview */}
         {(quote.title || quote.description || quote.projectType) && (
           <>
-            <h2 className="mb-4 font-bold text-xl">Project overview</h2>
+            <h2 className="mb-4 text-xl font-bold">Project overview</h2>
 
             {(quote.title || quote.projectType) && (
               <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-12 print:grid-cols-2 print:gap-12">
                 {quote.title && (
                   <div>
-                    <p className="mb-1 text-base-500 text-sm">Project name</p>
-                    <p className="font-medium text-lg">{quote.title}</p>
+                    <p className="mb-1 text-sm text-base-500">Project name</p>
+                    <p className="text-lg font-medium">{quote.title}</p>
                   </div>
                 )}
                 {quote.projectType && (
                   <div>
-                    <p className="mb-1 text-base-500 text-sm">Project type</p>
-                    <p className="font-medium text-lg">
+                    <p className="mb-1 text-sm text-base-500">Project type</p>
+                    <p className="text-lg font-medium">
                       {formatProjectType(quote.projectType)}
                     </p>
                   </div>
@@ -374,22 +374,22 @@ const QuotePreview = ({
 
             {quote.description && (
               <div className="mb-4">
-                <p className="mb-1 text-base-500 text-sm">Description</p>
+                <p className="mb-1 text-sm text-base-500">Description</p>
                 <p>{quote.description}</p>
               </div>
             )}
 
             {quote.timeRange && (
               <div className="mb-2">
-                <p className="mb-0.5 text-base-500 text-sm">
+                <p className="mb-0.5 text-sm text-base-500">
                   Estimated timeline
                 </p>
-                <p className="text-base-500 text-sm italic">
+                <p className="text-sm text-base-500 italic">
                   This is a rough estimate based on the current project scope
                   and requirements. The final time estimate may vary as the
                   project develops and requirements are refined.
                 </p>
-                <p className="mt-1 font-semibold text-lg">{quote.timeRange}</p>
+                <p className="mt-1 text-lg font-semibold">{quote.timeRange}</p>
               </div>
             )}
 
@@ -400,14 +400,14 @@ const QuotePreview = ({
         {/* Cost breakdown */}
         {validItems.length > 0 && (
           <>
-            <h2 className="mb-5 font-bold text-xl">Cost breakdown</h2>
+            <h2 className="mb-5 text-xl font-bold">Cost breakdown</h2>
 
             <div className="space-y-4">
               {baseItem && renderLineItemCard(baseItem)}
 
               {additionalItems.length > 0 && (
                 <>
-                  <p className="mt-6 mb-3 font-medium text-base-500 text-sm">
+                  <p className="mt-6 mb-3 text-sm font-medium text-base-500">
                     {quote.additionalItemsLabel || "Additional deliverables"}
                   </p>
                   {additionalItems.map((item) => renderLineItemCard(item))}
@@ -421,10 +421,10 @@ const QuotePreview = ({
 
         {/* Total investment */}
         <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4 print:flex-row print:items-baseline print:justify-between print:gap-4">
-          <h2 className="font-bold text-xl">Total investment</h2>
+          <h2 className="text-xl font-bold">Total investment</h2>
           <div className="sm:text-right print:text-right">
             <p
-              className="tabular font-bold text-3xl"
+              className="tabular text-3xl font-bold"
               style={{ color: accent.base }}
             >
               {formatCurrency(
@@ -435,7 +435,7 @@ const QuotePreview = ({
               )}
             </p>
             {hasHourly && (
-              <p className="mt-1 text-base-500 text-sm">
+              <p className="mt-1 text-sm text-base-500">
                 + hourly services
                 {hourlyMaxMonthly > 0
                   ? ` (maximum ${formatCurrency(String(hourlyMaxMonthly), currency)}/mo)`
@@ -443,12 +443,12 @@ const QuotePreview = ({
               </p>
             )}
             {hasRoyalty && (
-              <p className="mt-1 text-base-500 text-sm">
+              <p className="mt-1 text-sm text-base-500">
                 + royalty-based services
               </p>
             )}
             {taxRate > 0 && (
-              <p className="tabular mt-1 text-base-500 text-sm">
+              <p className="tabular mt-1 text-sm text-base-500">
                 Includes {taxRate}% tax (
                 {formatCurrency(String(taxAmount), currency)})
               </p>
@@ -461,7 +461,7 @@ const QuotePreview = ({
         {/* Terms and conditions */}
         {(!!quote.terms || !!quote.additionalTerms?.length) && (
           <>
-            <h2 className="mb-3 font-bold text-xl">Terms and conditions</h2>
+            <h2 className="mb-3 text-xl font-bold">Terms and conditions</h2>
 
             <p className="mb-4 italic">
               This quote is not legally binding and is subject to a formal

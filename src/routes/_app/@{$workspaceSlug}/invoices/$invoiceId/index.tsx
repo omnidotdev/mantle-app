@@ -343,10 +343,10 @@ const InvoicePreviewPage = () => {
 
         <aside className="grid gap-5 md:grid-cols-2 xl:grid-cols-1 print:hidden">
           <SectionCard>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {balance > 0 ? "Balance due" : "Balance"}
             </p>
-            <p className="tabular mt-1 font-bold text-[1.75rem] leading-9 tracking-tight">
+            <p className="tabular mt-1 text-[1.75rem] leading-9 font-bold tracking-tight">
               {formatCurrency(String(balance), currency)}
             </p>
             <div
@@ -363,7 +363,7 @@ const InvoicePreviewPage = () => {
                 style={{ width: `${percent}%` }}
               />
             </div>
-            <p className="mt-1.5 text-muted-foreground text-xs">
+            <p className="mt-1.5 text-xs text-muted-foreground">
               <span className="tabular">
                 {formatCurrency(String(paid), currency)}
               </span>{" "}
@@ -391,7 +391,7 @@ const InvoicePreviewPage = () => {
 
           <SectionCard title="Payments" flush>
             {invoice.payments.length === 0 ? (
-              <p className="px-4 py-4 text-muted-foreground text-sm sm:px-5">
+              <p className="px-4 py-4 text-sm text-muted-foreground sm:px-5">
                 No payments recorded yet
               </p>
             ) : (
@@ -402,18 +402,18 @@ const InvoicePreviewPage = () => {
                     className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-sm">
+                      <p className="truncate text-sm font-medium">
                         {payment.method
                           ? formatStatus(payment.method)
                           : "Payment"}
                       </p>
-                      <p className="truncate text-muted-foreground text-xs">
+                      <p className="truncate text-xs text-muted-foreground">
                         {[formatShortDate(payment.paidAt), payment.reference]
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
                     </div>
-                    <span className="tabular shrink-0 font-medium text-sm">
+                    <span className="tabular shrink-0 text-sm font-medium">
                       {formatCurrency(payment.amount, currency)}
                     </span>
                   </li>

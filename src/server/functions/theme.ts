@@ -12,9 +12,8 @@ const getTheme = createServerFn({ method: "POST" }).handler(
 );
 
 const setTheme = createServerFn({ method: "POST" })
-  .inputValidator(themeValidator)
+  .validator(themeValidator)
   .handler(async ({ data }) => setCookie(storageKey, data));
 
-export { getTheme, setTheme };
-
 export type { Theme };
+export { getTheme, setTheme };

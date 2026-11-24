@@ -22,5 +22,5 @@ const printQuoteDocument = (
   document.title = originalTitle;
 };
 
-export { PREVIEW_TYPE_OPTIONS, printQuoteDocument };
 export type { PreviewType };
+export { PREVIEW_TYPE_OPTIONS, printQuoteDocument };

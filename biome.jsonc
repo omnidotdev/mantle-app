@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,16 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!!**/generated", "!!src/routeTree.gen.ts"]
+    "includes": [
+      "**",
+      "!!**/generated",
+      "!!src/routeTree.gen.ts",
+      "!!**/public"
+    ]
+  },
+  // keep Markdown out of the formatter: it rewrites changeset frontmatter
+  "markdown": {
+    "formatter": { "enabled": false }
   },
   "css": {
     "parser": {
@@ -23,7 +32,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
         "useSemanticElements": "off",
         "noStaticElementInteractions": "off",
@@ -38,13 +47,9 @@
         "noUnusedImports": { "fix": "safe", "options": {}, "level": "error" }
       },
       "nursery": {
-        "useSortedClasses": {
+        "useTailwindSortedClasses": {
           "level": "error",
-          "fix": "safe",
-          "options": {
-            "attributes": ["className"],
-            "functions": ["cn, cva, tv"]
-          }
+          "fix": "safe"
         }
       },
       "style": {
@@ -91,5 +96,11 @@
         }
       }
     }
+  },
+  "tailwind": {
+    "stylesheet": "./src/styles.css",
+    "attributes": ["class", "className"],
+    "mergeFunctions": ["cn", "clsx"],
+    "variantFunctions": ["cva", "tv"]
   }
 }

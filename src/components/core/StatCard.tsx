@@ -33,7 +33,7 @@ const StatCard = ({
       className,
     )}
   >
-    <div className="flex items-center gap-2.5 text-muted-foreground text-sm">
+    <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
       {Icon && (
         <span className="hidden size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary-600 sm:flex dark:text-primary-300">
           <Icon className="size-4" />
@@ -48,14 +48,14 @@ const StatCard = ({
       />
     ) : (
       <p
-        className="tabular mt-2 truncate font-bold text-xl tracking-tight sm:mt-3 sm:text-[1.75rem] sm:leading-9"
+        className="tabular mt-2 truncate text-xl font-bold tracking-tight sm:mt-3 sm:text-[1.75rem] sm:leading-9"
         title={title}
       >
         {value}
       </p>
     )}
     {sub && !loading && (
-      <p className="mt-0.5 truncate text-muted-foreground text-xs sm:text-[0.8125rem]">
+      <p className="mt-0.5 truncate text-xs text-muted-foreground sm:text-[0.8125rem]">
         {sub}
       </p>
     )}

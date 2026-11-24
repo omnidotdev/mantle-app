@@ -43,14 +43,14 @@ const IconChip = ({
 /** Two-line text block: a strong first line and a muted second line */
 const RowText = ({ title, sub }: { title: ReactNode; sub?: ReactNode }) => (
   <span className="min-w-0 flex-1 leading-tight">
-    <span className="block truncate font-medium text-sm">{title}</span>
+    <span className="block truncate text-sm font-medium">{title}</span>
     {sub && (
-      <span className="mt-0.5 block truncate text-muted-foreground text-xs">
+      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
         {sub}
       </span>
     )}
   </span>
 );
 
-export { dashboardRowClass, IconChip, RowText };
 export type { ChipTone };
+export { IconChip, RowText, dashboardRowClass };

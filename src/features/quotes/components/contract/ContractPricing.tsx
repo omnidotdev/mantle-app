@@ -23,7 +23,7 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold text-lg">2. Payment terms</h3>
+      <h3 className="text-lg font-semibold">2. Payment terms</h3>
 
       <div className="space-y-2 text-sm">
         <p>
@@ -36,14 +36,14 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
             <h4 className="mb-1 font-medium">Fixed price items</h4>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-base-200 border-b text-left">
+                <tr className="border-b border-base-200 text-left">
                   <th className="py-1">Description</th>
                   <th className="py-1 text-right">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {fixedItems.map((item) => (
-                  <tr key={item.id} className="border-base-200 border-b">
+                  <tr key={item.id} className="border-b border-base-200">
                     <td className="py-1">{item.description}</td>
                     <td className="tabular py-1 text-right">
                       {formatCurrency(item.amount || "0", currency)}

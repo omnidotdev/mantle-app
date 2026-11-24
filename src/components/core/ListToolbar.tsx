@@ -15,7 +15,7 @@ const ListToolbar = ({
 }) => (
   <div
     className={cn(
-      "flex flex-col gap-2.5 border-border border-b p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4 print:hidden",
+      "flex flex-col gap-2.5 border-b border-border p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4 print:hidden",
       className,
     )}
   >

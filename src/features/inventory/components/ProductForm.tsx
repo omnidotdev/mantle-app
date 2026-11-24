@@ -140,7 +140,7 @@ const ProductForm = ({
               }
               placeholder="e.g. 10"
             />
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               The product is flagged as low stock at or below this quantity
             </p>
           </div>
@@ -151,7 +151,7 @@ const ProductForm = ({
         <div className="flex items-start justify-between gap-4">
           <div>
             <Label htmlFor="product-active">Active</Label>
-            <p className="mt-0.5 text-muted-foreground text-sm">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               Turn off for products you no longer stock. Inactive products stay
               in your records
             </p>

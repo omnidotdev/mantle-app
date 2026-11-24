@@ -112,21 +112,21 @@ const InvoiceCreditPanel = ({
     <SectionCard title="Workspace credit" className="print:hidden">
       <dl className="grid grid-cols-2 gap-4">
         <div className="min-w-0">
-          <dt className="text-muted-foreground text-xs">Available</dt>
-          <dd className="tabular mt-0.5 truncate font-semibold text-lg">
+          <dt className="text-xs text-muted-foreground">Available</dt>
+          <dd className="tabular mt-0.5 truncate text-lg font-semibold">
             {formatCurrency(String(available), currency)}
           </dd>
         </div>
         <div className="min-w-0 text-right">
-          <dt className="text-muted-foreground text-xs">Outstanding</dt>
-          <dd className="tabular mt-0.5 truncate font-semibold text-lg">
+          <dt className="text-xs text-muted-foreground">Outstanding</dt>
+          <dd className="tabular mt-0.5 truncate text-lg font-semibold">
             {formatCurrency(String(Math.max(outstanding, 0)), currency)}
           </dd>
         </div>
       </dl>
 
       {applied > 0 && (
-        <p className="mt-3 text-muted-foreground text-xs">
+        <p className="mt-3 text-xs text-muted-foreground">
           <span className="tabular">
             {formatCurrency(String(applied), currency)}
           </span>{" "}

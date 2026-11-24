@@ -69,7 +69,7 @@ const MembershipList = ({
               key={item.rowId}
               className="flex flex-wrap items-center gap-2 rounded-xl border border-border px-3 py-2 sm:flex-nowrap sm:gap-3"
             >
-              <span className="basis-full truncate font-medium text-sm sm:w-48 sm:shrink-0 sm:basis-auto">
+              <span className="basis-full truncate text-sm font-medium sm:w-48 sm:shrink-0 sm:basis-auto">
                 {item.name}
               </span>
               <Input
@@ -113,7 +113,7 @@ const MembershipList = ({
           ))}
         </ul>
       ) : (
-        <p className="mb-4 text-muted-foreground text-sm">{emptyLabel}</p>
+        <p className="mb-4 text-sm text-muted-foreground">{emptyLabel}</p>
       )}
 
       <div className="grid gap-2 sm:grid-cols-[1fr_12rem_auto]">

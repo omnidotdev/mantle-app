@@ -49,7 +49,8 @@ import { useAllInvoicesQuery } from "@/generated/graphql";
 import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 import { formatStatus } from "@/lib/utils";
 
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { Invoice } from "@/features/invoices/types/invoice";
 
 const DEFAULT_SORTING: SortingState = [{ id: "issueDate", desc: true }];
@@ -200,7 +201,7 @@ const InvoicesListPage = () => {
       params: { workspaceSlug, invoiceId: invoice.id },
     });
 
-  const columns = useMemo<ColumnDef<Row>[]>(
+  const columns = useMemo<DataTableColumnDef<Row>[]>(
     () => [
       {
         id: "invoiceNumber",
@@ -461,15 +462,15 @@ const InvoicesListPage = () => {
               rowLabel={(invoice) => `Open invoice ${invoice.invoiceNumber}`}
               renderMobileRow={(invoice) => (
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5">
-                  <span className="truncate font-medium text-sm">
+                  <span className="truncate text-sm font-medium">
                     {invoice.clientName ?? (
                       <EmptyValue>No client yet</EmptyValue>
                     )}
                   </span>
-                  <span className="tabular font-semibold text-sm">
+                  <span className="tabular text-sm font-semibold">
                     {formatCurrency(invoice.total, invoice.currency)}
                   </span>
-                  <span className="truncate text-muted-foreground text-xs">
+                  <span className="truncate text-xs text-muted-foreground">
                     <span className="tabular">{invoice.invoiceNumber}</span>
                     {" · due "}
                     {invoice.dueDate
