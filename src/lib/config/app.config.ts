@@ -8,7 +8,7 @@ const app = {
   icon: "🌋",
   /** App description (used in SEO meta tags) */
   description:
-    "Unified business operations suite for Omni, providing a cohesive platform for managing business workflows and operations.",
+    "People, invoices, quotes, and inventory in one open-source workspace for running a small business.",
   /** App tagline */
   tagline: "Forged under pressure",
   /** Production URL */
