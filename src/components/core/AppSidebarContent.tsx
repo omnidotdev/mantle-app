@@ -1,3 +1,10 @@
+import { Link, useLocation } from "@tanstack/react-router";
+
+import {
+  dashboardNav,
+  isNavActive,
+  moduleNav,
+} from "@/components/core/moduleNav";
 import {
   SidebarContent,
   SidebarGroup,
@@ -6,72 +13,50 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@omnidotdev/thornberry/sidebar";
-import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboardIcon } from "lucide-react";
-
-import app from "@/lib/config/app.config";
+} from "@/components/ui/sidebar";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 
-const moduleRoutes: Record<string, string> = {
-  people: "/@{$workspaceSlug}/people",
-  invoices: "/@{$workspaceSlug}/invoices",
-  quotes: "/@{$workspaceSlug}/quotes",
-  inventory: "/@{$workspaceSlug}/inventory",
-};
+import type { ModuleNavItem } from "@/components/core/moduleNav";
 
-const AppSidebarContent = () => {
+const NavItem = ({ item }: { item: ModuleNavItem }) => {
   const { pathname } = useLocation();
   const workspaceSlug = useWorkspaceSlug();
-
-  // Active state compares against the resolved path (`/@acme/...`), not the
-  // route template, since `pathname` carries the concrete handle
-  const workspaceHome = `/@${workspaceSlug}`;
+  const Icon = item.icon;
 
   return (
-    <SidebarContent>
-      {/* Dashboard */}
-      <SidebarGroup className="pt-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === workspaceHome}>
-              <Link to="/@{$workspaceSlug}" params={{ workspaceSlug }}>
-                <LayoutDashboardIcon className="size-4" />
-                <span>Dashboard</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
-
-      {/* Modules */}
-      <SidebarGroup>
-        <SidebarGroupLabel>Modules</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {Object.entries(app.modules)
-              .filter(([, config]) => config.enabled)
-              .map(([key, config]) => (
-                <SidebarMenuItem key={key}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(`${workspaceHome}/${key}`)}
-                  >
-                    <Link
-                      to={moduleRoutes[key] as "/@{$workspaceSlug}/people"}
-                      params={{ workspaceSlug }}
-                    >
-                      <span>{config.icon}</span>
-                      <span>{config.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </SidebarContent>
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={isNavActive(item, pathname, workspaceSlug)}
+      >
+        <Link to={item.to} params={{ workspaceSlug }}>
+          <Icon className="size-4" />
+          <span>{item.label}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 };
+
+const AppSidebarContent = () => (
+  <SidebarContent>
+    <SidebarGroup className="pt-1">
+      <SidebarMenu>
+        <NavItem item={dashboardNav} />
+      </SidebarMenu>
+    </SidebarGroup>
+
+    <SidebarGroup>
+      <SidebarGroupLabel className="px-2.5">Modules</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {moduleNav.map((item) => (
+            <NavItem key={item.key} item={item} />
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  </SidebarContent>
+);
 
 export default AppSidebarContent;

@@ -23,11 +23,9 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold text-foreground text-lg">
-        2. Payment Terms
-      </h3>
+      <h3 className="font-semibold text-lg">2. Payment terms</h3>
 
-      <div className="space-y-2 text-foreground text-sm">
+      <div className="space-y-2 text-sm">
         <p>
           Payment is due within 30 days of invoice date. No upfront payment is
           required. A late fee of 5% will be applied to overdue balances.
@@ -35,26 +33,26 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
         {fixedItems.length > 0 && (
           <div className="mt-3">
-            <h4 className="mb-1 font-medium">Fixed Price Items</h4>
+            <h4 className="mb-1 font-medium">Fixed price items</h4>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left">
+                <tr className="border-base-200 border-b text-left">
                   <th className="py-1">Description</th>
                   <th className="py-1 text-right">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {fixedItems.map((item) => (
-                  <tr key={item.id} className="border-border border-b">
+                  <tr key={item.id} className="border-base-200 border-b">
                     <td className="py-1">{item.description}</td>
-                    <td className="py-1 text-right">
+                    <td className="tabular py-1 text-right">
                       {formatCurrency(item.amount || "0", currency)}
                     </td>
                   </tr>
                 ))}
                 <tr className="font-medium">
-                  <td className="py-1">Total Fixed</td>
-                  <td className="py-1 text-right">
+                  <td className="py-1">Total fixed</td>
+                  <td className="tabular py-1 text-right">
                     {formatCurrency(String(fixedTotal), currency)}
                   </td>
                 </tr>
@@ -65,9 +63,9 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
         {hourlyItems.length > 0 && (
           <div className="mt-3">
-            <h4 className="mb-1 font-medium">Hourly Rate Items</h4>
+            <h4 className="mb-1 font-medium">Hourly rate items</h4>
             {hourlyItems.map((item) => (
-              <div key={item.id} className="mb-2 rounded bg-muted p-2">
+              <div key={item.id} className="mb-2 rounded-lg bg-base-50 p-2">
                 <p className="font-medium">{item.description}</p>
                 <p>
                   Rate:{" "}
@@ -99,9 +97,9 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
         {royaltyItems.length > 0 && (
           <div className="mt-3">
-            <h4 className="mb-1 font-medium">Royalty Items</h4>
+            <h4 className="mb-1 font-medium">Royalty items</h4>
             {royaltyItems.map((item) => (
-              <div key={item.id} className="mb-2 rounded bg-muted p-2">
+              <div key={item.id} className="mb-2 rounded-lg bg-base-50 p-2">
                 <p className="font-medium">{item.description}</p>
                 {item.royaltyPercentage && (
                   <p>Royalty: {item.royaltyPercentage}%</p>
@@ -133,9 +131,9 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
         {includedItems.length > 0 && (
           <div className="mt-3">
-            <h4 className="mb-1 font-medium">Included in Retainer</h4>
+            <h4 className="mb-1 font-medium">Included in retainer</h4>
             {includedItems.map((item) => (
-              <div key={item.id} className="mb-2 rounded bg-muted p-2">
+              <div key={item.id} className="mb-2 rounded-lg bg-base-50 p-2">
                 <p className="font-medium">{item.description}</p>
                 {item.subtitle && (
                   <p className="text-sm italic">{item.subtitle}</p>
@@ -147,9 +145,9 @@ const ContractPricing = ({ lineItems, currency }: ContractPricingProps) => {
 
         {complimentaryItems.length > 0 && (
           <div className="mt-3">
-            <h4 className="mb-1 font-medium">Complimentary Services</h4>
+            <h4 className="mb-1 font-medium">Complimentary services</h4>
             {complimentaryItems.map((item) => (
-              <div key={item.id} className="mb-2 rounded bg-muted p-2">
+              <div key={item.id} className="mb-2 rounded-lg bg-base-50 p-2">
                 <p className="font-medium">{item.description}</p>
                 {item.subtitle && (
                   <p className="text-sm italic">{item.subtitle}</p>

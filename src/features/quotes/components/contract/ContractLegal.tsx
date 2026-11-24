@@ -1,17 +1,20 @@
 interface ContractLegalProps {
   registrationState: string | null;
+  /** Quote-specific terms, numbered after the standard legal sections */
+  additionalTerms: string[] | null;
 }
 
-const ContractLegal = ({ registrationState }: ContractLegalProps) => {
+const ContractLegal = ({
+  registrationState,
+  additionalTerms,
+}: ContractLegalProps) => {
   const governingState = registrationState || "Minnesota";
 
   return (
-    <div className="space-y-4 text-foreground text-sm">
+    <div className="space-y-4 text-sm">
       {/* Section 10: Liability */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          10. Limitation of Liability
-        </h3>
+        <h3 className="font-semibold text-lg">10. Limitation of liability</h3>
         <p>
           The Developer&apos;s total liability under this Agreement shall not
           exceed the total amount paid by the Client for services. Neither party
@@ -21,9 +24,7 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 11: Compliance */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          11. Compliance Disclaimer
-        </h3>
+        <h3 className="font-semibold text-lg">11. Compliance disclaimer</h3>
         <p>
           The Developer makes no guarantees regarding regulatory compliance
           (e.g. HIPAA, GDPR, PCI-DSS). The Client is responsible for ensuring
@@ -33,8 +34,8 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 12: Termination */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          12. Termination & Refund Policy
+        <h3 className="font-semibold text-lg">
+          12. Termination and refund policy
         </h3>
         <p>
           Either party may terminate this Agreement with 14 days&apos; written
@@ -45,8 +46,8 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 13: Governing law */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          13. Governing Law & Dispute Resolution
+        <h3 className="font-semibold text-lg">
+          13. Governing law and dispute resolution
         </h3>
         <p>
           This Agreement shall be governed by the laws of the State of{" "}
@@ -58,9 +59,7 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
 
       {/* Section 14: Miscellaneous */}
       <div>
-        <h3 className="font-semibold text-foreground text-lg">
-          14. Miscellaneous
-        </h3>
+        <h3 className="font-semibold text-lg">14. Miscellaneous</h3>
         <p>
           This Agreement constitutes the entire agreement between the parties.
           Any amendments must be in writing and signed by both parties. If any
@@ -68,6 +67,18 @@ const ContractLegal = ({ registrationState }: ContractLegalProps) => {
           continue in full force.
         </p>
       </div>
+
+      {/* Section 15: Additional terms */}
+      {additionalTerms && additionalTerms.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-lg">15. Additional terms</h3>
+          <ul className="list-disc space-y-1 pl-5">
+            {additionalTerms.map((term) => (
+              <li key={term}>{term}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

@@ -21,7 +21,7 @@ mock.module("@tanstack/react-router", () => ({
   useRouteContext: () => ({ organizationId: "w1" }),
 }));
 
-mock.module("@omnidotdev/thornberry/sidebar", () => ({
+mock.module("@/components/ui/sidebar", () => ({
   useSidebar: () => ({ isMobile: false, setOpenMobile: () => {} }),
 }));
 

@@ -1,14 +1,30 @@
-import { Badge } from "@omnidotdev/thornberry/badge";
-import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
-import { DataTable } from "@omnidotdev/thornberry/data-table";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { Edit, Eye, Loader2, Package, Plus, Trash2 } from "lucide-react";
+import { BoxesIcon, Building2Icon, PlusIcon, SearchXIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import EmptyState from "@/components/core/EmptyState";
+import EmptyValue from "@/components/core/EmptyValue";
+import ListToolbar from "@/components/core/ListToolbar";
+import LoadingState from "@/components/core/LoadingState";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import SectionCard from "@/components/core/SectionCard";
+import StatusBadge from "@/components/core/StatusBadge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { DataTable } from "@/components/ui/data-table";
+import { SearchInput } from "@/components/ui/search-input";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import ProductRowMenu from "@/features/inventory/components/ProductRowMenu";
+import StockBadge from "@/features/inventory/components/StockBadge";
 import { inventoryListSearchSchema } from "@/features/inventory/searchParams";
+import {
+  getStockLevel,
+  productsFromQuery,
+} from "@/features/inventory/types/product";
 import { formatCurrency } from "@/features/invoices/types/invoice";
 import {
   useAllProductsQuery,
@@ -18,9 +34,24 @@ import { useUrlSort } from "@/lib/hooks/util/useUrlSort";
 import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type { ProductRowAction } from "@/features/inventory/components/ProductRowMenu";
+import type { InventoryFilter } from "@/features/inventory/searchParams";
 import type { Product } from "@/features/inventory/types/product";
 
 const DEFAULT_SORTING: SortingState = [{ id: "name", desc: false }];
+
+const matchesFilter = (product: Product, filter: InventoryFilter) => {
+  switch (filter) {
+    case "low":
+      return getStockLevel(product) === "low";
+    case "out":
+      return getStockLevel(product) === "out";
+    case "inactive":
+      return !product.isActive;
+    default:
+      return true;
+  }
+};
 
 const InventoryPage = () => {
   const { organizationId } = Route.useRouteContext();
@@ -29,10 +60,13 @@ const InventoryPage = () => {
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
+  const { search: searchTerm, status: statusFilter } = search;
+
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     id: string;
-  }>({ open: false, id: "" });
+    name: string;
+  }>({ open: false, id: "", name: "" });
 
   const [sorting, setSorting] = useUrlSort({
     search,
@@ -46,27 +80,31 @@ const InventoryPage = () => {
   );
 
   const products = useMemo(
-    () =>
-      (productsData?.products?.nodes ?? []).flatMap((node) => {
-        if (!node) return [];
-        return [
-          {
-            id: node.rowId,
-            organizationId: node.organizationId,
-            name: node.name,
-            description: node.description ?? null,
-            sku: node.sku ?? null,
-            unitPrice: node.unitPrice ?? null,
-            currentQuantity: node.currentQuantity ?? 0,
-            lowStockThreshold: node.lowStockThreshold ?? null,
-            isActive: node.isActive ?? true,
-            createdAt: node.createdAt ?? "",
-            updatedAt: node.updatedAt ?? "",
-          },
-        ];
-      }),
+    () => productsFromQuery(productsData),
     [productsData],
   );
+
+  const counts = useMemo(
+    () => ({
+      all: products.length,
+      low: products.filter((p) => matchesFilter(p, "low")).length,
+      out: products.filter((p) => matchesFilter(p, "out")).length,
+      inactive: products.filter((p) => matchesFilter(p, "inactive")).length,
+    }),
+    [products],
+  );
+
+  const filteredProducts = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+
+    return products.filter(
+      (product) =>
+        matchesFilter(product, statusFilter) &&
+        (!term ||
+          product.name.toLowerCase().includes(term) ||
+          (product.sku ?? "").toLowerCase().includes(term)),
+    );
+  }, [products, searchTerm, statusFilter]);
 
   const invalidateProducts = () => {
     queryClient.invalidateQueries({
@@ -80,76 +118,161 @@ const InventoryPage = () => {
     onSuccess: invalidateProducts,
   });
 
+  const openProduct = (product: Product) =>
+    navigate({
+      to: "/@{$workspaceSlug}/inventory/$productId",
+      params: { workspaceSlug, productId: product.id },
+    });
+
+  const handleRowAction = (product: Product, action: ProductRowAction) => {
+    if (action === "view") openProduct(product);
+
+    if (action === "edit")
+      navigate({
+        to: "/@{$workspaceSlug}/inventory/$productId/edit",
+        params: { workspaceSlug, productId: product.id },
+      });
+
+    if (action === "delete")
+      setDeleteConfirm({ open: true, id: product.id, name: product.name });
+  };
+
+  const clearFilters = () =>
+    navigate({
+      search: (prev) => ({ ...prev, search: "", status: "all" }),
+    });
+
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to view inventory
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={Building2Icon}
+          title="No workspace selected"
+          description="Select a workspace to view its inventory."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading inventory"
-        />
-      </div>
+      <PageContainer>
+        <LoadingState label="Loading inventory" />
+      </PageContainer>
     );
   }
 
-  return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold text-xl">Inventory</h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            {products.length} {products.length === 1 ? "product" : "products"}
-          </p>
-        </div>
-        <Link
-          to="/@{$workspaceSlug}/inventory/new"
-          params={{ workspaceSlug }}
-          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-        >
-          <Plus size={16} />
-          Add Product
-        </Link>
-      </div>
+  const stockSummary = [
+    counts.low > 0 && `${counts.low} low`,
+    counts.out > 0 && `${counts.out} out of stock`,
+  ].filter(Boolean);
 
-      <ProductsTable
-        products={products}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        onDelete={(id) => setDeleteConfirm({ open: true, id })}
+  return (
+    <PageContainer>
+      <PageHeader
+        title="Inventory"
+        description={
+          <>
+            <span className="tabular">{products.length}</span>{" "}
+            {products.length === 1 ? "product" : "products"}
+            {stockSummary.length > 0 && (
+              <span className="tabular">, {stockSummary.join(", ")}</span>
+            )}
+          </>
+        }
+        actions={
+          <Link
+            to="/@{$workspaceSlug}/inventory/new"
+            params={{ workspaceSlug }}
+            className={buttonVariants({
+              variant: "solid",
+              className: "max-md:hidden",
+            })}
+          >
+            <PlusIcon />
+            New product
+          </Link>
+        }
       />
+
+      <SectionCard flush>
+        {products.length === 0 ? (
+          <EmptyState
+            icon={BoxesIcon}
+            title="No products yet"
+            description="Add the products you sell to track stock levels and every adjustment."
+            action={
+              <Link
+                to="/@{$workspaceSlug}/inventory/new"
+                params={{ workspaceSlug }}
+                className={buttonVariants({ variant: "solid" })}
+              >
+                <PlusIcon />
+                New product
+              </Link>
+            }
+          />
+        ) : (
+          <>
+            <ListToolbar>
+              <SegmentedControl
+                label="Filter by stock"
+                size="sm"
+                value={statusFilter}
+                onValueChange={(status) =>
+                  navigate({ search: (prev) => ({ ...prev, status }) })
+                }
+                options={[
+                  { value: "all", label: "All", count: counts.all },
+                  { value: "low", label: "Low stock", count: counts.low },
+                  { value: "out", label: "Out of stock", count: counts.out },
+                  {
+                    value: "inactive",
+                    label: "Inactive",
+                    count: counts.inactive,
+                  },
+                ]}
+              />
+              <SearchInput
+                label="Search products"
+                placeholder="Search by name or SKU"
+                value={searchTerm}
+                onChange={(e) =>
+                  navigate({
+                    search: (prev) => ({ ...prev, search: e.target.value }),
+                    replace: true,
+                  })
+                }
+              />
+            </ListToolbar>
+
+            <ProductsTable
+              products={filteredProducts}
+              sorting={sorting}
+              onSortingChange={setSorting}
+              onRowClick={openProduct}
+              onAction={handleRowAction}
+              onClearFilters={clearFilters}
+            />
+          </>
+        )}
+      </SectionCard>
 
       <ConfirmDialog
         open={deleteConfirm.open}
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
-        title="Delete Product"
-        description="Are you sure you want to delete this product? This action cannot be undone."
-        confirmLabel="Delete"
-        onConfirm={() => {
-          // Close as soon as the delete fires
-          setDeleteConfirm((prev) => ({ ...prev, open: false }));
+        title={`Delete product "${deleteConfirm.name}"?`}
+        description="This permanently deletes the product. This cannot be undone."
+        onConfirm={() =>
           deleteProductMutation.mutate(
             { input: { rowId: deleteConfirm.id } },
             {
-              onError: (err) =>
-                toast.error(
-                  err instanceof Error
-                    ? err.message
-                    : "Failed to delete product",
-                ),
+              onError: () => toast.error("Could not delete the product"),
             },
-          );
-        }}
+          )
+        }
       />
-    </div>
+    </PageContainer>
   );
 };
 
@@ -157,141 +280,135 @@ const ProductsTable = ({
   products,
   sorting,
   onSortingChange,
-  onDelete,
+  onRowClick,
+  onAction,
+  onClearFilters,
 }: {
   products: Product[];
   sorting: SortingState;
   onSortingChange: ReturnType<typeof useUrlSort>[1];
-  onDelete: (id: string) => void;
+  onRowClick: (product: Product) => void;
+  onAction: (product: Product, action: ProductRowAction) => void;
+  onClearFilters: () => void;
 }) => {
-  const workspaceSlug = useWorkspaceSlug();
-
   const columns = useMemo<ColumnDef<Product>[]>(
     () => [
       {
-        id: "actions",
-        header: "Actions",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const product = row.original;
-          return (
-            <div className="flex gap-2">
-              <Link
-                to="/@{$workspaceSlug}/inventory/$productId"
-                params={{ workspaceSlug, productId: product.id }}
-                className="text-muted-foreground hover:text-foreground"
-                aria-label="View product details"
-              >
-                <Eye size={16} />
-              </Link>
-              <Link
-                to="/@{$workspaceSlug}/inventory/$productId/edit"
-                params={{ workspaceSlug, productId: product.id }}
-                className="text-muted-foreground hover:text-foreground"
-                aria-label="Edit product"
-              >
-                <Edit size={16} />
-              </Link>
-              <button
-                type="button"
-                onClick={() => onDelete(product.id)}
-                className="text-destructive hover:text-destructive/80"
-                aria-label="Delete product"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          );
-        },
-      },
-      {
         id: "name",
         accessorKey: "name",
-        header: "Name",
-        cell: ({ getValue }) => (
-          <span className="font-medium">{getValue<string>()}</span>
+        header: "Product",
+        cell: ({ row }) => (
+          <div className="min-w-0">
+            <p className="truncate font-medium">{row.original.name}</p>
+            <p className="truncate text-muted-foreground text-xs">
+              {row.original.sku ?? <EmptyValue>No SKU</EmptyValue>}
+            </p>
+          </div>
         ),
-      },
-      {
-        id: "sku",
-        accessorKey: "sku",
-        header: "SKU",
-        cell: ({ getValue }) => getValue<string | null>() ?? "—",
       },
       {
         id: "unitPrice",
         accessorFn: (row) =>
           row.unitPrice ? Number.parseFloat(row.unitPrice) : 0,
-        header: "Unit Price",
+        header: "Unit price",
+        meta: { align: "right" },
         cell: ({ row }) =>
-          row.original.unitPrice ? formatCurrency(row.original.unitPrice) : "—",
+          row.original.unitPrice ? (
+            <span className="tabular">
+              {formatCurrency(row.original.unitPrice)}
+            </span>
+          ) : (
+            <EmptyValue />
+          ),
       },
       {
         id: "currentQuantity",
         accessorKey: "currentQuantity",
-        header: "Quantity",
-        cell: ({ row }) => {
-          const product = row.original;
-          const lowStock =
-            product.lowStockThreshold != null &&
-            product.currentQuantity <= product.lowStockThreshold;
-          return (
-            <span
-              className={
-                lowStock
-                  ? "font-medium text-destructive"
-                  : "font-medium text-emerald-600 dark:text-emerald-400"
-              }
-            >
-              {product.currentQuantity}
+        header: "In stock",
+        meta: { align: "right" },
+        cell: ({ row }) => (
+          <span className="inline-flex items-center justify-end gap-2">
+            <StockBadge product={row.original} />
+            <span className="tabular font-medium">
+              {row.original.currentQuantity}
             </span>
-          );
-        },
+          </span>
+        ),
       },
       {
         id: "isActive",
         accessorKey: "isActive",
         header: "Status",
-        cell: ({ getValue }) => {
-          const isActive = getValue<boolean>();
-          return (
-            <Badge variant={isActive ? "solid" : "outline"} className="text-xs">
-              {isActive ? "Active" : "Inactive"}
-            </Badge>
-          );
-        },
+        cell: ({ row }) => (
+          <StatusBadge status={row.original.isActive ? "active" : "inactive"} />
+        ),
+      },
+      {
+        id: "actions",
+        header: () => <span className="sr-only">Actions</span>,
+        enableSorting: false,
+        cell: ({ row }) => (
+          <ProductRowMenu
+            productName={row.original.name}
+            onAction={(action) => onAction(row.original, action)}
+          />
+        ),
       },
     ],
-    [onDelete, workspaceSlug],
+    [onAction],
   );
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-border bg-card">
-      <DataTable
-        data={products}
-        columns={columns}
-        sorting={sorting}
-        onSortingChange={onSortingChange}
-        minWidth="700px"
-        emptyState={
-          <div className="rounded-lg border-2 border-border border-dashed py-12 text-center">
-            <Package size={32} className="mx-auto mb-2 text-muted-foreground" />
-            <p className="mb-4 text-muted-foreground">No products yet</p>
-            <Link
-              to="/@{$workspaceSlug}/inventory/new"
-              params={{ workspaceSlug }}
-              className="text-primary-600 hover:text-primary-700"
-            >
-              Add your first product
-            </Link>
-          </div>
-        }
-      />
-    </div>
+    <DataTable
+      data={products}
+      columns={columns}
+      sorting={sorting}
+      onSortingChange={onSortingChange}
+      minWidth="680px"
+      onRowClick={onRowClick}
+      rowLabel={(product) => `Open product ${product.name}`}
+      renderMobileRow={(product) => (
+        <span className="grid gap-1">
+          <span className="flex items-baseline justify-between gap-3">
+            <span className="truncate font-medium">{product.name}</span>
+            <span className="tabular shrink-0 font-semibold">
+              {product.currentQuantity}
+              <span className="font-normal text-muted-foreground text-xs">
+                {" "}
+                in stock
+              </span>
+            </span>
+          </span>
+          <span className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
+            <span className="truncate">
+              {product.sku ?? "No SKU"}
+              {product.unitPrice && ` · ${formatCurrency(product.unitPrice)}`}
+            </span>
+            <span className="flex shrink-0 items-center gap-1.5">
+              <StockBadge product={product} />
+              {!product.isActive && <StatusBadge status="inactive" />}
+            </span>
+          </span>
+        </span>
+      )}
+      emptyState={
+        <EmptyState
+          icon={SearchXIcon}
+          title="No products match your filters"
+          description="Try a different search or stock filter."
+          action={
+            <Button variant="outline" onClick={onClearFilters}>
+              Clear filters
+            </Button>
+          }
+        />
+      }
+    />
   );
 };
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/inventory/")({
+  staticData: { title: "Inventory" },
   component: InventoryPage,
   validateSearch: zodValidator(inventoryListSearchSchema),
 });

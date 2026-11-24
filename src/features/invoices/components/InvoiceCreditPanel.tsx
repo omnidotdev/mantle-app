@@ -1,8 +1,10 @@
-import { ConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import SectionCard from "@/components/core/SectionCard";
+import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import {
   appliedCredit,
   creditBalance,
@@ -107,53 +109,54 @@ const InvoiceCreditPanel = ({
   };
 
   return (
-    <div className="mb-6 rounded-lg border border-border bg-card p-4 print:hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-muted-foreground text-sm">Workspace credit</p>
-          <p className="font-semibold text-foreground text-lg">
+    <SectionCard title="Workspace credit" className="print:hidden">
+      <dl className="grid grid-cols-2 gap-4">
+        <div className="min-w-0">
+          <dt className="text-muted-foreground text-xs">Available</dt>
+          <dd className="tabular mt-0.5 truncate font-semibold text-lg">
             {formatCurrency(String(available), currency)}
-          </p>
-          {applied > 0 && (
-            <p className="text-muted-foreground text-sm">
-              {formatCurrency(String(applied), currency)} applied to this
-              invoice
-            </p>
-          )}
+          </dd>
         </div>
-
-        <div className="space-y-1 text-right">
-          <p className="text-muted-foreground text-sm">Outstanding</p>
-          <p className="font-semibold text-foreground text-lg">
+        <div className="min-w-0 text-right">
+          <dt className="text-muted-foreground text-xs">Outstanding</dt>
+          <dd className="tabular mt-0.5 truncate font-semibold text-lg">
             {formatCurrency(String(Math.max(outstanding, 0)), currency)}
-          </p>
+          </dd>
         </div>
-      </div>
+      </dl>
+
+      {applied > 0 && (
+        <p className="mt-3 text-muted-foreground text-xs">
+          <span className="tabular">
+            {formatCurrency(String(applied), currency)}
+          </span>{" "}
+          applied to this invoice
+        </p>
+      )}
 
       {canApply && (
-        <div className="mt-4 flex justify-end">
-          <button
-            type="button"
-            onClick={() => setConfirmOpen(true)}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-white hover:bg-primary-700"
-          >
-            Apply {formatCurrency(applicable.toFixed(2), currency)} credit
-          </button>
-        </div>
+        <Button
+          variant="outline"
+          className="mt-4 w-full"
+          onClick={() => setConfirmOpen(true)}
+        >
+          Apply {formatCurrency(applicable.toFixed(2), currency)} credit
+        </Button>
       )}
 
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        confirmVariant="solid"
+        variant="default"
         title="Apply workspace credit"
         description={`Apply ${formatCurrency(applicable.toFixed(2), currency)} of workspace credit to invoice ${invoice.invoiceNumber}? This cannot be undone.`}
         confirmLabel="Apply credit"
-        pendingLabel="Applying..."
-        isPending={applyMutation.isPending}
+        loadingLabel="Applying..."
+        closeOnConfirm={false}
+        loading={applyMutation.isPending}
         onConfirm={handleApply}
       />
-    </div>
+    </SectionCard>
   );
 };
 

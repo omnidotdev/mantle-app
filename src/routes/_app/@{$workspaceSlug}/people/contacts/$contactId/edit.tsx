@@ -1,13 +1,23 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Trash2, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import BackLink from "@/components/core/BackLink";
+import EmptyState from "@/components/core/EmptyState";
+import LoadingState from "@/components/core/LoadingState";
+import MobileActionBar from "@/components/core/MobileActionBar";
+import PageContainer from "@/components/core/PageContainer";
+import PageHeader from "@/components/core/PageHeader";
+import { Button, buttonVariants } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 import ContactCompanies from "@/features/people/components/ContactCompanies";
 import ContactForm from "@/features/people/components/ContactForm";
+import { MobileDeleteMenu } from "@/features/people/components/RowActions";
 import {
   useAllPeopleQuery,
+  useDeletePersonMutation,
   useUpdatePersonMutation,
 } from "@/generated/graphql";
 
@@ -17,8 +27,11 @@ const EditContactPage = () => {
   const { organizationId } = Route.useRouteContext();
   const { workspaceSlug, contactId } = Route.useParams();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [saving, setSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [currentPerson, setCurrentPerson] = useState<Partial<Person>>({});
   const [initialized, setInitialized] = useState(false);
 
@@ -93,10 +106,8 @@ const EditContactPage = () => {
       });
       invalidatePeople();
       toast.success("Contact saved");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save contact",
-      );
+    } catch {
+      toast.error("Failed to save contact");
     } finally {
       setSaving(false);
     }
@@ -108,76 +119,153 @@ const EditContactPage = () => {
     }
   };
 
+  const deletePersonMutation = useDeletePersonMutation();
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deletePersonMutation.mutateAsync({ input: { rowId: contactId } });
+      invalidatePeople();
+      toast.success("Contact deleted");
+      setDeleteOpen(false);
+      navigate({
+        to: "/@{$workspaceSlug}/people",
+        params: { workspaceSlug },
+        search: { tab: "contacts" },
+      });
+    } catch {
+      toast.error("Failed to delete contact");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const canSave =
+    !!(currentPerson.firstName?.trim() && currentPerson.lastName?.trim()) &&
+    !saving;
+
+  const headerActions = (
+    <div className="hidden md:flex md:flex-wrap md:gap-2">
+      <Button
+        variant="ghost"
+        onClick={() => setDeleteOpen(true)}
+        disabled={saving || deleting}
+        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+      >
+        <Trash2 />
+        Delete
+      </Button>
+      <Button variant="outline" onClick={handleCancel} disabled={saving}>
+        Cancel
+      </Button>
+      <Button onClick={handleSave} disabled={!canSave}>
+        {saving ? "Saving..." : "Save"}
+      </Button>
+    </div>
+  );
+
+  const backLink = (
+    <BackLink
+      to="/@{$workspaceSlug}/people"
+      params={{ workspaceSlug }}
+      search={{ tab: "contacts" }}
+    >
+      People
+    </BackLink>
+  );
+
   if (!organizationId) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          Select a workspace to edit contacts
-        </p>
-      </div>
+      <PageContainer width="narrow">
+        <EmptyState
+          icon={Users}
+          title="No workspace selected"
+          description="Select a workspace to edit contacts."
+        />
+      </PageContainer>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <Loader2
-          className="h-8 w-8 animate-spin text-muted-foreground"
-          aria-label="Loading contact"
-        />
-      </div>
+      <PageContainer width="narrow">
+        <LoadingState label="Loading contact" />
+      </PageContainer>
     );
   }
 
   if (!person) {
     return (
-      <div className="p-6">
-        <Link
-          to="/@{$workspaceSlug}/people"
-          params={{ workspaceSlug }}
-          search={{ tab: "contacts" }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">Contact not found</p>
-        </div>
-      </div>
+      <PageContainer width="narrow">
+        <PageHeader back={backLink} title="Contact" />
+        <EmptyState
+          icon={Users}
+          title="Contact not found"
+          description="It may have been deleted, or the link is out of date."
+          action={
+            <Link
+              to="/@{$workspaceSlug}/people"
+              params={{ workspaceSlug }}
+              search={{ tab: "contacts" }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Back to people
+            </Link>
+          }
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Link
-          to="/@{$workspaceSlug}/people"
-          params={{ workspaceSlug }}
-          search={{ tab: "contacts" }}
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          &larr; Back to list
-        </Link>
-      </div>
+    <PageContainer width="narrow">
+      <PageHeader
+        back={backLink}
+        title={`Edit ${person.firstName} ${person.lastName}`}
+        actions={headerActions}
+      />
 
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-6 font-semibold text-lg">Edit Contact</h2>
-        <ContactForm
-          person={currentPerson}
-          onPersonChange={setCurrentPerson}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saving={saving}
+      <div className="space-y-5">
+        <ContactForm person={currentPerson} onPersonChange={setCurrentPerson} />
+
+        <ContactCompanies
+          personId={contactId}
+          organizationId={organizationId}
         />
       </div>
 
-      <ContactCompanies personId={contactId} organizationId={organizationId} />
-    </div>
+      <MobileActionBar>
+        <MobileDeleteMenu
+          label="Delete contact"
+          onDelete={() => setDeleteOpen(true)}
+          disabled={saving || deleting}
+        />
+        <Button variant="outline" onClick={handleCancel} disabled={saving}>
+          Cancel
+        </Button>
+        <Button className="flex-1" onClick={handleSave} disabled={!canSave}>
+          {saving ? "Saving..." : "Save"}
+        </Button>
+      </MobileActionBar>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={`Delete contact "${`${person.firstName} ${person.lastName}`}"?`}
+        description="This permanently deletes the contact. This action cannot be undone."
+        confirmLabel="Delete contact"
+        closeOnConfirm={false}
+        loading={deleting}
+        loadingLabel="Deleting..."
+        onConfirm={handleDelete}
+      />
+    </PageContainer>
   );
 };
 
 export const Route = createFileRoute(
   "/_app/@{$workspaceSlug}/people/contacts/$contactId/edit",
 )({
+  staticData: { title: "Edit contact" },
   component: EditContactPage,
 });

@@ -1,23 +1,32 @@
 import { Input } from "@omnidotdev/thornberry/input";
 import { Label } from "@omnidotdev/thornberry/label";
+import {
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchRoot,
+  SwitchThumb,
+} from "@omnidotdev/thornberry/switch";
 import { Textarea } from "@omnidotdev/thornberry/textarea";
 
+import SectionCard from "@/components/core/SectionCard";
+
+import type { FormEvent } from "react";
 import type { Product } from "@/features/inventory/types/product";
+
+/** Form id, so Save buttons outside the form (page header, phone bar) submit it */
+export const PRODUCT_FORM_ID = "product-form";
 
 interface ProductFormProps {
   product: Partial<Product>;
   onProductChange: (product: Partial<Product>) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  saving?: boolean;
+  onSubmit: () => void;
 }
 
+/** Product fields grouped into section cards; the page owns the Save and Cancel actions */
 const ProductForm = ({
   product,
   onProductChange,
-  onSave,
-  onCancel,
-  saving,
+  onSubmit,
 }: ProductFormProps) => {
   const handleChange = (
     field: keyof Product,
@@ -26,17 +35,23 @@ const ProductForm = ({
     onProductChange({ ...product, [field]: value });
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Basic information */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">
-          Basic Information
-        </h3>
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!product.name?.trim()) return;
+    onSubmit();
+  };
 
+  return (
+    <form
+      id={PRODUCT_FORM_ID}
+      method="post"
+      onSubmit={handleSubmit}
+      className="space-y-6"
+    >
+      <SectionCard title="Details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="product-name">Name *</Label>
+            <Label htmlFor="product-name">Name</Label>
             <Input
               id="product-name"
               value={product.name ?? ""}
@@ -55,7 +70,7 @@ const ProductForm = ({
                 handleChange("description", e.target.value || null)
               }
               rows={3}
-              placeholder="Product description"
+              placeholder="What this product is"
             />
           </div>
 
@@ -68,19 +83,13 @@ const ProductForm = ({
               placeholder="e.g. SKU-001"
             />
           </div>
-        </div>
-      </div>
 
-      {/* Pricing */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Pricing</h3>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="product-unit-price">Unit Price</Label>
+            <Label htmlFor="product-unit-price">Unit price</Label>
             <Input
               id="product-unit-price"
               type="number"
+              inputMode="decimal"
               min="0"
               step="0.01"
               value={product.unitPrice ?? ""}
@@ -91,18 +100,16 @@ const ProductForm = ({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Stock */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Stock</h3>
-
+      <SectionCard title="Stock">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="product-quantity">Current Quantity</Label>
+            <Label htmlFor="product-quantity">Current quantity</Label>
             <Input
               id="product-quantity"
               type="number"
+              inputMode="numeric"
               min="0"
               step="1"
               value={product.currentQuantity ?? 0}
@@ -117,10 +124,11 @@ const ProductForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="product-low-stock">Low Stock Threshold</Label>
+            <Label htmlFor="product-low-stock">Low-stock threshold</Label>
             <Input
               id="product-low-stock"
               type="number"
+              inputMode="numeric"
               min="0"
               step="1"
               value={product.lowStockThreshold ?? ""}
@@ -132,45 +140,37 @@ const ProductForm = ({
               }
               placeholder="e.g. 10"
             />
+            <p className="text-muted-foreground text-xs">
+              The product is flagged as low stock at or below this quantity
+            </p>
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Status */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Status</h3>
-
-        <div className="flex items-center gap-2">
-          <input
-            id="product-active"
-            type="checkbox"
+      <SectionCard title="Status">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <Label htmlFor="product-active">Active</Label>
+            <p className="mt-0.5 text-muted-foreground text-sm">
+              Turn off for products you no longer stock. Inactive products stay
+              in your records
+            </p>
+          </div>
+          <SwitchRoot
+            ids={{ hiddenInput: "product-active" }}
             checked={product.isActive ?? true}
-            onChange={(e) => handleChange("isActive", e.target.checked)}
-            className="h-4 w-4 rounded border-input text-primary focus:ring-ring"
-          />
-          <Label htmlFor="product-active">Active</Label>
+            onCheckedChange={(details) =>
+              handleChange("isActive", details.checked)
+            }
+          >
+            <SwitchControl>
+              <SwitchThumb />
+            </SwitchControl>
+            <SwitchHiddenInput />
+          </SwitchRoot>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-2 border-border border-t pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={!product.name?.trim() || saving}
-          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Save
-        </button>
-      </div>
-    </div>
+      </SectionCard>
+    </form>
   );
 };
 

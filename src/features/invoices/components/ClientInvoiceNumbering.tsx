@@ -10,6 +10,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import SectionCard from "@/components/core/SectionCard";
+import { Button } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { formatPreview } from "@/features/settings/types/documentNumbering";
 import {
   useCreateDocumentNumberingConfigMutation,
@@ -17,6 +20,7 @@ import {
   useDocumentNumberingConfigsQuery,
   useUpdateDocumentNumberingConfigMutation,
 } from "@/generated/graphql";
+import { formatStatus } from "@/lib/utils";
 
 interface ClientInvoiceNumberingProps {
   organizationId: string;
@@ -111,10 +115,8 @@ const ClientInvoiceNumbering = ({
       }
       await invalidate();
       toast.success("Client invoice numbering saved");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save numbering",
-      );
+    } catch {
+      toast.error("Could not save client numbering. Try again.");
     }
   };
 
@@ -134,10 +136,8 @@ const ClientInvoiceNumbering = ({
         setPrefix("");
         await invalidate();
         toast.success("Reverted to workspace numbering");
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Failed to remove numbering",
-        );
+      } catch {
+        toast.error("Could not remove client numbering. Try again.");
       }
     }
   };
@@ -145,87 +145,74 @@ const ClientInvoiceNumbering = ({
   const preview = formatPreview({ ...base, prefix, idStrategy });
 
   return (
-    <div className="mt-6 space-y-4 rounded-lg border border-border bg-card p-6">
-      <div className="space-y-1">
-        <h3 className="font-medium text-foreground text-lg">
-          Invoice Numbering
-        </h3>
+    <SectionCard title="Invoice numbering" className="mt-6">
+      <div className="space-y-5">
         <p className="text-muted-foreground text-sm">
           By default this client uses your workspace invoice numbering. Turn on
           a custom prefix and format to give this client its own invoice
           sequence.
         </p>
-      </div>
 
-      <div className="flex items-center gap-3">
-        <SwitchRoot
-          ids={{ hiddenInput: "client-custom-numbering" }}
-          checked={enabled}
-          onCheckedChange={(details) => handleToggle(details.checked)}
-        >
-          <SwitchControl>
-            <SwitchThumb />
-          </SwitchControl>
-          <SwitchHiddenInput />
-        </SwitchRoot>
-        <Label htmlFor="client-custom-numbering">
-          Custom invoice numbering for this client
-        </Label>
-      </div>
-
-      {enabled && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="client-invoice-prefix">Prefix</Label>
-              <Input
-                id="client-invoice-prefix"
-                value={prefix}
-                onChange={(e) => setPrefix(e.target.value)}
-                placeholder="e.g. TDTS"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Format</Label>
-              <div className="inline-flex rounded-lg border border-border bg-muted p-1">
-                {STRATEGIES.map((strategy) => (
-                  <button
-                    key={strategy}
-                    type="button"
-                    onClick={() => setIdStrategy(strategy)}
-                    aria-pressed={idStrategy === strategy}
-                    className={`rounded-md px-3 py-1.5 font-medium text-sm capitalize transition-colors ${
-                      idStrategy === strategy
-                        ? "bg-card text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {strategy}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label>Preview</Label>
-              <div className="rounded-md border border-border bg-muted/50 px-4 py-2">
-                <code className="font-mono text-sm">{preview}</code>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving || !prefix.trim()}
-            className="rounded-md bg-primary px-4 py-1.5 text-sm text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+        <div className="flex items-center gap-3">
+          <SwitchRoot
+            ids={{ hiddenInput: "client-custom-numbering" }}
+            checked={enabled}
+            onCheckedChange={(details) => handleToggle(details.checked)}
           >
-            {isSaving ? "Saving..." : "Save"}
-          </button>
+            <SwitchControl>
+              <SwitchThumb />
+            </SwitchControl>
+            <SwitchHiddenInput />
+          </SwitchRoot>
+          <Label htmlFor="client-custom-numbering">
+            Custom invoice numbering for this client
+          </Label>
         </div>
-      )}
-    </div>
+
+        {enabled && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="client-invoice-prefix">Prefix</Label>
+                <Input
+                  id="client-invoice-prefix"
+                  value={prefix}
+                  onChange={(e) => setPrefix(e.target.value)}
+                  placeholder="e.g. TDTS"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="block font-medium text-sm">Format</span>
+                <SegmentedControl
+                  label="Invoice number format"
+                  options={STRATEGIES.map((strategy) => ({
+                    value: strategy,
+                    label: formatStatus(strategy),
+                  }))}
+                  value={idStrategy}
+                  onValueChange={setIdStrategy}
+                  className="w-fit"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <span className="block font-medium text-sm">Preview</span>
+                <div className="rounded-lg bg-muted px-4 py-2">
+                  <code className="tabular break-all font-mono text-sm">
+                    {preview}
+                  </code>
+                </div>
+              </div>
+            </div>
+
+            <Button onClick={handleSave} disabled={isSaving || !prefix.trim()}>
+              {isSaving ? "Saving..." : "Save numbering"}
+            </Button>
+          </div>
+        )}
+      </div>
+    </SectionCard>
   );
 };
 

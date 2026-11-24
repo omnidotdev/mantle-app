@@ -1,10 +1,15 @@
 import { rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
+import { TriangleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
+
+import EmptyState from "@/components/core/EmptyState";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import type { ErrorComponentProps } from "@tanstack/react-router";
 
 /**
- * Default error boundary for caught route errors.
+ * Default error boundary for caught route errors. The error is logged for
+ * debugging but never shown, so users only see friendly copy and a way forward
  */
 const DefaultCatchBoundary = ({ error }: ErrorComponentProps) => {
   const router = useRouter();
@@ -18,43 +23,27 @@ const DefaultCatchBoundary = ({ error }: ErrorComponentProps) => {
   }, [error]);
 
   return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center p-8">
-      <div className="text-center">
-        <div className="mb-6 text-6xl">🌋</div>
-        <h1 className="font-bold text-2xl text-destructive">
-          Something went wrong
-        </h1>
-        <p className="mt-2 max-w-md text-muted-foreground">
-          An unexpected error occurred. Please try again
-          {isRoot ? " or return to the home page" : ""}.
-        </p>
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.invalidate()}
-            className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground text-sm transition-colors hover:bg-accent"
-          >
-            Try again
-          </button>
-          {isRoot ? (
-            <a
-              href="/"
-              className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
-            >
-              Go Home
-            </a>
-          ) : (
-            <button
-              type="button"
-              onClick={() => window.history.back()}
-              className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
-            >
-              Go back
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+    <main className="flex min-h-[60vh] flex-1 items-center justify-center px-4 py-16">
+      <EmptyState
+        icon={TriangleAlertIcon}
+        title="Something went wrong"
+        description="This page could not be loaded. Try again, and if it keeps happening, come back in a few minutes."
+        action={
+          <>
+            <Button variant="outline" onClick={() => router.invalidate()}>
+              Try again
+            </Button>
+            {isRoot ? (
+              <a href="/" className={buttonVariants({ variant: "solid" })}>
+                Go home
+              </a>
+            ) : (
+              <Button onClick={() => window.history.back()}>Go back</Button>
+            )}
+          </>
+        }
+      />
+    </main>
   );
 };
 

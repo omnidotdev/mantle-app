@@ -1,10 +1,12 @@
-import { SidebarInset, SidebarProvider } from "@omnidotdev/thornberry/sidebar";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Toaster } from "sonner";
 
 import AppSidebar from "@/components/core/AppSidebar";
+import AppTopBar from "@/components/core/AppTopBar";
 import ErrorBoundary from "@/components/core/ErrorBoundary";
+import MobileTabBar from "@/components/core/MobileTabBar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import WorkspaceProvider from "@/providers/WorkspaceProvider";
 import { setLastOrgCookie } from "@/server/functions/lastWorkspace";
 
@@ -54,23 +56,23 @@ function WorkspaceLayout() {
   return (
     <WorkspaceProvider workspaces={organizations}>
       <SidebarProvider>
-        <div className="flex h-dvh w-full">
-          {/* Hide the whole sidebar (including its layout gap) when printing,
-              so invoices and quotes fill the page */}
-          <div className="contents print:hidden">
-            <AppSidebar />
-          </div>
+        <div className="flex min-h-dvh w-full">
+          <AppSidebar className="print:hidden" />
           <SidebarInset>
-            {/* On phones the sidebar renders its own sheet trigger in the top
-                right corner; reserve the row so it never covers page content */}
-            <div className="h-14 shrink-0 md:hidden print:hidden" />
+            <AppTopBar />
             <ErrorBoundary>
               <Outlet />
             </ErrorBoundary>
           </SidebarInset>
         </div>
+        <MobileTabBar />
       </SidebarProvider>
-      <Toaster position="bottom-right" richColors />
+      <Toaster
+        position="bottom-right"
+        richColors
+        // Clear the phone tab bar
+        mobileOffset={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+      />
     </WorkspaceProvider>
   );
 }

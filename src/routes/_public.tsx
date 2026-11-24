@@ -4,8 +4,6 @@ import {
   SiX as XSocialIcon,
 } from "@icons-pack/react-simple-icons";
 import { AppFooter } from "@omnidotdev/thornberry/app-footer";
-import { Badge } from "@omnidotdev/thornberry/badge";
-import { Button } from "@omnidotdev/thornberry/button";
 import {
   Outlet,
   createFileRoute,
@@ -15,11 +13,11 @@ import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { FaLinkedin as LinkedInIcon } from "react-icons/fa6";
 
+import { Button } from "@/components/ui/button";
 import signIn from "@/lib/auth/signIn";
 import signOut from "@/lib/auth/signOut";
 import appConfig from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
-import cn from "@/lib/utils";
 
 export const Route = createFileRoute("/_public")({
   component: PublicLayout,
@@ -31,7 +29,7 @@ function PublicLayout() {
 
   // Only treat the user as "signed in" if fully provisioned (has
   // identityProviderId). A session without it is a zombie session that will
-  // be cleared on next navigation — don't show "Sign Out" for it
+  // be cleared on next navigation, so don't show "Sign out" for it
   const isAuthenticated = !!session?.user?.identityProviderId;
 
   const handleSignIn = async () => {
@@ -43,154 +41,147 @@ function PublicLayout() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col">
-      {/* Ambient heat glow orbs */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Primary magma glow — top right */}
-        <div
-          className="absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full bg-primary-500/10 blur-[120px]"
-          style={{ animation: "heat-pulse 8s ease-in-out infinite" }}
-        />
-        {/* Secondary mineral rose glow — bottom left */}
-        <div
-          className="absolute -bottom-24 -left-24 h-[400px] w-[400px] rounded-full bg-secondary-500/5 blur-[100px]"
-          style={{ animation: "heat-pulse 10s ease-in-out infinite 2s" }}
-        />
-        {/* Subtle deep glow — center */}
-        <div
-          className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-400/5 blur-[150px]"
-          style={{ animation: "heat-pulse 12s ease-in-out infinite 4s" }}
-        />
+    <div
+      className="flex min-h-dvh flex-col bg-canvas"
+      style={{
+        // One soft warm wash behind the header and hero
+        backgroundImage:
+          "radial-gradient(1200px 500px at 70% -10%, color-mix(in oklch, var(--primary-300) 22%, transparent), transparent 70%)",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Early access banner */}
+      <div className="border-primary/15 border-b bg-primary/10 px-4 py-2 text-center text-sm">
+        <span className="text-foreground/80">
+          <strong className="font-semibold text-foreground">
+            {appConfig.name} is in early access.
+          </strong>{" "}
+          Help shape it on{" "}
+          <span className="whitespace-nowrap">
+            <a
+              href={appConfig.organization.discord}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-300"
+            >
+              <DiscordIcon className="size-3.5" aria-hidden />
+              Discord
+            </a>
+            .
+          </span>
+        </span>
       </div>
 
-      {/* Banner + header */}
-      <div className="sticky top-0 z-50">
-        <div className="flex w-full items-center justify-center gap-2 border-primary-500/20 border-b bg-primary-500/20 px-4 py-2 text-sm backdrop-blur-sm sm:gap-3">
-          <span className="text-base-700 dark:text-base-300">
-            <strong className="font-semibold">Mantle is in early access</strong>{" "}
-            — help shape it!
-          </span>
-
+      <header className="w-full">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
           <a
-            href={appConfig.organization.discord}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-full bg-primary-500/20 px-2.5 py-0.5 font-medium text-primary-700 text-xs transition-colors hover:bg-primary-500/30 dark:text-primary-300"
+            href="/"
+            className="flex items-center gap-2 font-bold text-lg tracking-tight"
           >
-            <DiscordIcon className="size-3" />
-            Discord
+            <span aria-hidden className="text-2xl">
+              {appConfig.icon}
+            </span>
+            {appConfig.name}
           </a>
-        </div>
 
-        <header className="w-full border-border border-b bg-background/80 backdrop-blur-lg">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="/" className="flex items-center gap-2">
-              <span className="text-2xl">🌋</span>
-              <span className="font-bold text-xl tracking-tight">
-                {appConfig.name}
-              </span>
-              <Badge className="hidden border-primary-500/20 bg-primary-500/10 text-shimmer text-xs sm:inline-flex">
-                Early Access
-              </Badge>
+          {/* Desktop nav */}
+          <nav
+            aria-label="Main"
+            className="ml-auto hidden items-center gap-2 md:flex"
+          >
+            <a
+              href={appConfig.links.docs}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
+            >
+              Docs
+            </a>
+            <a
+              href={appConfig.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <GithubIcon className="size-4" />
             </a>
 
-            {/* Desktop nav */}
-            <div className="hidden items-center gap-3 md:flex">
-              <a
-                href={appConfig.links.docs}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
-              >
-                Docs
-              </a>
-              <a
-                href={appConfig.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
-              >
-                GitHub
-              </a>
+            {isAuthenticated ? (
+              <Button variant="outline" onClick={signOut} className="ml-2">
+                Sign out
+              </Button>
+            ) : (
+              <Button onClick={handleSignIn} className="ml-2">
+                Sign in
+              </Button>
+            )}
+          </nav>
 
+          {/* Mobile menu button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="public-mobile-menu"
+            className="ml-auto md:hidden"
+          >
+            {mobileMenuOpen ? (
+              <XIcon className="size-5" />
+            ) : (
+              <MenuIcon className="size-5" />
+            )}
+          </Button>
+        </div>
+
+        {/* Mobile menu */}
+        <nav
+          id="public-mobile-menu"
+          aria-label="Main"
+          hidden={!mobileMenuOpen}
+          className="px-4 pb-3 md:hidden"
+        >
+          <div className="space-y-1 rounded-2xl bg-card p-2 shadow-card dark:border dark:border-border/60 dark:shadow-none">
+            <a
+              href={appConfig.links.docs}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-11 items-center rounded-xl px-3 font-medium text-sm transition-colors hover:bg-accent"
+            >
+              Docs
+            </a>
+            <a
+              href={appConfig.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-11 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors hover:bg-accent"
+            >
+              <GithubIcon className="size-4" />
+              GitHub
+            </a>
+            <div className="p-1 pt-2">
               {isAuthenticated ? (
-                <Button variant="outline" onClick={signOut}>
-                  Sign Out
+                <Button variant="outline" onClick={signOut} className="w-full">
+                  Sign out
                 </Button>
               ) : (
-                <Button onClick={handleSignIn}>Sign In</Button>
+                <Button onClick={handleSignIn} className="w-full">
+                  Sign in
+                </Button>
               )}
             </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? (
-                  <XIcon className="size-5" />
-                ) : (
-                  <MenuIcon className="size-5" />
-                )}
-              </Button>
-            </div>
           </div>
+        </nav>
+      </header>
 
-          {/* Mobile menu */}
-          <div
-            className={cn(
-              "border-border border-t bg-background md:hidden",
-              mobileMenuOpen ? "block" : "hidden",
-            )}
-          >
-            <div className="space-y-1 px-4 py-3">
-              <a
-                href={appConfig.links.docs}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
-              >
-                Docs
-              </a>
-              <a
-                href={appConfig.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-md px-3 py-2 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground"
-              >
-                GitHub
-              </a>
-              <div className="pt-2">
-                {isAuthenticated ? (
-                  <Button
-                    variant="outline"
-                    onClick={signOut}
-                    className="w-full"
-                  >
-                    Sign Out
-                  </Button>
-                ) : (
-                  <Button onClick={handleSignIn} className="w-full">
-                    Sign In
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
-      </div>
-
-      {/* Main content */}
-      <main className="relative z-10 flex-1">
+      <main className="flex-1 overflow-x-clip">
         <Outlet />
       </main>
 
-      {/* Footer */}
       <AppFooter
-        className="relative z-10 border-border border-t bg-muted/50 py-8 backdrop-blur-sm"
+        className="border-border border-t bg-card/60 py-8"
         appSymbol={appConfig.icon}
         docsUrl={appConfig.links.docs}
         orgUrl={appConfig.organization.url}

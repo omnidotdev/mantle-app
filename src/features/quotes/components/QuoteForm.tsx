@@ -2,10 +2,18 @@ import { Input } from "@omnidotdev/thornberry/input";
 import { Label } from "@omnidotdev/thornberry/label";
 import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import { Textarea } from "@omnidotdev/thornberry/textarea";
-import { Check, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react";
+import {
+  CheckIcon,
+  Loader2Icon,
+  PlusIcon,
+  RefreshCwIcon,
+  Trash2Icon,
+} from "lucide-react";
 
 import PopulateButton from "@/components/core/PopulateButton";
+import SectionCard from "@/components/core/SectionCard";
 import SortableList from "@/components/core/SortableList";
+import { Button } from "@/components/ui/button";
 import {
   ACCENT_PRESETS,
   DEFAULT_ACCENT,
@@ -15,9 +23,9 @@ import CompanyPicker from "@/features/people/components/CompanyPicker";
 import ContactPicker from "@/features/people/components/ContactPicker";
 import { useSettingsStore } from "@/features/settings/store/settingsStore";
 import { useGenerateDocumentNumberMutation } from "@/generated/graphql";
+import cn, { formatStatus } from "@/lib/utils";
 import { QUOTE_STATUSES, SOW_DEFAULTS } from "../types/quote";
-import AdditionalTermsEditor from "./AdditionalTermsEditor";
-import BulletListEditor from "./BulletListEditor";
+import ListItemEditor from "./ListItemEditor";
 
 import type { Quote, QuoteLineItem } from "../types/quote";
 
@@ -28,8 +36,6 @@ interface QuoteFormProps {
   onQuoteChange: (quote: Partial<Quote>) => void;
   lineItems: Partial<QuoteLineItem>[];
   onLineItemsChange: (items: Partial<QuoteLineItem>[]) => void;
-  onSave: () => void;
-  onCancel: () => void;
   organizationId?: string;
   onRegenerateNumber?: (strategy: IdStrategy) => void;
   isRegenerating?: boolean;
@@ -42,13 +48,18 @@ interface QuoteFormProps {
   autoNumberOnClientSelect?: boolean;
 }
 
+/** Read-only computed field (amounts, totals) */
+const readOnlyClass = "bg-muted tabular";
+
+/**
+ * Quote editor form. Saving and cancelling live in the page header (and the
+ * phone action bar), so the form itself has no footer actions
+ */
 const QuoteForm = ({
   quote,
   onQuoteChange,
   lineItems,
   onLineItemsChange,
-  onSave,
-  onCancel,
   organizationId,
   onRegenerateNumber,
   isRegenerating,
@@ -256,58 +267,61 @@ const QuoteForm = ({
     0,
   );
 
+  const activeAccent = orgProfile?.accentColor ?? DEFAULT_ACCENT;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Accent color */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Quote Theme</h3>
+      <SectionCard title="Theme">
+        <p className="mb-3 text-muted-foreground text-sm">
+          Accent color for quotes and contracts in this workspace
+        </p>
         <div className="flex flex-wrap items-center gap-2">
           {ACCENT_PRESETS.map((preset) => {
-            const isActive =
-              (orgProfile?.accentColor ?? DEFAULT_ACCENT) === preset.value;
+            const isActive = activeAccent === preset.value;
 
             return (
               <button
                 key={preset.value}
                 type="button"
                 onClick={() => handleProfileChange("accentColor", preset.value)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
-                style={{
-                  backgroundColor: preset.value,
-                  borderColor: isActive ? "var(--foreground)" : "transparent",
-                }}
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+                  isActive &&
+                    "ring-2 ring-foreground ring-offset-2 ring-offset-card",
+                )}
+                style={{ backgroundColor: preset.value }}
                 aria-label={preset.label}
+                aria-pressed={isActive}
                 title={preset.label}
               >
-                {isActive && <Check size={14} className="text-white" />}
+                {isActive && <CheckIcon className="size-3.5 text-base-50" />}
               </button>
             );
           })}
           <div className="flex items-center gap-1.5">
             <input
               type="color"
-              value={orgProfile?.accentColor ?? DEFAULT_ACCENT}
+              value={activeAccent}
               onChange={(e) =>
                 handleProfileChange("accentColor", e.target.value)
               }
-              className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
+              className="size-8 cursor-pointer rounded-full border-0 bg-transparent p-0"
               aria-label="Custom accent color"
               title="Custom color"
             />
             <span className="font-mono text-muted-foreground text-xs">
-              {orgProfile?.accentColor ?? DEFAULT_ACCENT}
+              {activeAccent}
             </span>
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Quote details */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Quote Details</h3>
-
+      <SectionCard title="Quote details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="quote-title">Title *</Label>
+            <Label htmlFor="quote-title">Title (required)</Label>
             <Input
               id="quote-title"
               value={quote.title ?? ""}
@@ -331,44 +345,44 @@ const QuoteForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-number">Quote Number</Label>
-            <div className="flex gap-2">
+            <Label htmlFor="quote-number">Quote number</Label>
+            <div className="flex flex-wrap gap-2">
               <Input
                 id="quote-number"
                 value={quote.quoteNumber ?? ""}
                 readOnly
-                className="bg-muted"
+                className="min-w-0 flex-1 basis-32 bg-muted font-mono"
               />
               {onRegenerateNumber && (
-                <div className="flex gap-1">
-                  <button
-                    type="button"
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
                     onClick={() => onRegenerateNumber("sequential")}
                     disabled={isRegenerating}
                     title="Generate sequential number"
-                    className="flex h-9 items-center gap-1 rounded-md border border-input px-2 text-muted-foreground text-xs hover:bg-muted hover:text-foreground disabled:opacity-50"
+                    aria-label="Generate sequential number"
                   >
                     {isRegenerating ? (
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2Icon className="animate-spin" />
                     ) : (
-                      <RefreshCw size={14} />
+                      <RefreshCwIcon />
                     )}
                     Seq
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="outline"
                     onClick={() => onRegenerateNumber("random")}
                     disabled={isRegenerating}
                     title="Generate random number"
-                    className="flex h-9 items-center gap-1 rounded-md border border-input px-2 text-muted-foreground text-xs hover:bg-muted hover:text-foreground disabled:opacity-50"
+                    aria-label="Generate random number"
                   >
                     {isRegenerating ? (
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2Icon className="animate-spin" />
                     ) : (
-                      <RefreshCw size={14} />
+                      <RefreshCwIcon />
                     )}
                     Rand
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -381,22 +395,21 @@ const QuoteForm = ({
               value={quote.status ?? "draft"}
               onChange={(e) => handleChange("status", e.target.value)}
               className="w-full"
-              selectClassName="capitalize"
             >
               {QUOTE_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {formatStatus(status)}
                 </option>
               ))}
             </NativeSelect>
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Client */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium text-foreground text-lg">Client</h3>
+      <SectionCard
+        title="Client"
+        action={
           <PopulateButton
             organizationId={organizationId}
             onPopulateClient={({
@@ -412,8 +425,8 @@ const QuoteForm = ({
               })
             }
           />
-        </div>
-
+        }
+      >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label>Company</Label>
@@ -436,7 +449,7 @@ const QuoteForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-client-name">Client Name</Label>
+            <Label htmlFor="quote-client-name">Client name</Label>
             <Input
               id="quote-client-name"
               value={quote.clientName ?? ""}
@@ -448,7 +461,7 @@ const QuoteForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-client-email">Client Email</Label>
+            <Label htmlFor="quote-client-email">Client email</Label>
             <Input
               id="quote-client-email"
               type="email"
@@ -460,15 +473,13 @@ const QuoteForm = ({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Project details */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Project Details</h3>
-
+      <SectionCard title="Project details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="quote-project-type">Project Type</Label>
+            <Label htmlFor="quote-project-type">Project type</Label>
             <NativeSelect
               id="quote-project-type"
               value={quote.projectType ?? ""}
@@ -478,10 +489,10 @@ const QuoteForm = ({
               className="w-full"
             >
               <option value="">Select type</option>
-              <option value="web">Web Application</option>
-              <option value="mobile">Mobile Application</option>
-              <option value="desktop">Desktop Application</option>
-              <option value="api">API / Backend</option>
+              <option value="web">Web application</option>
+              <option value="mobile">Mobile application</option>
+              <option value="desktop">Desktop application</option>
+              <option value="api">API / backend</option>
               <option value="other">Other</option>
             </NativeSelect>
           </div>
@@ -499,7 +510,7 @@ const QuoteForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-valid-until">Valid Until</Label>
+            <Label htmlFor="quote-valid-until">Valid until</Label>
             <Input
               id="quote-valid-until"
               type="date"
@@ -510,7 +521,7 @@ const QuoteForm = ({
 
           <div className="space-y-1.5">
             <Label htmlFor="quote-additional-items-label">
-              Additional Items Section Label
+              Additional items section label
             </Label>
             <Input
               id="quote-additional-items-label"
@@ -518,414 +529,435 @@ const QuoteForm = ({
               onChange={(e) =>
                 handleChange("additionalItemsLabel", e.target.value || null)
               }
-              placeholder="Additional Features"
+              placeholder="Additional deliverables"
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Line items */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Line Items</h3>
+      <SectionCard title="Line items">
+        <div className="space-y-4">
+          <SortableList
+            items={lineItems}
+            onReorder={onLineItemsChange}
+            renderItem={(item, index) => (
+              <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-sm">
+                    {index === 0
+                      ? "Base development cost"
+                      : `Item ${index + 1}`}
+                  </span>
+                  {lineItems.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => handleRemoveLineItem(index)}
+                      className="text-muted-foreground hover:text-destructive"
+                      aria-label={`Remove item ${index + 1}`}
+                    >
+                      <Trash2Icon />
+                    </Button>
+                  )}
+                </div>
 
-        <SortableList
-          items={lineItems}
-          onReorder={onLineItemsChange}
-          renderItem={(item, index) => (
-            <div className="space-y-3 rounded-lg border border-border p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-foreground text-sm">
-                  {index === 0 ? "Base Development Cost" : `Item ${index + 1}`}
-                </span>
-                {lineItems.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveLineItem(index)}
-                    className="text-destructive hover:text-destructive"
-                    aria-label="Remove item"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
-                <Input
-                  id={`item-desc-${item.id}`}
-                  value={item.description ?? ""}
-                  onChange={(e) =>
-                    handleLineItemChange(index, "description", e.target.value)
-                  }
-                  placeholder={
-                    index === 0
-                      ? "e.g. Base Development Cost"
-                      : "Item description"
-                  }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor={`item-subtitle-${item.id}`}>
-                  Detail / Sub-description
-                </Label>
-                <Textarea
-                  id={`item-subtitle-${item.id}`}
-                  value={item.subtitle ?? ""}
-                  onChange={(e) =>
-                    handleLineItemChange(
-                      index,
-                      "subtitle",
-                      e.target.value || null,
-                    )
-                  }
-                  rows={2}
-                  placeholder={
-                    index === 0
-                      ? "e.g. Includes project setup, core development, testing, deployment, and 30 days of as-needed post-launch maintenance and support."
-                      : "Optional detail text shown below the item"
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
+                  <Label htmlFor={`item-desc-${item.id}`}>Description</Label>
                   <Input
-                    id={`item-qty-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={item.quantity ?? "1"}
+                    id={`item-desc-${item.id}`}
+                    value={item.description ?? ""}
                     onChange={(e) =>
-                      handleLineItemChange(index, "quantity", e.target.value)
+                      handleLineItemChange(index, "description", e.target.value)
+                    }
+                    placeholder={
+                      index === 0
+                        ? "e.g. Base development cost"
+                        : "Item description"
                     }
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor={`item-price-${item.id}`}>Unit Price</Label>
-                  <Input
-                    id={`item-price-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={item.unitPrice ?? "0"}
+                  <Label htmlFor={`item-subtitle-${item.id}`}>Detail</Label>
+                  <Textarea
+                    id={`item-subtitle-${item.id}`}
+                    value={item.subtitle ?? ""}
                     onChange={(e) =>
-                      handleLineItemChange(index, "unitPrice", e.target.value)
+                      handleLineItemChange(
+                        index,
+                        "subtitle",
+                        e.target.value || null,
+                      )
+                    }
+                    rows={2}
+                    placeholder={
+                      index === 0
+                        ? "e.g. Includes project setup, core development, testing, deployment, and 30 days of as-needed post-launch maintenance and support."
+                        : "Optional detail text shown below the item"
                     }
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
-                  <Input
-                    id={`item-amount-${item.id}`}
-                    value={formatCurrency(item.amount || "0", quote.currency)}
-                    readOnly
-                    className="bg-muted"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor={`item-pricing-${item.id}`}>
-                    Pricing Type
-                  </Label>
-                  <NativeSelect
-                    id={`item-pricing-${item.id}`}
-                    value={item.pricingType ?? "fixed"}
-                    onChange={(e) =>
-                      handleLineItemChange(index, "pricingType", e.target.value)
-                    }
-                    className="w-full"
-                  >
-                    <option value="fixed">Fixed</option>
-                    <option value="hourly">Hourly</option>
-                    <option value="royalty">Royalty</option>
-                    <option value="complimentary">Complimentary</option>
-                    <option value="included">Included</option>
-                  </NativeSelect>
-                </div>
-              </div>
-
-              {/* Hourly fields */}
-              {item.pricingType === "hourly" && (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor={`item-est-hrs-${item.id}`}>
-                      Estimated Hours
-                    </Label>
+                    <Label htmlFor={`item-qty-${item.id}`}>Quantity</Label>
                     <Input
-                      id={`item-est-hrs-${item.id}`}
+                      id={`item-qty-${item.id}`}
                       type="number"
                       min="0"
                       step="1"
-                      value={item.estimatedHours ?? ""}
+                      value={item.quantity ?? "1"}
                       onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "estimatedHours",
-                          e.target.value || null,
-                        )
+                        handleLineItemChange(index, "quantity", e.target.value)
                       }
-                      placeholder="e.g. 200"
+                      className="tabular"
                     />
                   </div>
+
                   <div className="space-y-1.5">
-                    <Label htmlFor={`item-rate-${item.id}`}>Hourly Rate</Label>
+                    <Label htmlFor={`item-price-${item.id}`}>Unit price</Label>
                     <Input
-                      id={`item-rate-${item.id}`}
+                      id={`item-price-${item.id}`}
                       type="number"
                       min="0"
                       step="0.01"
-                      value={item.hourlyRate ?? ""}
+                      value={item.unitPrice ?? "0"}
                       onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "hourlyRate",
-                          e.target.value || null,
-                        )
+                        handleLineItemChange(index, "unitPrice", e.target.value)
                       }
-                      placeholder="$/hr"
+                      className="tabular"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`item-weekly-${item.id}`}>
-                      Weekly Cap (hrs)
-                    </Label>
-                    <Input
-                      id={`item-weekly-${item.id}`}
-                      type="number"
-                      min="0"
-                      value={item.weeklyCapHours ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "weeklyCapHours",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="e.g. 40"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`item-monthly-${item.id}`}>
-                      Monthly Cap (hrs)
-                    </Label>
-                    <Input
-                      id={`item-monthly-${item.id}`}
-                      type="number"
-                      min="0"
-                      value={item.monthlyCapHours ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "monthlyCapHours",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="e.g. 160"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`item-max-${item.id}`}>Max Cap (hrs)</Label>
-                    <Input
-                      id={`item-max-${item.id}`}
-                      type="number"
-                      min="0"
-                      value={item.maxCapHours ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "maxCapHours",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="Total max"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`item-min-billing-${item.id}`}>
-                      Min Billing (min)
-                    </Label>
-                    <Input
-                      id={`item-min-billing-${item.id}`}
-                      type="number"
-                      min="0"
-                      step="5"
-                      value={item.minimumBillingMinutes ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "minimumBillingMinutes",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="e.g. 30"
-                    />
-                  </div>
-                </div>
-              )}
 
-              {/* Royalty fields */}
-              {item.pricingType === "royalty" && (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor={`item-royalty-${item.id}`}>Royalty %</Label>
+                    <Label htmlFor={`item-amount-${item.id}`}>Amount</Label>
                     <Input
-                      id={`item-royalty-${item.id}`}
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
-                      value={item.royaltyPercentage ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "royaltyPercentage",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="e.g. 5"
+                      id={`item-amount-${item.id}`}
+                      value={formatCurrency(item.amount || "0", quote.currency)}
+                      readOnly
+                      className={readOnlyClass}
                     />
                   </div>
+
                   <div className="space-y-1.5">
-                    <Label htmlFor={`item-rtf-${item.id}`}>Timeframe</Label>
-                    <Input
-                      id={`item-rtf-${item.id}`}
-                      type="number"
-                      min="0"
-                      value={item.royaltyTimeframe ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "royaltyTimeframe",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="Duration"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`item-rtfu-${item.id}`}>Unit</Label>
+                    <Label htmlFor={`item-pricing-${item.id}`}>
+                      Pricing type
+                    </Label>
                     <NativeSelect
-                      id={`item-rtfu-${item.id}`}
-                      value={item.royaltyTimeframeUnit ?? ""}
+                      id={`item-pricing-${item.id}`}
+                      value={item.pricingType ?? "fixed"}
                       onChange={(e) =>
                         handleLineItemChange(
                           index,
-                          "royaltyTimeframeUnit",
-                          e.target.value || null,
+                          "pricingType",
+                          e.target.value,
                         )
                       }
                       className="w-full"
                     >
-                      <option value="">Select</option>
-                      <option value="months">Months</option>
-                      <option value="years">Years</option>
-                      <option value="perpetual">Perpetual</option>
+                      <option value="fixed">Fixed</option>
+                      <option value="hourly">Hourly</option>
+                      <option value="royalty">Royalty</option>
+                      <option value="complimentary">Complimentary</option>
+                      <option value="included">Included</option>
                     </NativeSelect>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`item-threshold-${item.id}`}>
-                      Threshold
-                    </Label>
-                    <Input
-                      id={`item-threshold-${item.id}`}
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={item.royaltyThreshold ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "royaltyThreshold",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="Revenue threshold"
-                    />
-                  </div>
-                  <div className="space-y-1.5 sm:col-span-2">
-                    <Label htmlFor={`item-buyout-${item.id}`}>
-                      Buyout Amount
-                    </Label>
-                    <Input
-                      id={`item-buyout-${item.id}`}
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={item.royaltyBuyoutAmount ?? ""}
-                      onChange={(e) =>
-                        handleLineItemChange(
-                          index,
-                          "royaltyBuyoutAmount",
-                          e.target.value || null,
-                        )
-                      }
-                      placeholder="One-time buyout"
-                    />
-                  </div>
                 </div>
-              )}
 
-              {/* Scope of work */}
-              <details className="group">
-                <summary className="cursor-pointer text-muted-foreground text-sm hover:text-foreground">
-                  Scope of Work (
-                  {(item.deliverables?.length ?? 0) +
-                    (item.acceptanceCriteria?.length ?? 0)}{" "}
-                  items)
-                </summary>
-                <div className="mt-3 space-y-3">
-                  <div className="space-y-1.5">
-                    <Label>Deliverables</Label>
-                    <BulletListEditor
-                      items={item.deliverables ?? []}
-                      onChange={(items) =>
-                        handleLineItemChange(
-                          index,
-                          "deliverables" as keyof QuoteLineItem,
-                          items.length > 0 ? items : null,
-                        )
-                      }
-                      placeholder="Add a deliverable"
-                    />
+                {/* Hourly fields */}
+                {item.pricingType === "hourly" && (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-est-hrs-${item.id}`}>
+                        Estimated hours
+                      </Label>
+                      <Input
+                        id={`item-est-hrs-${item.id}`}
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={item.estimatedHours ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "estimatedHours",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="e.g. 200"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-rate-${item.id}`}>
+                        Hourly rate
+                      </Label>
+                      <Input
+                        id={`item-rate-${item.id}`}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.hourlyRate ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "hourlyRate",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="$/hr"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-weekly-${item.id}`}>
+                        Weekly cap (hrs)
+                      </Label>
+                      <Input
+                        id={`item-weekly-${item.id}`}
+                        type="number"
+                        min="0"
+                        value={item.weeklyCapHours ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "weeklyCapHours",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="e.g. 40"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-monthly-${item.id}`}>
+                        Monthly cap (hrs)
+                      </Label>
+                      <Input
+                        id={`item-monthly-${item.id}`}
+                        type="number"
+                        min="0"
+                        value={item.monthlyCapHours ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "monthlyCapHours",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="e.g. 160"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-max-${item.id}`}>
+                        Max cap (hrs)
+                      </Label>
+                      <Input
+                        id={`item-max-${item.id}`}
+                        type="number"
+                        min="0"
+                        value={item.maxCapHours ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "maxCapHours",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="Total max"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-min-billing-${item.id}`}>
+                        Min billing (min)
+                      </Label>
+                      <Input
+                        id={`item-min-billing-${item.id}`}
+                        type="number"
+                        min="0"
+                        step="5"
+                        value={item.minimumBillingMinutes ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "minimumBillingMinutes",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="e.g. 30"
+                        className="tabular"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label>Acceptance Criteria</Label>
-                    <BulletListEditor
-                      items={item.acceptanceCriteria ?? []}
-                      onChange={(items) =>
-                        handleLineItemChange(
-                          index,
-                          "acceptanceCriteria" as keyof QuoteLineItem,
-                          items.length > 0 ? items : null,
-                        )
-                      }
-                      placeholder="Add acceptance criterion"
-                    />
-                  </div>
-                </div>
-              </details>
-            </div>
-          )}
-        />
+                )}
 
-        <button
-          type="button"
-          onClick={handleAddLineItem}
-          className="flex items-center gap-1 text-primary-600 hover:text-primary-700"
-        >
-          <Plus size={18} />
-          <span>Add Line Item</span>
-        </button>
-      </div>
+                {/* Royalty fields */}
+                {item.pricingType === "royalty" && (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-royalty-${item.id}`}>
+                        Royalty %
+                      </Label>
+                      <Input
+                        id={`item-royalty-${item.id}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={item.royaltyPercentage ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "royaltyPercentage",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="e.g. 5"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-rtf-${item.id}`}>Timeframe</Label>
+                      <Input
+                        id={`item-rtf-${item.id}`}
+                        type="number"
+                        min="0"
+                        value={item.royaltyTimeframe ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "royaltyTimeframe",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="Duration"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-rtfu-${item.id}`}>Unit</Label>
+                      <NativeSelect
+                        id={`item-rtfu-${item.id}`}
+                        value={item.royaltyTimeframeUnit ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "royaltyTimeframeUnit",
+                            e.target.value || null,
+                          )
+                        }
+                        className="w-full"
+                      >
+                        <option value="">Select</option>
+                        <option value="months">Months</option>
+                        <option value="years">Years</option>
+                        <option value="perpetual">Perpetual</option>
+                      </NativeSelect>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`item-threshold-${item.id}`}>
+                        Threshold
+                      </Label>
+                      <Input
+                        id={`item-threshold-${item.id}`}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.royaltyThreshold ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "royaltyThreshold",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="Revenue threshold"
+                        className="tabular"
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-1.5">
+                      <Label htmlFor={`item-buyout-${item.id}`}>
+                        Buyout amount
+                      </Label>
+                      <Input
+                        id={`item-buyout-${item.id}`}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.royaltyBuyoutAmount ?? ""}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            index,
+                            "royaltyBuyoutAmount",
+                            e.target.value || null,
+                          )
+                        }
+                        placeholder="One-time buyout"
+                        className="tabular"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Scope of work */}
+                <details className="group rounded-lg bg-muted/60 px-3 py-2">
+                  <summary className="cursor-pointer font-medium text-muted-foreground text-sm hover:text-foreground">
+                    Scope of work (
+                    <span className="tabular">
+                      {(item.deliverables?.length ?? 0) +
+                        (item.acceptanceCriteria?.length ?? 0)}
+                    </span>{" "}
+                    items)
+                  </summary>
+                  <div className="mt-3 space-y-3 pb-1">
+                    <div className="space-y-1.5">
+                      <Label>Deliverables</Label>
+                      <ListItemEditor
+                        items={item.deliverables ?? []}
+                        onChange={(items) =>
+                          handleLineItemChange(
+                            index,
+                            "deliverables" as keyof QuoteLineItem,
+                            items.length > 0 ? items : null,
+                          )
+                        }
+                        placeholder="Add a deliverable"
+                        removeLabel="Remove deliverable"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Acceptance criteria</Label>
+                      <ListItemEditor
+                        items={item.acceptanceCriteria ?? []}
+                        onChange={(items) =>
+                          handleLineItemChange(
+                            index,
+                            "acceptanceCriteria" as keyof QuoteLineItem,
+                            items.length > 0 ? items : null,
+                          )
+                        }
+                        placeholder="Add an acceptance criterion"
+                        removeLabel="Remove criterion"
+                      />
+                    </div>
+                  </div>
+                </details>
+              </div>
+            )}
+          />
+
+          <Button variant="outline" onClick={handleAddLineItem}>
+            <PlusIcon />
+            Add line item
+          </Button>
+        </div>
+      </SectionCard>
 
       {/* Financials */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Financials</h3>
-
+      <SectionCard title="Financials">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="quote-subtotal">Subtotal</Label>
@@ -933,12 +965,12 @@ const QuoteForm = ({
               id="quote-subtotal"
               value={formatCurrency(String(subtotal), quote.currency)}
               readOnly
-              className="bg-muted"
+              className={readOnlyClass}
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-tax-rate">Tax Rate (%)</Label>
+            <Label htmlFor="quote-tax-rate">Tax rate (%)</Label>
             <Input
               id="quote-tax-rate"
               type="number"
@@ -948,16 +980,17 @@ const QuoteForm = ({
               value={quote.taxRate ?? ""}
               onChange={(e) => handleTaxRateChange(e.target.value)}
               placeholder="0"
+              className="tabular"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="quote-tax-amount">Tax Amount</Label>
+            <Label htmlFor="quote-tax-amount">Tax amount</Label>
             <Input
               id="quote-tax-amount"
               value={formatCurrency(quote.taxAmount || "0", quote.currency)}
               readOnly
-              className="bg-muted"
+              className={readOnlyClass}
             />
           </div>
 
@@ -967,7 +1000,7 @@ const QuoteForm = ({
               id="quote-total"
               value={formatCurrency(quote.total || "0", quote.currency)}
               readOnly
-              className="bg-muted font-medium"
+              className={cn(readOnlyClass, "font-semibold")}
             />
           </div>
 
@@ -981,63 +1014,47 @@ const QuoteForm = ({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Terms & notes */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Terms & Notes</h3>
+      {/* Terms and notes */}
+      <SectionCard title="Terms and notes">
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-terms">Terms</Label>
+            <Textarea
+              id="quote-terms"
+              value={quote.terms ?? ""}
+              onChange={(e) => handleChange("terms", e.target.value || null)}
+              rows={3}
+              placeholder="Payment terms and conditions"
+            />
+          </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="quote-terms">Terms</Label>
-          <Textarea
-            id="quote-terms"
-            value={quote.terms ?? ""}
-            onChange={(e) => handleChange("terms", e.target.value || null)}
-            rows={3}
-            placeholder="Payment terms and conditions"
-          />
+          <div className="space-y-1.5">
+            <Label>Additional terms</Label>
+            <ListItemEditor
+              items={quote.additionalTerms ?? []}
+              onChange={(terms) =>
+                handleChange("additionalTerms", terms.length > 0 ? terms : null)
+              }
+              placeholder="Add a term or condition"
+              inputLabel="Add additional term"
+              removeLabel="Remove term"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="quote-notes">Notes</Label>
+            <Textarea
+              id="quote-notes"
+              value={quote.notes ?? ""}
+              onChange={(e) => handleChange("notes", e.target.value || null)}
+              rows={3}
+              placeholder="Additional notes"
+            />
+          </div>
         </div>
-
-        <div className="space-y-1.5">
-          <Label>Additional Terms</Label>
-          <AdditionalTermsEditor
-            terms={quote.additionalTerms ?? []}
-            onChange={(terms) =>
-              handleChange("additionalTerms", terms.length > 0 ? terms : null)
-            }
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="quote-notes">Notes</Label>
-          <Textarea
-            id="quote-notes"
-            value={quote.notes ?? ""}
-            onChange={(e) => handleChange("notes", e.target.value || null)}
-            rows={3}
-            placeholder="Additional notes"
-          />
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-2 border-border border-t pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={!quote.title?.trim()}
-          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Save
-        </button>
-      </div>
+      </SectionCard>
     </div>
   );
 };

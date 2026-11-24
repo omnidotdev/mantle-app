@@ -8,6 +8,7 @@ import {
 } from "@omnidotdev/thornberry/switch";
 import { Textarea } from "@omnidotdev/thornberry/textarea";
 
+import SectionCard from "@/components/core/SectionCard";
 import { PhoneInput } from "@/components/ui/phone-input";
 import EmailList from "./EmailList";
 import TagList from "./TagList";
@@ -17,18 +18,10 @@ import type { Person } from "@/features/people/types";
 interface ContactFormProps {
   person: Partial<Person>;
   onPersonChange: (person: Partial<Person>) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  saving?: boolean;
 }
 
-const ContactForm = ({
-  person,
-  onPersonChange,
-  onSave,
-  onCancel,
-  saving,
-}: ContactFormProps) => {
+/** Contact fields grouped into section cards. Save and cancel live in the page header */
+const ContactForm = ({ person, onPersonChange }: ContactFormProps) => {
   const handleChange = (
     field: keyof Person,
     value: string | string[] | boolean | null,
@@ -36,19 +29,12 @@ const ContactForm = ({
     onPersonChange({ ...person, [field]: value });
   };
 
-  const isValid = person.firstName?.trim() && person.lastName?.trim();
-
   return (
-    <div className="space-y-6">
-      {/* Basic information */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">
-          Basic Information
-        </h3>
-
+    <div className="space-y-5">
+      <SectionCard title="Details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="contact-first-name">First Name *</Label>
+            <Label htmlFor="contact-first-name">First name *</Label>
             <Input
               id="contact-first-name"
               value={person.firstName ?? ""}
@@ -59,7 +45,7 @@ const ContactForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="contact-last-name">Last Name *</Label>
+            <Label htmlFor="contact-last-name">Last name *</Label>
             <Input
               id="contact-last-name"
               value={person.lastName ?? ""}
@@ -79,7 +65,8 @@ const ContactForm = ({
             />
           </div>
 
-          <div className="flex items-center gap-3 self-end pb-1">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-2 sm:self-end">
+            <Label htmlFor="contact-internal">Internal team member</Label>
             <SwitchRoot
               ids={{ hiddenInput: "contact-internal" }}
               checked={person.internal ?? false}
@@ -92,34 +79,30 @@ const ContactForm = ({
               </SwitchControl>
               <SwitchHiddenInput />
             </SwitchRoot>
-            <Label htmlFor="contact-internal">Internal team member</Label>
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Emails */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Email Addresses</h3>
+      <SectionCard title="Email addresses">
         <EmailList
           emails={person.emails ?? []}
           onChange={(emails) => handleChange("emails", emails)}
         />
-      </div>
+      </SectionCard>
 
-      {/* Tags */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-foreground text-lg">Tags</h3>
+      <SectionCard title="Tags">
         <TagList
           tags={person.tags ?? []}
           onChange={(tags) =>
             handleChange("tags", tags.length > 0 ? tags : null)
           }
         />
-      </div>
+      </SectionCard>
 
-      {/* Notes */}
-      <div className="space-y-4">
-        <Label htmlFor="contact-notes">Notes</Label>
+      <SectionCard title="Notes">
+        <Label htmlFor="contact-notes" className="sr-only">
+          Notes
+        </Label>
         <Textarea
           id="contact-notes"
           value={person.notes ?? ""}
@@ -127,26 +110,7 @@ const ContactForm = ({
           rows={3}
           placeholder="Additional notes about this contact"
         />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-2 border-border border-t pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-input px-4 py-2 hover:bg-muted"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={!isValid || saving}
-          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Save
-        </button>
-      </div>
+      </SectionCard>
     </div>
   );
 };

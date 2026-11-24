@@ -1,8 +1,8 @@
 import { workspacesUrl } from "@omnidotdev/providers/react";
-import { useSidebar } from "@omnidotdev/thornberry/sidebar";
 import { WorkspaceSwitcher as SharedWorkspaceSwitcher } from "@omnidotdev/thornberry/workspace-switcher";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
+import { useSidebar } from "@/components/ui/sidebar";
 import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { useWorkspace } from "@/providers/WorkspaceProvider";
 

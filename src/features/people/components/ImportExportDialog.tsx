@@ -7,17 +7,13 @@ import {
   DialogRoot,
   DialogTitle,
 } from "@omnidotdev/thornberry/dialog";
-import {
-  TabsContent,
-  TabsList,
-  TabsRoot,
-  TabsTrigger,
-} from "@omnidotdev/thornberry/tabs";
 import { useQueryClient } from "@tanstack/react-query";
-import { Download, Upload } from "lucide-react";
+import { Download } from "lucide-react";
 import Papa from "papaparse";
 import { useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   useAllCompaniesQuery,
   useAllPeopleQuery,
@@ -46,7 +42,7 @@ const ImportExportDialog = ({
   people,
 }: ImportExportDialogProps) => {
   const queryClient = useQueryClient();
-  const [importTab, setImportTab] = useState<string>("export");
+  const [mode, setMode] = useState<"export" | "import">("export");
   const [importError, setImportError] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -164,7 +160,7 @@ const ImportExportDialog = ({
         if (file.name.endsWith(".json")) {
           const data = JSON.parse(text);
           if (!Array.isArray(data)) {
-            setImportError("Invalid JSON: expected an array of records");
+            setImportError("The JSON file must contain a list of records.");
             return;
           }
           if (context === "contacts") {
@@ -177,8 +173,11 @@ const ImportExportDialog = ({
             header: true,
           });
           if (result.errors.length > 0) {
+            const row = result.errors[0]?.row;
             setImportError(
-              `CSV parse error: ${result.errors[0].message} (row ${result.errors[0].row})`,
+              row === undefined
+                ? "The CSV file could not be read. Check its format and try again."
+                : `The CSV file could not be read (problem near row ${row + 1}). Check its format and try again.`,
             );
             return;
           }
@@ -212,7 +211,7 @@ const ImportExportDialog = ({
             await importCompanies(parsed);
           }
         } else {
-          setImportError("Unsupported file type. Use .json or .csv");
+          setImportError("Unsupported file type. Use a .json or .csv file.");
           return;
         }
 
@@ -220,18 +219,27 @@ const ImportExportDialog = ({
         onOpenChange(false);
       } catch (err) {
         setImportError(
-          err instanceof Error ? err.message : "Failed to parse file",
+          err instanceof SyntaxError
+            ? "The file could not be read. Check its format and try again."
+            : "Some records could not be imported. Check the file and try again.",
         );
       } finally {
         setImporting(false);
       }
     };
 
-    reader.onerror = () => setImportError("Failed to read file");
+    reader.onerror = () => setImportError("The file could not be read.");
     reader.readAsText(file);
     // Reset input
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const noun = context === "contacts" ? "contacts" : "companies";
+  const count = context === "contacts" ? people.length : companies.length;
+  const countLabel =
+    context === "contacts"
+      ? `${count} ${count === 1 ? "contact" : "contacts"}`
+      : `${count} ${count === 1 ? "company" : "companies"}`;
 
   return (
     <DialogRoot
@@ -244,80 +252,60 @@ const ImportExportDialog = ({
         <DialogBackdrop />
         <DialogPositioner>
           <DialogContent>
-            <DialogTitle>
-              Import / Export {context === "contacts" ? "People" : "Companies"}
-            </DialogTitle>
+            <DialogTitle>Import or export {noun}</DialogTitle>
 
-            <TabsRoot
-              value={importTab}
-              onValueChange={(d) => setImportTab(d.value)}
-            >
-              <TabsList className="mb-4">
-                <TabsTrigger value="export" className="flex items-center gap-2">
-                  <Download size={14} />
-                  Export
-                </TabsTrigger>
-                <TabsTrigger value="import" className="flex items-center gap-2">
-                  <Upload size={14} />
-                  Import
-                </TabsTrigger>
-              </TabsList>
+            <SegmentedControl
+              label="Import or export"
+              value={mode}
+              onValueChange={setMode}
+              options={[
+                { value: "export", label: "Export" },
+                { value: "import", label: "Import" },
+              ]}
+              className="w-fit"
+            />
 
-              <TabsContent value="export">
-                <div className="space-y-3">
-                  <p className="text-foreground text-sm">
-                    Export{" "}
-                    {context === "contacts"
-                      ? `${people.length} contacts`
-                      : `${companies.length} companies`}
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={exportJSON}
-                      className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
-                    >
-                      Export JSON
-                    </button>
-                    <button
-                      type="button"
-                      onClick={exportCSV}
-                      className="rounded-lg border border-input px-4 py-2 text-sm hover:bg-muted"
-                    >
-                      Export CSV
-                    </button>
-                  </div>
+            {mode === "export" ? (
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  Download all <span className="tabular">{countLabel}</span> as
+                  a file.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" onClick={exportJSON}>
+                    <Download />
+                    Export JSON
+                  </Button>
+                  <Button variant="outline" onClick={exportCSV}>
+                    <Download />
+                    Export CSV
+                  </Button>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="import">
-                <div className="space-y-3">
-                  <p className="text-foreground text-sm">
-                    Import {context === "contacts" ? "contacts" : "companies"}{" "}
-                    from a JSON or CSV file
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  Import {noun} from a JSON or CSV file.
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,.csv"
+                  aria-label="Choose file to import"
+                  onChange={handleImport}
+                  disabled={importing}
+                  className="block w-full text-muted-foreground text-sm file:mr-4 file:h-9 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:font-medium file:text-primary-600 file:text-sm hover:file:bg-primary/15 dark:file:text-primary-300"
+                />
+                {importing && (
+                  <p className="text-muted-foreground text-sm">Importing...</p>
+                )}
+                {importError && (
+                  <p className="rounded-xl bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                    {importError}
                   </p>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".json,.csv"
-                    aria-label="Choose file to import"
-                    onChange={handleImport}
-                    disabled={importing}
-                    className="block w-full text-muted-foreground text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:font-medium file:text-primary-700 file:text-sm hover:file:bg-primary-100"
-                  />
-                  {importing && (
-                    <p className="text-muted-foreground text-sm">
-                      Importing...
-                    </p>
-                  )}
-                  {importError && (
-                    <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive text-sm">
-                      {importError}
-                    </p>
-                  )}
-                </div>
-              </TabsContent>
-            </TabsRoot>
+                )}
+              </div>
+            )}
             <DialogCloseTrigger />
           </DialogContent>
         </DialogPositioner>

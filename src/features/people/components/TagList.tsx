@@ -1,27 +1,16 @@
-import { Badge } from "@omnidotdev/thornberry/badge";
 import { Input } from "@omnidotdev/thornberry/input";
 import { X } from "lucide-react";
 import { useState } from "react";
 
+import { getTagChipClass } from "@/features/people/tagPalette";
 import { COMMON_TAGS } from "@/features/people/types";
+import cn from "@/lib/utils";
+import TagChip from "./TagChip";
 
 interface TagListProps {
   tags: string[];
   onChange: (tags: string[]) => void;
 }
-
-const TAG_COLORS: Record<string, string> = {
-  employee: "bg-primary-100 text-primary-700",
-  client: "bg-secondary-100 text-secondary-700",
-  prospect: "bg-amber-100 text-amber-700",
-  active: "bg-emerald-100 text-emerald-700",
-  inactive: "bg-muted text-muted-foreground",
-  contractor: "bg-primary-50 text-primary-600",
-  leadership: "bg-indigo-100 text-indigo-700",
-  engineering: "bg-cyan-100 text-cyan-700",
-  design: "bg-pink-100 text-pink-700",
-  research: "bg-emerald-100 text-emerald-700",
-};
 
 const TagList = ({ tags, onChange }: TagListProps) => {
   const [input, setInput] = useState("");
@@ -64,13 +53,14 @@ const TagList = ({ tags, onChange }: TagListProps) => {
               type="button"
               onClick={() => togglePreset(tag)}
               aria-pressed={isActive}
+              className={cn(
+                "inline-flex h-7 select-none items-center rounded-full border px-3 font-medium text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                isActive
+                  ? cn("border-transparent", getTagChipClass(tag))
+                  : "border-input bg-card text-muted-foreground hover:bg-accent hover:text-foreground",
+              )}
             >
-              <Badge
-                variant={isActive ? "solid" : "outline"}
-                className="cursor-pointer select-none"
-              >
-                {tag}
-              </Badge>
+              {tag}
             </button>
           );
         })}
@@ -83,27 +73,23 @@ const TagList = ({ tags, onChange }: TagListProps) => {
         onKeyDown={handleKeyDown}
         placeholder="Add custom tag (Enter or comma)"
         aria-label="Add custom tag"
-        className="max-w-xs"
+        className="sm:max-w-xs"
       />
 
       {/* Active tags */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <span
-              key={tag}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-medium text-xs ${TAG_COLORS[tag] ?? "bg-muted text-muted-foreground"}`}
-            >
-              {tag}
+            <TagChip key={tag} tag={tag}>
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
-                className="opacity-60 hover:opacity-100"
+                className="-mr-1 rounded-full p-0.5 opacity-70 hover:opacity-100"
                 aria-label={`Remove ${tag} tag`}
               >
                 <X size={12} />
               </button>
-            </span>
+            </TagChip>
           ))}
         </div>
       )}
