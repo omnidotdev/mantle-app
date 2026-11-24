@@ -20,6 +20,7 @@ import {
   useCreateCompanyMutation,
   useCreatePersonMutation,
 } from "@/generated/graphql";
+import { planLimitMessage } from "@/lib/graphql/errors";
 import { resolveRegion, toE164 } from "@/lib/phone";
 
 import type { Company, Person } from "@/features/people/types";
@@ -218,10 +219,14 @@ const ImportExportDialog = ({
         invalidateAll();
         onOpenChange(false);
       } catch (err) {
+        const limit = planLimitMessage(err);
+        if (limit) invalidateAll();
         setImportError(
           err instanceof SyntaxError
             ? "The file could not be read. Check its format and try again."
-            : "Some records could not be imported. Check the file and try again.",
+            : limit
+              ? `Some contacts were not imported. ${limit}.`
+              : "Some records could not be imported. Check the file and try again.",
         );
       } finally {
         setImporting(false);

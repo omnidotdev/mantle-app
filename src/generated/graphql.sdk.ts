@@ -138,6 +138,17 @@ export type CreateInvoiceLineItemInput = {
   invoiceLineItem: InvoiceLineItemInput;
 };
 
+/** All input for the create `OrganizationSetting` mutation. */
+export type CreateOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `OrganizationSetting` to be created by this mutation. */
+  organizationSetting: OrganizationSettingInput;
+};
+
 /** All input for the create `Payment` mutation. */
 export type CreatePaymentInput = {
   /**
@@ -406,6 +417,52 @@ export type InvoicePatch = {
   updatedAt?: Date | null | undefined;
 };
 
+/** An input for mutations affecting `OrganizationSetting` */
+export type OrganizationSettingInput = {
+  accentColor?: string | null | undefined;
+  addressLine1?: string | null | undefined;
+  addressLine2?: string | null | undefined;
+  city?: string | null | undefined;
+  companyName?: string | null | undefined;
+  contactName?: string | null | undefined;
+  contactTitle?: string | null | undefined;
+  country?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  email?: string | null | undefined;
+  logoUrl?: string | null | undefined;
+  organizationId: string;
+  phone?: string | null | undefined;
+  postalCode?: string | null | undefined;
+  registrationState?: string | null | undefined;
+  rowId?: string | null | undefined;
+  state?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  website?: string | null | undefined;
+};
+
+/** Represents an update to a `OrganizationSetting`. Fields that are set will be updated. */
+export type OrganizationSettingPatch = {
+  accentColor?: string | null | undefined;
+  addressLine1?: string | null | undefined;
+  addressLine2?: string | null | undefined;
+  city?: string | null | undefined;
+  companyName?: string | null | undefined;
+  contactName?: string | null | undefined;
+  contactTitle?: string | null | undefined;
+  country?: string | null | undefined;
+  createdAt?: Date | null | undefined;
+  email?: string | null | undefined;
+  logoUrl?: string | null | undefined;
+  organizationId?: string | null | undefined;
+  phone?: string | null | undefined;
+  postalCode?: string | null | undefined;
+  registrationState?: string | null | undefined;
+  rowId?: string | null | undefined;
+  state?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+  website?: string | null | undefined;
+};
+
 /** An input for mutations affecting `Payment` */
 export type PaymentInput = {
   amount: string;
@@ -638,6 +695,18 @@ export type UpdateInvoiceInput = {
   clientMutationId?: string | null | undefined;
   /** An object where the defined keys will be set on the `Invoice` being updated. */
   patch: InvoicePatch;
+  rowId: string;
+};
+
+/** All input for the `updateOrganizationSetting` mutation. */
+export type UpdateOrganizationSettingInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `OrganizationSetting` being updated. */
+  patch: OrganizationSettingPatch;
   rowId: string;
 };
 
@@ -957,7 +1026,59 @@ export type DeleteQuoteLineItemMutationVariables = Exact<{
 
 export type DeleteQuoteLineItemMutation = { deleteQuoteLineItem: { deletedQuoteLineItemId: string | null } | null };
 
+export type WorkspaceProfileFieldsFragment = { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null };
 
+export type WorkspaceProfileQueryVariables = Exact<{
+  organizationId: string;
+}>;
+
+
+export type WorkspaceProfileQuery = { organizationSettings: { nodes: Array<{ rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
+
+export type CreateWorkspaceProfileMutationVariables = Exact<{
+  input: CreateOrganizationSettingInput;
+}>;
+
+
+export type CreateWorkspaceProfileMutation = { createOrganizationSetting: { organizationSetting: { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null } | null } | null };
+
+export type UpdateWorkspaceProfileMutationVariables = Exact<{
+  input: UpdateOrganizationSettingInput;
+}>;
+
+
+export type UpdateWorkspaceProfileMutation = { updateOrganizationSetting: { organizationSetting: { rowId: string, organizationId: string, accentColor: string | null, companyName: string | null, contactName: string | null, contactTitle: string | null, email: string | null, phone: string | null, website: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, logoUrl: string | null, registrationState: string | null, createdAt: string | null, updatedAt: string | null } | null } | null };
+
+export type WorkspacePlanQueryVariables = Exact<{
+  organizationId: string;
+}>;
+
+
+export type WorkspacePlanQuery = { workspacePlan: { tier: string, source: string, limits: Array<{ key: string, limit: number, used: number | null }> } | null };
+
+export const WorkspaceProfileFieldsFragmentDoc = gql`
+    fragment WorkspaceProfileFields on OrganizationSetting {
+  rowId
+  organizationId
+  accentColor
+  companyName
+  contactName
+  contactTitle
+  email
+  phone
+  website
+  addressLine1
+  addressLine2
+  city
+  state
+  postalCode
+  country
+  logoUrl
+  registrationState
+  createdAt
+  updatedAt
+}
+    `;
 export const AllCompaniesDocument = gql`
     query AllCompanies($organizationId: String!) {
   companies(condition: {organizationId: $organizationId}) {
@@ -1519,6 +1640,46 @@ export const DeleteQuoteLineItemDocument = gql`
   }
 }
     `;
+export const WorkspaceProfileDocument = gql`
+    query WorkspaceProfile($organizationId: String!) {
+  organizationSettings(condition: {organizationId: $organizationId}, first: 1) {
+    nodes {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+    ${WorkspaceProfileFieldsFragmentDoc}`;
+export const CreateWorkspaceProfileDocument = gql`
+    mutation CreateWorkspaceProfile($input: CreateOrganizationSettingInput!) {
+  createOrganizationSetting(input: $input) {
+    organizationSetting {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+    ${WorkspaceProfileFieldsFragmentDoc}`;
+export const UpdateWorkspaceProfileDocument = gql`
+    mutation UpdateWorkspaceProfile($input: UpdateOrganizationSettingInput!) {
+  updateOrganizationSetting(input: $input) {
+    organizationSetting {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+    ${WorkspaceProfileFieldsFragmentDoc}`;
+export const WorkspacePlanDocument = gql`
+    query WorkspacePlan($organizationId: String!) {
+  workspacePlan(organizationId: $organizationId) {
+    tier
+    source
+    limits {
+      key
+      limit
+      used
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1646,6 +1807,18 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteQuoteLineItem(variables: DeleteQuoteLineItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteQuoteLineItemMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteQuoteLineItemMutation>({ document: DeleteQuoteLineItemDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteQuoteLineItem', 'mutation', variables);
+    },
+    WorkspaceProfile(variables: WorkspaceProfileQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<WorkspaceProfileQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<WorkspaceProfileQuery>({ document: WorkspaceProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'WorkspaceProfile', 'query', variables);
+    },
+    CreateWorkspaceProfile(variables: CreateWorkspaceProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateWorkspaceProfileMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateWorkspaceProfileMutation>({ document: CreateWorkspaceProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateWorkspaceProfile', 'mutation', variables);
+    },
+    UpdateWorkspaceProfile(variables: UpdateWorkspaceProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateWorkspaceProfileMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateWorkspaceProfileMutation>({ document: UpdateWorkspaceProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateWorkspaceProfile', 'mutation', variables);
+    },
+    WorkspacePlan(variables: WorkspacePlanQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<WorkspacePlanQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<WorkspacePlanQuery>({ document: WorkspacePlanDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'WorkspacePlan', 'query', variables);
     }
   };
 }

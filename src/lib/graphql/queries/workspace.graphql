@@ -1,0 +1,60 @@
+fragment WorkspaceProfileFields on OrganizationSetting {
+  rowId
+  organizationId
+  accentColor
+  companyName
+  contactName
+  contactTitle
+  email
+  phone
+  website
+  addressLine1
+  addressLine2
+  city
+  state
+  postalCode
+  country
+  logoUrl
+  registrationState
+  createdAt
+  updatedAt
+}
+
+query WorkspaceProfile($organizationId: String!) {
+  organizationSettings(
+    condition: { organizationId: $organizationId }
+    first: 1
+  ) {
+    nodes {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+
+mutation CreateWorkspaceProfile($input: CreateOrganizationSettingInput!) {
+  createOrganizationSetting(input: $input) {
+    organizationSetting {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+
+mutation UpdateWorkspaceProfile($input: UpdateOrganizationSettingInput!) {
+  updateOrganizationSetting(input: $input) {
+    organizationSetting {
+      ...WorkspaceProfileFields
+    }
+  }
+}
+
+query WorkspacePlan($organizationId: String!) {
+  workspacePlan(organizationId: $organizationId) {
+    tier
+    source
+    limits {
+      key
+      limit
+      used
+    }
+  }
+}

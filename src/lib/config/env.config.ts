@@ -47,3 +47,16 @@ export const AUTH_INTERNAL_URL =
 export const PERSONAL_WORKSPACE_FALLBACK =
   typeof window === "undefined" &&
   process.env.PERSONAL_WORKSPACE_FALLBACK === "true";
+
+/**
+ * CIDRs of the reverse proxies in front of the app, comma-separated
+ * (server-only). Lets sign-in rate limiting resolve the client IP from a
+ * multi-hop `x-forwarded-for` when no Cloudflare header is present
+ */
+export const TRUSTED_PROXIES: string[] =
+  typeof window === "undefined"
+    ? (process.env.TRUSTED_PROXIES ?? "")
+        .split(",")
+        .map((cidr) => cidr.trim())
+        .filter(Boolean)
+    : [];

@@ -15,6 +15,7 @@ import {
   useAllPeopleQuery,
   useCreatePersonMutation,
 } from "@/generated/graphql";
+import { planLimitMessage } from "@/lib/graphql/errors";
 
 import type { Person } from "@/features/people/types";
 
@@ -78,8 +79,8 @@ const NewContactPage = () => {
           params: { workspaceSlug, contactId: newId },
         });
       }
-    } catch {
-      toast.error("Failed to save contact");
+    } catch (err) {
+      toast.error(planLimitMessage(err) ?? "Failed to save contact");
     } finally {
       setSaving(false);
     }
