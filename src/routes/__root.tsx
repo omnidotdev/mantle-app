@@ -66,18 +66,18 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#1a0f0a" },
+      { name: "theme-color", content: "#f4efe9" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { name: "apple-mobile-web-app-title", content: app.name },
       { name: "mobile-web-app-capable", content: "yes" },
-      { name: "msapplication-TileColor", content: "#1a0f0a" },
+      { name: "msapplication-TileColor", content: "#f4efe9" },
       ...createMetaTags(),
     ],
     links: [
       { rel: "stylesheet", href: appStyles },
       { rel: "manifest", href: "/manifest.json" },
-      { rel: "icon", type: "image/svg+xml", href: "/omni-logo.svg" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       {
         rel: "icon",
         type: "image/png",
