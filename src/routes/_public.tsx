@@ -79,7 +79,7 @@ function PublicLayout() {
             href="/"
             className="flex items-center gap-2 text-lg font-bold tracking-tight"
           >
-            <MantleLogo className="h-7" />
+            <MantleLogo className="h-7 text-primary-500" />
             {appConfig.name}
           </a>
 
