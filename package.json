@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "packageManager": "bun@1.4.4",
+  "packageManager": "bun@1.4.5",
   "scripts": {
     "release": "changeset publish",
     "dev": "concurrently --kill-others --names \"GRAPHQL-CODEGEN,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run graphql:generate:watch\" \"bun dev:vite\"",
@@ -25,13 +25,13 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@icons-pack/react-simple-icons": "^13.8.0",
     "@internationalized/date": "^3.11.0",
-    "@omnidotdev/providers": "github:omnidotdev/providers#v0.2.0",
+    "@omnidotdev/providers": "github:omnidotdev/providers#v0.4.1",
     "@omnidotdev/thornberry": "github:omnidotdev/thornberry#baea091695a4c0ccfce027117180edbe286d3628",
     "@tanstack/react-form": "^1.28.3",
     "@tanstack/react-query": "^5.108.4",
-    "@tanstack/react-router": "1.170.41",
+    "@tanstack/react-router": "1.170.46",
     "@tanstack/react-router-ssr-query": "^1.167.3",
-    "@tanstack/react-start": "1.168.60",
+    "@tanstack/react-start": "1.169.7",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/zod-adapter": "^1.167.0",
     "better-auth": "^1.7.2",
@@ -57,11 +57,11 @@
     "ts-pattern": "^5.9.0",
     "unleash-client": "^6.9.6",
     "usehooks-ts": "^3.1.1",
-    "zod": "4.6.6",
+    "zod": "4.6.7",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.11",
+    "@biomejs/biome": "2.6.8",
     "@changesets/changelog-github": "^0.7.0",
     "@changesets/cli": "^2.31.0",
     "@graphql-codegen/add": "^7.0.1",
@@ -105,6 +105,6 @@
   ],
   "overrides": {
     "@internationalized/date": "^3.10.1",
-    "@tanstack/router-core": "1.171.34"
+    "@tanstack/router-core": "1.171.39"
   }
 }
