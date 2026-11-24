@@ -22,27 +22,11 @@ import { getPublicEnv } from "@/server/functions/env";
 import { getTheme } from "@/server/functions/theme";
 import appStyles from "@/styles.css?url";
 
-import type { OrganizationClaim } from "@omnidotdev/providers/auth";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import type { Session } from "better-auth/types";
 import type { ReactNode } from "react";
+import type { ClientSession } from "@/lib/auth/clientSession";
 import type { Theme } from "@/server/functions/theme";
-
-interface ExtendedUser {
-  id: string;
-  email: string;
-  name?: string;
-  image?: string;
-  identityProviderId?: string;
-  username?: string;
-}
-
-interface ExtendedSession extends Omit<Session, "user"> {
-  user: ExtendedUser;
-  accessToken?: string;
-  organizations?: OrganizationClaim[];
-}
 
 const fetchSessionAndTheme = createServerFn({
   method: "POST",
@@ -68,7 +52,7 @@ const refreshSession = () => (isDemoActive() ? undefined : fetchSession());
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  session: ExtendedSession | null;
+  session: ClientSession | null;
   theme: string;
 }>()({
   beforeLoad: async ({ location }) => {
