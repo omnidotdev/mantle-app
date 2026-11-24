@@ -1,4 +1,14 @@
-import { ConfirmDialog as ThornberryConfirmDialog } from "@omnidotdev/thornberry/confirm-dialog";
+import {
+  DialogBackdrop,
+  DialogContent,
+  DialogDescription,
+  DialogPortal,
+  DialogPositioner,
+  DialogRoot,
+  DialogTitle,
+} from "@omnidotdev/thornberry/dialog";
+
+import { Button } from "@/components/ui/button";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -23,8 +33,9 @@ interface ConfirmDialogProps {
 }
 
 /**
- * Mantle's confirm dialog: the shared thornberry `ConfirmDialog` plus the
- * close-on-confirm default every Mantle call site relies on
+ * Confirmation for destructive or irreversible actions. Built on the shared
+ * thornberry dialog parts with Mantle's buttons, so its actions match the pill
+ * buttons used everywhere else in the app
  */
 const ConfirmDialog = ({
   open,
@@ -38,24 +49,48 @@ const ConfirmDialog = ({
   loading = false,
   loadingLabel,
 }: ConfirmDialogProps) => (
-  <ThornberryConfirmDialog
+  <DialogRoot
     open={open}
-    onOpenChange={(next) => {
+    onOpenChange={(details) => {
       // Hold the dialog open while the action is in flight
       if (loading) return;
-      onOpenChange(next);
+      onOpenChange(details.open);
     }}
-    title={title}
-    description={description}
-    confirmLabel={confirmLabel}
-    confirmVariant={variant === "danger" ? "destructive" : "solid"}
-    isPending={loading}
-    pendingLabel={loadingLabel}
-    onConfirm={() => {
-      onConfirm();
-      if (closeOnConfirm) onOpenChange(false);
-    }}
-  />
+    role="alertdialog"
+    lazyMount
+    unmountOnExit
+  >
+    <DialogPortal>
+      <DialogBackdrop />
+      <DialogPositioner>
+        <DialogContent className="max-w-sm">
+          <div className="flex flex-col gap-1.5">
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </div>
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant={variant === "danger" ? "destructive" : "solid"}
+              onClick={() => {
+                onConfirm();
+                if (closeOnConfirm) onOpenChange(false);
+              }}
+              disabled={loading}
+            >
+              {loading ? (loadingLabel ?? confirmLabel) : confirmLabel}
+            </Button>
+          </div>
+        </DialogContent>
+      </DialogPositioner>
+    </DialogPortal>
+  </DialogRoot>
 );
 
 export default ConfirmDialog;

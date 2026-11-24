@@ -949,7 +949,7 @@ const QuoteForm = ({
             )}
           />
 
-          <Button variant="outline" onClick={handleAddLineItem}>
+          <Button variant="outline" size="sm" onClick={handleAddLineItem}>
             <PlusIcon />
             Add line item
           </Button>
