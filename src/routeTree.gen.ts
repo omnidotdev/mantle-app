@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AppAtChar123workspaceSlugChar125RouteImport } from './routes/_app/@{$workspaceSlug}'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as AppAtChar123workspaceSlugChar125IndexRouteImport } from './routes/_app/@{$workspaceSlug}/index'
 import { Route as AppAtChar123workspaceSlugChar125InventoryRouteImport } from './routes/_app/@{$workspaceSlug}/inventory'
 import { Route as AppAtChar123workspaceSlugChar125InvoicesRouteImport } from './routes/_app/@{$workspaceSlug}/invoices'
@@ -58,6 +59,11 @@ const AppAtChar123workspaceSlugChar125Route =
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPricingRoute = PublicPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => PublicRoute,
 } as any)
 const AppAtChar123workspaceSlugChar125IndexRoute =
@@ -233,6 +239,7 @@ const AppAtChar123workspaceSlugChar125PeopleContactsContactIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/@{$workspaceSlug}': typeof AppAtChar123workspaceSlugChar125RouteWithChildren
+  '/pricing': typeof PublicPricingRoute
   '/@{$workspaceSlug}/inventory': typeof AppAtChar123workspaceSlugChar125InventoryRouteWithChildren
   '/@{$workspaceSlug}/invoices': typeof AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren
   '/@{$workspaceSlug}/people': typeof AppAtChar123workspaceSlugChar125PeopleRouteWithChildren
@@ -263,6 +270,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
+  '/pricing': typeof PublicPricingRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/@{$workspaceSlug}': typeof AppAtChar123workspaceSlugChar125IndexRoute
   '/@{$workspaceSlug}/inventory/new': typeof AppAtChar123workspaceSlugChar125InventoryNewRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/_app/@{$workspaceSlug}': typeof AppAtChar123workspaceSlugChar125RouteWithChildren
+  '/_public/pricing': typeof PublicPricingRoute
   '/_public/': typeof PublicIndexRoute
   '/_app/@{$workspaceSlug}/inventory': typeof AppAtChar123workspaceSlugChar125InventoryRouteWithChildren
   '/_app/@{$workspaceSlug}/invoices': typeof AppAtChar123workspaceSlugChar125InvoicesRouteWithChildren
@@ -323,6 +332,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/@{$workspaceSlug}'
+    | '/pricing'
     | '/@{$workspaceSlug}/inventory'
     | '/@{$workspaceSlug}/invoices'
     | '/@{$workspaceSlug}/people'
@@ -353,6 +363,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/pricing'
     | '/api/auth/$'
     | '/@{$workspaceSlug}'
     | '/@{$workspaceSlug}/inventory/new'
@@ -378,6 +389,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/_public'
     | '/_app/@{$workspaceSlug}'
+    | '/_public/pricing'
     | '/_public/'
     | '/_app/@{$workspaceSlug}/inventory'
     | '/_app/@{$workspaceSlug}/invoices'
@@ -442,6 +454,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/pricing': {
+      id: '/_public/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PublicPricingRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_app/@{$workspaceSlug}/': {
@@ -822,10 +841,12 @@ const AppRouteChildren: AppRouteChildren = {
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface PublicRouteChildren {
+  PublicPricingRoute: typeof PublicPricingRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
+  PublicPricingRoute: PublicPricingRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 

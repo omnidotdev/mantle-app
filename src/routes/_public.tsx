@@ -96,6 +96,12 @@ function PublicLayout() {
               Demo
             </a>
             <a
+              href="/pricing"
+              className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Pricing
+            </a>
+            <a
               href={appConfig.links.docs}
               target="_blank"
               rel="noopener noreferrer"
@@ -155,6 +161,12 @@ function PublicLayout() {
               className="flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-colors hover:bg-accent"
             >
               Demo
+            </a>
+            <a
+              href="/pricing"
+              className="flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Pricing
             </a>
             <a
               href={appConfig.links.docs}

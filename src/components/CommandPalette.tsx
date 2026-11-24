@@ -15,6 +15,7 @@ import {
   MoonStar,
   Receipt,
   Settings,
+  TagIcon,
   Users,
 } from "lucide-react";
 import { useState } from "react";
@@ -130,6 +131,16 @@ const CommandPalette = () => {
               ]),
         ] satisfies CommandAction[])
       : []),
+    {
+      id: "pricing",
+      label: "Pricing",
+      group: "Navigation",
+      icon: TagIcon,
+      keywords: ["plans", "upgrade", "billing", "price"],
+      onSelect: () => {
+        window.location.href = "/pricing";
+      },
+    },
     {
       id: "toggle-theme",
       label:

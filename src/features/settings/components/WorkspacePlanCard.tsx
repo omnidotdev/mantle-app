@@ -187,6 +187,15 @@ const WorkspacePlanCard = ({
               A workspace owner or admin can upgrade the plan.
             </p>
           )}
+
+          {plan.source !== "bypass" && (
+            <a
+              href="/pricing"
+              className="inline-block text-xs font-medium text-primary-600 underline-offset-2 hover:underline dark:text-primary-300"
+            >
+              Compare plans
+            </a>
+          )}
         </div>
       )}
     </SectionCard>
