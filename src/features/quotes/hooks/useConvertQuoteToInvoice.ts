@@ -43,11 +43,17 @@ const useConvertQuoteToInvoice = ({
       params: { workspaceSlug, invoiceId },
     });
 
+  // Refetch cached lists even when no mounted page is using them, so the
+  // invoice editor never opens on a stale list that lacks the new invoice
   const refresh = () =>
     Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["AllQuotes"] }),
+      queryClient.invalidateQueries({
+        queryKey: ["AllQuotes"],
+        refetchType: "all",
+      }),
       queryClient.invalidateQueries({
         queryKey: useAllInvoicesQuery.getKey({ organizationId }),
+        refetchType: "all",
       }),
     ]);
 
