@@ -1,23 +1,21 @@
 import type { OrganizationProfile } from "./types";
 
-/** Bundled default logo, shown when an organization has not set its own */
-const DEFAULT_LOGO_SRC = "/omni-logo.svg";
-
 interface DocumentLogo {
-  src: string;
+  /** Uploaded logo url from the profile, or null when none is set */
+  src: string | null;
   alt: string;
   /**
-   * Whether the logo is a custom one from the profile (vs the bundled default).
-   * The default is a white-knockout asset drawn tinted directly on the gradient
-   * banner; a custom logo is drawn full color on a white chip so any brand color
-   * stays visible
+   * First letter of the company name, drawn as a monogram when no logo is
+   * uploaded. Null when there is no company name either, so the banner shows
+   * no mark at all rather than someone else's brand
    */
-  isCustom: boolean;
+  initial: string | null;
 }
 
 /**
  * Resolve the logo shown on generated documents (quotes, contracts, invoices)
- * from the organization profile, falling back to the bundled default
+ * from the organization profile. Without an uploaded logo the document falls
+ * back to the company's initial, never to a bundled brand mark
  */
 const resolveDocumentLogo = (
   orgProfile: OrganizationProfile | undefined,
@@ -26,11 +24,11 @@ const resolveDocumentLogo = (
   const companyName = orgProfile?.companyName?.trim();
 
   return {
-    src: logoUrl || DEFAULT_LOGO_SRC,
+    src: logoUrl || null,
     alt: companyName ? `${companyName} logo` : "Company logo",
-    isCustom: !!logoUrl,
+    initial: companyName ? ([...companyName][0]?.toUpperCase() ?? null) : null,
   };
 };
 
 export type { DocumentLogo };
-export { DEFAULT_LOGO_SRC, resolveDocumentLogo };
+export { resolveDocumentLogo };

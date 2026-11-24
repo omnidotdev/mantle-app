@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { DEFAULT_LOGO_SRC, resolveDocumentLogo } from "./documentBranding";
+import { resolveDocumentLogo } from "./documentBranding";
 
 import type { OrganizationProfile } from "./types";
 
@@ -31,11 +31,11 @@ const profile = (
   }) satisfies OrganizationProfile;
 
 describe("resolveDocumentLogo", () => {
-  it("falls back to the bundled default when no profile is set", () => {
+  it("shows no mark when no profile is set", () => {
     expect(resolveDocumentLogo(undefined)).toEqual({
-      src: DEFAULT_LOGO_SRC,
+      src: null,
       alt: "Company logo",
-      isCustom: false,
+      initial: null,
     });
   });
 
@@ -47,21 +47,23 @@ describe("resolveDocumentLogo", () => {
     ).toEqual({
       src: "https://acme.test/logo.svg",
       alt: "Acme logo",
-      isCustom: true,
+      initial: "A",
     });
   });
 
-  it("falls back to the default logo when the url is blank whitespace", () => {
+  it("treats a blank whitespace url as no logo", () => {
     expect(
       resolveDocumentLogo(profile({ logoUrl: "   ", companyName: "Acme" })).src,
-    ).toBe(DEFAULT_LOGO_SRC);
+    ).toBeNull();
   });
 
-  it("names the alt after the company even without a custom logo", () => {
-    expect(resolveDocumentLogo(profile({ companyName: "Omni LLC" }))).toEqual({
-      src: DEFAULT_LOGO_SRC,
-      alt: "Omni LLC logo",
-      isCustom: false,
+  it("falls back to the company initial, never a bundled brand mark", () => {
+    expect(
+      resolveDocumentLogo(profile({ companyName: " acme studio" })),
+    ).toEqual({
+      src: null,
+      alt: "acme studio logo",
+      initial: "A",
     });
   });
 });
