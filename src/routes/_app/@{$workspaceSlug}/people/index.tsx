@@ -199,7 +199,6 @@ const PeoplePage = () => {
             <>
               <Button
                 variant="outline"
-                size="sm"
                 onClick={() => setImportExportOpen(true)}
               >
                 <Share2 />
