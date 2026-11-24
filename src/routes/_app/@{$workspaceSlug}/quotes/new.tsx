@@ -268,5 +268,8 @@ const NewQuotePage = () => {
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/quotes/new")({
   component: NewQuotePage,
+  // Seed line items get random ids on first render; render on the client only
+  // so the server and client never disagree on them
+  ssr: false,
   staticData: { title: "New quote" },
 });

@@ -303,5 +303,8 @@ const NewInvoicePage = () => {
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/invoices/new")({
   component: NewInvoicePage,
+  // Seed line items get random ids on first render; render on the client only
+  // so the server and client never disagree on them
+  ssr: false,
   staticData: { title: "New invoice" },
 });

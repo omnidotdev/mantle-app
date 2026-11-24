@@ -15,6 +15,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ChevronDown, ChevronUp, GripVertical } from "lucide-react";
+import { useId } from "react";
 
 import type { DragEndEvent } from "@dnd-kit/core";
 import type { ReactNode } from "react";
@@ -130,8 +131,13 @@ const SortableList = <T extends { id?: string }>({
     onReorder(arrayMove(items, index, index + 1));
   };
 
+  // dnd-kit numbers its accessibility ids with a global counter that differs
+  // between server and client; a React id keeps them stable across hydration
+  const dndId = useId();
+
   return (
     <DndContext
+      id={dndId}
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
