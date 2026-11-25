@@ -1,0 +1,34 @@
+query CustomFields($organizationId: String!) {
+  customFields(condition: { organizationId: $organizationId }) {
+    nodes {
+      rowId
+      entity
+      label
+      type
+      options
+      position
+    }
+  }
+}
+
+mutation CreateCustomField($input: CreateCustomFieldInput!) {
+  createCustomField(input: $input) {
+    customField {
+      rowId
+    }
+  }
+}
+
+mutation UpdateCustomField($input: UpdateCustomFieldInput!) {
+  updateCustomField(input: $input) {
+    customField {
+      rowId
+    }
+  }
+}
+
+mutation DeleteCustomField($input: DeleteCustomFieldInput!) {
+  deleteCustomField(input: $input) {
+    deletedCustomFieldId
+  }
+}

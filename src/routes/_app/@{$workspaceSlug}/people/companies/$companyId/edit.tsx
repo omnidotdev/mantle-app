@@ -12,6 +12,8 @@ import PageContainer from "@/components/core/PageContainer";
 import PageHeader from "@/components/core/PageHeader";
 import { Button, buttonVariants } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import useCustomFields from "@/features/customFields/useCustomFields";
+import { savableValues, toValues } from "@/features/customFields/values";
 import ClientInvoiceNumbering from "@/features/invoices/components/ClientInvoiceNumbering";
 import CompanyForm from "@/features/people/components/CompanyForm";
 import CompanyMembers from "@/features/people/components/CompanyMembers";
@@ -26,6 +28,7 @@ import type { Company } from "@/features/people/types";
 
 const EditCompanyPage = () => {
   const { organizationId } = Route.useRouteContext();
+  const { fields: customFields } = useCustomFields(organizationId, "company");
   const { workspaceSlug, companyId } = Route.useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -61,6 +64,7 @@ const EditCompanyPage = () => {
             postalCode: node.postalCode ?? null,
             country: node.country ?? null,
             notes: node.notes ?? null,
+            customFields: toValues(node.customFields),
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
           },
@@ -110,6 +114,10 @@ const EditCompanyPage = () => {
             postalCode: currentCompany.postalCode,
             country: currentCompany.country,
             notes: currentCompany.notes,
+            customFields: savableValues(
+              currentCompany.customFields ?? {},
+              customFields,
+            ),
           },
         },
       });
@@ -236,6 +244,7 @@ const EditCompanyPage = () => {
         <CompanyForm
           company={currentCompany}
           onCompanyChange={setCurrentCompany}
+          fields={customFields}
         />
 
         <CompanyMembers companyId={companyId} organizationId={organizationId} />

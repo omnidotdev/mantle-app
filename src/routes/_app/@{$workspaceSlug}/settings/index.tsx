@@ -11,6 +11,7 @@ import PageHeader from "@/components/core/PageHeader";
 import SectionCard from "@/components/core/SectionCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { PhoneInput } from "@/components/ui/phone-input";
+import CustomFieldSettings from "@/features/customFields/components/CustomFieldSettings";
 import { isDemoHref } from "@/features/demo/config";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import WorkspacePlanCard from "@/features/settings/components/WorkspacePlanCard";
@@ -401,6 +402,11 @@ const SettingsPage = () => {
         <WorkspacePlanCard
           organizationId={organizationId}
           workspaceSlug={workspaceSlug}
+          canManage={canEdit}
+        />
+
+        <CustomFieldSettings
+          organizationId={organizationId}
           canManage={canEdit}
         />
 

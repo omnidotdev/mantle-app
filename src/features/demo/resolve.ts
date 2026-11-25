@@ -76,6 +76,7 @@ const COLUMNS: Record<Table, string[]> = {
     "postalCode",
     "country",
     "notes",
+    "customFields",
   ],
   people: [
     "organizationId",
@@ -87,6 +88,7 @@ const COLUMNS: Record<Table, string[]> = {
     "avatarUrl",
     "tags",
     "notes",
+    "customFields",
   ],
   companyMembers: ["companyId", "personId", "title", "isPrimary"],
   invoices: [
@@ -222,11 +224,20 @@ const COLUMNS: Record<Table, string[]> = {
     "paymentId",
     "note",
   ],
+  customFields: [
+    "organizationId",
+    "entity",
+    "label",
+    "type",
+    "options",
+    "position",
+  ],
 };
 
 /** Defaults the database would fill in on insert */
 const DEFAULTS: Partial<Record<Table, Record<string, unknown>>> = {
-  people: { emails: [], tags: [], internal: false },
+  people: { emails: [], tags: [], internal: false, customFields: {} },
+  companies: { customFields: {} },
   invoices: { status: "draft", currency: "USD", taxAmount: "0.00" },
   quotes: { status: "draft", currency: "USD", additionalTerms: [] },
   quoteLineItems: { deliverables: [], acceptanceCriteria: [] },
@@ -249,6 +260,7 @@ const ID_PREFIX: Record<Table, string> = {
   organizationSettings: "40e1",
   documentNumberingConfigs: "50e1",
   creditTransactions: "60e1",
+  customFields: "cf01",
 };
 
 const insert = (table: Table, input: Record<string, unknown>): Row => {
@@ -382,6 +394,21 @@ const handlers: Record<string, (vars: Vars) => unknown> = {
   // Queries
   AllCompanies: () => ({ companies: nodes(getDb().companies) }),
   AllPeople: () => ({ people: nodes(getDb().people) }),
+  CustomFields: () => ({ customFields: nodes(getDb().customFields) }),
+  CreateCustomField: (vars) => ({
+    createCustomField: create("customFields", "customField")(vars),
+  }),
+  UpdateCustomField: (vars) => ({
+    updateCustomField: {
+      customField: update("customFields", input(vars).rowId, input(vars).patch),
+    },
+  }),
+  DeleteCustomField: (vars) => {
+    const { rowId } = input(vars);
+    remove("customFields", rowId);
+
+    return { deleteCustomField: { deletedCustomFieldId: rowId } };
+  },
   AllInvoices: () => ({ invoices: nodes(getDb().invoices.map(invoiceView)) }),
   AllQuotes: () => ({ quotes: nodes(getDb().quotes.map(quoteView)) }),
   AllProducts: () => ({ products: nodes(getDb().products) }),

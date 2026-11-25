@@ -10,6 +10,8 @@ import MobileActionBar from "@/components/core/MobileActionBar";
 import PageContainer from "@/components/core/PageContainer";
 import PageHeader from "@/components/core/PageHeader";
 import { Button } from "@/components/ui/button";
+import useCustomFields from "@/features/customFields/useCustomFields";
+import { savableValues } from "@/features/customFields/values";
 import ContactForm from "@/features/people/components/ContactForm";
 import {
   useAllPeopleQuery,
@@ -32,6 +34,7 @@ const defaultPerson: Partial<Person> = {
 
 const NewContactPage = () => {
   const { organizationId } = Route.useRouteContext();
+  const { fields: customFields } = useCustomFields(organizationId, "person");
   const { workspaceSlug } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -65,6 +68,10 @@ const NewContactPage = () => {
             tags: currentPerson.tags ?? null,
             internal: currentPerson.internal ?? false,
             notes: currentPerson.notes ?? null,
+            customFields: savableValues(
+              currentPerson.customFields ?? {},
+              customFields,
+            ),
           },
         },
       });
@@ -137,7 +144,11 @@ const NewContactPage = () => {
         actions={headerActions}
       />
 
-      <ContactForm person={currentPerson} onPersonChange={setCurrentPerson} />
+      <ContactForm
+        person={currentPerson}
+        onPersonChange={setCurrentPerson}
+        fields={customFields}
+      />
 
       <MobileActionBar>
         <Button variant="outline" onClick={handleCancel} disabled={saving}>

@@ -13,7 +13,7 @@
     "check": "biome check --diagnostic-level=error",
     "format": "biome format --write",
     "lint": "biome lint --diagnostic-level=error",
-    "graphql:generate": "NODE_PATH=src/ dotenv -e .env.development -- graphql-codegen --config src/lib/graphql/codegen.config.ts && bun scripts/postGraphqlGenerate.mjs",
+    "graphql:generate": "NODE_PATH=src/ dotenv-cli -e .env.development -- graphql-codegen --config src/lib/graphql/codegen.config.ts && bun scripts/postGraphqlGenerate.mjs",
     "graphql:generate:watch": "bun graphql:generate -w",
     "knip": "knip-bun",
     "prepare": "husky"
@@ -85,7 +85,6 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
     "concurrently": "^10.0.7",
-    "dotenv": "^18.0.10",
     "dotenv-cli": "^11.1.0",
     "husky": "^9.1.7",
     "knip": "^6.48.0",

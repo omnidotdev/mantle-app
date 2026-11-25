@@ -1,11 +1,11 @@
 // @ts-nocheck
+import { GraphQLClient, type RequestOptions } from 'graphql-request';
+import gql from 'graphql-tag';
+type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 /** Internal type. DO NOT USE DIRECTLY. */
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-import { GraphQLClient, type RequestOptions } from 'graphql-request';
-import gql from 'graphql-tag';
-type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 export type ApplyInvoiceCreditInput = {
   amount: string;
   invoiceId: string;
@@ -19,6 +19,7 @@ export type CompanyInput = {
   city?: string | null | undefined;
   country?: string | null | undefined;
   createdAt?: Date | null | undefined;
+  customFields?: unknown;
   email?: string | null | undefined;
   industry?: string | null | undefined;
   name: string;
@@ -59,11 +60,11 @@ export type CompanyPatch = {
   city?: string | null | undefined;
   country?: string | null | undefined;
   createdAt?: Date | null | undefined;
+  customFields?: unknown;
   email?: string | null | undefined;
   industry?: string | null | undefined;
   name?: string | null | undefined;
   notes?: string | null | undefined;
-  organizationId?: string | null | undefined;
   phone?: string | null | undefined;
   postalCode?: string | null | undefined;
   rowId?: string | null | undefined;
@@ -96,6 +97,17 @@ export type CreateCompanyMemberInput = {
   clientMutationId?: string | null | undefined;
   /** The `CompanyMember` to be created by this mutation. */
   companyMember: CompanyMemberInput;
+};
+
+/** All input for the create `CustomField` mutation. */
+export type CreateCustomFieldInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** The `CustomField` to be created by this mutation. */
+  customField: CustomFieldInput;
 };
 
 /** All input for the create `DocumentNumberingConfig` mutation. */
@@ -208,6 +220,29 @@ export type CreateQuoteLineItemInput = {
   quoteLineItem: QuoteLineItemInput;
 };
 
+/** An input for mutations affecting `CustomField` */
+export type CustomFieldInput = {
+  createdAt?: Date | null | undefined;
+  entity: string;
+  label: string;
+  options?: unknown;
+  organizationId: string;
+  position?: number | null | undefined;
+  rowId?: string | null | undefined;
+  type: string;
+  updatedAt?: Date | null | undefined;
+};
+
+/** Represents an update to a `CustomField`. Fields that are set will be updated. */
+export type CustomFieldPatch = {
+  createdAt?: Date | null | undefined;
+  label?: string | null | undefined;
+  options?: unknown;
+  position?: number | null | undefined;
+  rowId?: string | null | undefined;
+  updatedAt?: Date | null | undefined;
+};
+
 /** All input for the `deleteCompany` mutation. */
 export type DeleteCompanyInput = {
   /**
@@ -220,6 +255,16 @@ export type DeleteCompanyInput = {
 
 /** All input for the `deleteCompanyMember` mutation. */
 export type DeleteCompanyMemberInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  rowId: string;
+};
+
+/** All input for the `deleteCustomField` mutation. */
+export type DeleteCustomFieldInput = {
   /**
    * An arbitrary string value with no semantic meaning. Will be included in the
    * payload verbatim. May be used to track mutations by the client.
@@ -335,7 +380,6 @@ export type DocumentNumberingConfigPatch = {
   globalPrefix?: string | null | undefined;
   idStrategy?: string | null | undefined;
   nextSequentialNumber?: number | null | undefined;
-  organizationId?: string | null | undefined;
   prefix?: string | null | undefined;
   randomLength?: number | null | undefined;
   rowId?: string | null | undefined;
@@ -408,7 +452,6 @@ export type InvoicePatch = {
   invoiceNumber?: string | null | undefined;
   issueDate?: Date | null | undefined;
   notes?: string | null | undefined;
-  organizationId?: string | null | undefined;
   paidAt?: Date | null | undefined;
   paymentLinkUrl?: string | null | undefined;
   paymentReference?: string | null | undefined;
@@ -457,7 +500,6 @@ export type OrganizationSettingPatch = {
   createdAt?: Date | null | undefined;
   email?: string | null | undefined;
   logoUrl?: string | null | undefined;
-  organizationId?: string | null | undefined;
   phone?: string | null | undefined;
   postalCode?: string | null | undefined;
   registrationState?: string | null | undefined;
@@ -481,6 +523,7 @@ export type PaymentInput = {
 export type PersonInput = {
   avatarUrl?: string | null | undefined;
   createdAt?: Date | null | undefined;
+  customFields?: unknown;
   emailConsent?: boolean | null | undefined;
   emails?: Array<string | null | undefined> | null | undefined;
   firstName: string;
@@ -498,13 +541,13 @@ export type PersonInput = {
 export type PersonPatch = {
   avatarUrl?: string | null | undefined;
   createdAt?: Date | null | undefined;
+  customFields?: unknown;
   emailConsent?: boolean | null | undefined;
   emails?: Array<string | null | undefined> | null | undefined;
   firstName?: string | null | undefined;
   internal?: boolean | null | undefined;
   lastName?: string | null | undefined;
   notes?: string | null | undefined;
-  organizationId?: string | null | undefined;
   phone?: string | null | undefined;
   rowId?: string | null | undefined;
   tags?: Array<string | null | undefined> | null | undefined;
@@ -557,7 +600,6 @@ export type ProductPatch = {
   isRestricted?: boolean | null | undefined;
   lowStockThreshold?: number | null | undefined;
   name?: string | null | undefined;
-  organizationId?: string | null | undefined;
   retailPrice?: string | null | undefined;
   rowId?: string | null | undefined;
   sku?: string | null | undefined;
@@ -638,7 +680,6 @@ export type QuotePatch = {
   currency?: string | null | undefined;
   description?: string | null | undefined;
   notes?: string | null | undefined;
-  organizationId?: string | null | undefined;
   projectType?: string | null | undefined;
   quoteNumber?: string | null | undefined;
   rowId?: string | null | undefined;
@@ -675,6 +716,18 @@ export type UpdateCompanyMemberInput = {
   clientMutationId?: string | null | undefined;
   /** An object where the defined keys will be set on the `CompanyMember` being updated. */
   patch: CompanyMemberPatch;
+  rowId: string;
+};
+
+/** All input for the `updateCustomField` mutation. */
+export type UpdateCustomFieldInput = {
+  /**
+   * An arbitrary string value with no semantic meaning. Will be included in the
+   * payload verbatim. May be used to track mutations by the client.
+   */
+  clientMutationId?: string | null | undefined;
+  /** An object where the defined keys will be set on the `CustomField` being updated. */
+  patch: CustomFieldPatch;
   rowId: string;
 };
 
@@ -755,7 +808,7 @@ export type AllCompaniesQueryVariables = Exact<{
 }>;
 
 
-export type AllCompaniesQuery = { companies: { nodes: Array<{ rowId: string, organizationId: string, name: string, website: string | null, industry: string | null, phone: string | null, email: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, notes: string | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
+export type AllCompaniesQuery = { companies: { nodes: Array<{ rowId: string, organizationId: string, name: string, website: string | null, industry: string | null, phone: string | null, email: string | null, addressLine1: string | null, addressLine2: string | null, city: string | null, state: string | null, postalCode: string | null, country: string | null, notes: string | null, customFields: unknown, createdAt: string | null, updatedAt: string | null } | null> } | null };
 
 export type CreateCompanyMutationVariables = Exact<{
   input: CreateCompanyInput;
@@ -826,6 +879,34 @@ export type ApplyInvoiceCreditMutationVariables = Exact<{
 
 
 export type ApplyInvoiceCreditMutation = { applyInvoiceCredit: { creditTransactionId: string, amountApplied: string, remainingCredit: string, invoiceOutstanding: string } | null };
+
+export type CustomFieldsQueryVariables = Exact<{
+  organizationId: string;
+}>;
+
+
+export type CustomFieldsQuery = { customFields: { nodes: Array<{ rowId: string, entity: string, label: string, type: string, options: unknown, position: number } | null> } | null };
+
+export type CreateCustomFieldMutationVariables = Exact<{
+  input: CreateCustomFieldInput;
+}>;
+
+
+export type CreateCustomFieldMutation = { createCustomField: { customField: { rowId: string } | null } | null };
+
+export type UpdateCustomFieldMutationVariables = Exact<{
+  input: UpdateCustomFieldInput;
+}>;
+
+
+export type UpdateCustomFieldMutation = { updateCustomField: { customField: { rowId: string } | null } | null };
+
+export type DeleteCustomFieldMutationVariables = Exact<{
+  input: DeleteCustomFieldInput;
+}>;
+
+
+export type DeleteCustomFieldMutation = { deleteCustomField: { deletedCustomFieldId: string | null } | null };
 
 export type DocumentNumberingConfigsQueryVariables = Exact<{
   organizationId: string;
@@ -923,7 +1004,7 @@ export type AllPeopleQueryVariables = Exact<{
 }>;
 
 
-export type AllPeopleQuery = { people: { nodes: Array<{ rowId: string, organizationId: string, firstName: string, lastName: string, emails: Array<string | null> | null, phone: string | null, internal: boolean, avatarUrl: string | null, tags: Array<string | null> | null, notes: string | null, createdAt: string | null, updatedAt: string | null } | null> } | null };
+export type AllPeopleQuery = { people: { nodes: Array<{ rowId: string, organizationId: string, firstName: string, lastName: string, emails: Array<string | null> | null, phone: string | null, internal: boolean, avatarUrl: string | null, tags: Array<string | null> | null, notes: string | null, customFields: unknown, createdAt: string | null, updatedAt: string | null } | null> } | null };
 
 export type CreatePersonMutationVariables = Exact<{
   input: CreatePersonInput;
@@ -1092,7 +1173,7 @@ export const WorkspaceProfileFieldsFragmentDoc = gql`
     `;
 export const AllCompaniesDocument = gql`
     query AllCompanies($organizationId: String!) {
-  companies(condition: {organizationId: $organizationId}) {
+  companies(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1108,6 +1189,7 @@ export const AllCompaniesDocument = gql`
       postalCode
       country
       notes
+      customFields
       createdAt
       updatedAt
     }
@@ -1143,7 +1225,7 @@ export const DeleteCompanyDocument = gql`
     `;
 export const CompanyMembersByCompanyDocument = gql`
     query CompanyMembersByCompany($companyId: UUID!) {
-  companyMembers(condition: {companyId: $companyId}) {
+  companyMembers(condition: { companyId: $companyId }) {
     nodes {
       rowId
       companyId
@@ -1162,7 +1244,7 @@ export const CompanyMembersByCompanyDocument = gql`
     `;
 export const CompanyMembersByPersonDocument = gql`
     query CompanyMembersByPerson($personId: UUID!) {
-  companyMembers(condition: {personId: $personId}) {
+  companyMembers(condition: { personId: $personId }) {
     nodes {
       rowId
       companyId
@@ -1211,7 +1293,7 @@ export const DeleteCompanyMemberDocument = gql`
     `;
 export const WorkspaceCreditsDocument = gql`
     query WorkspaceCredits($organizationId: String!) {
-  creditTransactions(condition: {organizationId: $organizationId}) {
+  creditTransactions(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1236,9 +1318,48 @@ export const ApplyInvoiceCreditDocument = gql`
   }
 }
     `;
+export const CustomFieldsDocument = gql`
+    query CustomFields($organizationId: String!) {
+  customFields(condition: { organizationId: $organizationId }) {
+    nodes {
+      rowId
+      entity
+      label
+      type
+      options
+      position
+    }
+  }
+}
+    `;
+export const CreateCustomFieldDocument = gql`
+    mutation CreateCustomField($input: CreateCustomFieldInput!) {
+  createCustomField(input: $input) {
+    customField {
+      rowId
+    }
+  }
+}
+    `;
+export const UpdateCustomFieldDocument = gql`
+    mutation UpdateCustomField($input: UpdateCustomFieldInput!) {
+  updateCustomField(input: $input) {
+    customField {
+      rowId
+    }
+  }
+}
+    `;
+export const DeleteCustomFieldDocument = gql`
+    mutation DeleteCustomField($input: DeleteCustomFieldInput!) {
+  deleteCustomField(input: $input) {
+    deletedCustomFieldId
+  }
+}
+    `;
 export const DocumentNumberingConfigsDocument = gql`
     query DocumentNumberingConfigs($organizationId: String!) {
-  documentNumberingConfigs(condition: {organizationId: $organizationId}) {
+  documentNumberingConfigs(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1304,7 +1425,7 @@ export const GenerateDocumentNumberDocument = gql`
     `;
 export const AllInvoicesDocument = gql`
     query AllInvoices($organizationId: String!) {
-  invoices(condition: {organizationId: $organizationId}) {
+  invoices(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1422,7 +1543,7 @@ export const DeletePaymentDocument = gql`
     `;
 export const AllPeopleDocument = gql`
     query AllPeople($organizationId: String!) {
-  people(condition: {organizationId: $organizationId}) {
+  people(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1434,6 +1555,7 @@ export const AllPeopleDocument = gql`
       avatarUrl
       tags
       notes
+      customFields
       createdAt
       updatedAt
     }
@@ -1471,7 +1593,7 @@ export const DeletePersonDocument = gql`
     `;
 export const AllProductsDocument = gql`
     query AllProducts($organizationId: String!) {
-  products(condition: {organizationId: $organizationId}) {
+  products(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1517,7 +1639,7 @@ export const DeleteProductDocument = gql`
     `;
 export const InventoryAdjustmentsDocument = gql`
     query InventoryAdjustments($productId: UUID!) {
-  inventoryAdjustments(condition: {productId: $productId}) {
+  inventoryAdjustments(condition: { productId: $productId }) {
     nodes {
       rowId
       productId
@@ -1541,7 +1663,7 @@ export const CreateInventoryAdjustmentDocument = gql`
     `;
 export const AllQuotesDocument = gql`
     query AllQuotes($organizationId: String!) {
-  quotes(condition: {organizationId: $organizationId}) {
+  quotes(condition: { organizationId: $organizationId }) {
     nodes {
       rowId
       organizationId
@@ -1666,7 +1788,7 @@ export const ConvertQuoteToInvoiceDocument = gql`
     `;
 export const WorkspaceProfileDocument = gql`
     query WorkspaceProfile($organizationId: String!) {
-  organizationSettings(condition: {organizationId: $organizationId}, first: 1) {
+  organizationSettings(condition: { organizationId: $organizationId }, first: 1) {
     nodes {
       ...WorkspaceProfileFields
     }
@@ -1744,6 +1866,18 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     ApplyInvoiceCredit(variables: ApplyInvoiceCreditMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ApplyInvoiceCreditMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ApplyInvoiceCreditMutation>({ document: ApplyInvoiceCreditDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ApplyInvoiceCredit', 'mutation', variables);
+    },
+    CustomFields(variables: CustomFieldsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CustomFieldsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CustomFieldsQuery>({ document: CustomFieldsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CustomFields', 'query', variables);
+    },
+    CreateCustomField(variables: CreateCustomFieldMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateCustomFieldMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCustomFieldMutation>({ document: CreateCustomFieldDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateCustomField', 'mutation', variables);
+    },
+    UpdateCustomField(variables: UpdateCustomFieldMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateCustomFieldMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCustomFieldMutation>({ document: UpdateCustomFieldDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateCustomField', 'mutation', variables);
+    },
+    DeleteCustomField(variables: DeleteCustomFieldMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteCustomFieldMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteCustomFieldMutation>({ document: DeleteCustomFieldDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteCustomField', 'mutation', variables);
     },
     DocumentNumberingConfigs(variables: DocumentNumberingConfigsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DocumentNumberingConfigsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<DocumentNumberingConfigsQuery>({ document: DocumentNumberingConfigsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DocumentNumberingConfigs', 'query', variables);

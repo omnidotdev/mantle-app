@@ -10,6 +10,8 @@ import MobileActionBar from "@/components/core/MobileActionBar";
 import PageContainer from "@/components/core/PageContainer";
 import PageHeader from "@/components/core/PageHeader";
 import { Button } from "@/components/ui/button";
+import useCustomFields from "@/features/customFields/useCustomFields";
+import { savableValues } from "@/features/customFields/values";
 import CompanyForm from "@/features/people/components/CompanyForm";
 import {
   useAllCompaniesQuery,
@@ -35,6 +37,7 @@ const defaultCompany: Partial<Company> = {
 
 const NewCompanyPage = () => {
   const { organizationId } = Route.useRouteContext();
+  const { fields: customFields } = useCustomFields(organizationId, "company");
   const { workspaceSlug } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -72,6 +75,10 @@ const NewCompanyPage = () => {
             postalCode: currentCompany.postalCode ?? null,
             country: currentCompany.country ?? null,
             notes: currentCompany.notes ?? null,
+            customFields: savableValues(
+              currentCompany.customFields ?? {},
+              customFields,
+            ),
           },
         },
       });
@@ -145,6 +152,7 @@ const NewCompanyPage = () => {
       <CompanyForm
         company={currentCompany}
         onCompanyChange={setCurrentCompany}
+        fields={customFields}
       />
 
       <MobileActionBar>
