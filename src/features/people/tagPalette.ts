@@ -83,11 +83,26 @@ const getPeopleTone = (tags: string[] | null): TagTone => {
 
 const getTagChipClass = (tag: string) => TONE_CHIP_CLASSES[getTagTone(tag)];
 
+/** Tones custom field options cycle through, so neighboring choices differ */
+const OPTION_TONES: TagTone[] = [
+  "info",
+  "warning",
+  "success",
+  "viewed",
+  "brand",
+  "secondary",
+];
+
+/** Chip class for a select field's option, by its position in the field */
+const getOptionChipClass = (index: number) =>
+  TONE_CHIP_CLASSES[OPTION_TONES[index % OPTION_TONES.length] ?? "neutral"];
+
 export type { TagTone };
 export {
   TAG_LEGEND,
   TONE_CSS_VARS,
   TONE_DOT_CLASSES,
+  getOptionChipClass,
   getPeopleTone,
   getTagChipClass,
   getTagTone,

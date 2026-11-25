@@ -1,3 +1,5 @@
+import type { CustomFieldValues } from "@/features/customFields/types";
+
 export interface Company {
   id: string;
   organizationId: string;
@@ -13,6 +15,7 @@ export interface Company {
   postalCode: string | null;
   country: string | null;
   notes: string | null;
+  customFields: CustomFieldValues;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +31,7 @@ export interface Person {
   tags: string[] | null;
   internal: boolean;
   notes: string | null;
+  customFields: CustomFieldValues;
   createdAt: string;
   updatedAt: string;
 }

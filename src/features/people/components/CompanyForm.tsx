@@ -4,17 +4,25 @@ import { Textarea } from "@omnidotdev/thornberry/textarea";
 
 import SectionCard from "@/components/core/SectionCard";
 import { PhoneInput } from "@/components/ui/phone-input";
+import CustomFieldInputs from "@/features/customFields/components/CustomFieldInputs";
 import { resolveRegion } from "@/lib/phone";
 
+import type { CustomField } from "@/features/customFields/types";
 import type { Company } from "@/features/people/types";
 
 interface CompanyFormProps {
   company: Partial<Company>;
   onCompanyChange: (company: Partial<Company>) => void;
+  /** The workspace's custom fields for this record type */
+  fields?: CustomField[];
 }
 
 /** Company fields grouped into section cards. Save and cancel live in the page header */
-const CompanyForm = ({ company, onCompanyChange }: CompanyFormProps) => {
+const CompanyForm = ({
+  company,
+  onCompanyChange,
+  fields = [],
+}: CompanyFormProps) => {
   const handleChange = (field: keyof Company, value: string | null) => {
     onCompanyChange({ ...company, [field]: value });
   };
@@ -147,6 +155,14 @@ const CompanyForm = ({ company, onCompanyChange }: CompanyFormProps) => {
           </div>
         </div>
       </SectionCard>
+
+      <CustomFieldInputs
+        fields={fields}
+        values={company.customFields ?? {}}
+        onChange={(customFields) =>
+          onCompanyChange({ ...company, customFields })
+        }
+      />
 
       <SectionCard title="Notes">
         <Label htmlFor="company-notes" className="sr-only">

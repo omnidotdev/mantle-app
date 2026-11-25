@@ -19,6 +19,18 @@ import { DataTable } from "@/components/ui/data-table";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { SearchInput } from "@/components/ui/search-input";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import {
+  CustomFieldFilters,
+  customFieldColumns,
+  listFields,
+} from "@/features/customFields/components/CustomFieldTable";
+import useCustomFields from "@/features/customFields/useCustomFields";
+import {
+  matchesFilters,
+  parseFieldFilters,
+  serializeFieldFilters,
+  toValues,
+} from "@/features/customFields/values";
 import ImportExportDialog from "@/features/people/components/ImportExportDialog";
 import NetworkSection from "@/features/people/components/NetworkSection";
 import {
@@ -39,6 +51,7 @@ import { useWorkspaceSlug } from "@/lib/hooks/util/useWorkspaceSlug";
 
 import type { SortingState } from "@tanstack/react-table";
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+import type { CustomField } from "@/features/customFields/types";
 import type { ActiveTab } from "@/features/people/store/peopleStore";
 import type { Company, Person } from "@/features/people/types";
 
@@ -74,6 +87,17 @@ const PeoplePage = () => {
       { enabled: !!organizationId },
     );
 
+  const { fields: personFields } = useCustomFields(organizationId, "person");
+  const { fields: companyFields } = useCustomFields(organizationId, "company");
+  const fieldFilters = useMemo(
+    () => parseFieldFilters(search.fields),
+    [search.fields],
+  );
+  const setFieldFilters = (filters: Record<string, string>) =>
+    navigate({
+      search: (prev) => ({ ...prev, fields: serializeFieldFilters(filters) }),
+    });
+
   const { data: peopleData, isLoading: peopleLoading } = useAllPeopleQuery(
     { organizationId: organizationId ?? "" },
     { enabled: !!organizationId },
@@ -99,6 +123,7 @@ const PeoplePage = () => {
             postalCode: node.postalCode ?? null,
             country: node.country ?? null,
             notes: node.notes ?? null,
+            customFields: toValues(node.customFields),
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
           },
@@ -123,6 +148,7 @@ const PeoplePage = () => {
             tags: (node.tags as string[]) ?? null,
             internal: node.internal ?? false,
             notes: node.notes ?? null,
+            customFields: toValues(node.customFields),
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
           },
@@ -234,6 +260,7 @@ const PeoplePage = () => {
               ...prev,
               tab,
               search: "",
+              fields: "",
               sortBy: undefined,
               sortDir: undefined,
             }),
@@ -250,6 +277,9 @@ const PeoplePage = () => {
       {activeTab === "companies" && (
         <CompaniesTable
           companies={companies}
+          fields={companyFields}
+          fieldFilters={fieldFilters}
+          onFieldFiltersChange={setFieldFilters}
           search={search}
           navigate={navigate}
           searchTerm={searchTerm}
@@ -268,6 +298,9 @@ const PeoplePage = () => {
       {activeTab === "contacts" && (
         <ContactsTable
           people={people}
+          fields={personFields}
+          fieldFilters={fieldFilters}
+          onFieldFiltersChange={setFieldFilters}
           search={search}
           navigate={navigate}
           searchTerm={searchTerm}
@@ -296,6 +329,7 @@ const PeoplePage = () => {
         organizationId={organizationId}
         companies={companies}
         people={people}
+        fields={activeTab === "companies" ? companyFields : personFields}
       />
 
       <ConfirmDialog
@@ -326,6 +360,9 @@ type PeopleNavigate = ReturnType<typeof Route.useNavigate>;
 
 const CompaniesTable = ({
   companies,
+  fields,
+  fieldFilters,
+  onFieldFiltersChange,
   search,
   navigate: routeNavigate,
   searchTerm,
@@ -333,6 +370,9 @@ const CompaniesTable = ({
   onDelete,
 }: {
   companies: Company[];
+  fields: CustomField[];
+  fieldFilters: Record<string, string>;
+  onFieldFiltersChange: (filters: Record<string, string>) => void;
   search: PeopleSearch;
   navigate: PeopleNavigate;
   searchTerm: string;
@@ -350,14 +390,16 @@ const CompaniesTable = ({
 
   const filteredCompanies = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    if (!term) return companies;
 
-    return companies.filter((c) =>
-      [c.name, c.industry, c.email, c.phone, c.website].some((field) =>
-        (field ?? "").toLowerCase().includes(term),
-      ),
+    return companies.filter(
+      (c) =>
+        (!term ||
+          [c.name, c.industry, c.email, c.phone, c.website].some((field) =>
+            (field ?? "").toLowerCase().includes(term),
+          )) &&
+        matchesFilters(c.customFields, fieldFilters),
     );
-  }, [companies, searchTerm]);
+  }, [companies, searchTerm, fieldFilters]);
 
   const openCompany = useCallback(
     (company: Company) =>
@@ -402,6 +444,7 @@ const CompaniesTable = ({
           <PhoneDisplay value={getValue<string | null>()} />
         ),
       },
+      ...customFieldColumns<Company>(fields, (row) => row.customFields),
       {
         id: "actions",
         header: () => <span className="sr-only">Actions</span>,
@@ -418,7 +461,7 @@ const CompaniesTable = ({
         ),
       },
     ],
-    [onDelete, openCompany],
+    [onDelete, openCompany, fields],
   );
 
   if (companies.length === 0) {
@@ -446,6 +489,15 @@ const CompaniesTable = ({
   return (
     <SectionCard flush>
       <ListToolbar>
+        {listFields(fields).length > 0 && (
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <CustomFieldFilters
+              fields={fields}
+              filters={fieldFilters}
+              onChange={onFieldFiltersChange}
+            />
+          </div>
+        )}
         <SearchInput
           label="Search companies"
           value={searchTerm}
@@ -472,10 +524,16 @@ const CompaniesTable = ({
         )}
         emptyState={
           <EmptyState
-            title="No companies match your search"
+            title="No companies match your filters"
             action={
-              <Button variant="outline" onClick={() => onSearchChange("")}>
-                Clear search
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onSearchChange("");
+                  onFieldFiltersChange({});
+                }}
+              >
+                Clear filters
               </Button>
             }
           />
@@ -489,6 +547,9 @@ type ContactTypeFilter = "all" | "internal" | "external";
 
 const ContactsTable = ({
   people,
+  fields,
+  fieldFilters,
+  onFieldFiltersChange,
   search,
   navigate: routeNavigate,
   searchTerm,
@@ -498,6 +559,9 @@ const ContactsTable = ({
   onDelete,
 }: {
   people: Person[];
+  fields: CustomField[];
+  fieldFilters: Record<string, string>;
+  onFieldFiltersChange: (filters: Record<string, string>) => void;
   search: PeopleSearch;
   navigate: PeopleNavigate;
   searchTerm: string;
@@ -530,9 +594,13 @@ const ContactsTable = ({
         (typeFilter === "internal" && p.internal) ||
         (typeFilter === "external" && !p.internal);
 
-      return matchesSearch && matchesType;
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesFilters(p.customFields, fieldFilters)
+      );
     });
-  }, [people, searchTerm, typeFilter]);
+  }, [people, searchTerm, typeFilter, fieldFilters]);
 
   const internalCount = useMemo(
     () => people.filter((p) => p.internal).length,
@@ -608,6 +676,7 @@ const ContactsTable = ({
             <EmptyValue>No tags</EmptyValue>
           ),
       },
+      ...customFieldColumns<Person>(fields, (row) => row.customFields),
       {
         id: "actions",
         header: () => <span className="sr-only">Actions</span>,
@@ -628,7 +697,7 @@ const ContactsTable = ({
         },
       },
     ],
-    [onDelete, openContact],
+    [onDelete, openContact, fields],
   );
 
   if (people.length === 0) {
@@ -656,21 +725,28 @@ const ContactsTable = ({
   return (
     <SectionCard flush>
       <ListToolbar>
-        <SegmentedControl<ContactTypeFilter>
-          label="Filter by type"
-          size="sm"
-          value={typeFilter}
-          onValueChange={onTypeFilterChange}
-          options={[
-            { value: "all", label: "All", count: people.length },
-            { value: "internal", label: "Internal", count: internalCount },
-            {
-              value: "external",
-              label: "External",
-              count: people.length - internalCount,
-            },
-          ]}
-        />
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
+          <SegmentedControl<ContactTypeFilter>
+            label="Filter by type"
+            size="sm"
+            value={typeFilter}
+            onValueChange={onTypeFilterChange}
+            options={[
+              { value: "all", label: "All", count: people.length },
+              { value: "internal", label: "Internal", count: internalCount },
+              {
+                value: "external",
+                label: "External",
+                count: people.length - internalCount,
+              },
+            ]}
+          />
+          <CustomFieldFilters
+            fields={fields}
+            filters={fieldFilters}
+            onChange={onFieldFiltersChange}
+          />
+        </div>
         <SearchInput
           label="Search contacts"
           value={searchTerm}
@@ -721,6 +797,7 @@ const ContactsTable = ({
                 onClick={() => {
                   onSearchChange("");
                   onTypeFilterChange("all");
+                  onFieldFiltersChange({});
                 }}
               >
                 Clear filters

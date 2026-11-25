@@ -14,6 +14,7 @@ import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { formatValue } from "@/features/customFields/values";
 import {
   useAllCompaniesQuery,
   useAllPeopleQuery,
@@ -23,6 +24,7 @@ import {
 import { planLimitMessage } from "@/lib/graphql/errors";
 import { resolveRegion, toE164 } from "@/lib/phone";
 
+import type { CustomField } from "@/features/customFields/types";
 import type { Company, Person } from "@/features/people/types";
 
 interface ImportExportDialogProps {
@@ -32,7 +34,26 @@ interface ImportExportDialogProps {
   organizationId: string;
   companies: Company[];
   people: Person[];
+  /** Custom fields of the open tab's record type, exported by name */
+  fields: CustomField[];
 }
+
+/**
+ * A record for export: its custom field values keyed by field name, as the
+ * text shown in the app, instead of by internal field and option ids
+ */
+const exportRecord = (
+  { customFields, ...record }: Person | Company,
+  fields: CustomField[],
+): Record<string, unknown> => ({
+  ...record,
+  ...Object.fromEntries(
+    fields.map((field) => [
+      field.label,
+      formatValue(field, customFields[field.id]),
+    ]),
+  ),
+});
 
 const ImportExportDialog = ({
   open,
@@ -41,6 +62,7 @@ const ImportExportDialog = ({
   organizationId,
   companies,
   people,
+  fields,
 }: ImportExportDialogProps) => {
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<"export" | "import">("export");
@@ -61,7 +83,9 @@ const ImportExportDialog = ({
   };
 
   const exportJSON = () => {
-    const data = context === "contacts" ? people : companies;
+    const data = (context === "contacts" ? people : companies).map((item) =>
+      exportRecord(item, fields),
+    );
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
@@ -74,7 +98,9 @@ const ImportExportDialog = ({
   };
 
   const exportCSV = () => {
-    const data = context === "contacts" ? people : companies;
+    const data = (context === "contacts" ? people : companies).map((item) =>
+      exportRecord(item, fields),
+    );
     const rows = data.map((item) => {
       const row: Record<string, string> = {};
       for (const [key, value] of Object.entries(item)) {
@@ -96,7 +122,7 @@ const ImportExportDialog = ({
   const importCompanies = async (
     records: Omit<
       Company,
-      "id" | "createdAt" | "updatedAt" | "organizationId"
+      "id" | "createdAt" | "updatedAt" | "organizationId" | "customFields"
     >[],
   ) => {
     for (const record of records) {
@@ -125,7 +151,7 @@ const ImportExportDialog = ({
   const importPeople = async (
     records: Omit<
       Person,
-      "id" | "createdAt" | "updatedAt" | "organizationId"
+      "id" | "createdAt" | "updatedAt" | "organizationId" | "customFields"
     >[],
   ) => {
     for (const record of records) {

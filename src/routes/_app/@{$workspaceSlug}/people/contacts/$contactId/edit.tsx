@@ -12,6 +12,8 @@ import PageContainer from "@/components/core/PageContainer";
 import PageHeader from "@/components/core/PageHeader";
 import { Button, buttonVariants } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import useCustomFields from "@/features/customFields/useCustomFields";
+import { savableValues, toValues } from "@/features/customFields/values";
 import ContactCompanies from "@/features/people/components/ContactCompanies";
 import ContactForm from "@/features/people/components/ContactForm";
 import { MobileDeleteMenu } from "@/features/people/components/RowActions";
@@ -25,6 +27,7 @@ import type { Person } from "@/features/people/types";
 
 const EditContactPage = () => {
   const { organizationId } = Route.useRouteContext();
+  const { fields: customFields } = useCustomFields(organizationId, "person");
   const { workspaceSlug, contactId } = Route.useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -56,6 +59,7 @@ const EditContactPage = () => {
             tags: (node.tags as string[]) ?? null,
             internal: node.internal ?? false,
             notes: node.notes ?? null,
+            customFields: toValues(node.customFields),
             createdAt: node.createdAt ?? "",
             updatedAt: node.updatedAt ?? "",
           },
@@ -101,6 +105,10 @@ const EditContactPage = () => {
             tags: currentPerson.tags,
             internal: currentPerson.internal,
             notes: currentPerson.notes,
+            customFields: savableValues(
+              currentPerson.customFields ?? {},
+              customFields,
+            ),
           },
         },
       });
@@ -226,7 +234,11 @@ const EditContactPage = () => {
       />
 
       <div className="space-y-5">
-        <ContactForm person={currentPerson} onPersonChange={setCurrentPerson} />
+        <ContactForm
+          person={currentPerson}
+          onPersonChange={setCurrentPerson}
+          fields={customFields}
+        />
 
         <ContactCompanies
           personId={contactId}

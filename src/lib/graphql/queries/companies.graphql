@@ -15,6 +15,7 @@ query AllCompanies($organizationId: String!) {
       postalCode
       country
       notes
+      customFields
       createdAt
       updatedAt
     }

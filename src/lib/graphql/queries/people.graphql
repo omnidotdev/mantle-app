@@ -11,6 +11,7 @@ query AllPeople($organizationId: String!) {
       avatarUrl
       tags
       notes
+      customFields
       createdAt
       updatedAt
     }

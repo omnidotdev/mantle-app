@@ -10,18 +10,26 @@ import { Textarea } from "@omnidotdev/thornberry/textarea";
 
 import SectionCard from "@/components/core/SectionCard";
 import { PhoneInput } from "@/components/ui/phone-input";
+import CustomFieldInputs from "@/features/customFields/components/CustomFieldInputs";
 import EmailList from "./EmailList";
 import TagList from "./TagList";
 
+import type { CustomField } from "@/features/customFields/types";
 import type { Person } from "@/features/people/types";
 
 interface ContactFormProps {
   person: Partial<Person>;
   onPersonChange: (person: Partial<Person>) => void;
+  /** The workspace's custom fields for this record type */
+  fields?: CustomField[];
 }
 
 /** Contact fields grouped into section cards. Save and cancel live in the page header */
-const ContactForm = ({ person, onPersonChange }: ContactFormProps) => {
+const ContactForm = ({
+  person,
+  onPersonChange,
+  fields = [],
+}: ContactFormProps) => {
   const handleChange = (
     field: keyof Person,
     value: string | string[] | boolean | null,
@@ -98,6 +106,12 @@ const ContactForm = ({ person, onPersonChange }: ContactFormProps) => {
           }
         />
       </SectionCard>
+
+      <CustomFieldInputs
+        fields={fields}
+        values={person.customFields ?? {}}
+        onChange={(customFields) => onPersonChange({ ...person, customFields })}
+      />
 
       <SectionCard title="Notes">
         <Label htmlFor="contact-notes" className="sr-only">

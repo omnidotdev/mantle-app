@@ -27,6 +27,7 @@ export interface DemoDb {
   organizationSettings: Row[];
   documentNumberingConfigs: Row[];
   creditTransactions: Row[];
+  customFields: Row[];
 }
 
 const ANCHOR = "2026-11-24";
@@ -557,6 +558,7 @@ export const createDemoDb = (): DemoDb => {
       postalCode: postalCodes[i],
       country: "US",
       notes: null,
+      customFields: {},
       createdAt: ts(`2026-0${1 + (i % 5)}-1${i}`),
       updatedAt: ts("2026-11-02"),
     }),
@@ -578,6 +580,23 @@ export const createDemoDb = (): DemoDb => {
   const people: Row[] = [];
   const companyMembers: Row[] = [];
 
+  // A select field on contacts, so the list shows a qualification column and
+  // filter, and each contact's form shows the field
+  const qualification: Row = {
+    rowId: nextId("cf01"),
+    organizationId: ORG,
+    entity: "person",
+    label: "Qualification",
+    type: "select",
+    options: [
+      { id: "lead", label: "Lead" },
+      { id: "qualified", label: "Qualified" },
+      { id: "customer", label: "Customer" },
+    ],
+    position: 0,
+  };
+  const qualifications = ["customer", "qualified", "customer", "lead"];
+
   personRows.forEach(([firstName, lastName, email, key, title, tags], i) => {
     const person: Row = {
       rowId: nextId("b0e1"),
@@ -590,6 +609,9 @@ export const createDemoDb = (): DemoDb => {
       avatarUrl: null,
       tags,
       notes: null,
+      customFields: {
+        [qualification.rowId]: qualifications[i % qualifications.length],
+      },
       createdAt: ts(`2026-0${2 + (i % 6)}-0${1 + (i % 8)}`),
       updatedAt: ts("2026-11-10"),
     };
@@ -616,6 +638,7 @@ export const createDemoDb = (): DemoDb => {
       avatarUrl: null,
       tags: [title.toLowerCase()],
       notes: null,
+      customFields: {},
       createdAt: ts("2026-01-05"),
       updatedAt: ts("2026-10-01"),
     });
@@ -839,5 +862,6 @@ export const createDemoDb = (): DemoDb => {
     organizationSettings,
     documentNumberingConfigs: [],
     creditTransactions: [],
+    customFields: [qualification],
   };
 };
