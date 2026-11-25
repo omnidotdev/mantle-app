@@ -8,7 +8,7 @@ const app = {
   icon: "🌋",
   /** App description (used in SEO meta tags) */
   description:
-    "Open-source relationship management (CRM), quote to cash, invoicing, and inventory for small businesses, in one workspace you can self-host.",
+    "Open-source, self-hostable relationship management (CRM), quote to cash, invoicing, and inventory for small businesses.",
   /** Search keywords (used in SEO meta tags) */
   keywords:
     "crm, relationship management, quote to cash, invoicing, billing, quotes, contracts, inventory management, small business, back office, business operations, open source, self-hosted",
