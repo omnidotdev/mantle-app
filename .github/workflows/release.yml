@@ -10,6 +10,8 @@ name: Release 🏗️
 on:
   push:
     branches: [master]
+  # lets a maintainer re-run the release without a new commit
+  workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
