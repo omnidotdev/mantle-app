@@ -22,7 +22,10 @@ mock.module("@omnidotdev/thornberry/workspace-switcher", () => ({
 
 mock.module("@tanstack/react-router", () => ({
   useNavigate: () => () => {},
-  useRouteContext: () => ({ organizationId: "w1" }),
+  useRouteContext: () => ({
+    organizationId: "w1",
+    session: { user: { identityProviderId: "user-123" } },
+  }),
   useLocation: ({
     select,
   }: {
@@ -43,10 +46,12 @@ mock.module("@/providers/WorkspaceProvider", () => ({
 const { default: WorkspaceSwitcher } = await import("./WorkspaceSwitcher");
 
 describe("WorkspaceSwitcher manage link", () => {
-  test("links to the account hub's workspaces page, not identity", () => {
+  test("links to the account hub's workspaces page as the signed-in account, not identity", () => {
     renderToStaticMarkup(<WorkspaceSwitcher />);
 
-    expect(switcherProps?.manageUrl).toBe(workspacesUrl(ACCOUNT_URL));
+    expect(switcherProps?.manageUrl).toBe(
+      workspacesUrl(ACCOUNT_URL, { loginHint: "user-123" }),
+    );
     expect(switcherProps?.manageUrl ?? "").not.toContain("identity.");
   });
 

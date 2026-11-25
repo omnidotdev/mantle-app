@@ -16,6 +16,7 @@ import { isDemoHref } from "@/features/demo/config";
 import DocumentNumberingSettings from "@/features/settings/components/DocumentNumberingSettings";
 import WorkspacePlanCard from "@/features/settings/components/WorkspacePlanCard";
 import { useWorkspaceProfile } from "@/features/settings/hooks/useWorkspaceProfile";
+import useHubLoginHint from "@/lib/auth/useHubLoginHint";
 import { profileSaveErrorMessage } from "@/lib/graphql/errors";
 import { resolveRegion } from "@/lib/phone";
 import cn from "@/lib/utils";
@@ -88,6 +89,7 @@ const LogoPreview = ({ url }: { url: string }) => {
 const SettingsPage = () => {
   const { organizationId, workspaceSlug, session } = Route.useRouteContext();
   const { profile: existing, save } = useWorkspaceProfile(organizationId);
+  const loginHint = useHubLoginHint();
   const [saving, setSaving] = useState(false);
 
   // Only owners and admins may change workspace-wide settings (the API
@@ -403,6 +405,7 @@ const SettingsPage = () => {
           organizationId={organizationId}
           workspaceSlug={workspaceSlug}
           canManage={canEdit}
+          loginHint={loginHint}
         />
 
         <CustomFieldSettings
