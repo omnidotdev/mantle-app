@@ -14,6 +14,8 @@ interface WorkspacePlanCardProps {
   canManage: boolean;
   /** Account hub base URL; defaults to the configured one */
   accountBaseUrl?: string;
+  /** The signed-in account's subject, so the hub opens as it */
+  loginHint?: string;
 }
 
 /** Limits shown as usage meters, in display order */
@@ -84,6 +86,7 @@ const WorkspacePlanCard = ({
   workspaceSlug,
   canManage,
   accountBaseUrl = ACCOUNT_URL,
+  loginHint,
 }: WorkspacePlanCardProps) => {
   const { data, isLoading, isError } = useWorkspacePlanQuery(
     { organizationId },
@@ -103,6 +106,7 @@ const WorkspacePlanCard = ({
           product: "mantle",
           workspace: workspaceSlug,
           returnUrl,
+          loginHint,
         })
       : hubPlanUrl(accountBaseUrl, {
           product: "mantle",
@@ -110,6 +114,7 @@ const WorkspacePlanCard = ({
           interval: "month",
           workspace: workspaceSlug,
           returnUrl,
+          loginHint,
         });
 
   const tierName = !plan

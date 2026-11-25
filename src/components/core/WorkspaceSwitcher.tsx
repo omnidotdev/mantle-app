@@ -4,6 +4,7 @@ import { useNavigate, useRouteContext } from "@tanstack/react-router";
 
 import { useSidebar } from "@/components/ui/sidebar";
 import useIsDemo from "@/features/demo/useIsDemo";
+import useHubLoginHint from "@/lib/auth/useHubLoginHint";
 import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { useWorkspace } from "@/providers/WorkspaceProvider";
 
@@ -41,6 +42,7 @@ const WorkspaceSwitcher = () => {
   const { isMobile, setOpenMobile } = useSidebar();
   // The sample workspace is not managed on the account hub
   const isDemo = useIsDemo();
+  const loginHint = useHubLoginHint();
 
   const workspaces: SwitchableWorkspace[] = (
     workspaceCtx?.workspaces ?? []
@@ -61,7 +63,7 @@ const WorkspaceSwitcher = () => {
       workspaces={workspaces}
       currentWorkspaceId={organizationId}
       onSelect={handleSelect}
-      manageUrl={isDemo ? undefined : workspacesUrl(ACCOUNT_URL)}
+      manageUrl={isDemo ? undefined : workspacesUrl(ACCOUNT_URL, { loginHint })}
     />
   );
 };

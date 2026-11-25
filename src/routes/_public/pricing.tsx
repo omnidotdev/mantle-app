@@ -11,6 +11,7 @@ import {
   yearlySavingsPercent,
 } from "@/features/pricing/plans";
 import signIn from "@/lib/auth/signIn";
+import useHubLoginHint from "@/lib/auth/useHubLoginHint";
 import appConfig from "@/lib/config/app.config";
 import { ACCOUNT_URL, BASE_URL } from "@/lib/config/env.config";
 import createMetaTags from "@/lib/util/createMetaTags";
@@ -62,6 +63,7 @@ function PricingPage() {
   const { session } = useRouteContext({ from: "__root__" });
   const [interval, setInterval] = useState<BillingInterval>("month");
   const isAuthenticated = !!session?.user?.identityProviderId;
+  const loginHint = useHubLoginHint();
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 md:pt-16">
@@ -84,6 +86,7 @@ function PricingPage() {
             plan={plan}
             interval={interval}
             isAuthenticated={isAuthenticated}
+            loginHint={loginHint}
           />
         ))}
       </div>
@@ -166,10 +169,13 @@ const PlanCard = ({
   plan,
   interval,
   isAuthenticated,
+  loginHint,
 }: {
   plan: Plan;
   interval: BillingInterval;
   isAuthenticated: boolean;
+  /** The signed-in account's subject, so the hub opens as it */
+  loginHint?: string;
 }) => {
   const isFree = plan.monthlyPrice === 0;
   const price = perMonth(plan, interval);
@@ -180,6 +186,7 @@ const PlanCard = ({
         plan: plan.tier,
         interval,
         returnUrl: `${BASE_URL}/pricing`,
+        loginHint,
       });
 
   const startFree = async () => {
