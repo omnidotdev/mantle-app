@@ -20,7 +20,11 @@ export const fetchSession = createServerFn({ method: "POST" }).handler(
 
     const session = await getAuth(request);
 
-    if (!session) return { session: null };
+    // Identity provider base URL, so the browser can check its Omni session
+    // (the client bundle carries no build-time auth config)
+    const authBaseUrl = AUTH_BASE_URL as string | undefined;
+
+    if (!session) return { session: null, authBaseUrl };
 
     session.organizations = await withPersonalWorkspaceFallback(
       session.organizations,
@@ -29,7 +33,7 @@ export const fetchSession = createServerFn({ method: "POST" }).handler(
     );
 
     // The result reaches the browser, so send only whitelisted fields
-    return { session: toClientSession(session) };
+    return { session: toClientSession(session), authBaseUrl };
   },
 );
 

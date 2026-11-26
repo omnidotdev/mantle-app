@@ -31,9 +31,12 @@ import type { Theme } from "@/server/functions/theme";
 const fetchSessionAndTheme = createServerFn({
   method: "POST",
 }).handler(async () => {
-  const [{ session }, theme] = await Promise.all([fetchSession(), getTheme()]);
+  const [{ session, authBaseUrl }, theme] = await Promise.all([
+    fetchSession(),
+    getTheme(),
+  ]);
 
-  return { session, theme };
+  return { session, authBaseUrl, theme };
 });
 
 /**
@@ -57,14 +60,18 @@ export const Route = createRootRouteWithContext<{
 }>()({
   beforeLoad: async ({ location }) => {
     // The public demo runs on a sample session and never asks the auth server
-    // who the visitor is
+    // who the visitor is (no `authBaseUrl`, so identity sync stays off)
     if (isDemoHref(location.publicHref)) {
-      return { session: demoSession, theme: await getDemoTheme() };
+      return {
+        session: demoSession,
+        authBaseUrl: undefined,
+        theme: await getDemoTheme(),
+      };
     }
 
-    const { session, theme } = await fetchSessionAndTheme();
+    const { session, authBaseUrl, theme } = await fetchSessionAndTheme();
 
-    return { session, theme };
+    return { session, authBaseUrl, theme };
   },
   // Public runtime config is fixed for the life of the server process
   loader: () => getPublicEnv(),
