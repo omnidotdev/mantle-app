@@ -1,5 +1,19 @@
 # @omnidotdev/mantle-app
 
+## 0.2.0
+
+### Minor Changes
+
+- [#78](https://github.com/omnidotdev/mantle-app/pull/78) [`ba6757f`](https://github.com/omnidotdev/mantle-app/commit/ba6757fb7c87f87b1baa6b16ff9ae5789a0d4780) Thanks [@coopbri](https://github.com/coopbri)! - Add custom fields to contacts and companies from Settings: text, number, date, checkbox, select, or multi-select. Fill them in on each record's page. Select fields show as a column on the People lists and as a filter, so you can list, for example, only qualified leads. Exports include each field as its own column.
+
+- [#82](https://github.com/omnidotdev/mantle-app/pull/82) [`4088beb`](https://github.com/omnidotdev/mantle-app/commit/4088bebb469bc6061540de0eb7897ca708158af8) Thanks [@coopbri](https://github.com/coopbri)! - Signing in or out of Omni in another app now carries over here
+
+- [#81](https://github.com/omnidotdev/mantle-app/pull/81) [`3c27b1a`](https://github.com/omnidotdev/mantle-app/commit/3c27b1aed743a6af19614dbb53bbd6ef633541fb) Thanks [@coopbri](https://github.com/coopbri)! - Links to your Omni account now open it as the same account you use in Mantle, even when another account is signed in on the browser
+
+### Patch Changes
+
+- [#80](https://github.com/omnidotdev/mantle-app/pull/80) [`d87b829`](https://github.com/omnidotdev/mantle-app/commit/d87b829fb00dc1b39b363d2bdd8e69784e494b7d) Thanks [@coopbri](https://github.com/coopbri)! - Refresh the share image and site description copy
+
 ## 0.1.0
 
 ### Minor Changes
